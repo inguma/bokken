@@ -39,8 +39,8 @@ class RightCombo(gtk.Table):
         options = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
         for option in options:
             self.theme_combo.append_text(option)
-        # Set Disassembly by default
-        self.theme_combo.set_active(0)
+#        # Set first by default
+#        self.theme_combo.set_active(0)
 
         self.theme_combo.connect("changed", self.theme_combo_change)
         self.attach(self.theme_combo, 1, 2, 0, 1)
@@ -61,7 +61,9 @@ class RightCombo(gtk.Table):
         self.right_combo.connect("changed", self.right_combo_change)
         self.attach(self.right_combo, 3, 4, 0, 1)
 
+        #
         # Open File Stuff
+
         # Open file label
         self.open_label = gtk.Label('File to open:')
         self.attach(self.open_label, 4, 5, 0, 1)
@@ -108,6 +110,7 @@ class RightCombo(gtk.Table):
         self.tviews.update_theme(option)
 
     def right_combo_change(self, widget):
+        print "Changed"
         # Get selected option
         model = self.right_combo.get_model()
         active = self.right_combo.get_active()

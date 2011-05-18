@@ -107,6 +107,7 @@ class TopButtons(gtk.HBox):
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search for Shellcode')
         b.connect("clicked", self.search_shellcode)
         self.toolbox.pack_start(b, False, False)
+        b.set_sensitive(False)      # not yet working properly
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search antivm tricks')
         b.connect("clicked", self.search_antivm)
         self.toolbox.pack_start(b, False, False)
@@ -147,11 +148,16 @@ class TopButtons(gtk.HBox):
         self.throbber = throbber.Throbber()
         self.toolbox.pack_end(self.throbber, False, False)
         
-
-        # Grayed?
-        self.toolbox.set_sensitive(True)
+#        # Grayed?
+#        self.toolbox.set_sensitive(True)
         self.show_all()
 
+    #
+    # Functions
+    #
+
+    # Private methods
+    #
     def _bye(self, widget):
         msg = ("Do you really want to quit?")
         dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
@@ -164,16 +170,18 @@ class TopButtons(gtk.HBox):
         gtk.main_quit()
         return False
 
-    def _void(self):
-        pass
-
+    # New File related methods
+    #
     def new_file(self, widget):
         dialog = file_dialog.FileDialog()
         dialog.run()
         self.file = dialog.file
+
+        # Clean full vars where file parsed data is stored as cache
         self.uicore.clean_fullvars()
 
         # Use threads not to freeze GUI while loading
+        # FIXME: Same code used in main.py, should be converted into a function
         self.throbber.running(True)
         t = threading.Thread(target=self.main.load_file, args=(self.file,))
         t.start()
@@ -187,6 +195,8 @@ class TopButtons(gtk.HBox):
             self.main.show_file_data(thread)
             return False
 
+    # Button callback methods
+    #
     def search_pdfstreams(self, widget):
         if self.uicore.pyew.format in 'PDF':
             streams = self.uicore.get_pdf_streams()
@@ -219,9 +229,6 @@ class TopButtons(gtk.HBox):
         for element in results:
             hit = ("HIT [0x%08x]: %s\n" % (element.keys()[0], element.values()[0].translate(FILTER)))
             self.search_dialog.output_buffer.insert(enditer, hit)
-
-#    def show_cgraph(self, widget):
-#        dot = self.uicore.get_call_graph()
 
     def show_urls(self, widget):
         urls = self.uicore.get_urls()
@@ -320,9 +327,12 @@ class TopButtons(gtk.HBox):
 
         return False
 
+    # Executes pyew's plugins
     def execute(self, widget, plugin):
         self.uicore.execute_plugin(plugin)
 
+# Used to create most of the buttons
+#
 class SemiStockButton(gtk.Button):
     '''Takes the image from the stock, but the label which is passed.
     

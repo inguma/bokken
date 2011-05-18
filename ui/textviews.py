@@ -52,7 +52,7 @@ class TextViews(gtk.HBox):
         self.pack_start(rightvb, True, True, 1)
 
         #################################################################
-        # Left ListView and Tree
+        # Left ListView and TreeView
         #################################################################
 
         # Scrolled Window
@@ -61,16 +61,16 @@ class TextViews(gtk.HBox):
         left_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         left_scrolled_window.show()
 
-        # Create Functions List
-        self.treeView = treeviews.TreeViews(self.uicore, self)
+        # Create left TreeView
+        self.left_treeview = treeviews.TreeViews(self.uicore, self)
 
-        left_scrolled_window.add(self.treeView)
+        left_scrolled_window.add(self.left_treeview)
 
         #################################################################
         # Left ComboBox
         #################################################################
         self.left_combo = gtk.combo_box_new_text()
-        # Set Functions by default
+        # Set grayed by default
         self.left_combo.set_sensitive(False)
 
         # Add combo and textview to leftvb
@@ -93,7 +93,7 @@ class TextViews(gtk.HBox):
         self.buffer.set_data('languages-manager', lm)
         self.view = gtksourceview2.View(self.buffer)
 
-        # FIXME options that must be user selectable (statusbar)
+        # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
         self.view.set_highlight_current_line(True)
         # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
@@ -146,7 +146,6 @@ class TextViews(gtk.HBox):
     def update_righttext(self, option):
         # Fill right textview with selected content
         if option == 'Disassembly':
-            self.buffer.set_highlight_syntax(True)
             #self.uicore.get_sections()
             try:
                 self.dasm = self.uicore.get_text_dasm()
@@ -161,25 +160,20 @@ class TextViews(gtk.HBox):
         elif option == 'Python':
             self.dasm = self.uicore.get_python_dasm()
         elif option == 'String Repr':
-            self.buffer.set_highlight_syntax(False)
             self.repr = self.uicore.get_repr()
             self.buffer.set_text(self.repr)
         elif option == 'Hexdump':
-            self.buffer.set_highlight_syntax(False)
             self.hexdump = self.uicore.get_hexdump()
             self.buffer.set_text(self.hexdump)
         elif option == 'Strings':
-            self.buffer.set_highlight_syntax(False)
             self.strings = self.uicore.get_strings()
             self.buffer.set_text(self.strings)
         elif option == 'URL':
-            self.buffer.set_highlight_syntax(True)
             language = 'http'
             code = "%s" % ( self.format_html(self.uicore.pyew.buf) )
             self.buffer.set_text(code)
             self.right_notebook.xdot_widget.set_dot(self.uicore.http_dot)
         elif option == 'Plain Text':
-            self.buffer.set_highlight_syntax(True)
             language = self.get_language()
             data = self.uicore.get_file_text()
 
@@ -194,6 +188,19 @@ class TextViews(gtk.HBox):
                 self.hexdump = self.uicore.get_hexdump()
                 self.buffer.set_text(self.hexdump)
 
+        # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
+        if option in ['Disassembly', 'URL', 'Plain Text', 'Python']:
+            self.buffer.set_highlight_syntax(True)
+        else:
+            self.buffer.set_highlight_syntax(False)
+
+        # Wrap text only for 'String Repr'
+        if option != 'String Repr':
+            self.view.set_wrap_mode(gtk.WRAP_NONE)
+        else:
+            self.view.set_wrap_mode(gtk.WRAP_WORD)
+
+        # Hide left content for 'Plain Text'
         if option != 'Plain Text':
             self.leftvb.show()
         else:
@@ -211,29 +218,31 @@ class TextViews(gtk.HBox):
         return code
 
     def create_model(self, mode):
-        self.treeView.store.clear()
-        self.treeView.remove_columns()
+        # Clear before changing contents
+        self.left_treeview.store.clear()
+        self.left_treeview.remove_columns()
+
         if mode == 'Functions':
-            self.treeView.create_functions_columns()
+            self.left_treeview.create_functions_columns()
             for function in self.uicore.get_functions():
-                self.treeView.store.append([function, '', '', ''])
+                self.left_treeview.store.append([function, '', '', ''])
         elif mode == 'Sections':
-            self.treeView.create_sections_columns()
+            self.left_treeview.create_sections_columns()
             for section in self.uicore.get_sections():
                 tmp = []
                 for element in section:
                     tmp.append(element)
-                self.treeView.store.append(tmp)
+                self.left_treeview.store.append(tmp)
         elif mode == 'Imports':
-            self.treeView.create_tree( self.uicore.get_imports() )
+            self.left_treeview.create_tree( self.uicore.get_imports() )
         elif mode == 'Exports':
-            self.treeView.create_exports_columns()
+            self.left_treeview.create_exports_columns()
             for export in self.uicore.get_exports():
-                self.treeView.store.append(export)
+                self.left_treeview.store.append(export)
         elif mode == 'PDF':
-            self.treeView.create_pdf_tree( self.uicore.get_pdf_info() )
+            self.left_treeview.create_pdf_tree( self.uicore.get_pdf_info() )
         elif mode == 'URL':
-            self.treeView.create_url_tree( self.uicore.parsed_links )
+            self.left_treeview.create_url_tree( self.uicore.parsed_links )
 
     def update_tabs(self, mode):
         if mode == 'Disassembly':
@@ -250,11 +259,12 @@ class TextViews(gtk.HBox):
         option = model[active][0]
         self.create_model(option)
 
-    def update_combo_content(self):
+    def update_left_combo(self):
         # Empty the combo before adding new contents
         model = self.left_combo.get_model()
         model.clear()
 
+        # Add combo content depending on file format
         if self.uicore.pyew.format in ['PE']:
             options = ['Functions', 'Sections', 'Imports', 'Exports']
         elif self.uicore.pyew.format in ['ELF']:
@@ -274,7 +284,8 @@ class TextViews(gtk.HBox):
         self.left_combo.connect("changed", self.update_left_content)
 
         self.left_combo.set_sensitive(True)
-        self.update_left_content(self)
+        # FIXME: Really necessary?? looks like not...
+#        self.update_left_content(self)
 
     def search(self, widget, search_string, iter = None):
         # Clean string to search

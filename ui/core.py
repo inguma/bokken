@@ -58,10 +58,6 @@ class Core():
         self.pyew.offset = 0
         self.pyew.previousoffset = []
 
-        # Add global object's references for easier usage
-        self.pe = self.pyew.pe
-        self.elf = self.pyew.elf
-
         self.pyew.case = 'low'
 
     def clean_fullvars(self):
@@ -89,6 +85,7 @@ class Core():
         self.pe = self.pyew.pe
         self.elf = self.pyew.elf
 
+        # Check if file name is an URL, pyew stores it as 'raw'
         self.is_url()
 
         if self.pyew.format in ["PE", "ELF"]:
@@ -97,11 +94,11 @@ class Core():
             import ui.plugins.pdfinfo as pdfinfo
             self.pdfinfo = pdfinfo.get_pdfinfo(file)
         elif self.pyew.format in ['URL']:
-            print "URL! We've got URL!"
+            #print "URL! We've got URL!"
             self.search_http_src()
             self.parse_http_locals()
         elif self.pyew.format in ["raw"]:
-            print "We've got RAW!"
+            #print "We've got RAW!"
             self.pyew.format = 'Plain Text'
 
         self.pyew.bsize = self.pyew.maxsize
@@ -178,8 +175,9 @@ class Core():
                     self.allsections.append( [section.Name.split('\x00')[0], hex(section.VirtualAddress), hex(section.Misc_VirtualSize), hex(section.SizeOfRawData)] )
 #                    print "  ", section.Name, hex(section.VirtualAddress), hex(section.Misc_VirtualSize), section.SizeOfRawData
         elif self.pyew.format == 'ELF':
-            for section in self.pyew.elf.secnames:
-                self.allsections.append( [self.pyew.elf.secnames[section].getName(), "0x%08x" % (self.pyew.elf.secnames[section].sh_addr), "N/A", "N/A"] )
+            if self.allsections == []:
+                for section in self.pyew.elf.secnames:
+                    self.allsections.append( [self.pyew.elf.secnames[section].getName(), "0x%08x" % (self.pyew.elf.secnames[section].sh_addr), "N/A", "N/A"] )
 
         return self.allsections
 
@@ -250,6 +248,11 @@ class Core():
             self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize, 'processor':self.pyew.processor, 'type':self.pyew.type}
         elif self.pyew.format in ["PDF"]:
             self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize, 'processor':self.pyew.processor, 'type':self.pyew.type}
+        # I plan to add more content here soon so I keep it separated
+        elif self.pyew.format in ['URL']:
+            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize}
+        else:
+            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize}
 
         return self.fileinfo
 

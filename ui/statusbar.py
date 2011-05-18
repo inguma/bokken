@@ -31,7 +31,11 @@ class Statusbar(gtk.Statusbar):
 
         self.sbar_context = self.get_context_id('sb')
 
+    # Method to add content to the status bar
     def add_text(self, data_dict, version):
+        '''data_dict ontains text to be added.
+           Key will be the title
+           Value will be... well, the value :)'''
         self.text = ''
         for element in data_dict.keys():
             self.text += element.capitalize() + ': ' + str(data_dict[element]) + ' | '
@@ -40,6 +44,7 @@ class Statusbar(gtk.Statusbar):
         self.pack_end(gtk.VSeparator(), False)
         self.show_all()
 
+    # Method to clear the statusbar before adding new content
     def clear_sbar(self):
         self.push(self.sbar_context, '')
 

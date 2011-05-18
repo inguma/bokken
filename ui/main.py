@@ -49,16 +49,17 @@ else:
     gtk.gdk.threads_init()
 
 MAINTITLE = "Bokken, a GUI for pyew and (soon) radare2!"
-# FIXME Add to a Status Bar
 VERSION="1.0-dev"
 
 class MainApp:
     '''Main GTK application'''
 
+    # FIXME: Avoid using uicore data for GUI creation
     def __init__(self, file):
 
         self.file = file
 
+        # File select dialog in case no file parameter was pased
         if not self.file:
             dialog = file_dialog.FileDialog()
             dialog.run()
@@ -66,9 +67,10 @@ class MainApp:
 
         self.uicore = core.Core()
 
-        # Use threads not to freeze GUI load
+        # Use threads to avoid freezing the GUI load
         t = threading.Thread(target=self.load_file, args=(self.file,))
         t.start()
+        # This call must not depend on load_file data
         gobject.timeout_add(500, self.show_file_data, t)
 
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -97,6 +99,7 @@ class MainApp:
         self.supervb.pack_start(self.mainvb, True, True, 1)
 
         # Initialize and add TextViews
+        # FIXME: Modify to avoid depending on core load_file to finish
         self.tviews = textviews.TextViews(self.uicore)
 
         # Initialize and add Statusbar
@@ -111,10 +114,14 @@ class MainApp:
         # Start the throbber while the thread is running...
         self.topbuttons.throbber.running(True)
 
+        # Disable all until file loads
+        self.disable_all()
+
         self.window.show_all()
 
         gtk.main()
 
+    # Do all the core stuff of parsing file
     def load_file(self, file):
 
         OKGREEN = '\033[92m'
@@ -122,24 +129,23 @@ class MainApp:
 
         print "Loading file: %s..." % (file)
         self.uicore.load_file(file)
-        try:
+        # FIXME
+        if self.uicore.pyew.format in ['PE', 'Elf']:
             self.uicore.get_sections()
-        except:
-            pass
         print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
+    # Once we have the file info, let's create the GUI
     def show_file_data(self, thread):
         if thread.isAlive() == True:
             return True
         else:
-            # Left combo content
-            self.tviews.update_combo_content()
+            # Create left combo depending on file format
+            self.tviews.update_left_combo()
             # Right combo content
             self.tviews.update_right_combo()
 
             # Add data to RIGHT TextView
             if self.uicore.pyew.format in ["PE", "ELF"]:
-                # Add default startup content
                 self.tviews.update_righttext('Disassembly')
             elif self.uicore.pyew.format in ["PYC"]:
                 self.tviews.update_righttext('Python')
@@ -156,19 +162,35 @@ class MainApp:
                 self.tviews.left_combo.set_active(0)
         
                 # Add file information to the StatusBar
-                info = self.uicore.get_file_info()
-                self.sbar.add_text(info, VERSION)
+#                info = self.uicore.get_file_info()
+#                self.sbar.add_text(info, VERSION)
             elif self.uicore.pyew.format in ["PDF"]:
                 # Why?! Oh why in the name of God....!!
                 self.tviews.create_model('PDF')
                 #self.tviews.left_combo.set_active(0)
         
                 # Add file information to the StatusBar
-                info = self.uicore.get_file_info()
-                self.sbar.add_text(info, VERSION)
+#                info = self.uicore.get_file_info()
+#                self.sbar.add_text(info, VERSION)
             elif self.uicore.pyew.format in ["URL"]:
                 self.tviews.create_model('URL')
+
+            # Update statusbar with file info
+            info = self.uicore.get_file_info()
+            self.sbar.add_text(info, VERSION)
+
+            # Enable GUI
+            self.enable_all()
             self.topbuttons.throbber.running('')
+
+    def disable_all(self):
+        self.sbar.add_text({'Please wait while loading file':self.uicore.pyew.filename}, VERSION)
+        self.topbuttons.set_sensitive(False)
+        self.tviews.set_sensitive(False)
+
+    def enable_all(self):
+        self.topbuttons.set_sensitive(True)
+        self.tviews.set_sensitive(True)
 
     def quit(self, widget, event, data=None):
         '''Main quit.
