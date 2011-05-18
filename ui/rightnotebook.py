@@ -1,0 +1,88 @@
+#!/usr/bin/python
+
+#       rightnotebook.py
+#       
+#       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
+#       
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#       
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+import gtk
+
+import ui.graph as graph
+
+class RightNotebook(gtk.Notebook):
+    '''Right Notebook elements'''
+
+    def __init__(self, tviews, scrolled_window, uicore):
+        super(RightNotebook,self).__init__()
+
+        self.tviews = tviews
+        self.scrolled_window = scrolled_window
+        self.uicore = uicore
+
+#        disas_label = gtk.Label('Disassembly')
+#        self.append_page(self.scrolled_window, disas_label)
+
+        self.append_page(self.scrolled_window)
+        tab = self.create_tab('Code', self.scrolled_window)
+
+        self.set_tab_label_packing(self.scrolled_window, False, False, gtk.PACK_START)
+        self.set_tab_label(self.scrolled_window, tab)
+
+        self.xdot_widget = graph.MyDotWidget(self.uicore)
+        self.append_page(self.xdot_widget)
+#        graph_label = gtk.Label('Callgraph')
+#        self.append_page(self.xdot_widget, graph_label)
+
+        tab = self.create_tab('Callgraph', self.xdot_widget)
+
+        self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
+        self.set_tab_label(self.xdot_widget, tab)
+
+    def hide_tabs(self):
+        self.set_show_tabs(False)
+        self.set_current_page(0)
+
+    def create_tab(self, title, tab_child):
+        tab_box = gtk.HBox()
+        close_button = gtk.Button()
+
+        image = gtk.Image()
+        image.set_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_MENU)
+
+        label = gtk.Label(title)
+
+        close_button.connect("clicked", self.close_tab, tab_child)
+        close_button.set_image(image)
+        close_button.set_relief(gtk.RELIEF_NONE)
+        tab_box.pack_start(label, True, True)
+        tab_box.pack_end(close_button, False, False)
+
+        tab_box.show_all()
+        if title in ["Code", "Callgraph"]:
+            close_button.hide()
+
+        return tab_box
+
+    def close_tab(self, widget, child):
+        pagenum = self.page_num(child)
+
+        if pagenum != -1:
+            self.remove_page(pagenum)
+            child.destroy()
+
+        child.destroy()
+
