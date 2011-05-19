@@ -54,6 +54,7 @@ class Searchable(object):
         self.bg_notfnd = colormap.alloc_color("red")
         # build the search tab
         self._build_search(None)
+        self.searching = True
 
     def _key(self, widg, event):
         '''Handles keystrokes.'''
