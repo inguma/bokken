@@ -22,8 +22,8 @@
 import os, sys, threading
 
 # Perform the GTK UI dependency check here
-import ui.dependencyCheck as dependencyCheck
-dependencyCheck.check_all()
+import ui.dependency_check as dependency_check
+dependency_check.check_all()
 
 # Now that I know that I have them, import them!
 import gtk, gobject

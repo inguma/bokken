@@ -1,4 +1,4 @@
-#       dependencyCheck.py
+#       dependency_check.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
 #       
