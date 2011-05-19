@@ -40,8 +40,9 @@ class Statusbar(gtk.Statusbar):
         for element in data_dict.keys():
             self.text += element.capitalize() + ': ' + str(data_dict[element]) + ' | '
         self.push(self.sbar_context, self.text)
-        self.pack_end(gtk.Label('Bokken ' + version), False)
-        self.pack_end(gtk.VSeparator(), False)
+        if version:
+            self.pack_end(gtk.Label('Bokken ' + version), False)
+            self.pack_end(gtk.VSeparator(), False)
         self.show_all()
 
     # Method to clear the statusbar before adding new content

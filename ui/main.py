@@ -177,7 +177,7 @@ class MainApp:
 
             # Update statusbar with file info
             info = self.uicore.get_file_info()
-            self.sbar.add_text(info, VERSION)
+            self.sbar.add_text(info, '')
 
             # Enable GUI
             self.enable_all()

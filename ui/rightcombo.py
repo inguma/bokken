@@ -110,7 +110,6 @@ class RightCombo(gtk.Table):
         self.tviews.update_theme(option)
 
     def right_combo_change(self, widget):
-        print "Changed"
         # Get selected option
         model = self.right_combo.get_model()
         active = self.right_combo.get_active()
