@@ -73,6 +73,7 @@ class TextViews(gtk.HBox):
         self.left_combo = gtk.combo_box_new_text()
         # Set grayed by default
         self.left_combo.set_sensitive(False)
+        self.connect = self.left_combo.connect("changed", self.update_left_content)
 
         # Add combo and textview to leftvb
         self.leftvb.pack_start(self.left_combo, False, True, 2)
@@ -229,6 +230,7 @@ class TextViews(gtk.HBox):
         self.create_model(option)
 
     def update_left_combo(self):
+        self.left_combo.disconnect(self.connect)
         # Empty the combo before adding new contents
         model = self.left_combo.get_model()
         model.clear()
@@ -250,7 +252,7 @@ class TextViews(gtk.HBox):
         # Set First element by default
         self.left_combo.set_active(0)
 
-        self.left_combo.connect("changed", self.update_left_content)
+        self.connect = self.left_combo.connect("changed", self.update_left_content)
 
         self.left_combo.set_sensitive(True)
         # FIXME: Really necessary?? looks like not...
