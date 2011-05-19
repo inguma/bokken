@@ -78,47 +78,9 @@ class TextViews(gtk.HBox):
         self.leftvb.pack_start(self.left_combo, False, True, 2)
         self.leftvb.pack_start(left_scrolled_window, True, True, 2)
 
-#        #################################################################
-#        # Right Textview
-#        #################################################################
-#
-#        # Use GtkSourceView to add eye candy :P
-#        # create buffer
-#        lm = gtksourceview2.LanguageManager()
-#        # Add ui dir to language paths
-#        paths = lm.get_search_path()
-#        paths.append(os.getcwd() + os.sep + 'ui' + os.sep)
-#        lm.set_search_path(paths)
-#        self.buffer = gtksourceview2.Buffer()
-#        self.buffer.create_tag("green-background", background="green", foreground="black")
-#        self.buffer.set_data('languages-manager', lm)
-#        self.view = gtksourceview2.View(self.buffer)
-#
-#        # FIXME options must be user selectable (statusbar)
-#        self.view.set_editable(False)
-#        self.view.set_highlight_current_line(True)
-#        # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
-#        self.view.set_wrap_mode(gtk.WRAP_NONE)
-#        
-#        # setup view
-#        font_desc = pango.FontDescription('monospace 9')
-#        if font_desc:
-#            self.view.modify_font(font_desc)
-#
-#        self.buffer.set_highlight_syntax(True)
-#        manager = self.buffer.get_data('languages-manager')
-#        language = manager.get_language('asm')
-#        self.buffer.set_language(language)
-#
-#        self.mgr = gtksourceview2.style_scheme_manager_get_default()
-#
-#        # Scrolled Window
-#        self.right_scrolled_window = gtk.ScrolledWindow()
-#        self.right_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-#        self.right_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-#        self.right_scrolled_window.show()
-#        # Add Textview to Scrolled Window
-#        self.right_scrolled_window.add(self.view)
+        #################################################################
+        # Right Textview
+        #################################################################
 
         self.right_textview = right_textview.RightTextView()
         self.buffer = self.right_textview.buffer
