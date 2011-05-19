@@ -19,8 +19,14 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os, sys
+
 import gtk, gobject
 import threading
+
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
+ENDC = '\033[0m'
 
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
@@ -179,6 +185,14 @@ class TopButtons(gtk.HBox):
 
         # Clean full vars where file parsed data is stored as cache
         self.uicore.clean_fullvars()
+
+        # Check if file name is an URL, pyew stores it as 'raw'
+        self.uicore.is_url(self.file)
+
+        # Just open the file if path is correct or an url
+        if self.uicore.pyew.format != 'URL' and not os.path.isfile(self.file):
+            print "Incorrect file argument:", FAIL, self.file, ENDC
+            sys.exit(1)
 
         # Use threads not to freeze GUI while loading
         # FIXME: Same code used in main.py, should be converted into a function

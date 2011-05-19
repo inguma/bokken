@@ -99,7 +99,7 @@ class RightCombo(gtk.Table):
             self.right_combo.append_text('URL')
             # Set URL by default
             self.right_combo.set_active(3)
-        elif self.uicore.pyew.format == 'raw':
+        elif self.uicore.pyew.format == 'Plain Text':
             self.right_combo.append_text('Plain Text')
             # Set plain text by default
             self.right_combo.set_active(3)

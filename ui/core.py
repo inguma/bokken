@@ -79,14 +79,17 @@ class Core():
         self.http_dot = ''
 
     def load_file(self, file):
+        # Set default file format to raw
+        self.pyew.format = 'raw'
+
         self.pyew.loadFile(file, "rb")
 
         # Add global object's references for easier usage
         self.pe = self.pyew.pe
         self.elf = self.pyew.elf
 
-#        # Check if file name is an URL, pyew stores it as 'raw'
-#        self.is_url()
+        # Check if file name is an URL, pyew stores it as 'raw'
+        self.is_url(file)
 
         if self.pyew.format in ["PE", "ELF"]:
             self.saveAndCompareInDatabase(self.pyew)
@@ -105,6 +108,7 @@ class Core():
         self.pyew.seek(0)
 
     def is_url(self, file):
+        print "Checking if is URL..."
         self.filename = file
         if self.filename.lower().startswith("http://") or \
            self.filename.lower().startswith("https://") or \
