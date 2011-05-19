@@ -85,8 +85,8 @@ class Core():
         self.pe = self.pyew.pe
         self.elf = self.pyew.elf
 
-        # Check if file name is an URL, pyew stores it as 'raw'
-        self.is_url()
+#        # Check if file name is an URL, pyew stores it as 'raw'
+#        self.is_url()
 
         if self.pyew.format in ["PE", "ELF"]:
             self.saveAndCompareInDatabase(self.pyew)
@@ -104,8 +104,8 @@ class Core():
         self.pyew.bsize = self.pyew.maxsize
         self.pyew.seek(0)
 
-    def is_url(self):
-        self.filename = self.pyew.filename
+    def is_url(self, file):
+        self.filename = file
         if self.filename.lower().startswith("http://") or \
            self.filename.lower().startswith("https://") or \
            self.filename.lower().startswith("ftp://"):

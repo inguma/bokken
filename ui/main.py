@@ -19,7 +19,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import sys, threading
+import os, sys, threading
 
 # Perform the GTK UI dependency check here
 import ui.dependencyCheck as dependencyCheck
@@ -51,6 +51,10 @@ else:
 MAINTITLE = "Bokken, a GUI for pyew and (soon) radare2!"
 VERSION="1.0-dev"
 
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
+ENDC = '\033[0m'
+
 class MainApp:
     '''Main GTK application'''
 
@@ -66,6 +70,14 @@ class MainApp:
             self.file = dialog.file
 
         self.uicore = core.Core()
+
+        # Check if file name is an URL, pyew stores it as 'raw'
+        self.uicore.is_url(self.file)
+
+        # Just open the file if path is correct or an url
+        if self.uicore.pyew.format != 'URL' and not os.path.isfile(file):
+            print "Incorrect file argument:", FAIL, self.file, ENDC
+            sys.exit(1)
 
         # Use threads to avoid freezing the GUI load
         t = threading.Thread(target=self.load_file, args=(self.file,))
@@ -123,9 +135,6 @@ class MainApp:
 
     # Do all the core stuff of parsing file
     def load_file(self, file):
-
-        OKGREEN = '\033[92m'
-        ENDC = '\033[0m'
 
         print "Loading file: %s..." % (file)
         self.uicore.load_file(file)
