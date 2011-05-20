@@ -22,8 +22,6 @@
 
 import re
 
-import plugins.url as url
-
 def extract(pyew):
 
     from plugins.url import doFind
@@ -55,15 +53,59 @@ def extract(pyew):
     return ret
 
 def check(pyew):
+    """ Check URLs of the current file """
 
-    if pyew.format in 'raw':
-        pyew.f.write(pyew.buf)
-    checked = url.checkUrls(pyew, False)
-    return checked
+    import sys, urllib
+
+    oks = []
+    urls = extract(pyew)
+    
+    if len(urls) == 0:
+        print "***No URLs found"
+        return
+
+    for url in urls:
+        try:
+            r = urllib.urlopen(url)
+            
+            oks.append(url)
+        except KeyboardInterrupt:
+            print "Aborted"
+            break
+        except:
+            sys.stdout.write("DOWN\n")
+            sys.stdout.flush()
+        
+    return oks
 
 def check_bad(pyew):
+    """ Check for known bad URLs """
 
-    if pyew.format in 'raw':
-        pyew.f.write(pyew.buf)
-    bad = url.checkBad(pyew, False)
-    return bad
+    import sys, urllib
+    returls = []
+    
+    url = "http://www.malware.com.br/cgi/submit?action=list_adblock"
+    try:
+        l = urllib.urlopen(url).readlines()
+    except:
+        print "***Error fetching URL list from www.malware.com.br:", sys.exc_info()[1]
+        return
+
+    urls = extract(pyew)
+    
+    if len(urls) == 0:
+        print "***No URLs found"
+        return
+
+    for url in urls:
+        for badurl in l:
+            if badurl.startswith("["):
+                continue
+            badurl = badurl.strip("\n").strip("\r")
+            if url.lower().find(badurl) > -1:
+                print "***Found bad URL: %s" % url
+                
+                returls.append(url)
+                break
+
+    return returls

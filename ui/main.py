@@ -40,7 +40,6 @@ import ui.core as core
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.buttons as buttons
-import ui.file_dialog as file_dialog
 
 # Threading initializer
 if sys.platform == "win32":
