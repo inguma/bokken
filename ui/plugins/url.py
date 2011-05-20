@@ -21,7 +21,6 @@
 
 
 import re
-import urllib
 
 import plugins.url as url
 

@@ -32,6 +32,4 @@ def search_vt(pyew):
     scanner.printResults = False
     matches = scanner.scan(pyew.filename, argmd5=x)
 
-    print matches
     return matches
-
