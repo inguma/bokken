@@ -43,11 +43,13 @@ class TopButtons(gtk.HBox):
         self.uicore = core
         self.toolbox = self
 
+        self.img_path = 'ui' + os.sep + 'data' + os.sep
         self.options_dict = {'Hexadecimal':'x', 'String':'s', 'String no case':'i', 'Regexp':'r', 'Unicode':'u', 'Unicode no case':'U'}
 
         # New file button
         b = SemiStockButton("", gtk.STOCK_NEW, 'Open New file')
         b.connect("clicked", self.new_file)
+        b.label.label = 'New'
         self.toolbox.pack_start(b, False, False)
         # Separator
         self.sep = gtk.HSeparator()
@@ -56,6 +58,7 @@ class TopButtons(gtk.HBox):
         # PDF Streams search
         b = SemiStockButton("", gtk.STOCK_INDEX, 'Find PDF Streams')
         b.connect("clicked", self.search_pdfstreams)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         # Separator
         self.sep = gtk.HSeparator()
@@ -64,32 +67,35 @@ class TopButtons(gtk.HBox):
         # URL related buttons
         b = gtk.Button()
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file("ui/data/response-headers.png")
+        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path + 'response-headers.png')
         scaled_buf = pixbuf.scale_simple(24,24,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         b.set_image(i)
         b.set_tooltip_text('URL')
         b.connect("clicked", self.show_urls)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
 
         b = gtk.Button()
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file("ui/data/response-body.png")
+        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path  + 'response-body.png')
         scaled_buf = pixbuf.scale_simple(24,24,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         b.set_image(i)
         b.set_tooltip_text('Check URL')
         b.connect("clicked", self.show_checked_urls)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
 
         b = gtk.Button()
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file("ui/data/request-body.png")
+        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path  + 'request-body.png')
         scaled_buf = pixbuf.scale_simple(24,24,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         b.set_image(i)
         b.set_tooltip_text('Check bad URL')
         b.connect("clicked", self.show_bad_urls)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         # Separator
         self.sep = gtk.HSeparator()
@@ -98,6 +104,7 @@ class TopButtons(gtk.HBox):
         # Visualizatin buttons
         b = SemiStockButton("", gtk.STOCK_ZOOM_FIT, 'Visualize Binary')
         b.connect("clicked", self.execute, 'binvi')
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         # Separator
         self.sep = gtk.HSeparator()
@@ -106,19 +113,24 @@ class TopButtons(gtk.HBox):
         # Binary analysis buttons
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Send to VirusTotal')
         b.connect("clicked", self.send_to_virustotal)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search in Threat Expert')
         b.connect("clicked", self.execute, 'threat')
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search for Shellcode')
         b.connect("clicked", self.search_shellcode)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         b.set_sensitive(False)      # not yet working properly
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search antivm tricks')
         b.connect("clicked", self.search_antivm)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Check if the PE file is packed')
         b.connect("clicked", self.check_packer)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         # Separator
         self.sep = gtk.HSeparator()
@@ -137,6 +149,7 @@ class TopButtons(gtk.HBox):
         self.toolbox.pack_start(self.search_entry, False, False)
         b = SemiStockButton("", gtk.STOCK_FIND, 'Search')
         b.connect("clicked", self.search)
+        b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
 
         # Separator
@@ -144,6 +157,7 @@ class TopButtons(gtk.HBox):
         self.toolbox.pack_start(self.sep, False, False)
         # Exit button
         b = SemiStockButton("", gtk.STOCK_QUIT, 'Have a nice day ;-)')
+        b.label.label = 'Quit'
         b.connect("clicked", self._bye)
         self.toolbox.pack_start(b, False, False)
 
@@ -156,6 +170,7 @@ class TopButtons(gtk.HBox):
         
 #        # Grayed?
 #        self.toolbox.set_sensitive(True)
+
         self.show_all()
 
     #
@@ -175,6 +190,18 @@ class TopButtons(gtk.HBox):
 
         gtk.main_quit()
         return False
+
+    def disable_all(self):
+        for child in self:
+            try:
+                if child.label.label not in ['New', 'Quit']:
+                    child.set_sensitive(False)
+            except:
+                pass
+
+    def enable_all(self):
+        for child in self:
+            child.set_sensitive(True)
 
     # New File related methods
     #
