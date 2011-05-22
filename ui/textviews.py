@@ -21,7 +21,6 @@
 
 import os
 import gio
-import tidy
 
 import gtk
 import gtksourceview2
@@ -140,7 +139,11 @@ class TextViews(gtk.HBox):
             self.buffer.set_text(self.strings)
         elif option == 'URL':
             language = 'http'
-            code = "%s" % ( self.format_html(self.uicore.pyew.buf) )
+            try:
+                code = "%s" % ( self.format_html(self.uicore.pyew.buf) )
+            except:
+                code = unicode(self.uicore.pyew.buf, 'iso8859-15')
+                #code = self.uicore.pyew.buf
             self.buffer.set_text(code)
             self.right_notebook.xdot_widget.set_dot(self.uicore.http_dot)
         elif option == 'Plain Text':
@@ -182,6 +185,7 @@ class TextViews(gtk.HBox):
         self.right_combo.create_options()
 
     def format_html(self, code):
+        import tidy
         # Tidy options reference: http://tidy.sourceforge.net/docs/quickref.html
         options = dict(output_xhtml=1, add_xml_decl=1, indent=1, tidy_mark=0, output_encoding='UTF8', wrap=0)
         code = tidy.parseString(code, **options)
