@@ -17,8 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import pygtk
-import gtk, gobject
+import gtk
 
 class FileDialog(gtk.Dialog):
     '''Window popup to select file'''
@@ -37,9 +36,11 @@ class FileDialog(gtk.Dialog):
         self.set_position(gtk.WIN_POS_CENTER)
 
         # Table to contain elements
-        self.table = gtk.Table(2, 2, False)
+        self.table = gtk.Table(3, 2, False)
         # Label
-        self.label = gtk.Label('Select a file or enter it manually. Valid inputs are PE/Elf files and URL')
+        self.label = gtk.Label('\nSelect a file or enter the path manually.\nValid inputs are: PE/Elf, PDF, plain text files and URLs\n')
+        # Horizontal Separator
+        self.hseparator = gtk.HSeparator()
         # TextEntry
         self.input_entry = gtk.Entry(100)
         # Select file button
@@ -48,8 +49,9 @@ class FileDialog(gtk.Dialog):
 
         # Add elements to the table
         self.table.attach(self.label, 0, 2, 0, 1)
-        self.table.attach(self.input_entry, 0, 1, 1, 2)
-        self.table.attach(self.select_button, 1, 2, 1, 2)
+        self.table.attach(self.hseparator, 0, 2, 1, 2)
+        self.table.attach(self.input_entry, 0, 1, 2, 3)
+        self.table.attach(self.select_button, 1, 2, 2, 3)
 
 
         self.vbox.pack_start(self.table)
