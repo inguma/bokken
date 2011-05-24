@@ -21,6 +21,10 @@
 
 import os, sys, threading
 
+# Add plugins directory to the path
+bokken_path = os.getcwd() + os.sep + 'plugins' + os.sep
+sys.path.append(bokken_path)
+
 # Perform the GTK UI dependency check here
 import ui.dependency_check as dependency_check
 dependency_check.check_all()
