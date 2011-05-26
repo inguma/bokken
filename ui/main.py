@@ -149,7 +149,6 @@ class MainApp:
 
     def show_empty_gui(self):
         self.topbuttons.throbber.running('')
-        pass
 
     # Once we have the file info, let's create the GUI
     def show_file_data(self, thread):

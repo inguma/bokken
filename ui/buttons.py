@@ -83,7 +83,7 @@ class TopButtons(gtk.HBox):
         i.set_from_pixbuf(scaled_buf)
         b.set_image(i)
         b.set_tooltip_text('Check URL')
-        b.connect("clicked", self.show_checked_urls)
+        b.connect("clicked", self.check_urls)
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
 
@@ -94,7 +94,7 @@ class TopButtons(gtk.HBox):
         i.set_from_pixbuf(scaled_buf)
         b.set_image(i)
         b.set_tooltip_text('Check bad URL')
-        b.connect("clicked", self.show_bad_urls)
+        b.connect("clicked", self.check_bad_urls)
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         # Separator
@@ -111,24 +111,24 @@ class TopButtons(gtk.HBox):
         self.toolbox.pack_start(self.sep, False, False)
 
         # Binary analysis buttons
-        b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Send to VirusTotal')
+        b = SemiStockButton("", gtk.STOCK_CONNECT, 'Send to VirusTotal')
         b.connect("clicked", self.send_to_virustotal)
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
-        b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search in Threat Expert')
+        b = SemiStockButton("", gtk.STOCK_JUMP_TO, 'Search in Threat Expert')
         b.connect("clicked", self.execute, 'threat')
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
-        b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search for Shellcode')
+        b = SemiStockButton("", gtk.STOCK_FIND, 'Search for Shellcode')
         b.connect("clicked", self.search_shellcode)
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
         b.set_sensitive(False)      # not yet working properly
-        b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Search antivm tricks')
+        b = SemiStockButton("", gtk.STOCK_FIND_AND_REPLACE, 'Search antivm tricks')
         b.connect("clicked", self.search_antivm)
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
-        b = SemiStockButton("", gtk.STOCK_EXECUTE, 'Check if the PE file is packed')
+        b = SemiStockButton("", gtk.STOCK_CONVERT, 'Check if the PE file is packed')
         b.connect("clicked", self.check_packer)
         b.set_sensitive(False)
         self.toolbox.pack_start(b, False, False)
@@ -284,31 +284,50 @@ class TopButtons(gtk.HBox):
             md.run()
             md.destroy()
 
-    def show_checked_urls(self, widget):
-        checked_urls = self.uicore.check_urls()
-        if checked_urls:
-            self.create_search_dialog()
-            enditer = self.search_dialog.output_buffer.get_end_iter()
-    
-            for url in checked_urls:
-                self.search_dialog.output_buffer.insert(enditer, url + '\t\t[OK]\n')
-        else:
-            md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "No URLs found :(")
-            md.run()
-            md.destroy()
+    def check_urls(self, widget):
+        self.throbber.running(True)
+        # Use threads to avoid freezing the GUI
+        t = threading.Thread(target=self.uicore.check_urls)
+        t.start()
+        # This call must not depend on load_file data
+        gobject.timeout_add(500, self.show_checked_urls, t)
 
-    def show_bad_urls(self, widget):
-        bad_urls = self.uicore.bad_urls()
-        if bad_urls:
+    def show_checked_urls(self, thread):
+        if thread.isAlive() == True:
+            return True
+        else:
+            self.throbber.running('')
             self.create_search_dialog()
             enditer = self.search_dialog.output_buffer.get_end_iter()
-    
-            for url in bad_urls:
-                self.search_dialog.output_buffer.insert(enditer, url + '\n')
+        
+            if self.uicore.checked_urls:
+                for url in self.uicore.checked_urls:
+                    self.search_dialog.output_buffer.insert(enditer, url + '\t\t[OK]\n')
+            else:
+                self.search_dialog.output_buffer.insert(enditer, 'No URLs found :(\n')
+
+    def check_bad_urls(self, widget):
+        self.throbber.running(True)
+        # Use threads to avoid freezing the GUI
+        t = threading.Thread(target=self.uicore.bad_urls)
+        t.start()
+        # This call must not depend on load_file data
+        gobject.timeout_add(500, self.show_bad_urls, t)
+
+    def show_bad_urls(self, thread):
+        if thread.isAlive() == True:
+            return True
         else:
-            md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "No bad URLs found :(")
-            md.run()
-            md.destroy()
+            self.throbber.running('')
+            self.create_search_dialog()
+            enditer = self.search_dialog.output_buffer.get_end_iter()
+        
+            if self.uicore.bad_urls:
+                for url in self.uicore.bad_urls:
+                    self.search_dialog.output_buffer.insert(enditer, url + '\n')
+            else:
+                self.search_dialog.output_buffer.insert(enditer, 'No bad URLs found :(')
+            return False
 
     def send_to_virustotal(self, widget):
         vt_answer = self.uicore.sendto_vt()
@@ -360,6 +379,14 @@ class TopButtons(gtk.HBox):
             md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "No packers found")
             md.run()
             md.destroy()
+
+    def create_text_dialog(self, text):
+        md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, text)
+        md.run()
+        #md.connect("destroy", lambda x: self.destroy())
+        md.destroy()
+
+        return False
 
     def create_search_dialog(self):
 
