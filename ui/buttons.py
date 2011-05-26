@@ -380,14 +380,6 @@ class TopButtons(gtk.HBox):
             md.run()
             md.destroy()
 
-    def create_text_dialog(self, text):
-        md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, text)
-        md.run()
-        #md.connect("destroy", lambda x: self.destroy())
-        md.destroy()
-
-        return False
-
     def create_search_dialog(self):
 
         import search_dialog
