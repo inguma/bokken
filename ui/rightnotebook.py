@@ -26,31 +26,39 @@ import ui.graph as graph
 class RightNotebook(gtk.Notebook):
     '''Right Notebook elements'''
 
-    def __init__(self, tviews, scrolled_window, uicore):
+    def __init__(self, tviews, scrolled_window, interactive_scrolled, uicore):
         super(RightNotebook,self).__init__()
 
         self.tviews = tviews
         self.scrolled_window = scrolled_window
+        self.interactive_scrolled = interactive_scrolled
         self.uicore = uicore
 
-#        disas_label = gtk.Label('Disassembly')
-#        self.append_page(self.scrolled_window, disas_label)
-
+        #################################################
+        # Code view TAB
         self.append_page(self.scrolled_window)
         tab = self.create_tab('Code', self.scrolled_window)
 
         self.set_tab_label_packing(self.scrolled_window, False, False, gtk.PACK_START)
         self.set_tab_label(self.scrolled_window, tab)
 
+        #################################################
+        # Code map TAB
         self.xdot_widget = graph.MyDotWidget(self.uicore)
         self.append_page(self.xdot_widget)
-#        graph_label = gtk.Label('Callgraph')
-#        self.append_page(self.xdot_widget, graph_label)
 
         tab = self.create_tab('Callgraph', self.xdot_widget)
 
         self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
         self.set_tab_label(self.xdot_widget, tab)
+
+        #################################################
+        # Interactive view TAB
+        self.append_page(self.interactive_scrolled)
+        tab = self.create_tab('Interactive', self.interactive_scrolled)
+
+        self.set_tab_label_packing(self.interactive_scrolled, False, False, gtk.PACK_START)
+        self.set_tab_label(self.interactive_scrolled, tab)
 
     def hide_tabs(self):
         self.set_show_tabs(False)
@@ -72,7 +80,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ["Code", "Callgraph"]:
+        if title in ['Code', 'Callgraph', 'Interactive']:
             close_button.hide()
 
         return tab_box

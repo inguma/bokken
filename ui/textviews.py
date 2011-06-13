@@ -29,6 +29,7 @@ import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
+import ui.interactive_textview as interactive_textview
 
 class TextViews(gtk.HBox):
     '''Main TextView elements'''
@@ -93,9 +94,18 @@ class TextViews(gtk.HBox):
         self.right_combo = rightcombo.RightCombo(self, self.uicore)
 
         #################################################################
+        # Right Interactive Textview
+        #################################################################
+
+        self.interactive_textview = interactive_textview.InteractiveTextView(self.uicore)
+        self.interactive_buffer = self.interactive_textview.buffer
+        self.interactive_view = self.interactive_textview.view
+        self.interactive_mgr = self.interactive_textview.mgr
+
+        #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.interactive_textview, self.uicore)
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb

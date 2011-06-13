@@ -50,6 +50,8 @@ class Core():
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
+        self.cmd = ''
+        self.last_cmd = ''
 
         self.pyew = CPyew()
         if os.getenv("PYEW_DEBUG"):
@@ -81,6 +83,8 @@ class Core():
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
+        self.cmd = ''
+        self.last_cmd = ''
 
     def load_file(self, file):
         # Set default file format to raw
@@ -167,6 +171,83 @@ class Core():
             dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.pyew.bsize, baseoffset=self.pyew.offset)
             self.fulldasm = dis
         return self.fulldasm
+
+    def seek(self, pos):
+        data = ''
+        if pos > self.pyew.maxsize:
+            data = 'End of file reached'
+            self.pyew.offset = self.pyew.maxsize
+        elif pos < 0:
+            data = 'Begin of file reached'
+            self.pyew.offset = 0
+        else:
+            self.pyew.offset = pos
+        self.pyew.f.seek(self.pyew.offset)
+        self.pyew.buf = self.pyew.f.read(self.pyew.bsize)
+
+        return data
+
+    def move(self, direction, output):
+
+        #self.pyew.bsize = 512
+        self.cmd = direction
+
+        if len(self.pyew.previousoffset) > 0:
+            if self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ] != self.pyew.offset:
+                self.pyew.previousoffset.append(self.pyew.offset)
+        else:
+            self.pyew.previousoffset.append(self.pyew.offset)
+        
+        va = None
+        if self.pyew.virtual:
+            va = self.pyew.getVirtualAddressFromOffset(self.pyew.offset)
+        
+        if va:
+            prompt = "[0x%08x:0x%08x]> " % (self.pyew.offset, va)
+        else:
+            prompt = "[0x%08x]> " % self.pyew.offset
+
+        if self.cmd == "b":
+            tmp = self.pyew.previousoffset.pop()
+            
+            if len(self.pyew.previousoffset) > 0:
+                tmp = self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ]
+            else:
+                tmp = 0
+                
+            self.pyew.offset = tmp
+            self.pyew.lastasmoffset = tmp
+
+            limit = self.seek(tmp)
+
+        elif self.cmd == "b" and self.last_cmd == "b":
+            if len(self.pyew.previousoffset) < 2:
+                return
+            
+            tmp = self.pyew.previousoffset.pop()
+            tmp = self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ]
+
+            limit = self.seek(tmp)
+
+#        elif last_cmd in ["c", "d", "pd"] or last_cmd.isdigit():
+#            self.pyew.offset = self.pyew.lastasmoffset
+#
+#            self.seek(self.pyew.offset)
+#            if last_cmd.isdigit():
+#                last_cmd = "c"
+
+        else:
+            self.pyew.offset = self.pyew.offset + self.pyew.bsize
+            limit = self.seek(self.pyew.offset)
+
+        self.cmd = self.last_cmd
+
+        if not limit:
+            data = self.pyew.hexdump(self.pyew.buf, self.pyew.hexcolumns, baseoffset=self.pyew.offset)
+            return data
+        else:
+            print limit
+            return
 
     def get_python_dasm(self):
         if not self.pythondasm:
