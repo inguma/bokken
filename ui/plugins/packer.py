@@ -26,7 +26,6 @@ def search_packer(pyew):
 
     packers = packer.checkPacker(pyew, False)
 
-    print packers
     return packers
 
 

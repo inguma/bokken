@@ -145,12 +145,19 @@ class Core():
     def get_text_dasm(self):
         if not self.text_dasm:
             self.pyew.lines = 100*100
-            for section in self.pe.sections:
-                # Let's store text section information
-                if 'text' in section.Name:
-                    self.text_rsize = section.SizeOfRawData
-                    break
-            dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.pyew.ep)
+            if self.pyew.format == 'PE':
+                for section in self.pe.sections:
+                    # Let's store text section information
+                    if 'text' in section.Name:
+                        self.text_rsize = section.SizeOfRawData
+                        break
+            elif self.pyew.format == 'ELF':
+                for section in self.elf.sections:
+                    # Let's store text section information
+                    if 'text' in section.getName():
+                        self.text_rsize = section.sh_size
+                        break
+            dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.pyew.offset)
             self.text_dasm = dis
         return self.text_dasm
 
