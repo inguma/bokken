@@ -39,8 +39,8 @@ class RightCombo(gtk.Table):
         options = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
         for option in options:
             self.theme_combo.append_text(option)
-#        # Set first by default
-#        self.theme_combo.set_active(0)
+        # Set first by default
+        self.theme_combo.set_active(0)
 
         self.theme_combo.connect("changed", self.theme_combo_change)
         self.attach(self.theme_combo, 1, 2, 0, 1)

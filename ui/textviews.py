@@ -275,7 +275,12 @@ class TextViews(gtk.HBox):
             self.search_string = search_string 
             res = start.forward_search(self.search_string, gtk.TEXT_SEARCH_TEXT_ONLY)
 
-            if not res:
+            # Search 'function_name' instead of 'FUNCTION function_name'
+            if not res and 'FUNCTION' in self.search_string:
+                self.search_function_name = self.search_string.split()[1]
+                res = start.forward_search(self.search_function_name, gtk.TEXT_SEARCH_TEXT_ONLY)
+            # Try lowercase search
+            elif not res:
                 self.search_lower_string = self.search_string.lower()
                 res = start.forward_search(self.search_lower_string, gtk.TEXT_SEARCH_TEXT_ONLY)
 
