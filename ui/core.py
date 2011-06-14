@@ -154,6 +154,10 @@ class Core():
         self.pyew.bsize = 512
         return self.fullhex
 
+    def get_dasm(self):
+        dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.pyew.bsize, baseoffset=self.pyew.offset)
+        return dis
+
     def get_text_dasm(self):
         self.pyew.bsize = self.pyew.maxsize
         self.seek(0)
@@ -174,6 +178,7 @@ class Core():
             dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.pyew.offset)
             self.text_dasm = dis
         self.pyew.bsize = 512
+        self.pyew.lines = 40
         return self.text_dasm
 
     def get_fulldasm(self):
@@ -184,6 +189,7 @@ class Core():
             dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.pyew.bsize, baseoffset=self.pyew.offset)
             self.fulldasm = dis
         self.pyew.bsize = 512
+        self.pyew.lines = 40
         return self.fulldasm
 
     def seek(self, pos):
@@ -205,6 +211,7 @@ class Core():
 
         #self.pyew.bsize = 512
         self.cmd = direction
+        limit = ''
 
         if len(self.pyew.previousoffset) > 0:
             if self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ] != self.pyew.offset:
@@ -243,10 +250,10 @@ class Core():
 
             limit = self.seek(tmp)
 
-#        elif last_cmd in ["c", "d", "pd"] or last_cmd.isdigit():
-#            self.pyew.offset = self.pyew.lastasmoffset
-#
-#            self.seek(self.pyew.offset)
+        elif output == 'disassembly':
+            self.pyew.offset = self.pyew.lastasmoffset
+
+            self.pyew.seek(self.pyew.offset)
 #            if last_cmd.isdigit():
 #                last_cmd = "c"
 
@@ -257,7 +264,10 @@ class Core():
         self.cmd = self.last_cmd
 
         if not limit:
-            data = self.pyew.hexdump(self.pyew.buf, self.pyew.hexcolumns, baseoffset=self.pyew.offset)
+            if output == 'hexadecimal':
+                data = self.get_hexdump()
+            else:
+                data = self.get_dasm()
             return data
         else:
             print limit

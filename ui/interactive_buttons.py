@@ -33,6 +33,7 @@ class InteractiveButtons(gtk.HBox):
         super(InteractiveButtons,self).__init__(False, 1)
 
         self.buffer = buffer
+        self.output_type = 'hexadecimal'
 
         self.uicore = uicore
         self.toolbox = self
@@ -57,7 +58,7 @@ class InteractiveButtons(gtk.HBox):
         self.seek_label = gtk.Label('     Seek:')
         self.toolbox.pack_start(self.seek_label, False, False)
 
-        self.seek_entry = gtk.Entry(10)
+        self.seek_entry = gtk.Entry(20)
 #        self.seek_entry.set_text('')
         self.toolbox.pack_start(self.seek_entry, False, False)
         b = SemiStockButton("", gtk.STOCK_GO_FORWARD, 'Go')
@@ -85,12 +86,12 @@ class InteractiveButtons(gtk.HBox):
 
         # Radio buttons (output format)
         self.hex_button = gtk.RadioButton(None, "Hexadecimal")
-        self.hex_button.connect("toggled", self._void, "Hexadecimal")
+        self.hex_button.connect("toggled", self.callback, "Hexadecimal")
         self.hex_button.set_active(True)
         self.toolbox.pack_start(self.hex_button, False, False)
 
         self.dasm_button = gtk.RadioButton(self.hex_button, "Disassemby")
-        self.dasm_button.connect("toggled", self._void, "Disassembly")
+        self.dasm_button.connect("toggled", self.callback, "Disassembly")
         self.toolbox.pack_start(self.dasm_button, False, False)
 
         self.uicore.pyew.bsize = 512
@@ -103,8 +104,12 @@ class InteractiveButtons(gtk.HBox):
     def _void(self, widget):
         pass
 
+    def callback(self, widget, data=None):
+        if widget.get_active() == True:
+            self.output_type = data.lower()
+
     def move(self, widget, direction):
-        data = self.uicore.move(direction, 'hex')
+        data = self.uicore.move(direction, self.output_type)
         if data:
             self.buffer.set_text(data)
 
@@ -113,13 +118,30 @@ class InteractiveButtons(gtk.HBox):
         self.uicore.pyew.bsize = size
 
     def seek(self, widget):
-        pos = int(self.seek_entry.get_text())
+        pos = self.seek_entry.get_text()
+
+        if pos.lower() in ["ep", "entrypoint"]:
+            if self.uicore.pyew.ep:
+                pos = self.uicore.pyew.ep
+        elif pos in self.uicore.pyew.names.values():
+            for x in self.uicore.pyew.names:
+                if self.uicore.pyew.names[x] == pos:
+                    pos = x
+                    break
+        elif pos.lower().startswith("0x"):
+            pos = int(pos, 16)
+        else:
+            pos = int(pos)
         self.uicore.seek(pos)
         self.refresh()
 
     def refresh(self):
-        hexdump = self.uicore.get_hexdump()
-        self.buffer.set_text(hexdump)
+        if self.output_type == 'hexadecimal':
+            hexdump = self.uicore.get_hexdump()
+            self.buffer.set_text(hexdump)
+        else:
+            dasm = self.uicore.get_dasm()
+            self.buffer.set_text(dasm)
 
 # Used to create most of the buttons
 #
