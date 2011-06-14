@@ -81,6 +81,7 @@ class InteractiveTextView(gtk.VBox):
         self.interactive_buttons = interactive_buttons.InteractiveButtons(self.uicore, self.buffer)
         self.pack_end(self.interactive_buttons, expand=False, fill=True)
 
+    def update_content(self):
         # Add hexdump to textview
         self.uicore.pyew.offset = 0
         dump = self.uicore.pyew.hexdump(self.uicore.pyew.buf, self.uicore.pyew.hexcolumns)

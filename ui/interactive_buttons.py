@@ -19,10 +19,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os, sys
 
-import gtk, gobject
-import threading
+import gtk
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -41,13 +39,13 @@ class InteractiveButtons(gtk.HBox):
 
         # Previous buffer button
         b = SemiStockButton("", gtk.STOCK_GO_UP, 'Previous buffer')
-        b.connect("clicked", self.refresh, 'b')
+        b.connect("clicked", self.move, 'b')
         b.label.label = 'Previous'
         self.toolbox.pack_start(b, False, False)
 
         # Next buffer button
         b = SemiStockButton("", gtk.STOCK_GO_DOWN, 'Next buffer')
-        b.connect("clicked", self.refresh, 'f')
+        b.connect("clicked", self.move, 'f')
         b.label.label = 'Next'
         self.toolbox.pack_start(b, False, False)
 
@@ -63,7 +61,7 @@ class InteractiveButtons(gtk.HBox):
 #        self.seek_entry.set_text('')
         self.toolbox.pack_start(self.seek_entry, False, False)
         b = SemiStockButton("", gtk.STOCK_GO_FORWARD, 'Go')
-        b.connect("clicked", self._void)
+        b.connect("clicked", self.seek)
         self.toolbox.pack_start(b, False, False)
 
         # Separator
@@ -105,15 +103,23 @@ class InteractiveButtons(gtk.HBox):
     def _void(self, widget):
         pass
 
-    def refresh(self, widget, direction):
+    def move(self, widget, direction):
         data = self.uicore.move(direction, 'hex')
         if data:
             self.buffer.set_text(data)
 
     def set_buffer_size(self, widget):
         size = int(self.buffer_entry.get_text())
-        print size
         self.uicore.pyew.bsize = size
+
+    def seek(self, widget):
+        pos = int(self.seek_entry.get_text())
+        self.uicore.seek(pos)
+        self.refresh()
+
+    def refresh(self):
+        hexdump = self.uicore.get_hexdump()
+        self.buffer.set_text(hexdump)
 
 # Used to create most of the buttons
 #

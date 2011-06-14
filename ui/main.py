@@ -172,6 +172,9 @@ class MainApp:
             else:
                 self.tviews.update_righttext('Hexdump')
 
+            # Add data to INTERACTIVE TextView
+            self.tviews.update_interactive()
+
             # Load data to LEFT Tree
             if self.uicore.pyew.format in ["PE", "ELF"]:
                 self.tviews.create_model('Functions')

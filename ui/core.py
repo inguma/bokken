@@ -61,6 +61,7 @@ class Core():
 
         self.pyew.offset = 0
         self.pyew.previousoffset = []
+        #self.pyew.deepcodeanalysis = True
 
         self.pyew.case = 'low'
 
@@ -112,7 +113,7 @@ class Core():
             #print "We've got RAW!"
             self.pyew.format = 'Plain Text'
 
-        self.pyew.bsize = self.pyew.maxsize
+        #self.pyew.bsize = self.pyew.maxsize
         self.pyew.seek(0)
 
     def is_url(self, file):
@@ -141,12 +142,21 @@ class Core():
         return self.allfuncs
 
     def get_hexdump(self):
+        hexdump = self.pyew.hexdump(self.pyew.buf, self.pyew.hexcolumns, baseoffset=self.pyew.offset, bsize=self.pyew.bsize)
+        return hexdump
+
+    def get_full_hexdump(self):
+        self.pyew.bsize = self.pyew.maxsize
+        self.pyew.seek(0)
         if self.fullhex == '':
             hexdump = self.pyew.hexdump(self.pyew.buf, self.pyew.hexcolumns, baseoffset=0, bsize=self.pyew.bsize)
             self.fullhex = hexdump
+        self.pyew.bsize = 512
         return self.fullhex
 
     def get_text_dasm(self):
+        self.pyew.bsize = self.pyew.maxsize
+        self.seek(0)
         if not self.text_dasm:
             self.pyew.lines = 100*100
             if self.pyew.format == 'PE':
@@ -163,13 +173,17 @@ class Core():
                         break
             dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.pyew.offset)
             self.text_dasm = dis
+        self.pyew.bsize = 512
         return self.text_dasm
 
     def get_fulldasm(self):
+        self.pyew.bsize = self.pyew.maxsize
+        self.seek(0)
         if not self.fulldasm:
             self.pyew.lines = 100*100
             dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.pyew.bsize, baseoffset=self.pyew.offset)
             self.fulldasm = dis
+        self.pyew.bsize = 512
         return self.fulldasm
 
     def seek(self, pos):

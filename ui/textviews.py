@@ -142,7 +142,7 @@ class TextViews(gtk.HBox):
             self.repr = self.uicore.get_repr()
             self.buffer.set_text(self.repr)
         elif option == 'Hexdump':
-            self.hexdump = self.uicore.get_hexdump()
+            self.hexdump = self.uicore.get_full_hexdump()
             self.buffer.set_text(self.hexdump)
         elif option == 'Strings':
             self.strings = self.uicore.get_strings()
@@ -168,7 +168,7 @@ class TextViews(gtk.HBox):
                 self.uicore.format = 'Hexdump'
                 option = 'Hexdump'
                 self.buffer.set_highlight_syntax(False)
-                self.hexdump = self.uicore.get_hexdump()
+                self.hexdump = self.uicore.get_full_hexdump()
                 self.buffer.set_text(self.hexdump)
 
         # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
@@ -190,6 +190,11 @@ class TextViews(gtk.HBox):
             self.leftvb.hide()
 
         self.update_tabs(option)
+
+    def update_interactive(self):
+        self.uicore.pyew.offset = 0
+        dump = self.uicore.pyew.hexdump(self.uicore.pyew.buf, self.uicore.pyew.hexcolumns)
+        self.interactive_buffer.set_text(dump)
 
     def update_right_combo(self):
         self.right_combo.create_options()
