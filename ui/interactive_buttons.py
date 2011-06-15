@@ -123,6 +123,10 @@ class InteractiveButtons(gtk.HBox):
         if pos.lower() in ["ep", "entrypoint"]:
             if self.uicore.pyew.ep:
                 pos = self.uicore.pyew.ep
+
+        elif pos.isdigit() and int(pos) < len(self.uicore.pyew.calls)+1 and int(pos) > 0:
+            pos = self.uicore.pyew.calls[int(pos)-1]
+
         elif pos in self.uicore.pyew.names.values():
             for x in self.uicore.pyew.names:
                 if self.uicore.pyew.names[x] == pos:
@@ -130,6 +134,12 @@ class InteractiveButtons(gtk.HBox):
                     break
         elif pos.lower().startswith("0x"):
             pos = int(pos, 16)
+        elif pos == 'b':
+            data = self.uicore.move('b', self.output_type)
+            print data
+            if data:
+                self.buffer.set_text(data)
+#            self.refresh()
         else:
             pos = int(pos)
         self.uicore.seek(pos)

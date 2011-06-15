@@ -219,14 +219,14 @@ class Core():
         else:
             self.pyew.previousoffset.append(self.pyew.offset)
         
-        va = None
-        if self.pyew.virtual:
-            va = self.pyew.getVirtualAddressFromOffset(self.pyew.offset)
-        
-        if va:
-            prompt = "[0x%08x:0x%08x]> " % (self.pyew.offset, va)
-        else:
-            prompt = "[0x%08x]> " % self.pyew.offset
+#        va = None
+#        if self.pyew.virtual:
+#            va = self.pyew.getVirtualAddressFromOffset(self.pyew.offset)
+#        
+#        if va:
+#            prompt = "[0x%08x:0x%08x]> " % (self.pyew.offset, va)
+#        else:
+#            prompt = "[0x%08x]> " % self.pyew.offset
 
         if self.cmd == "b":
             tmp = self.pyew.previousoffset.pop()
