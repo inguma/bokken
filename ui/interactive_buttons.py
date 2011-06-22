@@ -99,14 +99,10 @@ class InteractiveButtons(gtk.HBox):
     # Functions
     #
 
-    # Private methods
-    #
-    def _void(self, widget):
-        pass
-
     def callback(self, widget, data=None):
         if widget.get_active() == True:
             self.output_type = data.lower()
+            self.refresh()
 
     def move(self, widget, direction):
         data = self.uicore.move(direction, self.output_type)
@@ -134,11 +130,11 @@ class InteractiveButtons(gtk.HBox):
                     break
         elif pos.lower().startswith("0x"):
             pos = int(pos, 16)
-        elif pos == 'b':
-            data = self.uicore.move('b', self.output_type)
-            print data
-            if data:
-                self.buffer.set_text(data)
+#        elif pos == 'b':
+#            data = self.uicore.move('b', self.output_type)
+#            print data
+#            if data:
+#                self.buffer.set_text(data)
 #            self.refresh()
         else:
             pos = int(pos)

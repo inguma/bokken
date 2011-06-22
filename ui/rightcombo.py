@@ -89,7 +89,7 @@ class RightCombo(gtk.Table):
         self.right_combo.disconnect(self.connect)
         self.right_combo.get_model().clear()
         main_options = ["Hexdump", "String Repr", "Strings"]
-        if self.uicore.pyew.format in ['PE', 'Elf']:
+        if self.uicore.pyew.format in ['PE', 'ELF']:
             self.right_combo.append_text('Disassembly')
             # Set Disassembly by default
             self.right_combo.set_active(0)

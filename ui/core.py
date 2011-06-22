@@ -160,7 +160,7 @@ class Core():
 
     def get_text_dasm(self):
         self.pyew.bsize = self.pyew.maxsize
-        self.seek(0)
+        #self.seek(0)
         if not self.text_dasm:
             self.pyew.lines = 100*100
             if self.pyew.format == 'PE':
@@ -168,14 +168,17 @@ class Core():
                     # Let's store text section information
                     if 'text' in section.Name:
                         self.text_rsize = section.SizeOfRawData
+                        self.text_address = section.VirtualAddress
                         break
             elif self.pyew.format == 'ELF':
                 for section in self.elf.sections:
                     # Let's store text section information
                     if 'text' in section.getName():
                         self.text_rsize = section.sh_size
+                        self.text_address = self.pyew.elf.secnames[section.getName()].sh_offset
                         break
-            dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.pyew.offset)
+            self.seek(self.text_address)
+            dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.text_address)
             self.text_dasm = dis
         self.pyew.bsize = 512
         self.pyew.lines = 40
@@ -202,6 +205,12 @@ class Core():
             self.pyew.offset = 0
         else:
             self.pyew.offset = pos
+        if len(self.pyew.previousoffset) > 0:
+            if self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ] != self.pyew.offset:
+                self.pyew.previousoffset.append(self.pyew.offset)
+        else:
+            self.pyew.previousoffset.append(self.pyew.offset)
+        
         self.pyew.f.seek(self.pyew.offset)
         self.pyew.buf = self.pyew.f.read(self.pyew.bsize)
 
