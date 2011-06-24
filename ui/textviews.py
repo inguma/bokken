@@ -197,6 +197,9 @@ class TextViews(gtk.HBox):
         dump = self.uicore.pyew.hexdump(self.uicore.pyew.buf, self.uicore.pyew.hexcolumns)
         self.interactive_buffer.set_text(dump)
 
+    def create_completion(self):
+        self.interactive_textview.interactive_buttons.set_completion()
+
     def update_right_combo(self):
         self.right_combo.create_options()
 

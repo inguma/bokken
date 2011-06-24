@@ -198,6 +198,9 @@ class MainApp:
             info = self.uicore.get_file_info()
             self.sbar.add_text(info, '')
 
+            # Create seek entry autocompletion of function names...
+            self.tviews.create_completion()
+
             # Enable GUI
             self.enable_all()
             self.topbuttons.throbber.running('')

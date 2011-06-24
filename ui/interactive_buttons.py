@@ -169,6 +169,20 @@ class InteractiveButtons(gtk.HBox):
             dasm = self.uicore.get_dasm()
             self.buffer.set_text(dasm)
 
+    def set_completion(self):
+        # Seek entry EntryCompletion
+        self.completion = gtk.EntryCompletion()
+        self.liststore = gtk.ListStore(str)
+        # Add function names to the list
+        for function in self.uicore.allfuncs:
+            self.liststore.append([function])
+
+        self.completion.set_model(self.liststore)
+        self.seek_entry.set_completion(self.completion)
+        self.completion.set_text_column(0)
+        #self.completion.connect('match-selected', self.match_cb)
+        #self.seek_entry.connect('activate', self.activate_cb)
+
 # Used to create most of the buttons
 #
 class SemiStockButton(gtk.Button):
