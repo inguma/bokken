@@ -77,6 +77,25 @@ class InteractiveTextView(gtk.VBox):
         self.interactive_scrolled_window.add(self.view)
         self.pack_start(self.interactive_scrolled_window, expand=True, fill=True)
 
+        #Always on bottom on change
+        self.vajd = self.interactive_scrolled_window.get_vadjustment()
+        self.vajd.connect('changed', lambda a, s=self.interactive_scrolled_window: self.rescroll(a,s))
+
+        # Key bindings
+        self.key_1 = gtk.gdk.keyval_from_name("1")
+        self.key_2 = gtk.gdk.keyval_from_name("2")
+        self.key_3 = gtk.gdk.keyval_from_name("3")
+        self.key_4 = gtk.gdk.keyval_from_name("4")
+        self.key_5 = gtk.gdk.keyval_from_name("5")
+        self.key_6 = gtk.gdk.keyval_from_name("6")
+        self.key_7 = gtk.gdk.keyval_from_name("7")
+        self.key_8 = gtk.gdk.keyval_from_name("8")
+        self.key_9 = gtk.gdk.keyval_from_name("9")
+        self.key_b = gtk.gdk.keyval_from_name("b")
+        self.key_f = gtk.gdk.keyval_from_name("f")
+        # signals
+        self.view.connect("key-press-event", self._key)
+
         # Interactive buttons
         self.interactive_buttons = interactive_buttons.InteractiveButtons(self.uicore, self.buffer)
         self.pack_end(self.interactive_buttons, expand=False, fill=True)
@@ -86,3 +105,18 @@ class InteractiveTextView(gtk.VBox):
         self.uicore.pyew.offset = 0
         dump = self.uicore.pyew.hexdump(self.uicore.pyew.buf, self.uicore.pyew.hexcolumns)
         self.buffer.set_text(dump)
+
+    def _key(self, widg, event):
+        '''Handles keystrokes.'''
+        # Number
+        if event.keyval in [self.key_1, self.key_2, self.key_3, self.key_4, self.key_5,\
+                            self.key_6, self.key_7, self.key_8, self.key_9]:
+            self.interactive_buttons.seek(self, event.string)
+        elif event.keyval == self.key_b:
+            self.interactive_buttons.move(self, event.string)
+        elif event.keyval == self.key_f:
+            self.interactive_buttons.move(self, event.string)
+
+    def rescroll(self, adj, scroll):
+        adj.set_value(adj.lower-adj.page_size)
+        scroll.set_vadjustment(adj)

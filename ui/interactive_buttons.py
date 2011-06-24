@@ -130,8 +130,11 @@ class InteractiveButtons(gtk.HBox):
         self.uicore.pyew.bsize = size
         self.refresh()
 
-    def seek(self, widget):
-        pos = self.seek_entry.get_text()
+    def seek(self, widget, action=''):
+        if action == '':
+            pos = self.seek_entry.get_text()
+        else:
+            pos = action
 
         if pos.lower() in ["ep", "entrypoint"]:
             if self.uicore.pyew.ep:
@@ -157,8 +160,10 @@ class InteractiveButtons(gtk.HBox):
             pos = int(pos)
         self.uicore.seek(pos)
 
-        self.seek_entry.set_text('')
-        self.seek_entry.grab_focus()
+        if widget.get_name() == 'GtkEntry':
+            self.seek_entry.set_text('')
+            self.seek_entry.grab_focus()
+
         self.refresh()
 
     def refresh(self):
