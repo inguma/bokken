@@ -61,7 +61,10 @@ class InteractiveButtons(gtk.HBox):
         self.toolbox.pack_start(self.seek_label, False, False)
 
         self.seek_entry = gtk.Entry(20)
-#        self.seek_entry.set_text('')
+        # Default action on pressing Enter
+        self.seek_entry.set_activates_default(True)
+        self.seek_entry.connect("activate", self.seek)
+
         self.toolbox.pack_start(self.seek_entry, False, False)
         b = SemiStockButton("", gtk.STOCK_GO_FORWARD, 'Go')
         b.connect("clicked", self.seek)
@@ -77,6 +80,10 @@ class InteractiveButtons(gtk.HBox):
 
         self.buffer_entry = gtk.Entry(10)
         self.buffer_entry.set_text('512')
+        # Default action on pressing Enter
+        self.buffer_entry.set_activates_default(True)
+        self.buffer_entry.connect("activate", self.set_buffer_size)
+
         self.toolbox.pack_start(self.buffer_entry, False, False)
         b = SemiStockButton("", gtk.STOCK_APPLY, 'Apply')
         b.connect("clicked", self.set_buffer_size)
@@ -121,6 +128,7 @@ class InteractiveButtons(gtk.HBox):
     def set_buffer_size(self, widget):
         size = int(self.buffer_entry.get_text())
         self.uicore.pyew.bsize = size
+        self.refresh()
 
     def seek(self, widget):
         pos = self.seek_entry.get_text()
@@ -148,6 +156,9 @@ class InteractiveButtons(gtk.HBox):
         else:
             pos = int(pos)
         self.uicore.seek(pos)
+
+        self.seek_entry.set_text('')
+        self.seek_entry.grab_focus()
         self.refresh()
 
     def refresh(self):
