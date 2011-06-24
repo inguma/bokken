@@ -167,6 +167,11 @@ class TopButtons(gtk.HBox):
         # Throbber
         self.throbber = throbber.Throbber()
         self.toolbox.pack_end(self.throbber, False, False)
+        # About button
+        b = SemiStockButton("", gtk.STOCK_ABOUT, 'About')
+        b.label.label = 'About'
+        b.connect("clicked", self.create_about_dialog)
+        self.toolbox.pack_end(b, False, False)
         
 #        # Grayed?
 #        self.toolbox.set_sensitive(True)
@@ -386,6 +391,17 @@ class TopButtons(gtk.HBox):
         self.search_dialog = search_dialog.SearchDialog()
 
         return False
+
+    def create_about_dialog(self, widget):
+        about = gtk.AboutDialog()
+        about.set_program_name("Bokken")
+        about.set_version("1.0-dev")
+        about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
+        about.set_comments("A GUI for pyew and (soon) radare2!")
+        about.set_website("http://bokken.inguma.eu")
+        about.set_logo(gtk.gdk.pixbuf_new_from_file("ui/data/logo.png"))
+        about.run()
+        about.destroy()
 
     # Executes pyew's plugins
     def execute(self, widget, plugin):
