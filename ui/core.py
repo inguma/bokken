@@ -61,7 +61,7 @@ class Core():
 
         self.pyew.offset = 0
         self.pyew.previousoffset = []
-        #self.pyew.deepcodeanalysis = True
+        self.pyew.deepcodeanalysis = True
 
         self.pyew.case = 'low'
 
@@ -138,6 +138,7 @@ class Core():
     def get_functions(self):
         if not self.allfuncs:
             for func in self.pyew.functions:
+                 #print "0x%08x" % (func)
                  self.allfuncs.append(self.pyew.names[func])
         return self.allfuncs
 

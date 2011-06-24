@@ -34,6 +34,8 @@ class InteractiveButtons(gtk.HBox):
 
         self.buffer = buffer
         self.output_type = 'hexadecimal'
+        # By default shows hexadecimal so no syntax highlight
+        self.buffer.set_highlight_syntax(False)
 
         self.uicore = uicore
         self.toolbox = self
@@ -95,13 +97,20 @@ class InteractiveButtons(gtk.HBox):
         self.toolbox.pack_start(self.dasm_button, False, False)
 
         self.uicore.pyew.bsize = 512
+
     #
     # Functions
     #
-
     def callback(self, widget, data=None):
         if widget.get_active() == True:
             self.output_type = data.lower()
+
+            # Only highlight syntax for disassembly
+            if self.output_type == 'hexadecimal':
+                self.buffer.set_highlight_syntax(False)
+            else:
+                self.buffer.set_highlight_syntax(True)
+
             self.refresh()
 
     def move(self, widget, direction):

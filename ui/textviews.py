@@ -121,6 +121,7 @@ class TextViews(gtk.HBox):
         theme = theme.lower()
         style_scheme = self.mgr.get_scheme(theme)
         self.buffer.set_style_scheme(style_scheme)
+        self.interactive_buffer.set_style_scheme(style_scheme)
 
     def update_righttext(self, option):
         # Fill right textview with selected content
