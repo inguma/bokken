@@ -454,9 +454,12 @@ class Core():
         for element in self.parsed_links['locals']:
             element = element.strip(' ').split('/')
             if len(element) > 1:
-                root = next(s for s in element if s)
-                root_index = element.index(root)
-                self.links_struct.append( {root:element[root_index + 1:]} )
+                try:
+                    root = next(s for s in element if s)
+                    root_index = element.index(root)
+                    self.links_struct.append( {root:element[root_index + 1:]} )
+                except:
+                    pass
             elif len(element) == 1:
                 self.links_struct.append( {element[0]:['']} )
         import ui.generate_dot as gendot

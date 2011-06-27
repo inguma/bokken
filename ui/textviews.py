@@ -149,12 +149,15 @@ class TextViews(gtk.HBox):
             self.strings = self.uicore.get_strings()
             self.buffer.set_text(self.strings)
         elif option == 'URL':
+            self.uicore.pyew.bsize = self.uicore.pyew.maxsize
+            self.uicore.pyew.seek(0)
             language = 'http'
             try:
                 code = "%s" % ( self.format_html(self.uicore.pyew.buf) )
             except:
                 code = unicode(self.uicore.pyew.buf, 'iso8859-15')
                 #code = self.uicore.pyew.buf
+            self.uicore.pyew.bsize = 512
             self.buffer.set_text(code)
             self.right_notebook.xdot_widget.set_dot(self.uicore.http_dot)
         elif option == 'Plain Text':
