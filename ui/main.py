@@ -22,8 +22,8 @@
 import os, sys, threading
 
 # Add plugins directory to the path
-bokken_path = os.getcwd() + os.sep + 'plugins' + os.sep
-sys.path.append(bokken_path)
+BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
+sys.path.append(BOKKEN_PATH)
 
 # Perform the GTK UI dependency check here
 import ui.dependency_check as dependency_check
@@ -52,7 +52,7 @@ else:
     gtk.gdk.threads_init()
 
 MAINTITLE = "Bokken, a GUI for pyew and (soon) radare2!"
-VERSION="1.0-dev"
+VERSION = "1.0-dev"
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -61,28 +61,27 @@ ENDC = '\033[0m'
 class MainApp:
     '''Main GTK application'''
 
-    # FIXME: Avoid using uicore data for GUI creation
-    def __init__(self, file):
+    def __init__(self, target):
 
-        self.file = file
+        self.target = target
         self.empty_gui = False
 
         self.uicore = core.Core()
 
-        # Check if file name is an URL, pyew stores it as 'raw'
-        self.uicore.is_url(self.file)
+        # Check if target name is an URL, pyew stores it as 'raw'
+        self.uicore.is_url(self.target)
 
-        if self.file:
-            # Just open the file if path is correct or an url
-            if self.uicore.pyew.format != 'URL' and not os.path.isfile(self.file):
-                print "Incorrect file argument:", FAIL, self.file, ENDC
+        if self.target:
+            # Just open the target if path is correct or an url
+            if self.uicore.pyew.format != 'URL' and not os.path.isfile(self.target):
+                print "Incorrect file argument:", FAIL, self.target, ENDC
                 sys.exit(1)
     
             # Use threads to avoid freezing the GUI load
-            t = threading.Thread(target=self.load_file, args=(self.file,))
-            t.start()
+            thread = threading.Thread(target=self.load_file, args=(self.target,))
+            thread.start()
             # This call must not depend on load_file data
-            gobject.timeout_add(500, self.show_file_data, t)
+            gobject.timeout_add(500, self.show_file_data, thread)
         else:
             self.empty_gui = True
 
@@ -113,7 +112,6 @@ class MainApp:
         self.supervb.pack_start(self.mainvb, True, True, 1)
 
         # Initialize and add TextViews
-        # FIXME: Modify to avoid depending on core load_file to finish
         self.tviews = textviews.TextViews(self.uicore)
 
         # Initialize and add Statusbar
@@ -139,11 +137,10 @@ class MainApp:
         gtk.main()
 
     # Do all the core stuff of parsing file
-    def load_file(self, file):
+    def load_file(self, target):
 
-        print "Loading file: %s..." % (file)
-        self.uicore.load_file(file)
-        # FIXME
+        print "Loading file: %s..." % (target)
+        self.uicore.load_file(target)
         if self.uicore.pyew.format in ['PE', 'Elf']:
             self.uicore.get_sections()
         print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
@@ -234,5 +231,5 @@ class MainApp:
         gtk.main_quit()
         return False
 
-def main(file):
-    MainApp(file)
+def main(target):
+    MainApp(target)
