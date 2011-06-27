@@ -61,7 +61,7 @@ class Core():
 
         self.pyew.offset = 0
         self.pyew.previousoffset = []
-        self.pyew.deepcodeanalysis = True
+        #self.pyew.deepcodeanalysis = True
 
         self.pyew.case = 'low'
 

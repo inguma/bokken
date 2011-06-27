@@ -103,6 +103,8 @@ class RightCombo(gtk.Table):
             self.right_combo.append_text('Plain Text')
             # Set plain text by default
             self.right_combo.set_active(3)
+        else:
+            self.right_combo.set_active(0)
 
         self.connect = self.right_combo.connect("changed", self.right_combo_change)
 

@@ -89,6 +89,7 @@ class MainApp:
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_focus = True
         self.window.connect("delete_event", self.quit)
+        self.window.set_icon_from_file('ui' + os.sep + 'data' + os.sep + 'icon.png')
         gtk.settings_get_default().set_long_property("gtk-button-images", True, "main") 
 
         # Title
