@@ -33,7 +33,7 @@ dependency_check.check_all()
 import gtk, gobject
 
 # This is just general info, to help people knowing their system
-print "Starting gyew, running on:"
+print "Starting bokken, running on:"
 print "  Python version:"
 print "\n".join("    "+x for x in sys.version.split("\n"))
 print "  GTK version:", ".".join(str(x) for x in gtk.gtk_version)
