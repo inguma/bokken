@@ -35,10 +35,15 @@ graph G {
         node = branch.keys()[0]
         elements = branch[node]
 
+        # Parse params to create clusters
         if '&amp;' in node or '&' in node or '?' in node or '&quest' in node:
-            node = node.replace('?', '|')
-            node = node.replace('&amp;', '|')
-            node = node.replace('&', '|')
+            # Check if there is param name or just value
+            if len( node.split('?') ) > 2:
+                node = node.replace('?', '|')
+            if len( node.split('&amp;') ) > 2:
+                node = node.replace('&amp;', '|')
+            if len( node.split('&') ) > 2:
+                node = node.replace('&', '|')
             dotcode += '''"%s" [label="%s", shape="record", style="rounded, filled"]\n''' % (node, node)
             dotcode += '''"%s" -- "%s" [len=1.25, color=azure3]; ''' % (root_node, node)
         else:

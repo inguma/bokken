@@ -27,6 +27,7 @@ if sys.platform != "win32":
     if not display:
         print "The DISPLAY environment variable is not set! You can not use any graphical program without it..."
         sys.exit(1)
+
 import ui.main as main
 
 if __name__ == "__main__":
