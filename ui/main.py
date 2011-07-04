@@ -52,7 +52,7 @@ else:
     gtk.gdk.threads_init()
 
 MAINTITLE = "Bokken, a GUI for pyew and (soon) radare2!"
-VERSION = "1.0-dev"
+VERSION = "1.0"
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'

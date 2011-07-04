@@ -395,7 +395,7 @@ class TopButtons(gtk.HBox):
     def create_about_dialog(self, widget):
         about = gtk.AboutDialog()
         about.set_program_name("Bokken")
-        about.set_version("1.0-dev")
+        about.set_version("1.0")
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
         about.set_comments("A GUI for pyew and (soon) radare2!")
         about.set_website("http://bokken.inguma.eu")

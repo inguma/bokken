@@ -204,7 +204,7 @@ class TreeViews(gtk.TreeView):
             gm = gtk.Menu()
 
             # And the items
-            e = gtk.MenuItem("Search this link")
+            e = gtk.MenuItem("Search")
             e.connect('activate', self.textviews.search, link_name)
             gm.append( e )
             gm.show_all()
