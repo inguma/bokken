@@ -153,6 +153,7 @@ class MainApp:
         if thread.isAlive() == True:
             return True
         else:
+            #print "File format detected: %s" % (self.uicore.pyew.format)
             # Create left combo depending on file format
             self.tviews.update_left_combo()
             # Right combo content

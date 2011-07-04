@@ -165,15 +165,19 @@ class TextViews(gtk.HBox):
             data = self.uicore.get_file_text()
 
             if language:
+                self.buffer.set_language(language)
                 self.buffer.set_text(data)
             else:
-                self.buffer.set_highlight_syntax(False)
+                self.dasm = self.uicore.get_fulldasm()
+                self.buffer.set_text(self.dasm)
+#                self.buffer.set_highlight_syntax(False)
                 #self.buffer.set_text('This is not a plain text file, could not show :(')
-                self.uicore.format = 'Hexdump'
-                option = 'Hexdump'
-                self.buffer.set_highlight_syntax(False)
-                self.hexdump = self.uicore.get_full_hexdump()
-                self.buffer.set_text(self.hexdump)
+                self.uicore.pyew.format = 'Hexdump'
+                option = 'Disassembly'
+#                self.buffer.set_highlight_syntax(False)
+#                self.hexdump = self.uicore.get_full_hexdump()
+#                self.buffer.set_text(self.hexdump)
+                self.update_right_combo()
 
         # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
         if option in ['Disassembly', 'URL', 'Plain Text', 'Python']:
@@ -188,7 +192,7 @@ class TextViews(gtk.HBox):
             self.view.set_wrap_mode(gtk.WRAP_WORD)
 
         # Hide left content for 'Plain Text'
-        if option != 'Plain Text':
+        if self.uicore.pyew.format not in ['Plain Text', 'Hexdump']:
             self.leftvb.show()
         else:
             self.leftvb.hide()
@@ -344,7 +348,7 @@ class TextViews(gtk.HBox):
             else:
                 print 'Couldn\'t get mime type for file "%s"' % self.uicore.pyew.filename
     
-            self.buffer.set_language(language)
+            #self.buffer.set_language(language)
 
         return language
 
