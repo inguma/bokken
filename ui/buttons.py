@@ -199,7 +199,7 @@ class TopButtons(gtk.HBox):
     def disable_all(self):
         for child in self:
             try:
-                if child.label.label not in ['New', 'Quit']:
+                if child.label.label not in ['New', 'Quit', 'About']:
                     child.set_sensitive(False)
             except:
                 pass
