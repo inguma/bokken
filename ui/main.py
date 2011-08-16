@@ -205,7 +205,10 @@ class MainApp:
             self.topbuttons.throbber.running('')
 
     def disable_all(self):
-        self.sbar.add_text({'Please wait while loading file':self.uicore.pyew.filename}, VERSION)
+        if self.uicore.pyew.filename:
+            self.sbar.add_text({'Please wait while loading file':self.uicore.pyew.filename}, VERSION)
+        else:
+            self.sbar.add_text({'Open a new file to start':''}, VERSION)
         self.topbuttons.disable_all()
         self.tviews.set_sensitive(False)
 
