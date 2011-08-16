@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 '''
 import gtk
-from ui.buttons import SemiStockButton
 
 class Searchable(object):
     '''Class that gives the machinery to search to a TextView.
@@ -240,5 +239,35 @@ class Searchable(object):
         self.search_entry.modify_base(gtk.STATE_NORMAL, self.bg_normal)
         self._resultsLabel.set_text('')
 
+# Used to create most of the buttons
+#
+class SemiStockButton(gtk.Button):
+    '''Takes the image from the stock, but the label which is passed.
+    
+    @param text: the text that will be used for the label
+    @param image: the stock widget from where extract the image
+    @param tooltip: the tooltip for the button
 
+    @author: Facundo Batista <facundobatista =at= taniquetil.com.ar>
+    '''
+    def __init__(self, text, image, tooltip=None):
+        super(SemiStockButton,self).__init__(stock=image)
+        align = self.get_children()[0]
+        box = align.get_children()[0]
+        (self.image, self.label) = box.get_children()
+        self.label.set_text(text)
+        if tooltip is not None:
+            self.set_tooltip_text(tooltip)
+            
+    def changeInternals(self, newtext, newimage, tooltip=None):
+        '''Changes the image and label of the widget.
+    
+        @param newtext: the text that will be used for the label
+        @param newimage: the stock widget from where extract the image
+        @param tooltip: the tooltip for the button
+        '''
+        self.label.set_text(newtext)
+        self.image.set_from_stock(newimage, gtk.ICON_SIZE_BUTTON)
+        if tooltip is not None:
+            self.set_tooltip_text(tooltip)
 

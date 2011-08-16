@@ -43,7 +43,7 @@ print
 import ui.core as core
 import ui.textviews as textviews
 import ui.statusbar as statusbar
-import ui.buttons as buttons
+import ui.toolbar as toolbar
 
 # Threading initializer
 if sys.platform == "win32":
@@ -104,7 +104,7 @@ class MainApp:
         self.supervb = gtk.VBox(False, 1)
 
         # Create top buttons and add to VBox
-        self.topbuttons = buttons.TopButtons(self.uicore, self)
+        self.topbuttons = toolbar.TopButtons(self.uicore, self)
         self.supervb.pack_start(self.topbuttons, False, True, 1)
 
         # Create VBox to contain textviews and statusbar
