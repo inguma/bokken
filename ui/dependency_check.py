@@ -26,6 +26,7 @@ ENDC = '\033[0m'
 
 def check_all():
     pyew_dependency_check()
+    radare_dependency_check()
     gtkui_dependency_check()
     psyco_dependency_check()
     tidy_dependency_check()
@@ -33,14 +34,13 @@ def check_all():
 def tidy_dependency_check():
     '''Try to use tidy'''
 
-    print 'Checking:'
     print '\tTidy availability...',
 
     try:
         import tidy
         print OKGREEN + "\tOK" + ENDC
     except ImportError:
-        print FAIL + "D'oh!" + ENDC
+        print FAIL + "\tD'oh!" + ENDC
         msg = 'No tidy module found. HTTP code won\'t be properly formated\n'
         print msg
 
@@ -54,16 +54,28 @@ def pyew_dependency_check():
         import pyew
         print OKGREEN + "\tOK" + ENDC
     except:
-        print FAIL + "D'oh!" + ENDC
+        print FAIL + "\tD'oh!" + ENDC
         msg = 'You need pyew for making this software work. Download it from its web:\n'
         msg += '    - code.google.com/p/pyew/\n'
         print msg
         sys.exit( 1 )
 
+def radare_dependency_check():
+    '''We need to verify the presence of radare2'''
+    
+    print '\tRadare availability...',
+
+    try:
+        import r2
+        print OKGREEN + "\tOK" + ENDC
+    except:
+        print FAIL + "\tD'oh!" + ENDC
+        msg = 'You need radare2 bindings to use r2 backend. Download it from its web:\n'
+        msg += '    - www.radare.org\n'
+        print msg
 def psyco_dependency_check():
     '''Try to use psyco'''
 
-    print 'Checking:'
     print '\tPsyco availability...',
 
     try:
@@ -72,7 +84,7 @@ def psyco_dependency_check():
         psyco.full()
         print OKGREEN + "\tOK" + ENDC
     except ImportError:
-        print FAIL + "D'oh!" + ENDC
+        print FAIL + "\tD'oh!" + ENDC
         msg = 'No psyco module found. It\'s recomended to use it to improve performance\n'
         print msg
 
@@ -92,7 +104,7 @@ def gtkui_dependency_check():
         assert gtk.pygtk_version >= (2, 12)
         print OKGREEN + "\tOK" + ENDC
     except:
-        print FAIL + "D'oh!" + ENDC
+        print FAIL + "\tD'oh!" + ENDC
         msg = 'You have to install GTK and PyGTK versions >=2.12 to be able to run the GTK user interface.\n'
         msg += '    - On Debian based distributions: apt-get install python-gtk2\n'
         msg += '    - On Mac: sudo port install py25-gtk'        
@@ -105,7 +117,7 @@ def gtkui_dependency_check():
         import gtksourceview2
         print OKGREEN + "\tOK" + ENDC
     except:
-        print FAIL + "D'oh!" + ENDC
+        print FAIL + "\tD'oh!" + ENDC
         print "GtkSourceView2 not installed! Install it for your platform:"
         print "    - On Debian based distributions: apt-get install python-gtksourceview2"
         sys.exit( 1 )

@@ -167,44 +167,49 @@ class TopButtons(gtk.HBox):
         self.search_combo_tb.add(self.search_combo)
         self.main_tb.insert(self.search_combo_tb, 17)
 
+        # Separator
+        self.sep = gtk.SeparatorToolItem()
+        self.sep.set_draw(False)
+        self.main_tb.insert(self.sep, 18)
+
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
         self.search_entry_tb.add(self.search_entry)
-        self.main_tb.insert(self.search_entry_tb, 18)
+        self.main_tb.insert(self.search_entry_tb, 19)
 
         self.search_tb = gtk.ToolButton(gtk.STOCK_FIND)
         self.search_tb.connect("clicked", self.search)
         self.search_tb.set_tooltip_text('Search')
         self.search_tb.set_sensitive(False)
-        self.main_tb.insert(self.search_tb, 19)
+        self.main_tb.insert(self.search_tb, 20)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 20)
+        self.main_tb.insert(self.sep, 21)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 21)
+        self.main_tb.insert(self.exit_tb, 22)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 22)
+        self.main_tb.insert(self.sep, 23)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 23)
+        self.main_tb.insert(self.about_tb, 24)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 24)
+        self.main_tb.insert(self.throbber_tb, 25)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
