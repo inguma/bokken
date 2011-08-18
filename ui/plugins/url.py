@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       url.py
 #       
 #       copyright 2011 hugo teso <hugo.teso@gmail.com>

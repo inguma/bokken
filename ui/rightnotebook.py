@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       rightnotebook.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       generate_dot.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>

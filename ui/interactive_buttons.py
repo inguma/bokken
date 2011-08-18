@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       interactive_buttons.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>

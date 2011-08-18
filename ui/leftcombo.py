@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       leftcombo.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
@@ -23,7 +21,7 @@
 import gtk
 
 class LeftCombo:
-    '''Left TextiView elements'''
+    '''Left TextView elements'''
 
     def __init__(self, tviews):
 
