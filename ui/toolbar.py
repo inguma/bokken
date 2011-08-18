@@ -50,10 +50,17 @@ class TopButtons(gtk.HBox):
         self.main_tb.set_style(gtk.TOOLBAR_ICONS)
 
         # New file button
-        self.new_tb = gtk.ToolButton(gtk.STOCK_NEW)
+        self.new_tb = gtk.MenuToolButton(gtk.STOCK_NEW)
         self.new_tb.set_tooltip_text('Open new file')
         self.new_tb.connect("clicked", self.new_file)
         self.main_tb.insert(self.new_tb, 0)
+
+        # Rcent files menu
+        self.manager = gtk.recent_manager_get_default()
+        self.recent_menu = gtk.RecentChooserMenu(self.manager)
+        self.new_tb.set_menu(self.recent_menu)
+        self.new_tb.set_arrow_tooltip_text('Recent opened files')
+        self.recent_menu.connect('item-activated', self.recent_kb)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
@@ -249,16 +256,21 @@ class TopButtons(gtk.HBox):
 
     # New File related methods
     #
-    def new_file(self, widget):
-        dialog = file_dialog.FileDialog()
-        dialog.run()
-        self.file = dialog.file
+    def new_file(self, widget, file=''):
+        if not file:
+            dialog = file_dialog.FileDialog()
+            dialog.run()
+            self.file = dialog.file
+        else:
+            self.file = file
 
         # Clean full vars where file parsed data is stored as cache
         self.uicore.clean_fullvars()
 
         # Check if file name is an URL, pyew stores it as 'raw'
         self.uicore.is_url(self.file)
+
+        self.manager.add_item('file://' + self.file)
 
         # Just open the file if path is correct or an url
         if self.uicore.pyew.format != 'URL' and not os.path.isfile(self.file):
@@ -271,6 +283,14 @@ class TopButtons(gtk.HBox):
         t = threading.Thread(target=self.main.load_file, args=(self.file,))
         t.start()
         gobject.timeout_add(500, self.load_data, t)
+
+    def recent_kb(self, widget):
+        """Activated when an item from the recent projects menu is clicked"""
+
+        uri = widget.get_current_item().get_uri()
+        # Strip 'file://' from the beginning of the uri
+        file_to_open = uri[7:]
+        self.new_file(None, file_to_open)
 
     def load_data(self, thread):
         if thread.isAlive() == True:
