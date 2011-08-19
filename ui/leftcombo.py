@@ -50,8 +50,9 @@ class LeftCombo:
         self.treeView.remove_columns()
         if mode == 'Functions':
             self.treeView.create_functions_columns()
-            for function in self.uicore.get_functions():
-                self.treeView.store.append([function, '', '', ''])
+            if self.uicore.corename == 'pyew':
+                for function in self.uicore.get_functions():
+                    self.treeView.store.append([function, '', '', ''])
         elif mode == 'Sections':
             self.treeView.create_sections_columns()
             for section in self.uicore.get_sections():

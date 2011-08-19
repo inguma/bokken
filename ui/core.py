@@ -50,6 +50,7 @@ class Core():
         self.bad_urls = []
         self.cmd = ''
         self.last_cmd = ''
+        self.corename = 'pyew'
 
         self.core = CPyew()
         if os.getenv("PYEW_DEBUG"):

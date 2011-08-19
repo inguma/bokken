@@ -39,6 +39,7 @@ print "  PyGTK version:", ".".join(str(x) for x in gtk.pygtk_version)
 print
 
 import ui.core as core
+import ui.r2_core as r2_core
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.toolbar as toolbar
@@ -65,6 +66,7 @@ class MainApp:
         self.empty_gui = False
 
         self.uicore = core.Core()
+        #self.uicore = r2_core.Core()
 
         # Check if target name is an URL, pyew stores it as 'raw'
         self.uicore.is_url(self.target)
@@ -203,8 +205,8 @@ class MainApp:
             self.topbuttons.throbber.running('')
 
     def disable_all(self):
-        if self.uicore.core.filename:
-            self.sbar.add_text({'Please wait while loading file':self.uicore.core.filename}, VERSION)
+        if self.target:
+            self.sbar.add_text({'Please wait while loading file':self.target}, VERSION)
         else:
             self.sbar.add_text({'Open a new file to start':''}, VERSION)
         self.topbuttons.disable_all()
