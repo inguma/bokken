@@ -147,15 +147,15 @@ class TextViews(gtk.HBox):
             self.strings = self.uicore.get_strings()
             self.buffer.set_text(self.strings)
         elif option == 'URL':
-            self.uicore.pyew.bsize = self.uicore.pyew.maxsize
-            self.uicore.pyew.seek(0)
+            self.uicore.core.bsize = self.uicore.core.maxsize
+            self.uicore.core.seek(0)
             language = 'http'
             try:
-                code = "%s" % ( self.format_html(self.uicore.pyew.buf) )
+                code = "%s" % ( self.format_html(self.uicore.core.buf) )
             except:
-                code = unicode(self.uicore.pyew.buf, 'iso8859-15')
-                #code = self.uicore.pyew.buf
-            self.uicore.pyew.bsize = 512
+                code = unicode(self.uicore.core.buf, 'iso8859-15')
+                #code = self.uicore.core.buf
+            self.uicore.core.bsize = 512
             self.buffer.set_text(code)
             self.right_notebook.xdot_widget.set_dot(self.uicore.http_dot)
         elif option == 'Plain Text':
@@ -170,7 +170,7 @@ class TextViews(gtk.HBox):
                 self.buffer.set_text(self.dasm)
 #                self.buffer.set_highlight_syntax(False)
                 #self.buffer.set_text('This is not a plain text file, could not show :(')
-                self.uicore.pyew.format = 'Hexdump'
+                self.uicore.core.format = 'Hexdump'
                 option = 'Disassembly'
 #                self.buffer.set_highlight_syntax(False)
 #                self.hexdump = self.uicore.get_full_hexdump()
@@ -190,7 +190,7 @@ class TextViews(gtk.HBox):
             self.view.set_wrap_mode(gtk.WRAP_WORD)
 
         # Hide left content for 'Plain Text'
-        if self.uicore.pyew.format not in ['Plain Text', 'Hexdump']:
+        if self.uicore.core.format not in ['Plain Text', 'Hexdump']:
             self.leftvb.show()
         else:
             self.leftvb.hide()
@@ -198,8 +198,8 @@ class TextViews(gtk.HBox):
         self.update_tabs(option)
 
     def update_interactive(self):
-        self.uicore.pyew.offset = 0
-        dump = self.uicore.pyew.hexdump(self.uicore.pyew.buf, self.uicore.pyew.hexcolumns)
+        self.uicore.core.offset = 0
+        dump = self.uicore.core.hexdump(self.uicore.core.buf, self.uicore.core.hexcolumns)
         self.interactive_buffer.set_text(dump)
 
     def create_completion(self):
@@ -264,13 +264,13 @@ class TextViews(gtk.HBox):
         model.clear()
 
         # Add combo content depending on file format
-        if self.uicore.pyew.format in ['PE']:
+        if self.uicore.core.format in ['PE']:
             options = ['Functions', 'Sections', 'Imports', 'Exports']
-        elif self.uicore.pyew.format in ['ELF']:
+        elif self.uicore.core.format in ['ELF']:
             options = ['Functions', 'Sections']
-        elif self.uicore.pyew.format in ['PDF']:
+        elif self.uicore.core.format in ['PDF']:
             options = ['PDF Info']
-        elif self.uicore.pyew.format in ['URL']:
+        elif self.uicore.core.format in ['URL']:
             options = ['Links']
         else:
             options = ['']
@@ -323,13 +323,13 @@ class TextViews(gtk.HBox):
                 self.last_search_iter = None
 
     def get_language(self):
-        if 'http' in self.uicore.pyew.filename:
+        if 'http' in self.uicore.core.filename:
             language = 'http'
         else:
-            if os.path.isabs(self.uicore.pyew.filename):
-                path = self.uicore.pyew.filename
+            if os.path.isabs(self.uicore.core.filename):
+                path = self.uicore.core.filename
             else:
-                path = os.path.abspath(self.uicore.pyew.filename)
+                path = os.path.abspath(self.uicore.core.filename)
             f = gio.File(path)
         
             path = f.get_path()
@@ -344,7 +344,7 @@ class TextViews(gtk.HBox):
                 if not language:
                     print 'No language found for mime type "%s"' % mime_type
             else:
-                print 'Couldn\'t get mime type for file "%s"' % self.uicore.pyew.filename
+                print 'Couldn\'t get mime type for file "%s"' % self.uicore.core.filename
     
             #self.buffer.set_language(language)
 

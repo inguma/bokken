@@ -100,8 +100,8 @@ class InteractiveTextView(gtk.VBox):
 
     def update_content(self):
         # Add hexdump to textview
-        self.uicore.pyew.offset = 0
-        dump = self.uicore.pyew.hexdump(self.uicore.pyew.buf, self.uicore.pyew.hexcolumns)
+        self.uicore.core.offset = 0
+        dump = self.uicore.core.hexdump(self.uicore.core.buf, self.uicore.core.hexcolumns)
         self.buffer.set_text(dump)
 
     def _key(self, widg, event):

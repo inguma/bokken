@@ -271,7 +271,7 @@ class TopButtons(gtk.HBox):
         self.manager.add_item('file://' + self.file)
 
         # Just open the file if path is correct or an url
-        if self.uicore.pyew.format != 'URL' and not os.path.isfile(self.file):
+        if self.uicore.core.format != 'URL' and not os.path.isfile(self.file):
             print "Incorrect file argument:", FAIL, self.file, ENDC
             sys.exit(1)
 
@@ -301,7 +301,7 @@ class TopButtons(gtk.HBox):
     # Button callback methods
     #
     def search_pdfstreams(self, widget):
-        if self.uicore.pyew.format in 'PDF':
+        if self.uicore.core.format in 'PDF':
             streams = self.uicore.get_pdf_streams()
     
             self.create_search_dialog()

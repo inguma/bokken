@@ -71,7 +71,7 @@ class MainApp:
 
         if self.target:
             # Just open the target if path is correct or an url
-            if self.uicore.pyew.format != 'URL' and not os.path.isfile(self.target):
+            if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
                 print "Incorrect file argument:", FAIL, self.target, ENDC
                 sys.exit(1)
     
@@ -139,7 +139,7 @@ class MainApp:
 
         print "Loading file: %s..." % (target)
         self.uicore.load_file(target)
-        if self.uicore.pyew.format in ['PE', 'Elf']:
+        if self.uicore.core.format in ['PE', 'Elf']:
             self.uicore.get_sections()
         print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
@@ -151,20 +151,20 @@ class MainApp:
         if thread.isAlive() == True:
             return True
         else:
-            #print "File format detected: %s" % (self.uicore.pyew.format)
+            #print "File format detected: %s" % (self.uicore.core.format)
             # Create left combo depending on file format
             self.tviews.update_left_combo()
             # Right combo content
             self.tviews.update_right_combo()
 
             # Add data to RIGHT TextView
-            if self.uicore.pyew.format in ["PE", "ELF"]:
+            if self.uicore.core.format in ["PE", "ELF"]:
                 self.tviews.update_righttext('Disassembly')
-            elif self.uicore.pyew.format in ["PYC"]:
+            elif self.uicore.core.format in ["PYC"]:
                 self.tviews.update_righttext('Python')
-            elif self.uicore.pyew.format in ['URL']:
+            elif self.uicore.core.format in ['URL']:
                 self.tviews.update_righttext('URL')
-            elif self.uicore.pyew.format in ['Plain Text']:
+            elif self.uicore.core.format in ['Plain Text']:
                 self.tviews.update_righttext('Plain Text')
             else:
                 self.tviews.update_righttext('Hexdump')
@@ -173,14 +173,14 @@ class MainApp:
             self.tviews.update_interactive()
 
             # Load data to LEFT Tree
-            if self.uicore.pyew.format in ["PE", "ELF"]:
+            if self.uicore.core.format in ["PE", "ELF"]:
                 self.tviews.create_model('Functions')
                 self.tviews.left_combo.set_active(0)
         
                 # Add file information to the StatusBar
 #                info = self.uicore.get_file_info()
 #                self.sbar.add_text(info, VERSION)
-            elif self.uicore.pyew.format in ["PDF"]:
+            elif self.uicore.core.format in ["PDF"]:
                 # Why?! Oh why in the name of God....!!
                 self.tviews.create_model('PDF')
                 #self.tviews.left_combo.set_active(0)
@@ -188,7 +188,7 @@ class MainApp:
                 # Add file information to the StatusBar
 #                info = self.uicore.get_file_info()
 #                self.sbar.add_text(info, VERSION)
-            elif self.uicore.pyew.format in ["URL"]:
+            elif self.uicore.core.format in ["URL"]:
                 self.tviews.create_model('URL')
 
             # Update statusbar with file info
@@ -203,8 +203,8 @@ class MainApp:
             self.topbuttons.throbber.running('')
 
     def disable_all(self):
-        if self.uicore.pyew.filename:
-            self.sbar.add_text({'Please wait while loading file':self.uicore.pyew.filename}, VERSION)
+        if self.uicore.core.filename:
+            self.sbar.add_text({'Please wait while loading file':self.uicore.core.filename}, VERSION)
         else:
             self.sbar.add_text({'Open a new file to start':''}, VERSION)
         self.topbuttons.disable_all()

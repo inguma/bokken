@@ -51,17 +51,17 @@ class Core():
         self.cmd = ''
         self.last_cmd = ''
 
-        self.pyew = CPyew()
+        self.core = CPyew()
         if os.getenv("PYEW_DEBUG"):
-            self.pyew.debug=True
+            self.core.debug=True
         else:
-            self.pyew.debug = False
+            self.core.debug = False
 
-        self.pyew.offset = 0
-        self.pyew.previousoffset = []
-        #self.pyew.deepcodeanalysis = True
+        self.core.offset = 0
+        self.core.previousoffset = []
+        #self.core.deepcodeanalysis = True
 
-        self.pyew.case = 'low'
+        self.core.case = 'low'
 
     def clean_fullvars(self):
         self.fulldasm = ''
@@ -87,32 +87,32 @@ class Core():
 
     def load_file(self, file):
         # Set default file format to raw
-        self.pyew.format = 'raw'
+        self.core.format = 'raw'
 
-        self.pyew.loadFile(file, "rb")
+        self.core.loadFile(file, "rb")
 
         # Add global object's references for easier usage
-        self.pe = self.pyew.pe
-        self.elf = self.pyew.elf
+        self.pe = self.core.pe
+        self.elf = self.core.elf
 
         # Check if file name is an URL, pyew stores it as 'raw'
         self.is_url(file)
 
-        if self.pyew.format in ["PE", "ELF"]:
-            self.saveAndCompareInDatabase(self.pyew)
-        elif self.pyew.format in ["PDF"]:
+        if self.core.format in ["PE", "ELF"]:
+            self.saveAndCompareInDatabase(self.core)
+        elif self.core.format in ["PDF"]:
             import ui.plugins.pdfinfo as pdfinfo
             self.pdfinfo = pdfinfo.get_pdfinfo(file)
-        elif self.pyew.format in ['URL']:
+        elif self.core.format in ['URL']:
             #print "URL! We've got URL!"
             self.search_http_src()
             self.parse_http_locals()
-        elif self.pyew.format in ["raw"]:
+        elif self.core.format in ["raw"]:
             #print "We've got RAW!"
-            self.pyew.format = 'Plain Text'
+            self.core.format = 'Plain Text'
 
-        #self.pyew.bsize = self.pyew.maxsize
-        self.pyew.seek(0)
+        #self.core.bsize = self.core.maxsize
+        self.core.seek(0)
 
     def is_url(self, file):
         #print "Checking if is URL..."
@@ -120,11 +120,11 @@ class Core():
         if self.filename.lower().startswith("http://") or \
            self.filename.lower().startswith("https://") or \
            self.filename.lower().startswith("ftp://"):
-            self.pyew.format = 'URL'
+            self.core.format = 'URL'
 
     def get_strings(self):
         if not self.allstrings:
-            self.allstrings = self.pyew.strings(self.pyew.buf)
+            self.allstrings = self.core.strings(self.core.buf)
             strings = ''
             FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
             for element in self.allstrings:
@@ -135,139 +135,139 @@ class Core():
 
     def get_functions(self):
         if not self.allfuncs:
-            for func in self.pyew.functions:
+            for func in self.core.functions:
                  #print "0x%08x" % (func)
-                 self.allfuncs.append(self.pyew.names[func])
+                 self.allfuncs.append(self.core.names[func])
         return self.allfuncs
 
     def get_hexdump(self):
-        hexdump = self.pyew.hexdump(self.pyew.buf, self.pyew.hexcolumns, baseoffset=self.pyew.offset, bsize=self.pyew.bsize)
+        hexdump = self.core.hexdump(self.core.buf, self.core.hexcolumns, baseoffset=self.core.offset, bsize=self.core.bsize)
         return hexdump
 
     def get_full_hexdump(self):
-        self.pyew.bsize = self.pyew.maxsize
-        self.pyew.seek(0)
+        self.core.bsize = self.core.maxsize
+        self.core.seek(0)
         if self.fullhex == '':
-            hexdump = self.pyew.hexdump(self.pyew.buf, self.pyew.hexcolumns, baseoffset=0, bsize=self.pyew.bsize)
+            hexdump = self.core.hexdump(self.core.buf, self.core.hexcolumns, baseoffset=0, bsize=self.core.bsize)
             self.fullhex = hexdump
-        self.pyew.bsize = 512
+        self.core.bsize = 512
         return self.fullhex
 
     def get_dasm(self):
-        dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.pyew.bsize, baseoffset=self.pyew.offset)
+        dis = self.core.disassemble(self.core.buf, self.core.processor, self.core.type, self.core.lines, self.core.bsize, baseoffset=self.core.offset)
         return dis
 
     def get_text_dasm(self):
-        self.pyew.bsize = self.pyew.maxsize
+        self.core.bsize = self.core.maxsize
         #self.seek(0)
         if not self.text_dasm:
-            self.pyew.lines = 100*100
-            if self.pyew.format == 'PE':
+            self.core.lines = 100*100
+            if self.core.format == 'PE':
                 for section in self.pe.sections:
                     # Let's store text section information
                     if 'text' in section.Name:
                         self.text_rsize = section.SizeOfRawData
                         self.text_address = section.VirtualAddress
                         break
-            elif self.pyew.format == 'ELF':
+            elif self.core.format == 'ELF':
                 for section in self.elf.sections:
                     # Let's store text section information
                     if 'text' in section.getName():
                         self.text_rsize = section.sh_size
-                        self.text_address = self.pyew.elf.secnames[section.getName()].sh_offset
+                        self.text_address = self.core.elf.secnames[section.getName()].sh_offset
                         break
             self.seek(self.text_address)
-            dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.text_rsize, baseoffset=self.text_address)
+            dis = self.core.disassemble(self.core.buf, self.core.processor, self.core.type, self.core.lines, self.text_rsize, baseoffset=self.text_address)
             self.text_dasm = dis
-        self.pyew.bsize = 512
-        self.pyew.lines = 40
+        self.core.bsize = 512
+        self.core.lines = 40
         return self.text_dasm
 
     def get_fulldasm(self):
-        self.pyew.bsize = self.pyew.maxsize
+        self.core.bsize = self.core.maxsize
         self.seek(0)
         if not self.fulldasm:
-            self.pyew.lines = 100*100
-            dis = self.pyew.disassemble(self.pyew.buf, self.pyew.processor, self.pyew.type, self.pyew.lines, self.pyew.bsize, baseoffset=self.pyew.offset)
+            self.core.lines = 100*100
+            dis = self.core.disassemble(self.core.buf, self.core.processor, self.core.type, self.core.lines, self.core.bsize, baseoffset=self.core.offset)
             self.fulldasm = dis
-        self.pyew.bsize = 512
-        self.pyew.lines = 40
+        self.core.bsize = 512
+        self.core.lines = 40
         return self.fulldasm
 
     def seek(self, pos):
         data = ''
-        if pos > self.pyew.maxsize:
+        if pos > self.core.maxsize:
             data = 'End of file reached'
-            self.pyew.offset = self.pyew.maxsize
+            self.core.offset = self.core.maxsize
         elif pos < 0:
             data = 'Begin of file reached'
-            self.pyew.offset = 0
+            self.core.offset = 0
         else:
-            self.pyew.offset = pos
-        if len(self.pyew.previousoffset) > 0:
-            if self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ] != self.pyew.offset:
-                self.pyew.previousoffset.append(self.pyew.offset)
+            self.core.offset = pos
+        if len(self.core.previousoffset) > 0:
+            if self.core.previousoffset[ len(self.core.previousoffset)-1 ] != self.core.offset:
+                self.core.previousoffset.append(self.core.offset)
         else:
-            self.pyew.previousoffset.append(self.pyew.offset)
+            self.core.previousoffset.append(self.core.offset)
         
-        self.pyew.f.seek(self.pyew.offset)
-        self.pyew.buf = self.pyew.f.read(self.pyew.bsize)
+        self.core.f.seek(self.core.offset)
+        self.core.buf = self.core.f.read(self.core.bsize)
 
         return data
 
     def move(self, direction, output):
 
-        #self.pyew.bsize = 512
+        #self.core.bsize = 512
         self.cmd = direction
         limit = ''
 
-        if len(self.pyew.previousoffset) > 0:
-            if self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ] != self.pyew.offset:
-                self.pyew.previousoffset.append(self.pyew.offset)
+        if len(self.core.previousoffset) > 0:
+            if self.core.previousoffset[ len(self.core.previousoffset)-1 ] != self.core.offset:
+                self.core.previousoffset.append(self.core.offset)
         else:
-            self.pyew.previousoffset.append(self.pyew.offset)
+            self.core.previousoffset.append(self.core.offset)
         
 #        va = None
-#        if self.pyew.virtual:
-#            va = self.pyew.getVirtualAddressFromOffset(self.pyew.offset)
+#        if self.core.virtual:
+#            va = self.core.getVirtualAddressFromOffset(self.core.offset)
 #        
 #        if va:
-#            prompt = "[0x%08x:0x%08x]> " % (self.pyew.offset, va)
+#            prompt = "[0x%08x:0x%08x]> " % (self.core.offset, va)
 #        else:
-#            prompt = "[0x%08x]> " % self.pyew.offset
+#            prompt = "[0x%08x]> " % self.core.offset
 
         if self.cmd == "b":
-            tmp = self.pyew.previousoffset.pop()
+            tmp = self.core.previousoffset.pop()
             
-            if len(self.pyew.previousoffset) > 0:
-                tmp = self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ]
+            if len(self.core.previousoffset) > 0:
+                tmp = self.core.previousoffset[ len(self.core.previousoffset)-1 ]
             else:
                 tmp = 0
                 
-            self.pyew.offset = tmp
-            self.pyew.lastasmoffset = tmp
+            self.core.offset = tmp
+            self.core.lastasmoffset = tmp
 
             limit = self.seek(tmp)
 
         elif self.cmd == "b" and self.last_cmd == "b":
-            if len(self.pyew.previousoffset) < 2:
+            if len(self.core.previousoffset) < 2:
                 return
             
-            tmp = self.pyew.previousoffset.pop()
-            tmp = self.pyew.previousoffset[ len(self.pyew.previousoffset)-1 ]
+            tmp = self.core.previousoffset.pop()
+            tmp = self.core.previousoffset[ len(self.core.previousoffset)-1 ]
 
             limit = self.seek(tmp)
 
         elif output == 'disassembly':
-            self.pyew.offset = self.pyew.lastasmoffset
+            self.core.offset = self.core.lastasmoffset
 
-            self.pyew.seek(self.pyew.offset)
+            self.core.seek(self.core.offset)
 #            if last_cmd.isdigit():
 #                last_cmd = "c"
 
         else:
-            self.pyew.offset = self.pyew.offset + self.pyew.bsize
-            limit = self.seek(self.pyew.offset)
+            self.core.offset = self.core.offset + self.core.bsize
+            limit = self.seek(self.core.offset)
 
         self.cmd = self.last_cmd
 
@@ -285,34 +285,34 @@ class Core():
         if not self.pythondasm:
             try:
                 import dis
-                self.pyew.lines = 100*100
-                self.pythondasm = dis.dis(self.pyew.buf)
+                self.core.lines = 100*100
+                self.pythondasm = dis.dis(self.core.buf)
             except:
                 pass
         return self.pythondasm
 
     def get_repr(self):
         if not self.fullstr:
-            self.fullstr = repr(self.pyew.buf)
+            self.fullstr = repr(self.core.buf)
         return self.fullstr
 
     def get_sections(self):
-        if self.pyew.format == 'PE':
+        if self.core.format == 'PE':
             if self.allsections == []:
                 for section in self.pe.sections:
                     self.allsections.append( [section.Name.split('\x00')[0], hex(section.VirtualAddress), hex(section.Misc_VirtualSize), hex(section.SizeOfRawData)] )
 #                    print "  ", section.Name, hex(section.VirtualAddress), hex(section.Misc_VirtualSize), section.SizeOfRawData
-        elif self.pyew.format == 'ELF':
+        elif self.core.format == 'ELF':
             if self.allsections == []:
-                for section in self.pyew.elf.secnames:
-                    self.allsections.append( [self.pyew.elf.secnames[section].getName(), "0x%08x" % (self.pyew.elf.secnames[section].sh_addr), "N/A", "N/A"] )
+                for section in self.core.elf.secnames:
+                    self.allsections.append( [self.core.elf.secnames[section].getName(), "0x%08x" % (self.core.elf.secnames[section].sh_addr), "N/A", "N/A"] )
 
         return self.allsections
 
     def get_imports(self):
         try:
             if not self.allimports:
-                if self.pyew.format == "PE":
+                if self.core.format == "PE":
                     for entry in self.pe.DIRECTORY_ENTRY_IMPORT:
 #                        print entry.dll
                         self.allimports[entry.dll] = []
@@ -328,10 +328,10 @@ class Core():
     def get_exports(self):
         try:
             if not self.allexports:
-                if self.pyew.format == "PE":
+                if self.core.format == "PE":
                     for exp in self.pe.DIRECTORY_ENTRY_EXPORT.symbols:
-#                        print hex(self.pyew.pe.OPTIONAL_HEADER.ImageBase + exp.address), exp.name, exp.ordinal
-                        self.allexports.append( [hex(self.pyew.pe.OPTIONAL_HEADER.ImageBase + exp.address), exp.name, str(exp.ordinal), ''] )
+#                        print hex(self.core.pe.OPTIONAL_HEADER.ImageBase + exp.address), exp.name, exp.ordinal
+                        self.allexports.append( [hex(self.core.pe.OPTIONAL_HEADER.ImageBase + exp.address), exp.name, str(exp.ordinal), ''] )
 #            print self.allexports
             return self.allexports
         except:
@@ -341,7 +341,7 @@ class Core():
             return self.allexports
 
     def get_virtual_address(self):
-        if  self.pyew.format in ["PE"]:
+        if  self.core.format in ["PE"]:
             x = self.pe.OPTIONAL_HEADER.AddressOfEntryPoint
             for s in self.pe.sections:
                 if x >= s.VirtualAddress and x <= s.VirtualAddress + s.SizeOfRawData:
@@ -362,7 +362,7 @@ class Core():
             return hex(va), hex(ep)
 
     def get_file_info(self):
-        if self.pyew.format in ["PE"]:
+        if self.core.format in ["PE"]:
             # pyew.filename        : /home/hteso/Pocs/MRxNet/mrxnet.sys
             # pyew.format          : PE
             # pyew.maxfilesize     : 1073741824
@@ -370,17 +370,17 @@ class Core():
             # pyew.type            : 32
             # pyew.processor       : intel
             vaddress, ep  = self.get_virtual_address()
-            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize, 'processor':self.pyew.processor, 'type':self.pyew.type, 'va':vaddress, 'ep':ep}
+            self.fileinfo = {'name':self.core.filename, 'format':self.core.format, 'size':self.core.maxsize, 'processor':self.core.processor, 'type':self.core.type, 'va':vaddress, 'ep':ep}
     #        print self.fileinfo
-        elif self.pyew.format in ["ELF"]:
-            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize, 'processor':self.pyew.processor, 'type':self.pyew.type}
-        elif self.pyew.format in ["PDF"]:
-            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize, 'processor':self.pyew.processor, 'type':self.pyew.type}
+        elif self.core.format in ["ELF"]:
+            self.fileinfo = {'name':self.core.filename, 'format':self.core.format, 'size':self.core.maxsize, 'processor':self.core.processor, 'type':self.core.type}
+        elif self.core.format in ["PDF"]:
+            self.fileinfo = {'name':self.core.filename, 'format':self.core.format, 'size':self.core.maxsize, 'processor':self.core.processor, 'type':self.core.type}
         # I plan to add more content here soon so I keep it separated
-        elif self.pyew.format in ['URL']:
-            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize}
+        elif self.core.format in ['URL']:
+            self.fileinfo = {'name':self.core.filename, 'format':self.core.format, 'size':self.core.maxsize}
         else:
-            self.fileinfo = {'name':self.pyew.filename, 'format':self.pyew.format, 'size':self.pyew.maxsize}
+            self.fileinfo = {'name':self.core.filename, 'format':self.core.format, 'size':self.core.maxsize}
 
         return self.fileinfo
 
@@ -389,55 +389,55 @@ class Core():
 
     def get_pdf_streams(self):
         import ui.plugins.pdfinfo as pdfinfo
-        self.streams = pdfinfo.pdfStream(self.pyew)
+        self.streams = pdfinfo.pdfStream(self.core)
         return self.streams
 
     def get_callgraph(self):
         import ui.plugins.cgraph as cgraph
-        dot_code = cgraph.showCallGraph(self.pyew)
+        dot_code = cgraph.showCallGraph(self.core)
         return dot_code
 
     def get_urls(self):
         import ui.plugins.url as url
-        urls = url.extract(self.pyew)
+        urls = url.extract(self.core)
         return urls
 
     def check_urls(self):
         import ui.plugins.url as url
-        checked_urls = url.check(self.pyew)
+        checked_urls = url.check(self.core)
         self.checked_urls = checked_urls
 
     def bad_urls(self):
         import ui.plugins.url as url
-        bad_urls = url.check_bad(self.pyew)
+        bad_urls = url.check_bad(self.core)
         self.bad_urls = bad_urls
 
     def sendto_vt(self):
         import ui.plugins.virustotal as virustotal
-        vt_results = virustotal.search_vt(self.pyew)
+        vt_results = virustotal.search_vt(self.core)
         return vt_results
 
     def execute_plugin(self, plugin):
         plg = plugin.split(" ")
         if len(plg) == 1:
-            self.pyew.plugins[plg[0]](self.pyew)
+            self.core.plugins[plg[0]](self.core)
         else:
-            self.pyew.plugins[plg[0]](self.pyew, plg[1:])
+            self.core.plugins[plg[0]](self.core, plg[1:])
 
     def get_packers(self):
         import ui.plugins.packer as packer
-        packers = packer.search_packer(self.pyew)
+        packers = packer.search_packer(self.core)
         return packers
 
     def dosearch(self, data, type):
         # search types: s, u, r, o, i, x
 
-        results = self.pyew.dosearch(self.pyew.f, type, data, offset=self.pyew.offset, cols=64, doprint=False)
+        results = self.core.dosearch(self.core.f, type, data, offset=self.core.offset, cols=64, doprint=False)
         return results
 
     def search_http_src(self):
-        srcs = self.pyew.dosearch(self.pyew.f, 's', 'src="', offset=self.pyew.offset, cols=100, doprint=False)
-        hrefs = self.pyew.dosearch(self.pyew.f, 's', 'href="', offset=self.pyew.offset, cols=100, doprint=False)
+        srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)
+        hrefs = self.core.dosearch(self.core.f, 's', 'href="', offset=self.core.offset, cols=100, doprint=False)
         results = srcs + hrefs
         for element in results:
             link = element.values()[0].split('"')[1]
@@ -461,10 +461,10 @@ class Core():
             elif len(element) == 1:
                 self.links_struct.append( {element[0]:['']} )
         import ui.generate_dot as gendot
-        self.http_dot = gendot.generate_dot(self.links_struct, self.pyew.filename)
+        self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
 
     def get_file_text(self):
-        file = open(self.pyew.filename, 'rb')
+        file = open(self.core.filename, 'rb')
         data = file.read()
         file.close()
 
@@ -477,9 +477,9 @@ class Core():
         bcontinue = True
         
         try:
-            buf = self.pyew.getBuffer()
+            buf = self.core.getBuffer()
             amd5 = md5(buf).hexdigest()
-            name = self.pyew.filename
+            name = self.core.filename
             sql = """ select * from samples where md5 = ? """
             cur.execute(sql, (amd5, ))
             
@@ -500,8 +500,8 @@ class Core():
         try:
             asha1 = sha1(buf).hexdigest()
             asha256 = sha256(buf).hexdigest()
-            name = self.pyew.filename
-            format = self.pyew.format
+            name = self.core.filename
+            format = self.core.format
             
             cur = db.cursor()
             sql = """ insert into samples (md5, sha1, sha256, filename, type)
@@ -511,13 +511,13 @@ class Core():
             
             sql = """ insert into function_stats (sample_id, addr, nodes, edges, cc)
                                           values (?, ?, ?, ?, ?) """
-            for f in self.pyew.function_stats:
+            for f in self.core.function_stats:
                 addr = "0x%08x" % f
-                nodes, edges, cc = self.pyew.function_stats[f]
+                nodes, edges, cc = self.core.function_stats[f]
                 cur.execute(sql, (rid, addr, nodes, edges, cc))
             
             sql = """ insert into antidebugs (sample_id, addr, mnemonic) values (?, ?, ?) """
-            for antidbg in self.pyew.antidebug:
+            for antidbg in self.core.antidebug:
                 addr, mnem = antidbg
                 addr = "0x%08x" % addr
                 cur.execute(sql, (rid, addr, mnem))

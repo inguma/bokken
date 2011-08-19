@@ -73,5 +73,11 @@ class RightTextView(gtk.VBox, Searchable):
         self.right_scrolled_window.add(self.view)
         self.pack_start(self.right_scrolled_window, expand=True, fill=True)
 
+        # XXX POC XXX
+        #self.right_scrolled_window.get_vadjustment().connect("value-changed", self._miau )
+
         # Create the search widget
         Searchable.__init__(self, self.view, small=True)
+
+    def _miau(self, widget):
+        print "miau"

@@ -101,7 +101,7 @@ class InteractiveButtons(gtk.HBox):
         self.dasm_button.connect("toggled", self.callback, "Disassembly")
         self.toolbox.pack_start(self.dasm_button, False, False)
 
-        self.uicore.pyew.bsize = 512
+        self.uicore.core.bsize = 512
 
     #
     # Functions
@@ -125,7 +125,7 @@ class InteractiveButtons(gtk.HBox):
 
     def set_buffer_size(self, widget):
         size = int(self.buffer_entry.get_text())
-        self.uicore.pyew.bsize = size
+        self.uicore.core.bsize = size
         self.refresh()
 
     def seek(self, widget, action=''):
@@ -135,15 +135,15 @@ class InteractiveButtons(gtk.HBox):
             pos = action
 
         if pos.lower() in ["ep", "entrypoint"]:
-            if self.uicore.pyew.ep:
-                pos = self.uicore.pyew.ep
+            if self.uicore.core.ep:
+                pos = self.uicore.core.ep
 
-        elif pos.isdigit() and int(pos) < len(self.uicore.pyew.calls)+1 and int(pos) > 0:
-            pos = self.uicore.pyew.calls[int(pos)-1]
+        elif pos.isdigit() and int(pos) < len(self.uicore.core.calls)+1 and int(pos) > 0:
+            pos = self.uicore.core.calls[int(pos)-1]
 
-        elif pos in self.uicore.pyew.names.values():
-            for x in self.uicore.pyew.names:
-                if self.uicore.pyew.names[x] == pos:
+        elif pos in self.uicore.core.names.values():
+            for x in self.uicore.core.names:
+                if self.uicore.core.names[x] == pos:
                     pos = x
                     break
         elif pos.lower().startswith("0x"):
