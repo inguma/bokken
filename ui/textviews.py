@@ -223,9 +223,8 @@ class TextViews(gtk.HBox):
 
         if mode == 'Functions':
             self.left_treeview.create_functions_columns()
-            if self.uicore.corename == 'pyew':
-                for function in self.uicore.get_functions():
-                    self.left_treeview.store.append([function, '', '', ''])
+            for function in self.uicore.get_functions():
+                self.left_treeview.store.append([function, '', '', ''])
         elif mode == 'Sections':
             self.left_treeview.create_sections_columns()
             for section in self.uicore.get_sections():

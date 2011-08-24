@@ -25,7 +25,7 @@ class MyDotWidget(DotWidget):
     def __init__(self, core):
 
         self.uicore = core
-        dotcode = self.uicore.get_callgraph()
+        #dotcode = self.uicore.get_callgraph()
         DotWidget.__init__(self)
 
     def set_dot(self, dotcode):

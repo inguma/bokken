@@ -42,16 +42,13 @@ class RightNotebook(gtk.Notebook):
 
         #################################################
         # Code map TAB
-        if self.uicore.corename == 'pyew':
-            self.xdot_widget = graph.MyDotWidget(self.uicore)
-            self.append_page(self.xdot_widget)
+        self.xdot_widget = graph.MyDotWidget(self.uicore)
+        self.append_page(self.xdot_widget)
 
-            tab = self.create_tab('Callgraph', self.xdot_widget)
+        tab = self.create_tab('Callgraph', self.xdot_widget)
 
-            self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
-            self.set_tab_label(self.xdot_widget, tab)
-        else:
-            pass
+        self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
+        self.set_tab_label(self.xdot_widget, tab)
 
         #################################################
         # Interactive view TAB

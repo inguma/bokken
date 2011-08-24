@@ -19,6 +19,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
+import tempfile
+
 from r2.r_core import *
 from r2.r_bin import *
 
@@ -29,6 +32,7 @@ class Core():
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
         self.pythondasm = ''
+        self.textsize= 0
         self.fullhex = ''
         self.fullstr = ''
         self.allstrings = ''
@@ -41,6 +45,7 @@ class Core():
         self.alllinks = []
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
+        self.dot = ''
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -55,6 +60,7 @@ class Core():
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
         self.pythondasm = ''
+        self.textsize= 0
         self.fullhex = ''
         self.fullstr = ''
         self.allstrings = ''
@@ -67,6 +73,7 @@ class Core():
         self.alllinks = []
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
+        self.dot = ''
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -89,6 +96,7 @@ class Core():
         self.info = self.bin.get_info()
         #bin.load(sys.argv[1], None)
         self.baddr = self.bin.get_baddr()
+        self.size = hex(self.core.file.size)
         self.core.format = self.info.rclass.upper()
 
         # Check if file name is an URL, pyew stores it as 'raw'
@@ -114,15 +122,16 @@ class Core():
         return self.allstrings
 
     def get_functions(self):
-#        if not self.allfuncs:
-#            self.core.cmd0('fs functions')
-#            for fcn in self.core.cmd_str('f').split('\n'):
-#                if fcn:
-#                    #print ' 0x%08x' % fcn.addr, fcn.name
-#                    fcn = fcn.split(' ')[-1]
-#                    self.allfuncs.append(fcn)
-#        return self.allfuncs
-        pass
+        if not self.allfuncs:
+            self.core.cmd0('aa')
+            self.core.cmd0('e asm.lines=false')
+            self.core.cmd0('fs functions')
+            for fcn in self.core.cmd_str('f').split('\n'):
+                if fcn:
+                    #print ' 0x%08x' % fcn.addr, fcn.name
+                    fcn = fcn.split(' ')[-1]
+                    self.allfuncs.append(fcn)
+        return self.allfuncs
 
     def get_hexdump(self):
         hexdump = self.core.cmd_str('px')
@@ -130,50 +139,50 @@ class Core():
 
     def get_full_hexdump(self):
         if self.fullhex == '':
-            self.core.cmd_str('b section..text')
-            self.core.cmd_str('x section..text')
+            self.core.cmd_str('s section..text')
+            self.core.cmd_str('x ' + self.size)
+            #self.core.cmd0('b 1024')
             hexdump = self.core.cmd_str('px')
             self.fullhex = hexdump
         return self.fullhex
 
     def get_dasm(self):
-        dasm = self.core.cmd0('x 10')
-        dasm = self.core.cmd0('b 512')
-        dasm = self.core.cmd0('e scr.color=0')
-        #dasm = self.core.cmd0('e asm.lines=false')
+        self.core.cmd0('e scr.color=0')
+        self.core.cmd0('e asm.lines=false')
         dasm = self.core.cmd_str('pd')
         return dasm
 
     def get_text_dasm(self):
         if not self.text_dasm:
-            dasm = self.core.cmd0('x 10')
-            dasm = self.core.cmd0('b 512')
-            dasm = self.core.cmd0('e scr.color=0')
-            #dasm = self.core.cmd0('e asm.lines=false')
+            self.core.cmd0('b ' + str(self.textsize))
+            self.core.cmd0('e scr.color=0')
+            self.core.cmd0('e asm.lines=false')
             dasm = self.core.cmd_str('pd')
             self.text_dasm = dasm
         return self.text_dasm
 
     def get_fulldasm(self):
         if not self.fulldasm:
-            dasm = self.core.cmd0('x 10')
-            dasm = self.core.cmd0('b 512')
-            dasm = self.core.cmd0('e scr.color=0')
-            #dasm = self.core.cmd0('e asm.lines=false')
+            self.core.cmd0('s section..text')
+            self.core.cmd0('b ' + str(self.textsize))
+            self.core.cmd0('e scr.color=0')
+            self.core.cmd0('e asm.lines=false')
             dasm = self.core.cmd_str('pd')
             self.fulldasm = dasm
         return self.fulldasm
 
     def get_repr(self):
         if not self.fullstr:
-            self.fullstr = self.core.cmd0('b 512')
-            self.fullstr = self.core.cmd_str('ps')
+            self.core.cmd0('s section..text')
+            self.fullstr = self.core.cmd_str('ps ' + str(self.size))
         return self.fullstr
 
     def get_sections(self):
         if self.allsections == []:
              for section in self.bin.get_sections():
                  self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
+                 if '.text' in section.name:
+                    self.textsize = section.size
 
         return self.allsections
 
@@ -187,13 +196,26 @@ class Core():
                 if not dll in self.allimports.keys():
                     self.allimports[dll] = []
                 self.allimports[dll].append( [hex(self.baddr+imp.rva), imp_name] )
-            return self.allimports
+        return self.allimports
 
     def get_exports(self):
         if not self.allexports:
             for sym in self.bin.get_symbols():
                 self.allexports.append( [hex(self.baddr+sym.rva), sym.name, '', ''] )
-            return self.allexports
+        return self.allexports
+
+    def get_callgraph(self, addr=''):
+        if not self.dot:
+            file = tempfile.gettempdir() + os.sep + 'miau.dot'
+            if not addr:
+                self.core.cmd_str('ag > ' + file)
+            else:
+                self.core.cmd_str('ag ' + addr + ' > ' + file)
+            f = open(file, 'r')
+            self.dot = f.read()
+            f.close()
+            os.unlink(file)
+        return self.dot
 
     def get_file_info(self):
         # core.filename        : /home/hteso/Pocs/MRxNet/mrxnet.sys

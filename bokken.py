@@ -32,6 +32,16 @@ import ui.main as main
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        main.main('')
+        main.main('', '')
+    elif len(sys.argv) == 2:
+        if '-r' in sys.argv:
+            main.main('', 'radare')
+        elif '-p' in sys.argv:
+            main.main('', 'pyew')
+        else:
+            main.main(sys.argv[1], '')
     else:
-        main.main(sys.argv[1])
+        if '-r' in sys.argv:
+            main.main(sys.argv[2], 'radare')
+        elif '-p' in sys.argv:
+            main.main(sys.argv[2], 'pyew')

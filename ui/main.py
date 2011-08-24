@@ -42,7 +42,6 @@ import ui.core as core
 import ui.r2_core as r2_core
 import ui.textviews as textviews
 import ui.statusbar as statusbar
-import ui.toolbar as toolbar
 
 # Threading initializer
 if sys.platform == "win32":
@@ -50,8 +49,8 @@ if sys.platform == "win32":
 else:
     gtk.gdk.threads_init()
 
-MAINTITLE = "Bokken, a GUI for pyew and (soon) radare2!"
-VERSION = "1.0"
+MAINTITLE = "Bokken, a GUI for pyew and (WIP) radare2!"
+VERSION = "1.5-dev"
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -60,13 +59,16 @@ ENDC = '\033[0m'
 class MainApp:
     '''Main GTK application'''
 
-    def __init__(self, target):
+    def __init__(self, target, backend):
 
         self.target = target
+        self.backend = backend
         self.empty_gui = False
 
-        self.uicore = core.Core()
-        #self.uicore = r2_core.Core()
+        if self.backend == 'pyew':
+            self.uicore = core.Core()
+        elif self.backend == 'radare':
+            self.uicore = r2_core.Core()
 
         # Check if target name is an URL, pyew stores it as 'raw'
         self.uicore.is_url(self.target)
@@ -104,7 +106,12 @@ class MainApp:
         self.supervb = gtk.VBox(False, 1)
 
         # Create top buttons and add to VBox
-        self.topbuttons = toolbar.TopButtons(self.uicore, self)
+        if self.backend == 'pyew':
+            import ui.pyew_toolbar as toolbar
+            self.topbuttons = toolbar.TopButtons(self.uicore, self)
+        elif self.backend == 'radare':
+            import ui.radare_toolbar as toolbar
+            self.topbuttons = toolbar.TopButtons(self.uicore, self)
         self.supervb.pack_start(self.topbuttons, False, True, 1)
 
         # Create VBox to contain textviews and statusbar
@@ -235,5 +242,5 @@ class MainApp:
         gtk.main_quit()
         return False
 
-def main(target):
-    MainApp(target)
+def main(target, backend):
+    MainApp(target, backend)
