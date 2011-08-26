@@ -81,6 +81,7 @@ class Core():
         self.last_cmd = ''
 
     def load_file(self, file):
+        print "[*] Loading file"
         # Init core
         self.core.file_open(file, 0, 0)
         self.core.bin_load(None)
@@ -103,7 +104,7 @@ class Core():
         self.is_url(file)
 
     def is_url(self, file):
-        #print "Checking if is URL..."
+        print "[*] Checking if is URL"
         self.filename = file
         if self.filename.lower().startswith("http://") or \
            self.filename.lower().startswith("https://") or \
@@ -111,6 +112,7 @@ class Core():
             self.core.format = 'URL'
 
     def get_strings(self):
+        print "[*] Get strings"
         if not self.allstrings:
             strings = ''
 #            FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
@@ -122,8 +124,9 @@ class Core():
         return self.allstrings
 
     def get_functions(self):
+        print "[*] Get functions"
         if not self.allfuncs:
-            self.core.cmd0('aa')
+            #self.core.cmd0('aa')
             self.core.cmd0('e asm.lines=false')
             self.core.cmd0('fs functions')
             for fcn in self.core.cmd_str('f').split('\n'):
@@ -138,33 +141,39 @@ class Core():
         return hexdump
 
     def get_full_hexdump(self):
+        print "[*] Get full hexdump"
         if self.fullhex == '':
-            self.core.cmd_str('s section..text')
-            self.core.cmd_str('x ' + self.size)
+            self.core.cmd_str('s ' + str(self.baddr))
+            self.core.cmd_str('x ' + str(self.size))
             #self.core.cmd0('b 1024')
             hexdump = self.core.cmd_str('px')
             self.fullhex = hexdump
         return self.fullhex
 
     def get_dasm(self):
+        print "[*] Get dasm"
         self.core.cmd0('e scr.color=0')
         self.core.cmd0('e asm.lines=false')
         dasm = self.core.cmd_str('pd')
         return dasm
 
     def get_text_dasm(self):
+        print "[*] Get text dasm"
         if not self.text_dasm:
             self.core.cmd0('b ' + str(self.textsize))
             self.core.cmd0('e scr.color=0')
             self.core.cmd0('e asm.lines=false')
+            print "\t* Let's get the dasm...",
             dasm = self.core.cmd_str('pd')
+            print " OK!"
             self.text_dasm = dasm
         return self.text_dasm
 
     def get_fulldasm(self):
+        print "[*] Get full dasm"
         if not self.fulldasm:
-            self.core.cmd0('s section..text')
-            self.core.cmd0('b ' + str(self.textsize))
+            self.core.cmd0('s ' + str(self.baddr))
+            self.core.cmd0('b ' + str(self.size))
             self.core.cmd0('e scr.color=0')
             self.core.cmd0('e asm.lines=false')
             dasm = self.core.cmd_str('pd')
@@ -172,12 +181,14 @@ class Core():
         return self.fulldasm
 
     def get_repr(self):
+        print "[*] Get string repr"
         if not self.fullstr:
             self.core.cmd0('s section..text')
             self.fullstr = self.core.cmd_str('ps ' + str(self.size))
         return self.fullstr
 
     def get_sections(self):
+        print "[*] Get sections"
         if self.allsections == []:
              for section in self.bin.get_sections():
                  self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
@@ -187,6 +198,7 @@ class Core():
         return self.allsections
 
     def get_imports(self):
+        print "[*] Get imports"
         if not self.allimports:
             for imp in self.bin.get_imports():
                 if '__' in imp.name:
@@ -199,16 +211,18 @@ class Core():
         return self.allimports
 
     def get_exports(self):
+        print "[*] Get exports"
         if not self.allexports:
             for sym in self.bin.get_symbols():
                 self.allexports.append( [hex(self.baddr+sym.rva), sym.name, '', ''] )
         return self.allexports
 
     def get_callgraph(self, addr=''):
+        print "[*] Get callgraph"
         if not self.dot:
             file = tempfile.gettempdir() + os.sep + 'miau.dot'
             if not addr:
-                self.core.cmd_str('ag > ' + file)
+                self.core.cmd_str('agc > ' + file)
             else:
                 self.core.cmd_str('ag ' + addr + ' > ' + file)
             f = open(file, 'r')
@@ -218,6 +232,7 @@ class Core():
         return self.dot
 
     def get_file_info(self):
+        print "[*] Get file info"
         # core.filename        : /home/hteso/Pocs/MRxNet/mrxnet.sys
         # core.format          : PE
         # core.maxfilesize     : 1073741824
@@ -229,6 +244,10 @@ class Core():
     #   print self.fileinfo
 
         return self.fileinfo
+
+    def seek(self, pos):
+        self.code.cmd0('s ' + pos)
+        return True
 
     def search_http_src(self):
         srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)
