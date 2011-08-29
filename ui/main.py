@@ -18,6 +18,8 @@
 #       MA 02110-1301, USA.
 
 import os, sys, threading
+import pango
+import gtksourceview2
 
 # Add plugins directory to the path
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
@@ -69,6 +71,7 @@ class MainApp:
             self.uicore = core.Core()
         elif self.backend == 'radare':
             self.uicore = r2_core.Core()
+        self.uicore.backend = self.backend
 
         # Check if target name is an URL, pyew stores it as 'raw'
         self.uicore.is_url(self.target)
@@ -240,7 +243,7 @@ class MainApp:
             return True
 
         gtk.main_quit()
-        return False
+        return True
 
 def main(target, backend):
     MainApp(target, backend)

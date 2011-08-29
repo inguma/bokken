@@ -233,7 +233,11 @@ class TextViews(gtk.HBox):
                     tmp.append(element)
                 self.left_treeview.store.append(tmp)
         elif mode == 'Imports':
-            self.left_treeview.create_tree( self.uicore.get_imports() )
+            # We have different import format for PE or Elf
+            if 'ELF' in self.uicore.core.format:
+                self.left_treeview.create_tree( self.uicore.get_elf_imports() )
+            else:
+                self.left_treeview.create_tree( self.uicore.get_imports() )
         elif mode == 'Exports':
             self.left_treeview.create_exports_columns()
             for export in self.uicore.get_exports():
@@ -268,7 +272,11 @@ class TextViews(gtk.HBox):
         if self.uicore.core.format in ['PE']:
             options = ['Functions', 'Sections', 'Imports', 'Exports']
         elif self.uicore.core.format in ['ELF']:
-            options = ['Functions', 'Sections']
+            # Pyew doesn't has support for Elf Imports/Exports parsing
+            if 'pyew' in self.uicore.backend:
+                options = ['Functions', 'Sections']
+            else:
+                options = ['Functions', 'Sections', 'Imports', 'Exports']
         elif self.uicore.core.format in ['PDF']:
             options = ['PDF Info']
         elif self.uicore.core.format in ['URL']:
@@ -286,6 +294,11 @@ class TextViews(gtk.HBox):
         self.left_combo.set_sensitive(True)
         # FIXME: Really necessary?? looks like not...
 #        self.update_left_content(self)
+
+    def update_graph(self, widget, addr):
+        addr = addr.split(' ')[-1]
+        print addr
+        self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph(addr))
 
     def search(self, widget, search_string, iter = None):
         # Clean string to search

@@ -205,6 +205,10 @@ class TreeViews(gtk.TreeView):
             e = gtk.MenuItem("Search")
             e.connect('activate', self.textviews.search, link_name)
             gm.append( e )
+            if 'radare' in self.uicore.backend:
+                e = gtk.MenuItem("Show graph")
+                e.connect('activate', self.textviews.update_graph, link_name)
+                gm.append( e )
             gm.show_all()
 
             gm.popup( None, None, None, event.button, _time)

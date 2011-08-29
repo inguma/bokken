@@ -62,11 +62,12 @@ class InteractiveButtons(gtk.HBox):
         # Default action on pressing Enter
         self.seek_entry.set_activates_default(True)
         self.seek_entry.connect("activate", self.seek)
+        self.seek_entry.set_icon_from_stock(1, gtk.STOCK_GO_FORWARD)
 
         self.toolbox.pack_start(self.seek_entry, False, False)
-        b = SemiStockButton("", gtk.STOCK_GO_FORWARD, 'Go')
-        b.connect("clicked", self.seek)
-        self.toolbox.pack_start(b, False, False)
+#        b = SemiStockButton("", gtk.STOCK_GO_FORWARD, 'Go')
+#        b.connect("clicked", self.seek)
+#        self.toolbox.pack_start(b, False, False)
 
         # Separator
         self.sep = gtk.HSeparator()
@@ -78,14 +79,15 @@ class InteractiveButtons(gtk.HBox):
 
         self.buffer_entry = gtk.Entry(10)
         self.buffer_entry.set_text('512')
+        self.buffer_entry.set_icon_from_stock(1, gtk.STOCK_APPLY)
         # Default action on pressing Enter
         self.buffer_entry.set_activates_default(True)
         self.buffer_entry.connect("activate", self.set_buffer_size)
 
         self.toolbox.pack_start(self.buffer_entry, False, False)
-        b = SemiStockButton("", gtk.STOCK_APPLY, 'Apply')
-        b.connect("clicked", self.set_buffer_size)
-        self.toolbox.pack_start(b, False, False)
+#        b = SemiStockButton("", gtk.STOCK_APPLY, 'Apply')
+#        b.connect("clicked", self.set_buffer_size)
+#        self.toolbox.pack_start(b, False, False)
 
         # Separator
         self.sep = gtk.HSeparator()
@@ -97,9 +99,18 @@ class InteractiveButtons(gtk.HBox):
         self.hex_button.set_active(True)
         self.toolbox.pack_start(self.hex_button, False, False)
 
-        self.dasm_button = gtk.RadioButton(self.hex_button, "Disassemby")
+        self.dasm_button = gtk.RadioButton(self.hex_button, "Disassembly")
         self.dasm_button.connect("toggled", self.callback, "Disassembly")
         self.toolbox.pack_start(self.dasm_button, False, False)
+
+        if 'radare' in self.uicore.backend:
+            # Separator
+            self.sep = gtk.HSeparator()
+            self.toolbox.pack_start(self.sep, False, False)
+
+            self.exec_entry = gtk.Entry(100)
+            self.exec_entry.set_icon_from_stock(1, gtk.STOCK_EXECUTE)
+            self.toolbox.pack_start(self.exec_entry, False, False)
 
         self.uicore.core.bsize = 512
 

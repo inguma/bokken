@@ -54,6 +54,8 @@ class Core():
         self.corename = 'radare'
 
         self.core = RCore()
+        self.cons = RCons()
+        self.assembler = self.core.assembler
         self.core.format = ''
 
     def clean_fullvars(self):
@@ -83,22 +85,26 @@ class Core():
     def load_file(self, file):
         print "[*] Loading file"
         # Init core
+        # Returns True/False (check)
         self.core.file_open(file, 0, 0)
         self.core.bin_load(None)
-        #self.core.config.set_i("io.va", 1)
-        #self.core.config.set_i("anal.split", 1)
-        #self.core.cmd0("af@entry0");
-        self.core.config.set("asm.bytes", "false")
+        #self.core.config.set("asm.bytes", "false")
         self.core.cmd0("aa")
+        self.core.cmd0("e scr.interactive=false")
+        self.core.cmd0('e asm.lines=false')
+        self.core.cmd0('e scr.color=0')
         #self.core.config.set_i("asm.decode", 1)
-        #self.core.gdiff(self.core)
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
-        #bin.load(sys.argv[1], None)
         self.baddr = self.bin.get_baddr()
         self.size = hex(self.core.file.size)
-        self.core.format = self.info.rclass.upper()
+        #self.core.format = self.info.rclass.upper()
+        miau = self.core.cmd_str('e file.type')
+        if miau:
+            self.core.format = miau[:-1].upper()
+        else:
+            self.core.format = 'raw'
 
         # Check if file name is an URL, pyew stores it as 'raw'
         self.is_url(file)
@@ -112,8 +118,8 @@ class Core():
             self.core.format = 'URL'
 
     def get_strings(self):
-        print "[*] Get strings"
         if not self.allstrings:
+            print "[*] Get strings"
             strings = ''
 #            FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
 #            for str in self.bin.get_strings():
@@ -124,10 +130,9 @@ class Core():
         return self.allstrings
 
     def get_functions(self):
-        print "[*] Get functions"
         if not self.allfuncs:
+            print "[*] Get functions"
             #self.core.cmd0('aa')
-            self.core.cmd0('e asm.lines=false')
             self.core.cmd0('fs functions')
             for fcn in self.core.cmd_str('f').split('\n'):
                 if fcn:
@@ -141,28 +146,30 @@ class Core():
         return hexdump
 
     def get_full_hexdump(self):
-        print "[*] Get full hexdump"
         if self.fullhex == '':
-            self.core.cmd_str('s ' + str(self.baddr))
-            self.core.cmd_str('x ' + str(self.size))
-            #self.core.cmd0('b 1024')
+            print "[*] Get full hexdump"
+            self.core.cmd0('e io.va=0')
+            self.core.cmd0('s 0')
+            self.core.cmd0('b ' + str(self.size))
             hexdump = self.core.cmd_str('px')
+            self.core.cmd0('s ' + str(self.baddr))
+            #self.core.cmd0('b 1024')
+            self.core.cmd0('e io.va=1')
             self.fullhex = hexdump
         return self.fullhex
 
     def get_dasm(self):
         print "[*] Get dasm"
-        self.core.cmd0('e scr.color=0')
-        self.core.cmd0('e asm.lines=false')
         dasm = self.core.cmd_str('pd')
         return dasm
 
     def get_text_dasm(self):
-        print "[*] Get text dasm"
         if not self.text_dasm:
+            print "[*] Get text dasm"
+            if self.textsize == 0:
+                self.textsize = 4096
+            self.core.cmd0('s section..text')
             self.core.cmd0('b ' + str(self.textsize))
-            self.core.cmd0('e scr.color=0')
-            self.core.cmd0('e asm.lines=false')
             print "\t* Let's get the dasm...",
             dasm = self.core.cmd_str('pd')
             print " OK!"
@@ -170,36 +177,48 @@ class Core():
         return self.text_dasm
 
     def get_fulldasm(self):
-        print "[*] Get full dasm"
         if not self.fulldasm:
+            print "[*] Get full dasm"
             self.core.cmd0('s ' + str(self.baddr))
             self.core.cmd0('b ' + str(self.size))
-            self.core.cmd0('e scr.color=0')
-            self.core.cmd0('e asm.lines=false')
-            dasm = self.core.cmd_str('pd')
+            dasm = self.core.cmd_str('pi')
             self.fulldasm = dasm
         return self.fulldasm
 
     def get_repr(self):
-        print "[*] Get string repr"
         if not self.fullstr:
-            self.core.cmd0('s section..text')
+            print "[*] Get string repr"
+            self.core.cmd0('e io.va=0')
+            self.core.cmd0('s 0')
+            self.core.cmd0('b ' + str(self.size))
             self.fullstr = self.core.cmd_str('ps ' + str(self.size))
+            #self.core.cmd0('b 1024')
+            self.core.cmd0('e io.va=1')
+            self.core.cmd0('s section..text')
         return self.fullstr
 
     def get_sections(self):
-        print "[*] Get sections"
         if self.allsections == []:
-             for section in self.bin.get_sections():
-                 self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
-                 if '.text' in section.name:
+            print "[*] Get sections"
+            for section in self.bin.get_sections():
+                self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
+                if '.text' in section.name:
                     self.textsize = section.size
 
         return self.allsections
 
-    def get_imports(self):
-        print "[*] Get imports"
+    def get_elf_imports(self):
         if not self.allimports:
+            print "[*] Get ELF imports"
+            for imp in self.bin.get_imports():
+                if not 'Imports' in self.allimports.keys():
+                    self.allimports['Imports'] = []
+                self.allimports['Imports'].append( [hex(self.baddr+imp.rva), imp.name] )
+        return self.allimports
+
+    def get_imports(self):
+        if not self.allimports:
+            print "[*] Get imports"
             for imp in self.bin.get_imports():
                 if '__' in imp.name:
                     dll, imp_name = imp.name.split('__')
@@ -211,24 +230,25 @@ class Core():
         return self.allimports
 
     def get_exports(self):
-        print "[*] Get exports"
         if not self.allexports:
+            print "[*] Get exports"
             for sym in self.bin.get_symbols():
                 self.allexports.append( [hex(self.baddr+sym.rva), sym.name, '', ''] )
         return self.allexports
 
     def get_callgraph(self, addr=''):
+        #if not self.dot:
         print "[*] Get callgraph"
-        if not self.dot:
-            file = tempfile.gettempdir() + os.sep + 'miau.dot'
-            if not addr:
-                self.core.cmd_str('agc > ' + file)
-            else:
-                self.core.cmd_str('ag ' + addr + ' > ' + file)
-            f = open(file, 'r')
-            self.dot = f.read()
-            f.close()
-            os.unlink(file)
+        file = tempfile.gettempdir() + os.sep + 'miau.dot'
+        if not addr:
+            self.core.cmd0('ag section..text > ' + file)
+            #self.core.cmd_str('aga > ' + file)
+        else:
+            self.core.cmd0('ag ' + addr + ' > ' + file)
+        f = open(file, 'r')
+        self.dot = f.read()
+        f.close()
+        os.unlink(file)
         return self.dot
 
     def get_file_info(self):

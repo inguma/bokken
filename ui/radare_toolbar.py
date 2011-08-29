@@ -64,11 +64,21 @@ class TopButtons(gtk.HBox):
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, 1)
 
+        # Assembler button
+        self.asm_tb = gtk.ToolButton(gtk.STOCK_EXECUTE)
+        self.asm_tb.set_tooltip_text('Open assembler dialog')
+        self.asm_tb.connect("clicked", self._miau)
+        self.main_tb.insert(self.asm_tb, 2)
+
+        # Separator
+        self.sep = gtk.SeparatorToolItem()
+        self.main_tb.insert(self.sep, 3)
+
         # Search components
         self.search_tb = gtk.ToolItem()
         self.search_label = gtk.Label('  Search:  ')
         self.search_tb.add(self.search_label)
-        self.main_tb.insert(self.search_tb, 2)
+        self.main_tb.insert(self.search_tb, 4)
 
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo = gtk.combo_box_new_text()
@@ -77,51 +87,51 @@ class TopButtons(gtk.HBox):
         for option in options:
             self.search_combo.append_text(option)
         self.search_combo_tb.add(self.search_combo)
-        self.main_tb.insert(self.search_combo_tb, 3)
+        self.main_tb.insert(self.search_combo_tb, 5)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 4)
+        self.main_tb.insert(self.sep, 6)
 
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
         self.search_entry_tb.add(self.search_entry)
-        self.main_tb.insert(self.search_entry_tb, 5)
+        self.main_tb.insert(self.search_entry_tb, 7)
 
         self.search_tb = gtk.ToolButton(gtk.STOCK_FIND)
         self.search_tb.connect("clicked", self.search)
         self.search_tb.set_tooltip_text('Search')
         self.search_tb.set_sensitive(False)
-        self.main_tb.insert(self.search_tb, 6)
+        self.main_tb.insert(self.search_tb, 8)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 7)
+        self.main_tb.insert(self.sep, 9)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 8)
+        self.main_tb.insert(self.exit_tb, 10)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 9)
+        self.main_tb.insert(self.sep, 11)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 10)
+        self.main_tb.insert(self.about_tb, 12)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 11)
+        self.main_tb.insert(self.throbber_tb, 13)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -134,6 +144,10 @@ class TopButtons(gtk.HBox):
 
     # Private methods
     #
+
+    def _miau(self, widgets):
+        self.create_assemble_dialog()
+
     def _bye(self, widget):
         msg = ("Do you really want to quit?")
         dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
@@ -223,6 +237,13 @@ class TopButtons(gtk.HBox):
             hit = ("HIT [0x%08x]: %s\n" % (element.keys()[0], element.values()[0].translate(FILTER)))
             self.search_dialog.output_buffer.insert(enditer, hit)
 
+    def create_assemble_dialog(self):
+
+        import assemble_dialog
+        self.assemble_dialog = assemble_dialog.AssembleDialog(self.uicore)
+
+        return False
+
     def create_search_dialog(self):
 
         import search_dialog
@@ -233,9 +254,9 @@ class TopButtons(gtk.HBox):
     def create_about_dialog(self, widget):
         about = gtk.AboutDialog()
         about.set_program_name("Bokken")
-        about.set_version("1.0")
+        about.set_version("1.5-dev")
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
-        about.set_comments("A GUI for pyew and (soon) radare2!")
+        about.set_comments("A GUI for pyew and (WIP) radare2!")
         about.set_website("http://bokken.inguma.eu")
         about.set_logo(gtk.gdk.pixbuf_new_from_file("ui/data/logo.png"))
         about.run()
