@@ -96,42 +96,40 @@ class TopButtons(gtk.HBox):
 
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
+        self.search_entry.set_icon_from_stock(1, gtk.STOCK_FIND)
+        self.search_entry.set_icon_tooltip_text(1, 'Search')
+        self.search_entry.connect("activate", self.search)
+        self.search_entry.connect("icon-press", self.search)
         self.search_entry_tb.add(self.search_entry)
         self.main_tb.insert(self.search_entry_tb, 7)
 
-        self.search_tb = gtk.ToolButton(gtk.STOCK_FIND)
-        self.search_tb.connect("clicked", self.search)
-        self.search_tb.set_tooltip_text('Search')
-        self.search_tb.set_sensitive(False)
-        self.main_tb.insert(self.search_tb, 8)
-
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 9)
+        self.main_tb.insert(self.sep, 8)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 10)
+        self.main_tb.insert(self.exit_tb, 9)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 11)
+        self.main_tb.insert(self.sep, 10)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 12)
+        self.main_tb.insert(self.about_tb, 11)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 13)
+        self.main_tb.insert(self.throbber_tb, 12)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -221,7 +219,7 @@ class TopButtons(gtk.HBox):
 
     # Button callback methods
     #
-    def search(self, widget):
+    def search(self, widget, icon_pos=None, event=None):
         data = self.search_entry.get_text()
         model = self.search_combo.get_model()
         active = self.search_combo.get_active()

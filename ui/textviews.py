@@ -200,7 +200,7 @@ class TextViews(gtk.HBox):
     def update_interactive(self):
         self.uicore.core.offset = 0
         #dump = self.uicore.core.hexdump(self.uicore.core.buf, self.uicore.core.hexcolumns)
-        dump = self.uicore.get_full_hexdump()
+        dump = self.uicore.get_hexdump()
         self.interactive_buffer.set_text(dump)
 
     def create_completion(self):

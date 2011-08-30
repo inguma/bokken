@@ -227,10 +227,13 @@ class TreeViews(gtk.TreeView):
             link_name = link_name.split("\t")
             # Elf/PE (function)
             if len( link_name ) == 1:
-                link_name = 'FUNCTION ' + link_name[0]
+                if self.uicore.backend == 'pyew':
+                    link_name = 'FUNCTION ' + link_name[0]
+                elif self.uicore.backend == 'radare':
+                    link_name = 'function: ' + link_name[0]
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
-                link_name = link_name[1]
+                link_name = link_name[0]
             # URL
             else:
                 link_name = link_name[0]

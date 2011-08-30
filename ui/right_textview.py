@@ -128,6 +128,10 @@ class RightTextView(gtk.VBox, Searchable):
                 self.search_string = 'function: ' + search_string
             elif 'sub_' in search_string:
                 self.search_string = '0x' + search_string[4:]
+            elif '.' in search_string:
+                if '[' in search_string:
+                    search_string = search_string.strip('[').strip(']')
+                self.search_string = search_string + ':'
             else:
                 pass
 
@@ -148,7 +152,7 @@ class RightTextView(gtk.VBox, Searchable):
                     if self.match_start != None and self.match_end != None:
                         self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
                     for iter in res:
-                        if iter[0].get_line_offset() < 3:
+                        if iter[0].get_line_offset() < 16:
                             self.match_start, self.match_end = iter
 
                         if self.match_start:

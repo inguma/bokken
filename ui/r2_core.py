@@ -58,6 +58,8 @@ class Core():
         self.assembler = self.core.assembler
         self.core.format = ''
 
+        self.backend = 'radare'
+
     def clean_fullvars(self):
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -153,7 +155,7 @@ class Core():
             self.core.cmd0('b ' + str(self.size))
             hexdump = self.core.cmd_str('px')
             self.core.cmd0('s ' + str(self.baddr))
-            #self.core.cmd0('b 1024')
+            self.core.cmd0('b 512')
             self.core.cmd0('e io.va=1')
             self.fullhex = hexdump
         return self.fullhex
@@ -172,6 +174,7 @@ class Core():
             self.core.cmd0('b ' + str(self.textsize))
             print "\t* Let's get the dasm...",
             dasm = self.core.cmd_str('pd')
+            self.core.cmd0('b 512')
             print " OK!"
             self.text_dasm = dasm
         return self.text_dasm
@@ -182,6 +185,7 @@ class Core():
             self.core.cmd0('s ' + str(self.baddr))
             self.core.cmd0('b ' + str(self.size))
             dasm = self.core.cmd_str('pi')
+            self.core.cmd0('b 512')
             self.fulldasm = dasm
         return self.fulldasm
 
@@ -195,6 +199,7 @@ class Core():
             #self.core.cmd0('b 1024')
             self.core.cmd0('e io.va=1')
             self.core.cmd0('s section..text')
+            self.core.cmd0('b 512')
         return self.fullstr
 
     def get_sections(self):
@@ -266,8 +271,30 @@ class Core():
         return self.fileinfo
 
     def seek(self, pos):
-        self.code.cmd0('s ' + pos)
+        print pos
+        self.core.cmd0('s ' + str(pos))
         return True
+
+    def set_bsize(self, size):
+        self.core.cmd0('b ' + str(size))
+        return True
+
+    def execute_command(self, command):
+        res = self.core.cmd_str(command)
+        return res
+
+    def move(self, direction, output):
+        if direction == 'f':
+            direction = '..'
+        elif direction == 'b':
+            direction = '.'
+
+        self.core.cmd0(direction)
+
+        if output == 'hexadecimal':
+            return self.get_hexdump()
+        elif output == 'disassembly':
+            return self.get_dasm()
 
     def search_http_src(self):
         srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)

@@ -58,11 +58,15 @@ class Core():
         else:
             self.core.debug = False
 
+        self.backend = 'pyew'
+
         self.core.offset = 0
         self.core.previousoffset = []
         #self.core.deepcodeanalysis = True
 
         self.core.case = 'low'
+        self.core.physical = False
+        self.core.virtual = True
 
     def clean_fullvars(self):
         self.fulldasm = ''

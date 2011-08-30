@@ -18,8 +18,6 @@
 #       MA 02110-1301, USA.
 
 import os, sys, threading
-import pango
-import gtksourceview2
 
 # Add plugins directory to the path
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep

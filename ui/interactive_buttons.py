@@ -63,11 +63,10 @@ class InteractiveButtons(gtk.HBox):
         self.seek_entry.set_activates_default(True)
         self.seek_entry.connect("activate", self.seek)
         self.seek_entry.set_icon_from_stock(1, gtk.STOCK_GO_FORWARD)
+        self.seek_entry.connect("icon-press", self.seek)
+        self.seek_entry.set_icon_tooltip_text(1, 'Go')
 
         self.toolbox.pack_start(self.seek_entry, False, False)
-#        b = SemiStockButton("", gtk.STOCK_GO_FORWARD, 'Go')
-#        b.connect("clicked", self.seek)
-#        self.toolbox.pack_start(b, False, False)
 
         # Separator
         self.sep = gtk.HSeparator()
@@ -83,11 +82,10 @@ class InteractiveButtons(gtk.HBox):
         # Default action on pressing Enter
         self.buffer_entry.set_activates_default(True)
         self.buffer_entry.connect("activate", self.set_buffer_size)
+        self.buffer_entry.connect("icon-press", self.set_buffer_size)
+        self.buffer_entry.set_icon_tooltip_text(1, 'Apply')
 
         self.toolbox.pack_start(self.buffer_entry, False, False)
-#        b = SemiStockButton("", gtk.STOCK_APPLY, 'Apply')
-#        b.connect("clicked", self.set_buffer_size)
-#        self.toolbox.pack_start(b, False, False)
 
         # Separator
         self.sep = gtk.HSeparator()
@@ -110,6 +108,9 @@ class InteractiveButtons(gtk.HBox):
 
             self.exec_entry = gtk.Entry(100)
             self.exec_entry.set_icon_from_stock(1, gtk.STOCK_EXECUTE)
+            self.exec_entry.connect("activate", self.r2_exec)
+            self.exec_entry.connect("icon-press", self.r2_exec)
+            self.exec_entry.set_icon_tooltip_text(1, 'Execute')
             self.toolbox.pack_start(self.exec_entry, False, False)
 
         self.uicore.core.bsize = 512
@@ -134,40 +135,54 @@ class InteractiveButtons(gtk.HBox):
         if data:
             self.buffer.set_text(data)
 
-    def set_buffer_size(self, widget):
+    def set_buffer_size(self, widget, icon_pos=None, event=None):
         size = int(self.buffer_entry.get_text())
-        self.uicore.core.bsize = size
+        if self.uicore.backend == 'pyew':
+            self.uicore.core.bsize = size
+        elif self.uicore.backend == 'radare':
+            self.uicore.set_bsize(size)
         self.refresh()
 
-    def seek(self, widget, action=''):
+    def r2_exec(self, widget, icon_pos=None, event=None):
+        command = self.exec_entry.get_text()
+        res = self.uicore.execute_command(command)
+        self.buffer.set_text(res)
+        self.exec_entry.set_text('')
+        self.exec_entry.grab_focus()
+
+    def seek(self, widget, icon_pos=None, event=None, action=''):
         if action == '':
             pos = self.seek_entry.get_text()
         else:
             pos = action
-
-        if pos.lower() in ["ep", "entrypoint"]:
-            if self.uicore.core.ep:
-                pos = self.uicore.core.ep
-
-        elif pos.isdigit() and int(pos) < len(self.uicore.core.calls)+1 and int(pos) > 0:
-            pos = self.uicore.core.calls[int(pos)-1]
-
-        elif pos in self.uicore.core.names.values():
-            for x in self.uicore.core.names:
-                if self.uicore.core.names[x] == pos:
-                    pos = x
-                    break
-        elif pos.lower().startswith("0x"):
-            pos = int(pos, 16)
-#        elif pos == 'b':
-#            data = self.uicore.move('b', self.output_type)
-#            print data
-#            if data:
-#                self.buffer.set_text(data)
-#            self.refresh()
-        else:
-            pos = int(pos)
-        self.uicore.seek(pos)
+    
+        if self.uicore.backend == 'pyew':
+            if pos.lower() in ["ep", "entrypoint"]:
+                if self.uicore.core.ep:
+                    pos = self.uicore.core.ep
+    
+            elif pos.isdigit() and int(pos) < len(self.uicore.core.calls)+1 and int(pos) > 0:
+                pos = self.uicore.core.calls[int(pos)-1]
+    
+            elif pos in self.uicore.core.names.values():
+                for x in self.uicore.core.names:
+                    if self.uicore.core.names[x] == pos:
+                        pos = x
+                        break
+            elif pos.lower().startswith("0x"):
+                pos = int(pos, 16)
+#            elif pos == 'b':
+#                data = self.uicore.move('b', self.output_type)
+#                print data
+#                if data:
+#                    self.buffer.set_text(data)
+#                self.refresh()
+            else:
+                pos = int(pos)
+            self.uicore.seek(pos)
+    
+        elif self.uicore.backend == 'radare':
+            self.uicore.seek(pos)
 
         if widget.get_name() == 'GtkEntry':
             self.seek_entry.set_text('')
