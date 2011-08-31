@@ -171,6 +171,7 @@ class Core():
                 for section in self.pe.sections:
                     # Let's store text section information
                     if 'text' in section.Name:
+                        #print hex(self.core.pe.OPTIONAL_HEADER.ImageBase + section.VirtualAddress)
                         self.text_rsize = section.SizeOfRawData
                         self.text_address = section.VirtualAddress
                         break

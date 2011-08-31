@@ -21,7 +21,7 @@
 
 -->
 <!--
-	Mostly copied and pasted from c.lang
+    Mostly copied and pasted from c.lang
 -->
 <language id="asm" _name="ASM" version="2.0" _section="Others">
     <metadata>
@@ -44,6 +44,7 @@
         <style id="octal"             _name="Octal number"        map-to="def:base-n-integer"/>
         <style id="hexadecimal"       _name="Hexadecimal number"  map-to="def:base-n-integer"/>
         <style id="binary"            _name="Binary number"       map-to="def:base-n-integer"/>
+        <style id="ir-direction"      _name="Instruction Register(IR) Direction" map-to="def:underlined"/>
     </styles>
     
     <default-regex-options case-sensitive="false"/>
@@ -92,6 +93,30 @@
                         ([0-9]+[Ee][+-]?[0-9]*))
                         (?![\w\.])
                     </match>
+                </context>
+
+                <!-- 
+                Contexto para que en instrucciones de branch/jump subraye la dirección a la que ir
+                La expresión regular, está formada por una primera parte, que "recupera" el opcode(instruccion),
+                una segunda que captura si tiene el tipo
+                y una tercera que recupera la siguiente palabra que se toma como la direccion.
+                -->
+                <context id="ir-direction">
+                   <match extended="true">
+                    (?&lt;![\w\.])
+                                (?P&lt;opcode&gt;((J|CMOV|SET)N?(AE|BE|PE|PO|LE|GE|O|B|C|Z|E|A|S|P|L|G))|(FCMOVN?(BE|B|E|U))|CALL) ## Regex que captura el opcode
+                    (\s+(?P&lt;tipo&gt;(DWORD|BYTE)\s+)?) ## Regex que captura los espacios y el tipo dword y byte en este caso
+                    (?P&lt;direccion&gt;\S+) ## Regex que captura la siguiente palabra para subrayarla.
+                    (?![\w\.])
+                   </match>
+                   <include>
+                    <!--context sub-pattern="0" style-ref="comment"/-->
+                    <context sub-pattern="opcode" style-ref="opcode"/>
+                    <context sub-pattern="tipo" style-ref="type"/>
+                    <context sub-pattern="direccion" style-ref="ir-direction"/>
+                    <context sub-pattern="direccion" style-ref="comment"/>
+                    <context sub-pattern="hex" style-ref="hexadecimal"/>
+                   </include>
                 </context>
 
                 <context id="hexadecimal" style-ref="hexadecimal">
@@ -355,8 +380,11 @@
                     </match>
                 </context>
 
+		
             </include>
         </context>
+
+	
         
     </definitions>
 </language>

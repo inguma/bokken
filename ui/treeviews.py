@@ -228,12 +228,17 @@ class TreeViews(gtk.TreeView):
             # Elf/PE (function)
             if len( link_name ) == 1:
                 if self.uicore.backend == 'pyew':
-                    link_name = 'FUNCTION ' + link_name[0]
+                    if '0x' in link_name[0]:
+                        rva = int(link_name[0], 16) - self.uicore.core.pe.OPTIONAL_HEADER.ImageBase
+                        link_name = hex( self.uicore.core.pe.get_offset_from_rva(rva) )
+                    else:
+                        link_name = 'FUNCTION ' + link_name[0]
                 elif self.uicore.backend == 'radare':
                     link_name = 'function: ' + link_name[0]
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
                 link_name = link_name[0]
+
             # URL
             else:
                 link_name = link_name[0]
