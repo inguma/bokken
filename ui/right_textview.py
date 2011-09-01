@@ -27,12 +27,14 @@ from ui.searchable import Searchable
 class RightTextView(gtk.VBox, Searchable):
     '''Right TextView elements'''
 
-    def __init__(self):
+    def __init__(self, core):
         super(RightTextView,self).__init__(False, 1)
 
         #################################################################
         # Right Textview
         #################################################################
+
+        self.uicore = core
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
@@ -121,7 +123,10 @@ class RightTextView(gtk.VBox, Searchable):
         if search_string:
             # If is an address, search lines begining by this address
             if '0x' in search_string:
-                self.search_string = search_string
+                if len( search_string.split('x')[-1] ) == 7:
+                    self.search_string = '0x0' + search_string.split('x')[-1]
+                else:
+                    self.search_string = search_string
             elif 'loc.' in search_string:
                 self.search_string = 'loc: ' + search_string
             elif 'fcn.' in search_string:
@@ -131,7 +136,10 @@ class RightTextView(gtk.VBox, Searchable):
             elif '.' in search_string:
                 if '[' in search_string:
                     search_string = search_string.strip('[').strip(']')
-                self.search_string = search_string + ':'
+                if 'ELF' in self.uicore.core.format:
+                    self.search_string = '; ' + search_string
+                else:
+                    self.search_string = search_string + ':'
             else:
                 pass
 

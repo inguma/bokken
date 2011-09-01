@@ -58,7 +58,7 @@ def pyew_dependency_check():
         msg = 'You need pyew for making this software work. Download it from its web:\n'
         msg += '    - code.google.com/p/pyew/\n'
         print msg
-        sys.exit( 1 )
+        #sys.exit( 1 )
 
 def radare_dependency_check():
     '''We need to verify the presence of radare2'''

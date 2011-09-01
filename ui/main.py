@@ -38,8 +38,6 @@ print "  GTK version:", ".".join(str(x) for x in gtk.gtk_version)
 print "  PyGTK version:", ".".join(str(x) for x in gtk.pygtk_version)
 print
 
-import ui.core as core
-import ui.r2_core as r2_core
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 
@@ -66,8 +64,10 @@ class MainApp:
         self.empty_gui = False
 
         if self.backend == 'pyew':
+            import ui.core as core
             self.uicore = core.Core()
         elif self.backend == 'radare':
+            import ui.r2_core as r2_core
             self.uicore = r2_core.Core()
         self.uicore.backend = self.backend
 
