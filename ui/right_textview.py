@@ -123,10 +123,9 @@ class RightTextView(gtk.VBox, Searchable):
         if search_string:
             # If is an address, search lines begining by this address
             if '0x' in search_string:
-                if len( search_string.split('x')[-1] ) == 7:
-                    self.search_string = '0x0' + search_string.split('x')[-1]
-                else:
-                    self.search_string = search_string
+                integer = int(search_string, 16)
+                hex_addr = "0x%08x" % integer
+                self.search_string = hex_addr
             elif 'loc.' in search_string:
                 self.search_string = 'loc: ' + search_string
             elif 'fcn.' in search_string:

@@ -86,6 +86,7 @@ class Core():
 
     def load_file(self, file):
         print "[*] Loading file"
+        self.file = file
         # Init core
         # Returns True/False (check)
         self.core.file_open(file, 0, 0)
@@ -265,8 +266,10 @@ class Core():
         # core.type            : 32
         # core.processor       : intel
         #info = self.bin.get_info()
-        self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine}
-    #   print self.fileinfo
+        if 'ELF' in self.core.format or 'PE' in self.core.format:
+           self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine}
+        else:
+            self.fileinfo = {'name':self.file}
 
         return self.fileinfo
 
