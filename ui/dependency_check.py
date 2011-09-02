@@ -27,6 +27,7 @@ ENDC = '\033[0m'
 def check_all():
     pyew_dependency_check()
     radare_dependency_check()
+    cores()
     gtkui_dependency_check()
     psyco_dependency_check()
     tidy_dependency_check()
@@ -50,14 +51,17 @@ def pyew_dependency_check():
     print 'Checking:'
     print '\tPyew availability...',
 
+    global HAS_PYEW
     try:
         import pyew
         print OKGREEN + "\tOK" + ENDC
+        HAS_PYEW = True
     except:
         print FAIL + "\tD'oh!" + ENDC
         msg = 'You need pyew for making this software work. Download it from its web:\n'
         msg += '    - code.google.com/p/pyew/\n'
         print msg
+        HAS_PYEW = False
         #sys.exit( 1 )
 
 def radare_dependency_check():
@@ -65,14 +69,25 @@ def radare_dependency_check():
     
     print '\tRadare availability...',
 
+    global HAS_RADARE
     try:
         import r2
         print OKGREEN + "\tOK" + ENDC
+        HAS_RADARE = True
     except:
         print FAIL + "\tD'oh!" + ENDC
         msg = 'You need radare2 bindings to use r2 backend. Download it from its web:\n'
         msg += '    - www.radare.org\n'
         print msg
+        HAS_RADARE = False
+
+def cores():
+    if not HAS_PYEW and not HAS_RADARE:
+        print "You need at least one core, either pyew or radare:"
+        print '    - code.google.com/p/pyew/'
+        print '    - www.radare.org'
+        sys.exit( 1 )
+
 def psyco_dependency_check():
     '''Try to use psyco'''
 
