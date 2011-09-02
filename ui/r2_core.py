@@ -288,16 +288,16 @@ class Core():
 
     def move(self, direction, output):
         if direction == 'f':
-            direction = '..'
+            direction = ''
         elif direction == 'b':
             direction = '.'
 
-        self.core.cmd0(direction)
-
         if output == 'hexadecimal':
-            return self.get_hexdump()
+            void = self.core._cmd('px', True)
         elif output == 'disassembly':
-            return self.get_dasm()
+            void = self.core._cmd('pd', True)
+
+        return self.core.cmd_str(direction)
 
     def search_http_src(self):
         srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)

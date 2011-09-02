@@ -132,6 +132,7 @@ class InteractiveButtons(gtk.HBox):
 
     def move(self, widget, direction):
         data = self.uicore.move(direction, self.output_type)
+        print data
         if data:
             self.buffer.set_text(data)
 

@@ -234,7 +234,10 @@ class TreeViews(gtk.TreeView):
                     else:
                         link_name = 'FUNCTION ' + link_name[0]
                 elif self.uicore.backend == 'radare':
-                    link_name = 'function: ' + link_name[0]
+                    if '0x' in link_name[0]:
+                        link_name = link_name[0]
+                    else:
+                        link_name = 'function: ' + link_name[0]
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
                 link_name = link_name[0]
