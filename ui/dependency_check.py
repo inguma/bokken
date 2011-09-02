@@ -25,12 +25,22 @@ FAIL = '\033[91m'
 ENDC = '\033[0m'
 
 def check_all():
+    python_version()
     pyew_dependency_check()
     radare_dependency_check()
     cores()
     gtkui_dependency_check()
     psyco_dependency_check()
     tidy_dependency_check()
+
+def python_version():
+    print '\tPython version...',
+    if sys.version_info.major == (3):
+        print FAIL + "\tD'oh!" + ENDC
+        sys.stderr.write("Python3 not supported, install python 2.7 to run bokken")
+        exit(1)
+    else:
+        print OKGREEN + "\tOK" + ENDC
 
 def tidy_dependency_check():
     '''Try to use tidy'''

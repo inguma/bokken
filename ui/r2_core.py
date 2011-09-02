@@ -92,10 +92,10 @@ class Core():
         self.core.file_open(file, 0, 0)
         self.core.bin_load(None)
         #self.core.config.set("asm.bytes", "false")
-        self.core.cmd0("aa")
         self.core.cmd0("e scr.interactive=false")
         self.core.cmd0('e asm.lines=false')
         self.core.cmd0('e scr.color=0')
+        self.core.cmd0("aa")
         #self.core.config.set_i("asm.decode", 1)
 
         self.bin = self.core.bin
