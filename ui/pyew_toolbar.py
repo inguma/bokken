@@ -448,17 +448,13 @@ class TopButtons(gtk.HBox):
         return False
 
     def create_about_dialog(self, widget):
-        about = gtk.AboutDialog()
-        about.set_program_name("Bokken")
-        about.set_version("1.5-dev")
-        about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
-        about.set_comments("A GUI for pyew and (WIP) radare2!")
-        about.set_website("http://bokken.inguma.eu")
-        about.set_authors(["Hugo Teso <hteso@inguma.eu>"])
-        about.set_artists(["Marcos Gomez <renx67@gmail.com>"])
-        about.set_logo(gtk.gdk.pixbuf_new_from_file("ui/data/logo.png"))
-        about.run()
-        about.destroy()
+        import ui.about as about
+
+        about_dlg = about.AboutDialog()
+        dialog = about_dlg.create_dialog()
+
+        dialog.run()
+        dialog.destroy()
 
     # Executes pyew's plugins
     def execute(self, widget, plugin):
