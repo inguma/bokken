@@ -103,9 +103,10 @@ class Core():
         self.baddr = self.bin.get_baddr()
         self.size = hex(self.core.file.size)
         #self.core.format = self.info.rclass.upper()
-        miau = self.core.cmd_str('e file.type')
-        if miau:
-            self.core.format = miau[:-1].upper()
+        self.core.cmd0('e search.flags=false')
+        ftype = self.core.cmd_str('e file.type')
+        if ftype:
+            self.core.format = ftype[:-1].upper()
         else:
             self.core.format = 'raw'
 
@@ -298,6 +299,12 @@ class Core():
             void = self.core._cmd('pd', True)
 
         return self.core.cmd_str(direction)
+
+    def search(self, text, type):
+        self.core.cmd0('e io.va=false')
+        hits = self.core.cmd_str('/' + type + text)
+        self.core.cmd0('e io.va=true')
+        return hits
 
     def search_http_src(self):
         srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)

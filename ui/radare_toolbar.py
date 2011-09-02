@@ -42,7 +42,7 @@ class TopButtons(gtk.HBox):
         self.toolbox = self
 
         self.img_path = 'ui' + os.sep + 'data' + os.sep
-        self.options_dict = {'Hexadecimal':'x', 'String':'s', 'String no case':'i', 'Regexp':'r', 'Unicode':'u', 'Unicode no case':'U'}
+        self.options_dict = {'Hexadecimal':'x ', 'String':' ', 'String no case':'i ', 'Regexp':'e '}
 
         self.main_tb = gtk.Toolbar()
         self.main_tb.set_style(gtk.TOOLBAR_ICONS)
@@ -83,7 +83,7 @@ class TopButtons(gtk.HBox):
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo = gtk.combo_box_new_text()
 
-        options = ['Hexadecimal', 'String', 'String no case', 'Regexp', 'Unicode', 'Unicode no case']
+        options = ['Hexadecimal', 'String', 'String no case', 'Regexp']
         for option in options:
             self.search_combo.append_text(option)
         self.search_combo_tb.add(self.search_combo)
@@ -225,15 +225,13 @@ class TopButtons(gtk.HBox):
         active = self.search_combo.get_active()
         option = model[active][0]
 
-        results = self.uicore.dosearch(data, self.options_dict[option])
+        results = self.uicore.search(data, self.options_dict[option])
 
         self.create_search_dialog()
         enditer = self.search_dialog.output_buffer.get_end_iter()
 
-        FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
         for element in results:
-            hit = ("HIT [0x%08x]: %s\n" % (element.keys()[0], element.values()[0].translate(FILTER)))
-            self.search_dialog.output_buffer.insert(enditer, hit)
+            self.search_dialog.output_buffer.insert(enditer, element)
 
     def create_assemble_dialog(self):
 

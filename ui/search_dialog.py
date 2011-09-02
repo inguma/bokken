@@ -23,7 +23,7 @@ class SearchDialog(gtk.Dialog):
     '''Window to popup search output'''
 
     def __init__(self):
-        super(SearchDialog,self).__init__('Search results', None, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+        super(SearchDialog,self).__init__('Search results', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
 
         # the cancel button
         self.butt_cancel = self.action_area.get_children()[0]
