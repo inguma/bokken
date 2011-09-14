@@ -169,6 +169,7 @@ class TopButtons(gtk.HBox):
         options = ['Hexadecimal', 'String', 'String no case', 'Regexp', 'Unicode', 'Unicode no case']
         for option in options:
             self.search_combo.append_text(option)
+        self.search_combo.set_active(1)
         self.search_combo_tb.add(self.search_combo)
         self.main_tb.insert(self.search_combo_tb, 17)
 
