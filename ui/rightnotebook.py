@@ -58,6 +58,12 @@ class RightNotebook(gtk.Notebook):
         self.set_tab_label_packing(self.interactive_scrolled, False, False, gtk.PACK_START)
         self.set_tab_label(self.interactive_scrolled, tab)
 
+        #################################################
+        # Move buttons
+        self.move_buttons = self.create_seek_buttons()
+        self.set_action_widget(self.move_buttons, gtk.PACK_END)
+        self.move_buttons.show_all()
+
     def hide_tabs(self):
         self.set_show_tabs(False)
         self.set_current_page(0)
@@ -92,3 +98,24 @@ class RightNotebook(gtk.Notebook):
 
         child.destroy()
 
+    def create_seek_buttons(self):
+        self.vbox = gtk.HBox(False, 1)
+
+        self.back = gtk.Button()
+        self.back_img = gtk.Image()
+        self.back_img.set_from_stock(gtk.STOCK_GO_BACK, gtk.ICON_SIZE_MENU)
+        self.back.set_image(self.back_img)
+
+        self.forward = gtk.Button()
+        self.forward_img = gtk.Image()
+        self.forward_img.set_from_stock(gtk.STOCK_GO_FORWARD, gtk.ICON_SIZE_MENU)
+        self.forward.set_image(self.forward_img)
+
+        self.seek = gtk.Entry(10)
+        self.seek.set_icon_from_stock(1, gtk.STOCK_JUMP_TO)
+
+        self.vbox.pack_start(self.back, False, False)
+        self.vbox.pack_start(self.forward, False, False)
+        self.vbox.pack_start(self.seek, False, False)
+
+        return self.vbox
