@@ -61,7 +61,7 @@ class RightNotebook(gtk.Notebook):
         #################################################
         # Move buttons
         self.move_buttons = self.create_seek_buttons()
-        self.set_action_widget(self.move_buttons, gtk.PACK_END)
+        #self.set_action_widget(self.move_buttons, gtk.PACK_END)
         self.move_buttons.show_all()
 
     def hide_tabs(self):
