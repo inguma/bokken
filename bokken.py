@@ -32,18 +32,19 @@ import ui.main as main
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        print "Specify the core to be used, either -r for radare or -p for pyew"
+        main.main('', '')
     elif len(sys.argv) == 2:
         if '-r' in sys.argv:
             main.main('', 'radare')
         elif '-p' in sys.argv:
             main.main('', 'pyew')
         else:
-            print "Specify the core to be used, either -r for radare or -p for pyew"
-    else:
+            main.main(sys.argv[1], '')
+    elif len(sys.argv) == 3:
         if '-r' in sys.argv:
             main.main(sys.argv[2], 'radare')
         elif '-p' in sys.argv:
             main.main(sys.argv[2], 'pyew')
         else:
-            print "Specify the core to be used, either -r for radare or -p for pyew"
+            print "Incorrect arguments"
+            main.main('', '')

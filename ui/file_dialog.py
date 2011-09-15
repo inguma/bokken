@@ -32,13 +32,14 @@ class FileDialog(gtk.Dialog):
         self.butt_ok = self.action_area.get_children()[1]
         self.butt_ok.connect("clicked", self.get_file)
         self.butt_cancel = self.action_area.get_children()[0]
-        self.butt_cancel.connect("clicked", lambda x: self.destroy())
+        self.butt_cancel.connect("clicked", self.cancel)
 
         # Window position
         self.set_position(gtk.WIN_POS_CENTER)
 
         # Main Vertical Box
         self.main_vbox = gtk.VBox(False, 2)
+        self.main_vbox.set_border_width(7)
 
         # Logo
         self.logo = gtk.Image()
@@ -59,12 +60,11 @@ class FileDialog(gtk.Dialog):
         self.core_combo = gtk.combo_box_new_text()
         self.core_combo.append_text('Pyew')
         self.core_combo.append_text('Radare')
-        self.core_combo.connect("changed", self._on_change)
         if not self.core:
             self.core_combo.set_active(0)
-        elif self.core == 'p':
+        elif self.core == 'pyew':
             self.core_combo.set_active(0)
-        elif self.core == 'r':
+        elif self.core == 'radare':
             self.core_combo.set_active(1)
 
         # Core combo Horizontal Box
@@ -77,11 +77,21 @@ class FileDialog(gtk.Dialog):
         # File selection Horizontal Box
         self.hbox = gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry = gtk.Entry(100)
+        self.model = gtk.ListStore(str)
+        self.input_entry = gtk.ComboBoxEntry(self.model, column=0)
+        #self.input_entry = gtk.Entry(100)
         if self.file:
-            self.input_entry.set_text(self.file)
+            self.input_entry.get_child().set_text(self.file)
+        # Recent file manager
+        self.manager = gtk.recent_manager_get_default()
+        self.manager.set_limit(10)
+        for element in self.manager.get_items():
+            self.model.append( [element.get_display_name()])
         # Select file button
-        self.select_button = gtk.Button(label=None, stock=gtk.STOCK_OPEN)
+        icon = gtk.Image()
+        icon.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
+        self.select_button = gtk.Button()
+        self.select_button.set_image(icon)
         self.select_button.connect("clicked", self.select_file)
         # Pack elements into hbox
         self.hbox.pack_start(self.input_entry, True, True, 2)
@@ -102,6 +112,8 @@ class FileDialog(gtk.Dialog):
         self.case_dasm = gtk.CheckButton(label='Lower case disassembly')
         self.pyew_box.pack_start(self.deep_anal, False, False, 2)
         self.pyew_box.pack_start(self.case_dasm, False, False, 2)
+        # It's here to avoid errors during start up
+        self.core_combo.connect("changed", self._on_change)
 
         # Radare options
         self.anal_bin = gtk.CheckButton(label='Analyze binary')
@@ -119,11 +131,29 @@ class FileDialog(gtk.Dialog):
 
         self.vbox.pack_start(self.main_vbox)
         self.show_all()
-        self.radare_box.set_visible(False)
+        if self.core == 'pyew':
+            self.radare_box.set_visible(False)
+        elif self.core == 'radare':
+            self.pyew_box.set_visible(False)
+        else:
+            self.radare_box.set_visible(False)
+
+    def cancel(self, widget):
+        import sys
+        sys.exit(1)
+        self.destroy()
 
     def get_file(self, widget):
-        self.file = self.input_entry.get_text()
+        self.file = self.input_entry.get_child().get_text()
+        self.get_backend()
         self.destroy()
+
+    def get_backend(self):
+        active = self.core_combo.get_active()
+        if active == 0:
+            self.backend= 'pyew'
+        elif active == 1:
+            self.backend= 'radare'
 
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -131,8 +161,8 @@ class FileDialog(gtk.Dialog):
         self.response = chooser.run()
         if self.response == gtk.RESPONSE_OK:
             self.file_name = chooser.get_filename()
+            self.input_entry.get_child().set_text(self.file_name)
         chooser.destroy()
-        self.input_entry.set_text(self.file_name)
 
     def _on_change(self, widget):
         active = widget.get_active()

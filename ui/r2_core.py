@@ -114,7 +114,7 @@ class Core():
         self.is_url(file)
 
     def is_url(self, file):
-        print "[*] Checking if is URL"
+        #print "[*] Checking if is URL"
         self.filename = file
         if self.filename.lower().startswith("http://") or \
            self.filename.lower().startswith("https://") or \

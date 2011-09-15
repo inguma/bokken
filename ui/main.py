@@ -64,6 +64,11 @@ class MainApp:
         self.backend = backend
         self.empty_gui = False
 
+        dialog = file_dialog.FileDialog(self.backend, self.target)
+        dialog.run()
+        self.target = dialog.file
+        self.backend = dialog.backend
+
         if self.backend == 'pyew':
             import ui.core as core
             self.uicore = core.Core()
