@@ -40,6 +40,7 @@ print
 
 import ui.textviews as textviews
 import ui.statusbar as statusbar
+import ui.file_dialog as file_dialog
 
 # Threading initializer
 if sys.platform == "win32":
