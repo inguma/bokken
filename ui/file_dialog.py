@@ -17,6 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
 import gtk
 
 class FileDialog(gtk.Dialog):
@@ -84,8 +85,8 @@ class FileDialog(gtk.Dialog):
             self.input_entry.get_child().set_text(self.file)
         # Recent file manager
         self.manager = gtk.recent_manager_get_default()
-        self.manager.set_limit(10)
-        for element in self.manager.get_items():
+        items = self.manager.get_items()
+        for element in items[:10]:
             self.model.append( [element.get_display_name()])
         # Select file button
         icon = gtk.Image()
@@ -145,6 +146,7 @@ class FileDialog(gtk.Dialog):
 
     def get_file(self, widget):
         self.file = self.input_entry.get_child().get_text()
+        self.manager.add_item('file://' + self.file)
         self.get_backend()
         self.destroy()
 
