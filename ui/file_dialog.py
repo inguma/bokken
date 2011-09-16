@@ -23,8 +23,11 @@ import gtk
 class FileDialog(gtk.Dialog):
     '''Window popup to select file'''
 
-    def __init__(self, core='', file=''):
+    def __init__(self, has_pyew, has_radare, core='', file=''):
         super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+
+        self.has_pyew = has_pyew
+        self.has_radare = has_radare
 
         self.core = core
         self.file = file
@@ -59,9 +62,15 @@ class FileDialog(gtk.Dialog):
         self.core_label = gtk.Label('Select backend to use: ')
         self.core_label.set_alignment(0, 0.5)
         self.core_combo = gtk.combo_box_new_text()
-        self.core_combo.append_text('Pyew')
-        self.core_combo.append_text('Radare')
+
+        if self.has_pyew:
+            self.core_combo.append_text('Pyew')
+        if self.has_radare:
+            self.core_combo.append_text('Radare')
+
         if not self.core:
+            self.core_combo.set_active(0)
+        elif self.has_radare != self.has_pyew:
             self.core_combo.set_active(0)
         elif self.core == 'pyew':
             self.core_combo.set_active(0)

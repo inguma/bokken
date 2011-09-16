@@ -73,7 +73,8 @@ class MainApp:
             md.destroy()
             sys.exit(1)
 
-        dialog = file_dialog.FileDialog(self.backend, self.target)
+        # Launch file selection dialog
+        dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target)
         dialog.run()
         self.target = dialog.file
         self.backend = dialog.backend
