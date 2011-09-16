@@ -64,6 +64,15 @@ class MainApp:
         self.backend = backend
         self.empty_gui = False
 
+        # Check if we have, at least, one core; else: exit
+        if not dependency_check.HAS_PYEW and not dependency_check.HAS_RADARE:
+            md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
+            md.set_markup("<big><b>No backend engines found!</b></big>")
+            md.format_secondary_markup("Install either pyew or radare to run bokken:\n\n<b>Pyew:</b>\t\t<a href=\"http://code.google.com/p/pyew/\">http://code.google.com/p/pyew/</a>\n<b>Radare:</b>\t<a href=\"http://radare.org/\">http://radare.org</a>")
+            md.run()
+            md.destroy()
+            sys.exit(1)
+
         dialog = file_dialog.FileDialog(self.backend, self.target)
         dialog.run()
         self.target = dialog.file

@@ -47,7 +47,7 @@ class FileDialog(gtk.Dialog):
         self.logo.set_from_file('ui/data/logo.png')
         # logo label
         self.logo_text = gtk.Label()
-        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 0.5</b></span>')
+        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.5-dev</b></span>')
 
         # Logo label
         self.label = gtk.Label('Select a file or enter the path manually.\nValid inputs are: PE/Elf, PDF, plain text files and URLs')
@@ -146,7 +146,7 @@ class FileDialog(gtk.Dialog):
 
     def get_file(self, widget):
         self.file = self.input_entry.get_child().get_text()
-        self.manager.add_item('file://' + self.file)
+        self.manager.add_item('file://' + os.getcwd() + os.sep + self.file)
         self.get_backend()
         self.destroy()
 
