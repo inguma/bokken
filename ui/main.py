@@ -75,16 +75,19 @@ class MainApp:
 
         # Launch file selection dialog
         dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target)
-        dialog.run()
+        resp = dialog.run()
+        if resp == gtk.RESPONSE_DELETE_EVENT:
+            sys.exit(1)
+        # Get dialog selected file, backend and options
         self.target = dialog.file
         self.backend = dialog.backend
 
         if self.backend == 'pyew':
             import ui.core as core
-            self.uicore = core.Core()
+            self.uicore = core.Core(dialog.case, dialog.deep)
         elif self.backend == 'radare':
             import ui.r2_core as r2_core
-            self.uicore = r2_core.Core()
+            self.uicore = r2_core.Core(dialog.radare_lower, dialog.analyze_bin)
         self.uicore.backend = self.backend
 
         # Check if target name is an URL, pyew stores it as 'raw'

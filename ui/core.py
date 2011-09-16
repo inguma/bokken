@@ -28,7 +28,10 @@ from pyew_core import CPyew
 
 class Core():
 
-    def __init__(self):
+    def __init__(self, case, deep_anal):
+
+        self.low_case = case
+        self.deep_anal = deep_anal
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -62,9 +65,11 @@ class Core():
 
         self.core.offset = 0
         self.core.previousoffset = []
-        #self.core.deepcodeanalysis = True
+        if self.deep_anal:
+            self.core.deepcodeanalysis = True
 
-        self.core.case = 'low'
+        if self.low_case:
+           self.core.case = 'low'
         self.core.physical = False
         self.core.virtual = True
 

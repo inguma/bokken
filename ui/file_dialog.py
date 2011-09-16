@@ -117,6 +117,12 @@ class FileDialog(gtk.Dialog):
         self.options_hbox.pack_start(self.pyew_box, False, False, 0)
         self.options_hbox.pack_start(self.radare_box, False, False, 0)
 
+        # HSeparator
+        self.hseparator3 = gtk.HSeparator()
+        # Analysis options label
+        self.anal_label = gtk.Label()
+        self.anal_label.set_markup("<b>Analysis options:</b>")
+
         # Pyew options
         self.deep_anal = gtk.CheckButton(label='Deep analysis')
         self.case_dasm = gtk.CheckButton(label='Lower case disassembly')
@@ -126,8 +132,10 @@ class FileDialog(gtk.Dialog):
         self.core_combo.connect("changed", self._on_change)
 
         # Radare options
-        self.anal_bin = gtk.CheckButton(label='Analyze binary')
+        self.anal_bin = gtk.CheckButton(label='Analyze program')
+        self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
+        self.radare_box.pack_start(self.radare_dasm, False, False, 2)
 
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.logo, False, False, 0)
@@ -137,6 +145,8 @@ class FileDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.hseparator2, False, False, 2)
         self.main_vbox.pack_start(self.label, False, False, 2)
         self.main_vbox.pack_start(self.hbox, False, False, 2)
+        self.main_vbox.pack_start(self.hseparator3, False, False, 2)
+        self.main_vbox.pack_start(self.anal_label, False, False, 2)
         self.main_vbox.pack_start(self.options_hbox, False, False, 2)
 
         self.vbox.pack_start(self.main_vbox)
@@ -157,6 +167,7 @@ class FileDialog(gtk.Dialog):
         self.file = self.input_entry.get_child().get_text()
         self.manager.add_item('file://' + os.getcwd() + os.sep + self.file)
         self.get_backend()
+        self.get_options()
         self.destroy()
 
     def get_backend(self):
@@ -165,6 +176,15 @@ class FileDialog(gtk.Dialog):
             self.backend= 'pyew'
         elif active == 1:
             self.backend= 'radare'
+
+    def get_options(self):
+        active = self.core_combo.get_active()
+        if active == 0:
+            self.deep = self.deep_anal.get_active()
+            self.case = self.case_dasm.get_active()
+        if active == 1:
+            self.analyze_bin = self.anal_bin.get_active()
+            self.radare_lower = self.radare_dasm.get_active()
 
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,

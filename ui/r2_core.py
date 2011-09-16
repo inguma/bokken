@@ -27,7 +27,10 @@ from r2.r_bin import *
 
 class Core():
 
-    def __init__(self):
+    def __init__(self, lower_case, do_anal):
+
+        self.do_anal = do_anal
+        self.lower_case = lower_case
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -95,7 +98,10 @@ class Core():
         self.core.cmd0("e scr.interactive=false")
         self.core.cmd0('e asm.lines=false')
         self.core.cmd0('e scr.color=0')
-        self.core.cmd0("aa")
+        if not self.lower_case:
+            self.core.cmd0('e asm.ucase=true')
+        if self.do_anal:
+            self.core.cmd0("aa")
         #self.core.config.set_i("asm.decode", 1)
 
         self.bin = self.core.bin
