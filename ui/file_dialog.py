@@ -24,7 +24,8 @@ class FileDialog(gtk.Dialog):
     '''Window popup to select file'''
 
     def __init__(self, has_pyew, has_radare, core='', file=''):
-        super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+        super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+
 
         self.has_pyew = has_pyew
         self.has_radare = has_radare
@@ -33,9 +34,9 @@ class FileDialog(gtk.Dialog):
         self.file = file
 
         # the cancel button
-        self.butt_ok = self.action_area.get_children()[1]
+        self.butt_ok = self.action_area.get_children()[0]
         self.butt_ok.connect("clicked", self.get_file)
-        self.butt_cancel = self.action_area.get_children()[0]
+        self.butt_cancel = self.action_area.get_children()[1]
         self.butt_cancel.connect("clicked", self.cancel)
 
         # Window position

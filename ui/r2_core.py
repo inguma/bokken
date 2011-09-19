@@ -100,6 +100,8 @@ class Core():
         self.core.cmd0('e scr.color=0')
         if not self.lower_case:
             self.core.cmd0('e asm.ucase=true')
+        else:
+            self.core.cmd0('e asm.ucase=false')
         if self.do_anal:
             self.core.cmd0("aa")
         #self.core.config.set_i("asm.decode", 1)

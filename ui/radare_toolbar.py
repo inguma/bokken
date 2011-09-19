@@ -40,6 +40,7 @@ class TopButtons(gtk.HBox):
 
         self.uicore = core
         self.toolbox = self
+        self.dependency_check = self.main.dependency_check
 
         self.img_path = 'ui' + os.sep + 'data' + os.sep
         self.options_dict = {'Hexadecimal':'x ', 'String':' ', 'String no case':'i ', 'Regexp':'e '}
@@ -176,7 +177,7 @@ class TopButtons(gtk.HBox):
     #
     def new_file(self, widget, file=''):
         if not file:
-            dialog = file_dialog.FileDialog()
+            dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, self.dependency_check.HAS_RADARE, 'radare', '')
             dialog.run()
             self.file = dialog.file
         else:

@@ -35,7 +35,7 @@ def check_all():
 
 def python_version():
     print '\tPython version...',
-    if sys.version_info[0] == (3):
+    if sys.version_info[0] == 3:
         print FAIL + "\tD'oh!" + ENDC
         sys.stderr.write("Python3 not supported, install python 2.7 to run bokken")
         exit(1)

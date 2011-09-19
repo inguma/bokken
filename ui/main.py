@@ -60,6 +60,8 @@ class MainApp:
 
     def __init__(self, target, backend):
 
+        self.dependency_check = dependency_check
+
         self.target = target
         self.backend = backend
         self.empty_gui = False
