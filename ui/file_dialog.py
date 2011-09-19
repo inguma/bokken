@@ -72,6 +72,7 @@ class FileDialog(gtk.Dialog):
             self.core_combo.set_active(0)
         elif self.has_radare != self.has_pyew:
             self.core_combo.set_active(0)
+            self.core = self.core_combo.get_active_text().lower()
         elif self.core == 'pyew':
             self.core_combo.set_active(0)
         elif self.core == 'radare':
@@ -171,18 +172,14 @@ class FileDialog(gtk.Dialog):
         self.destroy()
 
     def get_backend(self):
-        active = self.core_combo.get_active()
-        if active == 0:
-            self.backend= 'pyew'
-        elif active == 1:
-            self.backend= 'radare'
+        self.backend = self.core_combo.get_active_text().lower()
 
     def get_options(self):
-        active = self.core_combo.get_active()
-        if active == 0:
+        active = self.core_combo.get_active_text()
+        if active == 'Pyew':
             self.deep = self.deep_anal.get_active()
             self.case = self.case_dasm.get_active()
-        if active == 1:
+        if active == 'Radare':
             self.analyze_bin = self.anal_bin.get_active()
             self.radare_lower = self.radare_dasm.get_active()
 
@@ -196,10 +193,10 @@ class FileDialog(gtk.Dialog):
         chooser.destroy()
 
     def _on_change(self, widget):
-        active = widget.get_active()
-        if active == 0:
+        active = widget.get_active_text()
+        if active == 'Pyew':
             self.pyew_box.set_visible(True)
             self.radare_box.set_visible(False)
-        elif active == 1:
+        elif active == 'Radare':
             self.pyew_box.set_visible(False)
             self.radare_box.set_visible(True)
