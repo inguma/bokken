@@ -73,11 +73,11 @@ class FileDialog(gtk.Dialog):
             self.core_combo.set_active(0)
         elif self.has_radare != self.has_pyew:
             self.core_combo.set_active(0)
-            self.core = self.core_combo.get_active_text().lower()
         elif self.core == 'pyew':
             self.core_combo.set_active(0)
         elif self.core == 'radare':
             self.core_combo.set_active(1)
+        self.core = self.core_combo.get_active_text().lower()
 
         # Core combo Horizontal Box
         self.core_hbox = gtk.HBox(False, 0)
@@ -128,6 +128,7 @@ class FileDialog(gtk.Dialog):
         # Pyew options
         self.deep_anal = gtk.CheckButton(label='Deep analysis')
         self.case_dasm = gtk.CheckButton(label='Lower case disassembly')
+        self.case_dasm.set_active(True)
         self.pyew_box.pack_start(self.deep_anal, False, False, 2)
         self.pyew_box.pack_start(self.case_dasm, False, False, 2)
         # It's here to avoid errors during start up
@@ -135,7 +136,9 @@ class FileDialog(gtk.Dialog):
 
         # Radare options
         self.anal_bin = gtk.CheckButton(label='Analyze program')
+        self.anal_bin.set_active(True)
         self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
+        self.radare_dasm.set_active(True)
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
 
