@@ -89,7 +89,7 @@ class MainApp:
             self.uicore = core.Core(dialog.case, dialog.deep)
         elif self.backend == 'radare':
             import ui.r2_core as r2_core
-            self.uicore = r2_core.Core(dialog.radare_lower, dialog.analyze_bin)
+            self.uicore = r2_core.Core(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va)
         self.uicore.backend = self.backend
 
         # Check if target name is an URL, pyew stores it as 'raw'

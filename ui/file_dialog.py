@@ -139,8 +139,12 @@ class FileDialog(gtk.Dialog):
         self.anal_bin.set_active(True)
         self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
         self.radare_dasm.set_active(True)
+        self.io_va = gtk.CheckButton(label='Don\'t use VA')
+        self.asm_syntax = gtk.CheckButton(label='Use AT&T syntax')
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
+        self.radare_box.pack_start(self.io_va, False, False, 2)
+        self.radare_box.pack_start(self.asm_syntax, False, False, 2)
 
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.logo, False, False, 0)
@@ -186,6 +190,8 @@ class FileDialog(gtk.Dialog):
         if active == 'Radare':
             self.analyze_bin = self.anal_bin.get_active()
             self.radare_lower = self.radare_dasm.get_active()
+            self.use_va = self.io_va.get_active()
+            self.asm_syn = self.asm_syntax.get_active()
 
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
