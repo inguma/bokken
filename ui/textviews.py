@@ -27,6 +27,7 @@ import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
+import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
 
 class TextViews(gtk.HBox):
@@ -101,6 +102,11 @@ class TextViews(gtk.HBox):
         self.interactive_mgr = self.interactive_textview.mgr
 
         #################################################################
+        # Hexdump Textview
+        #################################################################
+        self.hexdump_view = hexdump_view.HexdumpView(self.uicore)
+
+        #################################################################
         # Right NoteBook
         #################################################################
         self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.interactive_textview, self.uicore)
@@ -108,7 +114,6 @@ class TextViews(gtk.HBox):
 
         # Add combo and textview to rightvb
         rightvb.pack_start(self.right_combo, False, True, 2)
-        #rightvb.pack_start(self.right_scrolled_window, True, True, 2)
         rightvb.pack_start(self.right_notebook, True, True, 2)
         self.right_notebook.show_all()
 
@@ -133,6 +138,8 @@ class TextViews(gtk.HBox):
                 self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph())
             except:
                 pass
+            self.hexdump = self.uicore.get_full_hexdump()
+            self.hexdump_view.set_hexdump(self.hexdump)
 
             self.buffer.set_text(self.dasm)
         elif option == 'Python':
@@ -142,7 +149,8 @@ class TextViews(gtk.HBox):
             self.buffer.set_text(self.repr)
         elif option == 'Hexdump':
             self.hexdump = self.uicore.get_full_hexdump()
-            self.buffer.set_text(self.hexdump)
+            #self.buffer.set_text(self.hexdump)
+            self.hexdump_view.set_hexdump(self.hexdump)
         elif option == 'Strings':
             self.strings = self.uicore.get_strings()
             self.buffer.set_text(self.strings)
@@ -154,10 +162,11 @@ class TextViews(gtk.HBox):
                 code = "%s" % ( self.format_html(self.uicore.core.buf) )
             except:
                 code = unicode(self.uicore.core.buf, 'iso8859-15')
-                #code = self.uicore.core.buf
             self.uicore.core.bsize = 512
             self.buffer.set_text(code)
             self.right_notebook.xdot_widget.set_dot(self.uicore.http_dot)
+            self.hexdump = self.uicore.get_full_hexdump()
+            self.hexdump_view.set_hexdump(self.hexdump)
         elif option == 'Plain Text':
             language = self.get_language()
             data = self.uicore.get_file_text()
@@ -168,13 +177,8 @@ class TextViews(gtk.HBox):
             else:
                 self.dasm = self.uicore.get_fulldasm()
                 self.buffer.set_text(self.dasm)
-#                self.buffer.set_highlight_syntax(False)
-                #self.buffer.set_text('This is not a plain text file, could not show :(')
                 self.uicore.core.format = 'Hexdump'
                 option = 'Disassembly'
-#                self.buffer.set_highlight_syntax(False)
-#                self.hexdump = self.uicore.get_full_hexdump()
-#                self.buffer.set_text(self.hexdump)
                 self.update_right_combo()
 
         # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
@@ -199,7 +203,6 @@ class TextViews(gtk.HBox):
 
     def update_interactive(self):
         self.uicore.core.offset = 0
-        #dump = self.uicore.core.hexdump(self.uicore.core.buf, self.uicore.core.hexcolumns)
         dump = self.uicore.get_hexdump()
         self.interactive_buffer.set_text(dump)
 
@@ -292,8 +295,6 @@ class TextViews(gtk.HBox):
         self.connect = self.left_combo.connect("changed", self.update_left_content)
 
         self.left_combo.set_sensitive(True)
-        # FIXME: Really necessary?? looks like not...
-#        self.update_left_content(self)
 
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]

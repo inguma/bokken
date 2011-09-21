@@ -1,0 +1,183 @@
+#       hexdump_view.py
+#       
+#       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
+#       
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#       
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+import gtk
+import pango
+import gtksourceview2
+
+class HexdumpView(gtk.HBox):
+
+    '''Right TextView elements'''
+
+    def __init__(self, core):
+        super(HexdumpView,self).__init__(False, 0)
+
+        #################################################################
+        # Hexdump
+        #################################################################
+
+        self.uicore = core
+
+        # Scrolledwindow for Offsets
+        self.offset_sw = gtk.ScrolledWindow()
+        self.offset_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.offset_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+
+        # Scrolledwindow for Hexdump
+        self.hex_sw = gtk.ScrolledWindow()
+        self.hex_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.hex_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+
+        # Scrolledwindow for ASCII
+        self.ascii_sw = gtk.ScrolledWindow()
+        self.ascii_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.ascii_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+
+        # Scrolling signals and callbacks
+        self.offset_sw.connect("scroll-event", self._sync_vscroll_offset_scroll)
+        self.hex_sw.connect("scroll-event", self._sync_vscroll_hex_scroll)
+        self.ascii_sw.get_vadjustment().connect("value-changed", self._sync_vscroll_ascii_mouse)
+        self.hex_sw.get_vadjustment().connect("value-changed", self._sync_vscroll_hex_mouse)
+        self.offset_sw.get_vadjustment().connect("value-changed", self._sync_vscroll_offset_mouse)
+
+        # Textviews and buffers
+        self.offset_buffer = gtksourceview2.Buffer()
+        self.hex_buffer = gtksourceview2.Buffer()
+        self.ascii_buffer = gtksourceview2.Buffer()
+
+        self.offset_view = gtksourceview2.View(self.offset_buffer)
+        self.hex_view = gtksourceview2.View(self.hex_buffer)
+        self.ascii_view = gtksourceview2.View(self.ascii_buffer)
+
+        # Margins for eye candy
+        self.offset_view.set_show_right_margin(True)
+        self.offset_view.set_right_margin(10)
+        self.offset_view.set_editable(False)
+        self.hex_view.set_show_right_margin(True)
+        self.hex_view.set_right_margin(10)
+        self.hex_view.set_left_margin(10)
+        self.hex_view.set_editable(False)
+        self.ascii_view.set_editable(False)
+        self.ascii_view.set_left_margin(10)
+
+        font_desc = pango.FontDescription('monospace 9')
+        if font_desc:
+            self.offset_view.modify_font(font_desc)
+            self.hex_view.modify_font(font_desc)
+            self.ascii_view.modify_font(font_desc)
+
+        #print self.hex_buffer.get_line_count()
+
+        # Pack everything
+        self.offset_sw.add(self.offset_view)
+        self.hex_sw.add(self.hex_view)
+        self.ascii_sw.add(self.ascii_view)
+
+        self.pack_start(self.offset_sw, False, False, 1)
+        self.pack_start(self.hex_sw, False, False, 0)
+        self.pack_start(self.ascii_sw, True, True, 10)
+
+    def set_hexdump(self, dump):
+        DUMP = dump
+        OFFSET_DUMP = ''
+        HEX_DUMP = ''
+        ASCII_DUMP = ''
+
+        DUMP_LINES = DUMP.split('\n')
+        if self.uicore.backend == 'radare':
+            for line in DUMP_LINES[1:]:
+                line = line.split('  ')
+                if len(line) > 1:
+                    OFFSET_DUMP += line[0] +'\n'
+                    HEX_DUMP += line[1] + '\n'
+                    ASCII_DUMP += line[-1] + '\n'
+        elif self.uicore.backend == 'pyew':
+            for line in DUMP_LINES:
+                line = line.split('   ')
+                if len(line) > 1:
+                    OFFSET_DUMP += line[0] +'\n'
+                    HEX_DUMP += line[1] + '\n'
+                    ASCII_DUMP += line[-1][1:] + '\n'
+
+        self.offset_buffer.set_text(OFFSET_DUMP)
+        self.hex_buffer.set_text(HEX_DUMP)
+        self.ascii_buffer.set_text(ASCII_DUMP)
+
+    def _sync_vscroll_offset_scroll(self, sw, event):
+        direction = event.direction.value_name
+        hex_adj = sw.get_vadjustment()
+        if direction == 'GDK_SCROLL_DOWN':
+            hex_adj.set_value(hex_adj.get_value() + hex_adj.get_step_increment())
+        elif direction == 'GDK_SCROLL_UP':
+            hex_adj.set_value(hex_adj.get_value() - hex_adj.get_step_increment())
+        ascii_adj = self.ascii_sw.get_vadjustment()
+        if direction == 'GDK_SCROLL_DOWN':
+            ascii_adj.set_value(ascii_adj.get_value() + ascii_adj.get_step_increment())
+        elif direction == 'GDK_SCROLL_UP':
+            ascii_adj.set_value(ascii_adj.get_value() - ascii_adj.get_step_increment())
+        offset_adj = self.offset_sw.get_vadjustment()
+        if direction == 'GDK_SCROLL_DOWN':
+            offset_adj.set_value(offset_adj.get_value() + offset_adj.get_step_increment())
+        elif direction == 'GDK_SCROLL_UP':
+            offset_adj.set_value(offset_adj.get_value() - offset_adj.get_step_increment())
+
+    def _sync_vscroll_hex_scroll(self, sw, event):
+        direction = event.direction.value_name
+        hex_adj = sw.get_vadjustment()
+        if direction == 'GDK_SCROLL_DOWN':
+            hex_adj.set_value(hex_adj.get_value() + hex_adj.get_step_increment())
+        elif direction == 'GDK_SCROLL_UP':
+            hex_adj.set_value(hex_adj.get_value() - hex_adj.get_step_increment())
+        ascii_adj = self.ascii_sw.get_vadjustment()
+        if direction == 'GDK_SCROLL_DOWN':
+            ascii_adj.set_value(ascii_adj.get_value() + ascii_adj.get_step_increment())
+        elif direction == 'GDK_SCROLL_UP':
+            ascii_adj.set_value(ascii_adj.get_value() - ascii_adj.get_step_increment())
+        offset_adj = self.offset_sw.get_vadjustment()
+        if direction == 'GDK_SCROLL_DOWN':
+            offset_adj.set_value(offset_adj.get_value() + offset_adj.get_step_increment())
+        elif direction == 'GDK_SCROLL_UP':
+            offset_adj.set_value(offset_adj.get_value() - offset_adj.get_step_increment())
+
+    def _sync_vscroll_ascii_mouse(self, adjustment):
+        value = adjustment.get_value()
+        hex_adj = self.hex_sw.get_vadjustment()
+        hex_adj.set_value(value)
+        hex_adj.changed()
+        offset_adj = self.offset_sw.get_vadjustment()
+        offset_adj.set_value(value)
+        offset_adj.changed()
+
+    def _sync_vscroll_hex_mouse(self, adjustment):
+        value = adjustment.get_value()
+        ascii_adj = self.ascii_sw.get_vadjustment()
+        ascii_adj.set_value(value)
+        ascii_adj.changed()
+        offset_adj = self.offset_sw.get_vadjustment()
+        offset_adj.set_value(value)
+        offset_adj.changed()
+
+    def _sync_vscroll_offset_mouse(self, adjustment):
+        value = adjustment.get_value()
+        ascii_adj = self.ascii_sw.get_vadjustment()
+        ascii_adj.set_value(value)
+        ascii_adj.changed()
+        hex_adj = self.hex_sw.get_vadjustment()
+        hex_adj.set_value(value)
+        hex_adj.changed()

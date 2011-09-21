@@ -86,8 +86,8 @@ class RightCombo(gtk.Table):
     def create_options(self):
         self.right_combo.disconnect(self.connect)
         self.right_combo.get_model().clear()
-        main_options = ["Hexdump", "String Repr", "Strings"]
-        if self.uicore.core.format in ['PE', 'ELF', 'Hexdump']:
+        main_options = ["String Repr", "Strings"]
+        if self.uicore.core.format in ['PE', 'ELF', 'Hexdump', 'PDF']:
             self.right_combo.append_text('Disassembly')
             # Set Disassembly by default
             self.right_combo.set_active(0)
@@ -96,11 +96,11 @@ class RightCombo(gtk.Table):
         if self.uicore.core.format == 'URL':
             self.right_combo.append_text('URL')
             # Set URL by default
-            self.right_combo.set_active(3)
+            self.right_combo.set_active(2)
         elif self.uicore.core.format == 'Plain Text':
             self.right_combo.append_text('Plain Text')
             # Set plain text by default
-            self.right_combo.set_active(3)
+            self.right_combo.set_active(2)
         else:
             self.right_combo.set_active(0)
 

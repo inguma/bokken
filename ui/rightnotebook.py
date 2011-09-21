@@ -30,6 +30,7 @@ class RightNotebook(gtk.Notebook):
         self.tviews = tviews
         self.scrolled_window = scrolled_window
         self.interactive_scrolled = interactive_scrolled
+        self.hexdump_view = self.tviews.hexdump_view
         self.uicore = uicore
 
         #################################################
@@ -49,6 +50,14 @@ class RightNotebook(gtk.Notebook):
 
         self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
         self.set_tab_label(self.xdot_widget, tab)
+
+        #################################################
+        # Hexdump TAB
+        self.append_page(self.hexdump_view)
+        tab = self.create_tab('Hexdump', self.hexdump_view)
+
+        self.set_tab_label_packing(self.hexdump_view, False, False, gtk.PACK_START)
+        self.set_tab_label(self.hexdump_view, tab)
 
         #################################################
         # Interactive view TAB
@@ -84,7 +93,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Code', 'Callgraph', 'Interactive']:
+        if title in ['Code', 'Callgraph', 'Interactive', 'Hexdump']:
             close_button.hide()
 
         return tab_box
