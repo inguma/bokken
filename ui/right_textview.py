@@ -122,23 +122,28 @@ class RightTextView(gtk.VBox, Searchable):
         self.search_string = ''
         if search_string:
             # If is an address, search lines begining by this address
+            if '[' in search_string:
+                search_string = search_string.strip('[').strip(']')
             if '0x' in search_string:
                 integer = int(search_string, 16)
                 hex_addr = "0x%08x" % integer
                 self.search_string = hex_addr
             elif 'loc.' in search_string:
-                self.search_string = 'loc: ' + search_string
+                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             elif 'fcn.' in search_string:
-                self.search_string = 'function: ' + search_string
+                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
+            elif 'imp.' in search_string:
+                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             elif 'sub_' in search_string:
                 self.search_string = '0x' + search_string[4:]
             elif '.' in search_string:
                 if '[' in search_string:
                     search_string = search_string.strip('[').strip(']')
-                if 'ELF' in self.uicore.core.format:
-                    self.search_string = '; ' + search_string
-                else:
-                    self.search_string = search_string + ':'
+                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
+#                if 'ELF' in self.uicore.core.format:
+#                    self.search_string = '; ' + search_string
+#                else:
+#                    self.search_string = search_string + ':'
             else:
                 pass
 
