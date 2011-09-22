@@ -168,6 +168,10 @@ class TreeViews(gtk.TreeView):
         self.set_model(self.treestore)
         self.expand_all()
 
+    def search_and_graph(self, widget, link_name):
+        self.textviews.search(widget, link_name)
+        self.textviews.update_graph(widget, link_name)
+
     def popup_menu(self, tv, event):
         '''Shows a menu when you right click on a plugin.
         
@@ -189,7 +193,10 @@ class TreeViews(gtk.TreeView):
             link_name = link_name.split("\t")
             # Elf/PE (function)
             if len( link_name ) == 1:
-                link_name = 'FUNCTION ' + link_name[0]
+                if self.uicore.backend == 'radare':
+                    link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
+                else:
+                    link_name = 'FUNCTION ' + link_name[0]
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
                 link_name = link_name[1]
@@ -203,7 +210,10 @@ class TreeViews(gtk.TreeView):
 
             # And the items
             e = gtk.MenuItem("Search")
-            e.connect('activate', self.textviews.search, link_name)
+            if 'radare' in self.uicore.backend:
+                e.connect('activate', self.search_and_graph, link_name)
+            else:
+                e.connect('activate', self.textviews.search, link_name)
             gm.append( e )
             if 'radare' in self.uicore.backend:
                 e = gtk.MenuItem("Show graph")
@@ -237,7 +247,7 @@ class TreeViews(gtk.TreeView):
                     if '0x' in link_name[0]:
                         link_name = link_name[0]
                     else:
-                        link_name = 'function: ' + link_name[0]
+                        link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
                 link_name = link_name[0]
@@ -246,4 +256,7 @@ class TreeViews(gtk.TreeView):
             else:
                 link_name = link_name[0]
 
-            self.textviews.search(self, link_name)
+            if self.uicore.backend == 'radare':
+                self.search_and_graph(self, link_name)
+            else:
+                self.textviews.search(self, link_name)

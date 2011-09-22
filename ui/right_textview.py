@@ -27,7 +27,7 @@ from ui.searchable import Searchable
 class RightTextView(gtk.VBox, Searchable):
     '''Right TextView elements'''
 
-    def __init__(self, core):
+    def __init__(self, core, textviews):
         super(RightTextView,self).__init__(False, 1)
 
         #################################################################
@@ -35,6 +35,7 @@ class RightTextView(gtk.VBox, Searchable):
         #################################################################
 
         self.uicore = core
+        self.textviews = textviews
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
@@ -116,6 +117,8 @@ class RightTextView(gtk.VBox, Searchable):
             soffset = temp_offset
 
         self._search(text[soffset:eoffset])
+        if self.uicore.backend == 'radare':
+            self.textviews.update_graph(self, text[soffset:eoffset])
 
     def _search(self, search_string, iter = None):
 

@@ -82,7 +82,7 @@ class TextViews(gtk.HBox):
         # Right Textview
         #################################################################
 
-        self.right_textview = right_textview.RightTextView(self.uicore)
+        self.right_textview = right_textview.RightTextView(self.uicore, self)
         self.buffer = self.right_textview.buffer
         self.view = self.right_textview.view
         self.mgr = self.right_textview.mgr
