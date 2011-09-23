@@ -34,22 +34,17 @@ class TreeViews(gtk.TreeView):
         # Connect right click popup search menu
         self.pupoup_handler = self.connect('button-press-event', self.popup_menu)
 
-#        self.create_functions_columns()
-
     def create_functions_columns(self):
     
-#        self.store = gtk.ListStore(str)
-
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Function", rendererText, text=0)
         column.set_sort_column_id(0)
+        self.store.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.append_column(column)
         self.set_model(self.store)
 
     def create_sections_columns(self):
     
-#        self.store = gtk.ListStore(str, str, str, str)
-
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Section", rendererText, text=0)
         column.set_sort_column_id(0)
@@ -57,6 +52,7 @@ class TreeViews(gtk.TreeView):
     
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Virtual Address", rendererText, text=1)
+        self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
         column.set_sort_column_id(1)
         self.append_column(column)
 
@@ -75,6 +71,7 @@ class TreeViews(gtk.TreeView):
 
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Offset", rendererText, text=0)
+        self.store.set_sort_column_id(0,gtk.SORT_ASCENDING)
         column.set_sort_column_id(0)
         self.append_column(column)
     
