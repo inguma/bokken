@@ -27,6 +27,8 @@ import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
+import ui.strings_textview as strings_textview
+import ui.repr_textview as repr_textview
 import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
 
@@ -107,15 +109,33 @@ class TextViews(gtk.HBox):
         self.hexdump_view = hexdump_view.HexdumpView(self.uicore)
 
         #################################################################
+        # Strings Textview
+        #################################################################
+
+        self.strings_textview = strings_textview.StringsTextView(self.uicore, self)
+        self.strings_buffer = self.strings_textview.buffer
+        self.strings_view = self.strings_textview.view
+        self.strings_mgr = self.strings_textview.mgr
+
+        #################################################################
+        # Repr Textview
+        #################################################################
+
+        self.repr_textview = repr_textview.ReprTextView(self.uicore, self)
+        self.repr_buffer = self.repr_textview.buffer
+        self.repr_view = self.repr_textview.view
+        self.repr_mgr = self.repr_textview.mgr
+
+        #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.interactive_textview, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.uicore)
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb
         rightvb.pack_start(self.right_combo, False, True, 2)
         rightvb.pack_start(self.right_notebook, True, True, 2)
-        self.right_notebook.show_all()
+        self.right_notebook.show()
 
     def update_lefttext(self, text):
         self.leftbuffer.set_text(text)
@@ -138,22 +158,15 @@ class TextViews(gtk.HBox):
                 self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph())
             except:
                 pass
+
+            # Load hexdump, strings and strings repr
             self.hexdump = self.uicore.get_full_hexdump()
-            self.hexdump_view.set_hexdump(self.hexdump)
+            self.strings = self.uicore.get_strings()
+            self.repr = self.uicore.get_repr()
 
             self.buffer.set_text(self.dasm)
         elif option == 'Python':
             self.dasm = self.uicore.get_python_dasm()
-        elif option == 'String Repr':
-            self.repr = self.uicore.get_repr()
-            self.buffer.set_text(self.repr)
-        elif option == 'Hexdump':
-            self.hexdump = self.uicore.get_full_hexdump()
-            #self.buffer.set_text(self.hexdump)
-            self.hexdump_view.set_hexdump(self.hexdump)
-        elif option == 'Strings':
-            self.strings = self.uicore.get_strings()
-            self.buffer.set_text(self.strings)
         elif option == 'URL':
             self.uicore.core.bsize = self.uicore.core.maxsize
             self.uicore.core.seek(0)
@@ -182,7 +195,7 @@ class TextViews(gtk.HBox):
                 self.update_right_combo()
 
         # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
-        if option in ['Disassembly', 'URL', 'Plain Text', 'Python']:
+        if option in ['Disassembly', 'URL', 'Plain Text', 'Python', 'Program']:
             self.buffer.set_highlight_syntax(True)
         else:
             self.buffer.set_highlight_syntax(False)
@@ -272,7 +285,7 @@ class TextViews(gtk.HBox):
         model.clear()
 
         # Add combo content depending on file format
-        if self.uicore.core.format in ['PE']:
+        if self.uicore.core.format in ['PE', 'Program']:
             options = ['Functions', 'Sections', 'Imports', 'Exports']
         elif self.uicore.core.format in ['ELF']:
             # Pyew doesn't has support for Elf Imports/Exports parsing
@@ -298,7 +311,7 @@ class TextViews(gtk.HBox):
 
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]
-        self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph(addr))
+        print self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph(addr))
 
     def search(self, widget, search_string, iter = None):
         # Clean string to search

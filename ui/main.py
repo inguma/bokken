@@ -84,6 +84,7 @@ class MainApp:
         self.target = dialog.file
         self.backend = dialog.backend
 
+        # Load selected core
         if self.backend == 'pyew':
             import ui.core as core
             self.uicore = core.Core(dialog.case, dialog.deep)
@@ -189,7 +190,7 @@ class MainApp:
             self.tviews.update_right_combo()
 
             # Add data to RIGHT TextView
-            if self.uicore.core.format in ["PE", "ELF"]:
+            if self.uicore.core.format in ["PE", "ELF", "Program"]:
                 self.tviews.update_righttext('Disassembly')
             elif self.uicore.core.format in ["PYC"]:
                 self.tviews.update_righttext('Python')
@@ -204,21 +205,14 @@ class MainApp:
             self.tviews.update_interactive()
 
             # Load data to LEFT Tree
-            if self.uicore.core.format in ["PE", "ELF"]:
+            if self.uicore.core.format in ["PE", "ELF", "Program"]:
                 self.tviews.create_model('Functions')
                 self.tviews.left_combo.set_active(0)
         
-                # Add file information to the StatusBar
-#                info = self.uicore.get_file_info()
-#                self.sbar.add_text(info, VERSION)
             elif self.uicore.core.format in ["PDF"]:
                 # Why?! Oh why in the name of God....!!
                 self.tviews.create_model('PDF')
-                #self.tviews.left_combo.set_active(0)
         
-                # Add file information to the StatusBar
-#                info = self.uicore.get_file_info()
-#                self.sbar.add_text(info, VERSION)
             elif self.uicore.core.format in ["URL"]:
                 self.tviews.create_model('URL')
 

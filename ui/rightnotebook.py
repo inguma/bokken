@@ -24,11 +24,13 @@ import ui.graph as graph
 class RightNotebook(gtk.Notebook):
     '''Right Notebook elements'''
 
-    def __init__(self, tviews, scrolled_window, interactive_scrolled, uicore):
+    def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, uicore):
         super(RightNotebook,self).__init__()
 
         self.tviews = tviews
         self.scrolled_window = scrolled_window
+        self.strings_textview = strings_textview
+        self.repr_textview = repr_textview
         self.interactive_scrolled = interactive_scrolled
         self.hexdump_view = self.tviews.hexdump_view
         self.uicore = uicore
@@ -42,7 +44,7 @@ class RightNotebook(gtk.Notebook):
         self.set_tab_label(self.scrolled_window, tab)
 
         #################################################
-        # Code map TAB
+        # Graph map TAB
         self.xdot_widget = graph.MyDotWidget(self.uicore)
         self.append_page(self.xdot_widget)
 
@@ -60,6 +62,22 @@ class RightNotebook(gtk.Notebook):
         self.set_tab_label(self.hexdump_view, tab)
 
         #################################################
+        # Strings view TAB
+        self.append_page(self.strings_textview)
+        tab = self.create_tab('Strings', self.strings_textview)
+
+        self.set_tab_label_packing(self.strings_textview, False, False, gtk.PACK_START)
+        self.set_tab_label(self.strings_textview, tab)
+
+        #################################################
+        # Repr view TAB
+        self.append_page(self.repr_textview)
+        tab = self.create_tab('Strings repr', self.repr_textview)
+
+        self.set_tab_label_packing(self.repr_textview, False, False, gtk.PACK_START)
+        self.set_tab_label(self.repr_textview, tab)
+
+        #################################################
         # Interactive view TAB
         self.append_page(self.interactive_scrolled)
         tab = self.create_tab('Interactive', self.interactive_scrolled)
@@ -71,7 +89,21 @@ class RightNotebook(gtk.Notebook):
         # Move buttons
         self.move_buttons = self.create_seek_buttons()
         #self.set_action_widget(self.move_buttons, gtk.PACK_END)
-        self.move_buttons.show_all()
+        #self.move_buttons.show_all()
+
+        self.connect("switch-page", self.on_switch)
+
+    def on_switch(self, notebook, page, page_num):
+        # Tabs to avoid
+        avoid = [0, 1, 5]
+        # walk through tabs and remove all content but the active one
+        for page in range(self.get_n_pages()):
+            if page != page_num and page not in avoid:
+                widget = self.get_nth_page(page)
+                widget.remove_content()
+            elif page == page_num and page not in avoid:
+                widget = self.get_nth_page(page)
+                widget.add_content()
 
     def hide_tabs(self):
         self.set_show_tabs(False)
@@ -93,7 +125,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Code', 'Callgraph', 'Interactive', 'Hexdump']:
+        if title in ['Code', 'Callgraph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump']:
             close_button.hide()
 
         return tab_box

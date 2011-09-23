@@ -1,4 +1,4 @@
-#       right_textview.py
+#       strings_textview.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
 #       
@@ -24,11 +24,11 @@ import gtksourceview2
 
 from ui.searchable import Searchable
 
-class RightTextView(gtk.VBox, Searchable):
-    '''Right TextView elements'''
+class StringsTextView(gtk.VBox, Searchable):
+    '''Strings TextView elements'''
 
     def __init__(self, core, textviews):
-        super(RightTextView,self).__init__(False, 1)
+        super(StringsTextView,self).__init__(False, 1)
 
         #################################################################
         # Right Textview
@@ -69,13 +69,13 @@ class RightTextView(gtk.VBox, Searchable):
         self.mgr = gtksourceview2.style_scheme_manager_get_default()
 
         # Scrolled Window
-        self.right_scrolled_window = gtk.ScrolledWindow()
-        self.right_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.right_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.right_scrolled_window.show()
+        self.strings_scrolled_window = gtk.ScrolledWindow()
+        self.strings_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.strings_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.strings_scrolled_window.show()
         # Add Textview to Scrolled Window
-        self.right_scrolled_window.add(self.view)
-        self.pack_start(self.right_scrolled_window, expand=True, fill=True)
+        self.strings_scrolled_window.add(self.view)
+        self.pack_start(self.strings_scrolled_window, expand=True, fill=True)
 
         # Create the search widget
         Searchable.__init__(self, self.view, small=True)
@@ -84,6 +84,13 @@ class RightTextView(gtk.VBox, Searchable):
         self.match_start = None
         self.match_end = None
         self.search_string = ''
+
+    def add_content(self):
+        strings = self.uicore.get_strings()
+        self.buffer.set_text(strings)
+
+    def remove_content(self):
+        self.buffer.set_text('')
 
     def _get_clicked_word(self, widget, event):
         # Get textbuffer coordinates from texview ones
@@ -113,67 +120,48 @@ class RightTextView(gtk.VBox, Searchable):
         else:
             soffset = temp_offset
 
-        self._search(text[soffset:eoffset])
-        if self.uicore.backend == 'radare':
-            self.textviews.update_graph(self, text[soffset:eoffset])
+        self.textviews.right_textview._search(text[soffset:eoffset])
 
-    def _search(self, search_string, iter = None):
-
-        self.search_string = ''
-        if search_string:
-            # If is an address, search lines begining by this address
-            if '[' in search_string:
-                search_string = search_string.strip('[').strip(']')
-            if '0x' in search_string:
-                integer = int(search_string, 16)
-                hex_addr = "0x%08x" % integer
-                self.search_string = hex_addr
-            elif 'loc.' in search_string:
-                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-            elif 'fcn.' in search_string:
-                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-            elif 'imp.' in search_string:
-                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-            elif 'sub_' in search_string:
-                self.search_string = '0x' + search_string[4:]
-            elif '.' in search_string:
-                if '[' in search_string:
-                    search_string = search_string.strip('[').strip(']')
-                if self.uicore.backend == 'radare':
-                    self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-#                if 'ELF' in self.uicore.core.format:
-#                    self.search_string = '; ' + search_string
+#    def _search(self, search_string, iter = None):
+#
+#        self.search_string = ''
+#        if search_string:
+#            # If is an address, search lines begining by this address
+#            if '0x' in search_string:
+#                integer = int(search_string, 16)
+#                hex_addr = "0x%08x" % integer
+#                self.search_string = hex_addr
+#            elif 'str.' in search_string:
+#                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
+#            else:
+#                pass
+#
+#            if self.search_string:
+#                startIter =  self.textbuf.get_start_iter()
+#                # find the positions where the phrase is found
+#                res = []
+#                while True:
+#                    result = startIter.forward_search(self.search_string, gtk.TEXT_SEARCH_TEXT_ONLY, None)
+#                    if result:
+#                        res.append((result[0], result[1]))
+#                        startIter = result[1]
+#                    else:
+#                        break
+#
+#                if res:
+#                    # Remove previous marks if exist
+#                    if self.match_start != None and self.match_end != None:
+#                        self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
+#                    for iter in res:
+#                        if iter[0].get_line_offset() < 16:
+#                            self.match_start, self.match_end = iter
+#
+#                        if self.match_start:
+#                            self.buffer.place_cursor(self.match_start)
+#                            self.view.scroll_to_iter(self.match_start, 0, True, 0, 0)
+#                            self.last_search_iter = self.match_end
+#                            self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
+#    
 #                else:
-#                    self.search_string = search_string + ':'
-            else:
-                pass
-
-            if self.search_string:
-                startIter =  self.textbuf.get_start_iter()
-                # find the positions where the phrase is found
-                res = []
-                while True:
-                    result = startIter.forward_search(self.search_string, gtk.TEXT_SEARCH_TEXT_ONLY, None)
-                    if result:
-                        res.append((result[0], result[1]))
-                        startIter = result[1]
-                    else:
-                        break
-
-                if res:
-                    # Remove previous marks if exist
-                    if self.match_start != None and self.match_end != None:
-                        self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
-                    for iter in res:
-                        if iter[0].get_line_offset() < 16:
-                            self.match_start, self.match_end = iter
-
-                        if self.match_start:
-                            self.buffer.place_cursor(self.match_start)
-                            self.view.scroll_to_iter(self.match_start, 0, True, 0, 0)
-                            self.last_search_iter = self.match_end
-                            self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
-    
-                else:
-                    self.search_string = None      
-                    self.last_search_iter = None
+#                    self.search_string = None      
+#                    self.last_search_iter = None

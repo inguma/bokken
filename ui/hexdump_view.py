@@ -93,6 +93,15 @@ class HexdumpView(gtk.HBox):
         self.pack_start(self.hex_sw, False, False, 0)
         self.pack_start(self.ascii_sw, True, True, 10)
 
+    def add_content(self):
+        hexdump = self.uicore.get_full_hexdump()
+        self.set_hexdump(hexdump)
+
+    def remove_content(self):
+        self.offset_buffer.set_text('')
+        self.hex_buffer.set_text('')
+        self.ascii_buffer.set_text('')
+
     def set_hexdump(self, dump):
         DUMP = dump
         OFFSET_DUMP = ''

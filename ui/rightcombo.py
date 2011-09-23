@@ -49,12 +49,6 @@ class RightCombo(gtk.Table):
 
         # Right ComboBox
         self.right_combo = gtk.combo_box_new_text()
-#        options = ['Disassembly', "Hexdump", "String Repr", "Strings", "Plain Text", 'URL']
-#        for option in options:
-#            self.right_combo.append_text(option)
-#        # Set Disassembly by default
-#        self.right_combo.set_active(0)
-#        self.create_options()
 
         self.connect = self.right_combo.connect("changed", self.right_combo_change)
         self.attach(self.right_combo, 3, 4, 0, 1)
@@ -86,8 +80,8 @@ class RightCombo(gtk.Table):
     def create_options(self):
         self.right_combo.disconnect(self.connect)
         self.right_combo.get_model().clear()
-        main_options = ["String Repr", "Strings"]
-        if self.uicore.core.format in ['PE', 'ELF', 'Hexdump', 'PDF']:
+        main_options = []
+        if self.uicore.core.format in ['PE', 'ELF', 'Hexdump', 'PDF', 'Program']:
             self.right_combo.append_text('Disassembly')
             # Set Disassembly by default
             self.right_combo.set_active(0)
@@ -96,11 +90,11 @@ class RightCombo(gtk.Table):
         if self.uicore.core.format == 'URL':
             self.right_combo.append_text('URL')
             # Set URL by default
-            self.right_combo.set_active(2)
+            self.right_combo.set_active(0)
         elif self.uicore.core.format == 'Plain Text':
             self.right_combo.append_text('Plain Text')
             # Set plain text by default
-            self.right_combo.set_active(2)
+            self.right_combo.set_active(0)
         else:
             self.right_combo.set_active(0)
 
