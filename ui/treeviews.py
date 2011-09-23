@@ -167,7 +167,8 @@ class TreeViews(gtk.TreeView):
 
     def search_and_graph(self, widget, link_name):
         self.textviews.search(widget, link_name)
-        self.textviews.update_graph(widget, link_name)
+        if self.dograph:
+            self.textviews.update_graph(widget, link_name)
 
     def popup_menu(self, tv, event):
         '''Shows a menu when you right click on a plugin.
@@ -175,6 +176,9 @@ class TreeViews(gtk.TreeView):
         @param tv: the treeview.
         @parameter event: The GTK event 
         '''
+
+        self.dograph = False
+
         if event.button == 3:
             # It's a right click !
             _time = event.time
@@ -191,6 +195,9 @@ class TreeViews(gtk.TreeView):
             # Elf/PE (function)
             if len( link_name ) == 1:
                 if self.uicore.backend == 'radare':
+                    # Just get graph for functions
+                    if 'fcn.' in link_name[0]:
+                        self.dograph = True
                     link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
                 else:
                     link_name = 'FUNCTION ' + link_name[0]
@@ -212,7 +219,7 @@ class TreeViews(gtk.TreeView):
             else:
                 e.connect('activate', self.textviews.search, link_name)
             gm.append( e )
-            if 'radare' in self.uicore.backend:
+            if 'radare' in self.uicore.backend and self.dograph:
                 e = gtk.MenuItem("Show graph")
                 e.connect('activate', self.textviews.update_graph, link_name)
                 gm.append( e )
@@ -244,6 +251,9 @@ class TreeViews(gtk.TreeView):
                     if '0x' in link_name[0]:
                         link_name = link_name[0]
                     else:
+                        # Just get graph for functions
+                        if 'fcn.' in link_name[0]:
+                            self.dograph = True
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
@@ -257,3 +267,4 @@ class TreeViews(gtk.TreeView):
                 self.search_and_graph(self, link_name)
             else:
                 self.textviews.search(self, link_name)
+            self.dograph = False

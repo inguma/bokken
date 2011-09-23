@@ -114,11 +114,12 @@ class RightTextView(gtk.VBox, Searchable):
             soffset = temp_offset
 
         self._search(text[soffset:eoffset])
-        if self.uicore.backend == 'radare':
-            self.textviews.update_graph(self, text[soffset:eoffset])
+#        if self.uicore.backend == 'radare':
+#            self.textviews.update_graph(self, text[soffset:eoffset])
 
     def _search(self, search_string, iter = None):
 
+        self.dograph = False
         self.search_string = ''
         if search_string:
             # If is an address, search lines begining by this address
@@ -132,6 +133,7 @@ class RightTextView(gtk.VBox, Searchable):
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             elif 'fcn.' in search_string:
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
+                self.dograph = True
             elif 'imp.' in search_string:
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             elif 'sub_' in search_string:
@@ -177,3 +179,5 @@ class RightTextView(gtk.VBox, Searchable):
                 else:
                     self.search_string = None      
                     self.last_search_iter = None
+                if self.uicore.backend == 'radare' and self.dograph:
+                    self.textviews.update_graph(self, self.search_string)

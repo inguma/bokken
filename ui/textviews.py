@@ -309,7 +309,7 @@ class TextViews(gtk.HBox):
 
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]
-        print self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph(addr))
+        self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph(addr))
 
     def search(self, widget, search_string, iter = None):
         # Clean string to search
