@@ -153,6 +153,7 @@ class TextViews(gtk.HBox):
         # Fill right textview with selected content
         if option in ['Disassembly', 'Hexdump']:
             try:
+                self.uicore.get_sections()
                 self.dasm = self.uicore.get_text_dasm()
             except:
                 self.dasm = self.uicore.get_fulldasm()

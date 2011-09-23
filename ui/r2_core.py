@@ -43,6 +43,7 @@ class Core():
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
+        self.execsections = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -75,6 +76,7 @@ class Core():
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
+        self.execsections = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -188,15 +190,15 @@ class Core():
     def get_text_dasm(self):
         if not self.text_dasm:
             print "[*] Get text dasm"
-            if self.textsize == 0:
-                self.textsize = 4096
-            self.core.cmd0('s section..text')
-            self.core.cmd0('b ' + str(self.textsize))
-            print "\t* Let's get the dasm...",
-            dasm = self.core.cmd_str('pd')
-            self.core.cmd0('b 512')
-            print " OK!"
-            self.text_dasm = dasm
+            for section in self.execsections:
+                dasm = ''
+                self.core.cmd0('s section.' + section[0])
+                self.core.cmd0('b ' + str(section[1]))
+                print "\t* Let's get the dasm for %s..." % section[0],
+                dasm = self.core.cmd_str('pD')
+                self.core.cmd0('b 512')
+                print " OK!"
+                self.text_dasm += dasm
         return self.text_dasm
 
     def get_fulldasm(self):
@@ -227,6 +229,8 @@ class Core():
             print "[*] Get sections"
             for section in self.bin.get_sections():
                 self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
+                if section.srwx & 1 == 1:
+                    self.execsections.append([section.name, section.size])
                 if '.text' in section.name:
                     self.textsize = section.size
 
