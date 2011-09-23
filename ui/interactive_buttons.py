@@ -58,7 +58,7 @@ class InteractiveButtons(gtk.HBox):
         self.seek_label = gtk.Label('     Seek:')
         self.toolbox.pack_start(self.seek_label, False, False)
 
-        self.seek_entry = gtk.Entry(20)
+        self.seek_entry = gtk.Entry(10)
         # Default action on pressing Enter
         self.seek_entry.set_activates_default(True)
         self.seek_entry.connect("activate", self.seek)
@@ -76,7 +76,7 @@ class InteractiveButtons(gtk.HBox):
         self.buffer_label = gtk.Label('     Buffer size:')
         self.toolbox.pack_start(self.buffer_label, False, False)
 
-        self.buffer_entry = gtk.Entry(10)
+        self.buffer_entry = gtk.Entry(5)
         self.buffer_entry.set_text('512')
         self.buffer_entry.set_icon_from_stock(1, gtk.STOCK_APPLY)
         # Default action on pressing Enter
@@ -106,7 +106,7 @@ class InteractiveButtons(gtk.HBox):
             self.sep = gtk.HSeparator()
             self.toolbox.pack_start(self.sep, False, False)
 
-            self.exec_entry = gtk.Entry(100)
+            self.exec_entry = gtk.Entry(20)
             self.exec_entry.set_icon_from_stock(1, gtk.STOCK_EXECUTE)
             self.exec_entry.connect("activate", self.r2_exec)
             self.exec_entry.connect("icon-press", self.r2_exec)

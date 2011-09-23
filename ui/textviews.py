@@ -144,12 +144,14 @@ class TextViews(gtk.HBox):
         theme = theme.lower()
         style_scheme = self.mgr.get_scheme(theme)
         self.buffer.set_style_scheme(style_scheme)
+        self.strings_buffer.set_style_scheme(style_scheme)
+        self.repr_buffer.set_style_scheme(style_scheme)
         self.interactive_buffer.set_style_scheme(style_scheme)
+        self.hexdump_view.update_theme(style_scheme)
 
     def update_righttext(self, option):
         # Fill right textview with selected content
-        if option == 'Disassembly':
-            #self.uicore.get_sections()
+        if option in ['Disassembly', 'Hexdump']:
             try:
                 self.dasm = self.uicore.get_text_dasm()
             except:
@@ -192,7 +194,6 @@ class TextViews(gtk.HBox):
                 self.buffer.set_text(self.dasm)
                 self.uicore.core.format = 'Hexdump'
                 option = 'Disassembly'
-                self.update_right_combo()
 
         # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
         if option in ['Disassembly', 'URL', 'Plain Text', 'Python', 'Program']:
@@ -221,9 +222,6 @@ class TextViews(gtk.HBox):
 
     def create_completion(self):
         self.interactive_textview.interactive_buttons.set_completion()
-
-    def update_right_combo(self):
-        self.right_combo.create_options()
 
     def format_html(self, code):
         import tidy
@@ -268,9 +266,9 @@ class TextViews(gtk.HBox):
             self.right_notebook.set_show_tabs(True)
         elif mode == 'URL':
             self.right_notebook.set_show_tabs(True)
-        else:
-            self.right_notebook.set_show_tabs(False)
-            self.right_notebook.set_current_page(0)
+#        else:
+#            self.right_notebook.set_show_tabs(False)
+#            self.right_notebook.set_current_page(0)
 
     def update_left_content(self, widget):
         model = self.left_combo.get_model()

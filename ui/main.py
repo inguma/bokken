@@ -186,8 +186,6 @@ class MainApp:
             #print "File format detected: %s" % (self.uicore.core.format)
             # Create left combo depending on file format
             self.tviews.update_left_combo()
-            # Right combo content
-            self.tviews.update_right_combo()
 
             # Add data to RIGHT TextView
             if self.uicore.core.format in ["PE", "ELF", "Program"]:

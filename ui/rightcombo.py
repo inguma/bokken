@@ -43,72 +43,8 @@ class RightCombo(gtk.Table):
         self.theme_combo.connect("changed", self.theme_combo_change)
         self.attach(self.theme_combo, 1, 2, 0, 1)
 
-        # Right Combo Label
-        self.rc_label = gtk.Label('Data format:')
-        self.attach(self.rc_label, 2, 3, 0, 1)
-
-        # Right ComboBox
-        self.right_combo = gtk.combo_box_new_text()
-
-        self.connect = self.right_combo.connect("changed", self.right_combo_change)
-        self.attach(self.right_combo, 3, 4, 0, 1)
-
-        #
-        # Open File Stuff
-
-        # Open file label
-        self.open_label = gtk.Label('File to open:')
-        self.attach(self.open_label, 4, 5, 0, 1)
-
-        # Open file text entry
-        self.open_entry = gtk.Entry(100)
-        self.attach(self.open_entry, 5, 6, 0, 1)
-
-        # Open file button
-        self.open_button = gtk.Button()
-
-        image = gtk.Image()
-        image.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
-
-#        self.open_button.connect("clicked", self.open_new_file)
-        self.open_button.set_image(image)
-        self.open_button.set_relief(gtk.RELIEF_NONE)
-        self.open_button.set_sensitive(False)
-
-        self.attach(self.open_button, 6, 7, 0, 1)
-
-    def create_options(self):
-        self.right_combo.disconnect(self.connect)
-        self.right_combo.get_model().clear()
-        main_options = []
-        if self.uicore.core.format in ['PE', 'ELF', 'Hexdump', 'PDF', 'Program']:
-            self.right_combo.append_text('Disassembly')
-            # Set Disassembly by default
-            self.right_combo.set_active(0)
-        for option in main_options:
-            self.right_combo.append_text(option)
-        if self.uicore.core.format == 'URL':
-            self.right_combo.append_text('URL')
-            # Set URL by default
-            self.right_combo.set_active(0)
-        elif self.uicore.core.format == 'Plain Text':
-            self.right_combo.append_text('Plain Text')
-            # Set plain text by default
-            self.right_combo.set_active(0)
-        else:
-            self.right_combo.set_active(0)
-
-        self.connect = self.right_combo.connect("changed", self.right_combo_change)
-
     def theme_combo_change(self, widget):
         model = self.theme_combo.get_model()
         active = self.theme_combo.get_active()
         option = model[active][0]
         self.tviews.update_theme(option)
-
-    def right_combo_change(self, widget):
-        # Get selected option
-        model = self.right_combo.get_model()
-        active = self.right_combo.get_active()
-        option = model[active][0]
-        self.tviews.update_righttext(option)
