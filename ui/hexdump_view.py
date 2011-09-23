@@ -37,12 +37,12 @@ class HexdumpView(gtk.HBox):
         # Scrolledwindow for Offsets
         self.offset_sw = gtk.ScrolledWindow()
         self.offset_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.offset_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+        self.offset_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
         # Scrolledwindow for Hexdump
         self.hex_sw = gtk.ScrolledWindow()
         self.hex_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.hex_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+        self.hex_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
         # Scrolledwindow for ASCII
         self.ascii_sw = gtk.ScrolledWindow()
