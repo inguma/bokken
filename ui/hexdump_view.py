@@ -38,11 +38,15 @@ class HexdumpView(gtk.HBox):
         self.offset_sw = gtk.ScrolledWindow()
         self.offset_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
         self.offset_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        sb = self.offset_sw.get_vscrollbar()
+        sb.set_child_visible(False)
 
         # Scrolledwindow for Hexdump
         self.hex_sw = gtk.ScrolledWindow()
         self.hex_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
         self.hex_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        sb = self.hex_sw.get_vscrollbar()
+        sb.set_child_visible(False)
 
         # Scrolledwindow for ASCII
         self.ascii_sw = gtk.ScrolledWindow()
@@ -89,9 +93,9 @@ class HexdumpView(gtk.HBox):
         self.hex_sw.add(self.hex_view)
         self.ascii_sw.add(self.ascii_view)
 
-        self.pack_start(self.offset_sw, False, False, 1)
+        self.pack_start(self.offset_sw, False, False, 0)
         self.pack_start(self.hex_sw, False, False, 0)
-        self.pack_start(self.ascii_sw, True, True, 10)
+        self.pack_start(self.ascii_sw, True, True, 0)
 
     def add_content(self):
         hexdump = self.uicore.get_full_hexdump()
