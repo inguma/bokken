@@ -44,6 +44,7 @@ class Core():
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
+        self.sections_size = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -77,6 +78,7 @@ class Core():
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
+        self.sections_size = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -231,8 +233,11 @@ class Core():
                 self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
                 if section.srwx & 1 == 1:
                     self.execsections.append([section.name, section.size])
+                    self.sections_size.append(section.size)
                 if '.text' in section.name:
                     self.textsize = section.size
+            self.sections_size.append(sum(self.sections_size))
+            print self.sections_size
 
         return self.allsections
 
