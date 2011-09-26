@@ -174,7 +174,7 @@ class FileDialog(gtk.Dialog):
 
     def get_file(self, widget):
         self.file = self.input_entry.get_child().get_text()
-        self.manager.add_item('file://' + os.getcwd() + os.sep + self.file)
+        self.manager.add_item('file://' + self.file)
         self.get_backend()
         self.get_options()
         self.destroy()
