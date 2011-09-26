@@ -67,18 +67,25 @@ class SectionsBar(gtk.DrawingArea):
 
         colors = [ (0.7568627450980392, 1.0, 0.7568627450980392),
                   (0.7568627450980392, 0.7568627450980392, 2.0) ]
-        # Get sections sizes
+
+        if height == 0:
+            return
+
         sections_size = self.uicore.sections_size
+        if len(sections_size) < 2:
+            sections_size = [height, height]
+        # Get sections sizes
         total_size = sections_size[-1]
-        # Aqui iterare entre las secciones
         prev_height = 0
+        # Aqui iterare entre las secciones
+        total_size = sections_size[-1]
         for size in sections_size[:-1]:
             # Calculate percentage
             perc_size = (float(size)*100)/float(total_size)
             # Get height
             tmp_height = height * perc_size / 100
             y0, y1 = 0.5, tmp_height - 0.5
-
+    
             # Draw
             color = colors[ sections_size.index(size) & 1]
             context.set_source_rgb(*color)
