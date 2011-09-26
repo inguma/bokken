@@ -48,7 +48,12 @@ class RightNotebook(gtk.Notebook):
         self.xdot_widget = graph.MyDotWidget(self.uicore)
         self.append_page(self.xdot_widget)
 
-        tab = self.create_tab('Callgraph', self.xdot_widget)
+        if self.uicore.backend == 'pyew':
+            label = 'Callgraph'
+        else:
+            label = 'Graph'
+
+        tab = self.create_tab(label, self.xdot_widget)
 
         self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
         self.set_tab_label(self.xdot_widget, tab)
@@ -93,9 +98,18 @@ class RightNotebook(gtk.Notebook):
 
         self.connect("switch-page", self.on_switch)
 
+        # Hide callgraph for URL, Plain Text and PDF
+        if self.uicore.core.format in ['URL', 'Plain Text', 'PDF']:
+            self.remove_page(1)
+
     def on_switch(self, notebook, page, page_num):
         # Tabs to avoid
-        avoid = [0, 1, 5]
+        avoid = [
+                self.page_num(self.scrolled_window),
+                self.page_num(self.xdot_widget),
+                self.page_num(self.interactive_scrolled)
+                ]
+        #avoid = [0, 1, 5]
         # walk through tabs and remove all content but the active one
         for page in range(self.get_n_pages()):
             if page != page_num and page not in avoid:
@@ -125,7 +139,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Code', 'Callgraph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump']:
+        if title in ['Code', 'Callgraph', 'Graph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump']:
             close_button.hide()
 
         return tab_box
