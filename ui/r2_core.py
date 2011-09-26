@@ -237,7 +237,6 @@ class Core():
                 if '.text' in section.name:
                     self.textsize = section.size
             self.sections_size.append(sum(self.sections_size))
-            print self.sections_size
 
         return self.allsections
 

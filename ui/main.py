@@ -145,7 +145,7 @@ class MainApp:
         self.tviews = textviews.TextViews(self.uicore)
 
         # Initialize and add Statusbar
-        self.sbar = statusbar.Statusbar(self.uicore)
+        self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
 
         # Add textviews and statusbar to the VBox
         self.mainvb.pack_start(self.tviews, True, True, 1)
@@ -186,6 +186,10 @@ class MainApp:
             #print "File format detected: %s" % (self.uicore.core.format)
             # Create left combo depending on file format
             self.tviews.update_left_combo()
+
+#            # If analyze binary option was choosen, format will be 'Program'
+#            if self.uicore.do_anal:
+#                self.uicore.core.format = 'Program'
 
             # Add data to RIGHT TextView
             if self.uicore.core.format in ["PE", "ELF", "Program"]:

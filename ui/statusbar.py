@@ -22,12 +22,30 @@ import gtk
 class Statusbar(gtk.Statusbar):
     '''Statusbar for main window'''
 
-    def __init__(self, core):
+    def __init__(self, core, tviews):
         super(Statusbar,self).__init__()
 
         self.uicore = core
+        self.tviews = tviews
 
         self.sbar_context = self.get_context_id('sb')
+
+        # Theme change combo
+        # Theme Label
+        self.theme_label = gtk.Label('Color theme:')
+
+        # Theme ComboBox
+        self.theme_combo = gtk.combo_box_new_text()
+        options = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
+        for option in options:
+            self.theme_combo.append_text(option)
+        # Set first by default
+        self.theme_combo.set_active(0)
+
+        self.theme_combo.connect("changed", self.theme_combo_change)
+        self.pack_start(gtk.VSeparator(), False)
+        self.pack_start(self.theme_label, False, False, 2)
+        self.pack_start(self.theme_combo, False, False, 2)
 
     # Method to add content to the status bar
     def add_text(self, data_dict, version):
@@ -38,12 +56,19 @@ class Statusbar(gtk.Statusbar):
         for element in data_dict.keys():
             self.text += element.capitalize() + ': ' + str(data_dict[element]) + ' | '
         self.push(self.sbar_context, self.text)
+
         if version:
             self.pack_end(gtk.Label('Bokken ' + version), False)
             self.pack_end(gtk.VSeparator(), False)
+
         self.show_all()
 
     # Method to clear the statusbar before adding new content
     def clear_sbar(self):
         self.push(self.sbar_context, '')
 
+    def theme_combo_change(self, widget):
+        model = self.theme_combo.get_model()
+        active = self.theme_combo.get_active()
+        option = model[active][0]
+        self.tviews.update_theme(option)

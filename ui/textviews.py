@@ -23,7 +23,7 @@ import gio
 import gtk
 import gtksourceview2
 
-import ui.rightcombo as rightcombo
+#import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
@@ -92,7 +92,7 @@ class TextViews(gtk.HBox):
         #################################################################
         # Right ComboBox
         #################################################################
-        self.right_combo = rightcombo.RightCombo(self, self.uicore)
+        #self.right_combo = rightcombo.RightCombo(self, self.uicore)
 
         #################################################################
         # Right Interactive Textview
@@ -133,7 +133,7 @@ class TextViews(gtk.HBox):
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb
-        rightvb.pack_start(self.right_combo, False, True, 2)
+        #rightvb.pack_start(self.right_combo, False, True, 2)
         rightvb.pack_start(self.right_notebook, True, True, 2)
         self.right_notebook.show()
 
