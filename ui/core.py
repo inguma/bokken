@@ -41,6 +41,7 @@ class Core():
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
+        self.sections_size = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -82,6 +83,7 @@ class Core():
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
+        self.sections_size = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
