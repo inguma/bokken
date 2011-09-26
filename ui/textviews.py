@@ -151,7 +151,7 @@ class TextViews(gtk.HBox):
 
     def update_righttext(self, option):
         # Fill right textview with selected content
-        if option in ['Disassembly', 'Hexdump']:
+        if option in ['Disassembly', 'Hexdump', 'Program']:
             try:
                 self.uicore.get_sections()
                 self.dasm = self.uicore.get_text_dasm()

@@ -49,7 +49,8 @@ class SectionsBar(gtk.DrawingArea):
 
     def do_expose_event(self, event):
         self._scroll_height = self.scrollbar.allocation.height
-        height = self._scroll_height - 1
+        stepper_size = self.scrollbar.style_get_property("stepper-size")
+        height = self._scroll_height - 1 - (2 * stepper_size)
         #height = self._scroll_height - self._h_offset - 1
         y_start = self._scroll_y - self.allocation.y + self._y_offset + 1
         xpad = self.style_get_property('x-padding')
@@ -60,7 +61,7 @@ class SectionsBar(gtk.DrawingArea):
         #context.translate(0, y_start)
         context.translate(0, 0)
         context.set_line_width(1)
-        context.rectangle(0, -1, 20, height + 1)
+        context.rectangle(0, stepper_size, 20, height + 1)
         context.clip()
 
         darken = lambda color: [x * 0.8 for x in color]
@@ -89,7 +90,7 @@ class SectionsBar(gtk.DrawingArea):
             # Draw
             color = colors[ sections_size.index(size) & 1]
             context.set_source_rgb(*color)
-            context.rectangle(0, prev_height, 20, y1)
+            context.rectangle(0, stepper_size + prev_height, 20, y1)
             context.fill_preserve()
             context.set_source_rgb(*darken(color))
             context.stroke()

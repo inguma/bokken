@@ -187,9 +187,12 @@ class MainApp:
             # Create left combo depending on file format
             self.tviews.update_left_combo()
 
-#            # If analyze binary option was choosen, format will be 'Program'
-#            if self.uicore.do_anal:
-#                self.uicore.core.format = 'Program'
+            # If analyze binary option was choosen, format will be 'Program'
+            if self.backend == 'radare':
+                if self.uicore.do_anal:
+                    self.uicore.core.format = 'Program'
+                else:
+                    self.uicore.core.format = 'Hexdump'
 
             # Add data to RIGHT TextView
             if self.uicore.core.format in ["PE", "ELF", "Program"]:
