@@ -27,7 +27,7 @@ from r2.r_bin import *
 
 class Core():
 
-    def __init__(self, lower_case, do_anal, use_va, asm_syn):
+    def __init__(self, lower_case, do_anal, asm_syn, use_va):
 
         self.do_anal = do_anal
         self.lower_case = lower_case
@@ -127,10 +127,12 @@ class Core():
         #self.core.format = self.info.rclass.upper()
         self.core.cmd0('e search.flags=false')
         ftype = self.core.cmd_str('e file.type')
-        if ftype:
-            self.core.format = ftype[:-1].upper()
+#        if ftype:
+#            self.core.format = ftype[:-1].upper()
+        if self.do_anal:
+            self.core.format = 'Program'
         else:
-            self.core.format = 'raw'
+            self.core.format = 'Hexdump'
 
         # Check if file name is an URL, pyew stores it as 'raw'
         self.is_url(file)
@@ -227,7 +229,7 @@ class Core():
         return self.fullstr
 
     def get_sections(self):
-        if self.allsections == []:
+        if self.allsections == [] and self.core.format != 'Hexdump':
             print "[*] Get sections"
             for section in self.bin.get_sections():
                 self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
@@ -293,7 +295,8 @@ class Core():
         # core.type            : 32
         # core.processor       : intel
         #info = self.bin.get_info()
-        if 'ELF' in self.core.format or 'PE' in self.core.format:
+        #if 'ELF' in self.core.format or 'PE' in self.core.format:
+        if 'Program' in self.core.format:
            self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine}
         else:
             self.fileinfo = {'name':self.file}
