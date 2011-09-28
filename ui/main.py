@@ -225,6 +225,13 @@ class MainApp:
             self.enable_all()
             self.topbuttons.throbber.running('')
 
+            if 'radare' in self.uicore.backend:
+                if self.uicore.core.format == 'Program':
+                    self.tviews.update_graph(self, 'entry0')
+                    link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+                    if link_name:
+                        self.tviews.search(self, link_name)
+
     def disable_all(self):
         if self.target:
             self.sbar.add_text({'Please wait while loading file':self.target}, VERSION)

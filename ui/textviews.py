@@ -348,7 +348,9 @@ class TextViews(gtk.HBox):
                     self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
                 self.match_start, self.match_end = res
                 self.buffer.place_cursor(self.match_start)
-                self.view.scroll_to_iter(self.match_start, 0, False, 0, 0)
+                #self.view.scroll_to_iter(self.match_start, 0, False, 0, 0)
+                mark = self.buffer.create_mark(None, self.match_start, False)
+                self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                 self.last_search_iter = self.match_end
                 self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
 
