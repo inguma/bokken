@@ -85,16 +85,17 @@ class SectionsBar(gtk.DrawingArea):
             perc_size = (float(size)*100)/float(total_size)
             # Get height
             tmp_height = height * perc_size / 100
-            y0, y1 = 0.5, tmp_height - 0.5
+            y1 = tmp_height
     
             # Draw
             color = colors[ sections_size.index(size) & 1]
             context.set_source_rgb(*color)
-            context.rectangle(0, stepper_size + prev_height, 20, y1)
+            context.set_line_width(1)
+            context.rectangle(0, stepper_size + prev_height + 0.5, 20, y1 + stepper_size + prev_height - 0.5)
             context.fill_preserve()
             context.set_source_rgb(*darken(color))
             context.stroke()
-            prev_height = tmp_height
+            prev_height += tmp_height
 
     def do_size_request(self, request):
         request.width = self.style_get_property('width')
