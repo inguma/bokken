@@ -118,23 +118,21 @@ class Core():
             self.core.cmd0("e asm.syntax=att")
         else:
             self.core.cmd0("e asm.syntax=intel")
-        #self.core.config.set_i("asm.decode", 1)
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
         self.baddr = self.bin.get_baddr()
         self.size = hex(self.core.file.size)
-        #self.core.format = self.info.rclass.upper()
         self.core.cmd0('e search.flags=false')
-        ftype = self.core.cmd_str('e file.type')
-#        if ftype:
-#            self.core.format = ftype[:-1].upper()
         if self.do_anal:
             self.core.format = 'Program'
         else:
             self.core.format = 'Hexdump'
+        # Check if file is a supported program
+        if not hasattr(self.info, 'type'):
+            self.core.format = 'Hexdump'
 
-        # Check if file name is an URL, pyew stores it as 'raw'
+        # Check if file name is an URL
         self.is_url(file)
 
     def is_url(self, file):
@@ -149,9 +147,6 @@ class Core():
         if not self.allstrings:
             print "[*] Get strings"
             strings = ''
-#            FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
-#            for str in self.bin.get_strings():
-#                strings += "0x%08x:\t%s\n" % (self.baddr+str.rva, str.string.translate(FILTER))
             self.core.cmd0('fs strings')
             strings = self.core.cmd_str('f')
             self.allstrings = strings
@@ -210,7 +205,7 @@ class Core():
             print "[*] Get full dasm"
             self.core.cmd0('s ' + str(self.baddr))
             self.core.cmd0('b ' + str(self.size))
-            dasm = self.core.cmd_str('pi')
+            dasm = self.core.cmd_str('pd')
             self.core.cmd0('b 512')
             self.fulldasm = dasm
         return self.fulldasm
@@ -288,14 +283,6 @@ class Core():
 
     def get_file_info(self):
         print "[*] Get file info"
-        # core.filename        : /home/hteso/Pocs/MRxNet/mrxnet.sys
-        # core.format          : PE
-        # core.maxfilesize     : 1073741824
-        # core.maxsize         : 17400
-        # core.type            : 32
-        # core.processor       : intel
-        #info = self.bin.get_info()
-        #if 'ELF' in self.core.format or 'PE' in self.core.format:
         if 'Program' in self.core.format:
            self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine}
         else:

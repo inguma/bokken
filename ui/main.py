@@ -171,7 +171,7 @@ class MainApp:
 
         print "Loading file: %s..." % (target)
         self.uicore.load_file(target)
-        if self.uicore.core.format in ['PE', 'Elf']:
+        if self.uicore.core.format in ['PE', 'Elf', 'Program']:
             self.uicore.get_sections()
         print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
@@ -186,13 +186,6 @@ class MainApp:
             #print "File format detected: %s" % (self.uicore.core.format)
             # Create left combo depending on file format
             self.tviews.update_left_combo()
-
-            # If analyze binary option was choosen, format will be 'Program'
-            if self.backend == 'radare':
-                if self.uicore.do_anal:
-                    self.uicore.core.format = 'Program'
-                else:
-                    self.uicore.core.format = 'Hexdump'
 
             # Add data to RIGHT TextView
             if self.uicore.core.format in ["PE", "ELF", "Program"]:

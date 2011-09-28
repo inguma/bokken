@@ -152,22 +152,23 @@ class TextViews(gtk.HBox):
     def update_righttext(self, option):
         # Fill right textview with selected content
         if option in ['Disassembly', 'Hexdump', 'Program']:
-            try:
-                self.uicore.get_sections()
-                self.dasm = self.uicore.get_text_dasm()
-            except:
-                self.dasm = self.uicore.get_fulldasm()
-            try:
-                self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph())
-            except:
-                pass
+            # We don't want dasm and graph for not analyzed programs or other files
+            if option != 'Hexdump':
+                if self.uicore.allsections:
+                    self.dasm = self.uicore.get_text_dasm()
+                else:
+                    self.dasm = self.uicore.get_fulldasm()
+                self.buffer.set_text(self.dasm)
+                try:
+                    self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph())
+                except:
+                    pass
 
             # Load hexdump, strings and strings repr
             self.hexdump = self.uicore.get_full_hexdump()
             self.strings = self.uicore.get_strings()
             self.repr = self.uicore.get_repr()
 
-            self.buffer.set_text(self.dasm)
         elif option == 'Python':
             self.dasm = self.uicore.get_python_dasm()
         elif option == 'URL':
@@ -196,7 +197,7 @@ class TextViews(gtk.HBox):
                 self.uicore.core.format = 'Hexdump'
                 option = 'Disassembly'
 
-        # Highlight syntax just for 'Disassembly', 'URL' and 'Plain text'
+        # Highlight syntax just for 'Disassembly', 'URL' 'Program' and 'Plain text'
         if option in ['Disassembly', 'URL', 'Plain Text', 'Python', 'Program']:
             self.buffer.set_highlight_syntax(True)
         else:
@@ -214,7 +215,7 @@ class TextViews(gtk.HBox):
         else:
             self.leftvb.hide()
 
-        self.update_tabs(option)
+        #self.update_tabs(option)
 
     def update_interactive(self):
         self.uicore.core.offset = 0
@@ -248,9 +249,13 @@ class TextViews(gtk.HBox):
                     tmp.append(element)
                 self.left_treeview.store.append(tmp)
         elif mode == 'Imports':
+            # FIXME horrible...
             # We have different import format for PE or Elf
-            if 'ELF' in self.uicore.core.format:
-                self.left_treeview.create_tree( self.uicore.get_elf_imports() )
+            if self.uicore.backend == 'radare':
+                if 'elf' in self.uicore.info.rclass:
+                    self.left_treeview.create_tree( self.uicore.get_elf_imports() )
+                else:
+                    self.left_treeview.create_tree( self.uicore.get_imports() )
             else:
                 self.left_treeview.create_tree( self.uicore.get_imports() )
         elif mode == 'Exports':
@@ -262,11 +267,12 @@ class TextViews(gtk.HBox):
         elif mode == 'URL':
             self.left_treeview.create_url_tree( self.uicore.parsed_links )
 
-    def update_tabs(self, mode):
-        if mode == 'Disassembly':
-            self.right_notebook.set_show_tabs(True)
-        elif mode == 'URL':
-            self.right_notebook.set_show_tabs(True)
+#    def update_tabs(self, mode):
+#        #print "Updating tabs!"
+#        if mode == 'Disassembly':
+#            self.right_notebook.set_show_tabs(True)
+#        elif mode == 'URL':
+#            self.right_notebook.set_show_tabs(True)
 #        else:
 #            self.right_notebook.set_show_tabs(False)
 #            self.right_notebook.set_current_page(0)
@@ -296,6 +302,8 @@ class TextViews(gtk.HBox):
             options = ['PDF Info']
         elif self.uicore.core.format in ['URL']:
             options = ['Links']
+        elif self.uicore.core.format in ['Hexdump']:
+            options = ['']
         else:
             options = ['']
 

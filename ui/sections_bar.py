@@ -78,7 +78,7 @@ class SectionsBar(gtk.DrawingArea):
         # Get sections sizes
         total_size = sections_size[-1]
         prev_height = 0
-        # Aqui iterare entre las secciones
+        # Iterate sections
         total_size = sections_size[-1]
         for size in sections_size[:-1]:
             # Calculate percentage
