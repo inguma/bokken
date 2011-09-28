@@ -17,7 +17,6 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
 
 class FileDialog(gtk.Dialog):
@@ -91,6 +90,7 @@ class FileDialog(gtk.Dialog):
         # TextEntry
         self.model = gtk.ListStore(str)
         self.input_entry = gtk.ComboBoxEntry(self.model, column=0)
+        self.input_entry.get_child().connect("activate", self.get_file)
         #self.input_entry = gtk.Entry(100)
         if self.file:
             self.input_entry.get_child().set_text(self.file)
@@ -159,6 +159,7 @@ class FileDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.options_hbox, False, False, 2)
 
         self.vbox.pack_start(self.main_vbox)
+        self.set_focus(self.input_entry.get_child())
         self.show_all()
         if self.core == 'pyew':
             self.radare_box.set_visible(False)
