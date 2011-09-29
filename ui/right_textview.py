@@ -38,6 +38,14 @@ class RightTextView(gtk.VBox, Searchable):
         self.uicore = core
         self.textviews = textviews
 
+        self.seek_index = 0
+        self.seeks = []
+
+        #################################################
+        # Move buttons
+        self.move_buttons = self.create_seek_buttons()
+        self.pack_start(self.move_buttons, False, False, 1)
+
         self.sec_bar = sections_bar.SectionsBar(self.uicore)
         self.hbox = gtk.HBox(False, 0)
 
@@ -95,6 +103,33 @@ class RightTextView(gtk.VBox, Searchable):
         self.match_end = None
         self.search_string = ''
 
+    def do_seek(self, widget, direction):
+        if self.seek_index <= 1 and direction == 'b':
+            pass
+        elif self.seek_index == len(self.seeks) and direction == 'f':
+            pass
+        else:
+            if direction == 'b':
+                self.seek_index -= 1
+            elif direction == 'f':
+                self.seek_index += 1
+            print "Nuevo indice %d" % self.seek_index
+
+            print "Me muevo al indice %d de %d" % (self.seek_index-1, self.seek_index)
+            self.view.scroll_to_iter(self.seeks[self.seek_index-1], 0, True, 0, 0)
+
+    def set_completion(self):
+        # Seek entry EntryCompletion
+        self.completion = gtk.EntryCompletion()
+        self.liststore = gtk.ListStore(str)
+        # Add function names to the list
+        for function in self.uicore.allfuncs:
+            self.liststore.append([function])
+
+        self.completion.set_model(self.liststore)
+        self.seek.set_completion(self.completion)
+        self.completion.set_text_column(0)
+
     def _get_clicked_word(self, widget, event):
         # Get textbuffer coordinates from texview ones
         x, y = self.view.get_pointer()
@@ -127,6 +162,29 @@ class RightTextView(gtk.VBox, Searchable):
 #        if self.uicore.backend == 'radare':
 #            self.textviews.update_graph(self, text[soffset:eoffset])
 
+    def create_seek_buttons(self):
+        self.hbox = gtk.HBox(False, 1)
+
+        self.back = gtk.Button()
+        self.back_img = gtk.Image()
+        self.back_img.set_from_stock(gtk.STOCK_GO_BACK, gtk.ICON_SIZE_MENU)
+        self.back.set_image(self.back_img)
+        self.back.connect('clicked', self.do_seek, 'b')
+
+        self.forward = gtk.Button()
+        self.forward_img = gtk.Image()
+        self.forward_img.set_from_stock(gtk.STOCK_GO_FORWARD, gtk.ICON_SIZE_MENU)
+        self.forward.set_image(self.forward_img)
+        self.forward.connect('clicked', self.do_seek, 'f')
+
+        self.seek = gtk.Entry(30)
+        self.seek.set_icon_from_stock(1, gtk.STOCK_JUMP_TO)
+
+        self.hbox.pack_start(self.back, False, False)
+        self.hbox.pack_start(self.forward, False, False)
+        self.hbox.pack_start(self.seek, True, True)
+
+        return self.hbox
     def _search(self, search_string, iter = None):
 
         self.dograph = False
@@ -187,6 +245,13 @@ class RightTextView(gtk.VBox, Searchable):
                             self.view.scroll_to_iter(self.match_start, 0, True, 0, 0)
                             self.last_search_iter = self.match_end
                             self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
+
+                    # Update seeks
+                    if self.match_start != self.seeks[-1]:
+                        self.seeks.insert(self.seek_index, self.match_start)
+                        self.seek_index += 1
+                        if len(self.seeks) != self.seek_index:
+                            self.seeks = self.seeks[:self.seek_index]
     
                 else:
                     self.search_string = None      

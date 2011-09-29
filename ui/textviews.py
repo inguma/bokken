@@ -232,6 +232,7 @@ class TextViews(gtk.HBox):
 
     def create_completion(self):
         self.interactive_textview.interactive_buttons.set_completion()
+        self.right_textview.set_completion()
 
     def format_html(self, code):
         import tidy
@@ -361,6 +362,10 @@ class TextViews(gtk.HBox):
                 self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                 self.last_search_iter = self.match_end
                 self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
+
+                self.right_textview.seek_index += 1
+                self.right_textview.seeks.insert(self.right_textview.seek_index, self.match_start)
+                print "Anadida nueva entrada en el indice %d" % self.right_textview.seek_index
 
             else:
                 self.search_string = None      
