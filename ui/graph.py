@@ -38,6 +38,8 @@ class MyDotWidget(gtk.HBox):
             self.pack_start(self.sw, False, False, 4)
 
     def set_dot(self, dotcode):
+        dotcode = dotcode.replace('color=lightgray, style=filled', 'color=blue')
+        dotcode = dotcode.replace('color="lightgray"', 'color="blue"')
         self.dot_widget.set_dotcode(dotcode)
         #self.animate_to( self.graph.nodes[-1].x, self.graph.nodes[-1].y)
         if self.uicore.backend == 'radare':
