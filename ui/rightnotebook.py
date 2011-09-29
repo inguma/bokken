@@ -45,18 +45,19 @@ class RightNotebook(gtk.Notebook):
 
         #################################################
         # Graph map TAB
-        self.xdot_widget = graph.MyDotWidget(self.uicore)
-        self.append_page(self.xdot_widget)
+        self.xdot_box = graph.MyDotWidget(self.uicore)
+        self.xdot_widget = self.xdot_box.dot_widget
+        self.append_page(self.xdot_box)
 
         if self.uicore.backend == 'pyew':
             label = 'Callgraph'
         else:
             label = 'Graph'
 
-        tab = self.create_tab(label, self.xdot_widget)
+        tab = self.create_tab(label, self.xdot_box)
 
-        self.set_tab_label_packing(self.xdot_widget, False, False, gtk.PACK_START)
-        self.set_tab_label(self.xdot_widget, tab)
+        self.set_tab_label_packing(self.xdot_box, False, False, gtk.PACK_START)
+        self.set_tab_label(self.xdot_box, tab)
 
         #################################################
         # Hexdump TAB
@@ -107,7 +108,7 @@ class RightNotebook(gtk.Notebook):
         # Tabs to avoid
         avoid = [
                 self.page_num(self.scrolled_window),
-                self.page_num(self.xdot_widget),
+                self.page_num(self.xdot_box),
                 self.page_num(self.interactive_scrolled)
                 ]
         #avoid = [0, 1, 5]

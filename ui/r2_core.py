@@ -45,6 +45,7 @@ class Core():
         self.allsections = []
         self.execsections = []
         self.sections_size = []
+        self.sections_lines = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -79,6 +80,7 @@ class Core():
         self.allsections = []
         self.execsections = []
         self.sections_size = []
+        self.sections_lines = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -165,7 +167,10 @@ class Core():
         return self.allfuncs
 
     def get_hexdump(self):
+        print "[*] Get hexdump"
+        #self.core.cmd0('e io.va=0')
         hexdump = self.core.cmd_str('px')
+        #self.core.cmd0('e io.va=1')
         return hexdump
 
     def get_full_hexdump(self):
@@ -195,9 +200,11 @@ class Core():
                 self.core.cmd0('b ' + str(section[1]))
                 print "\t* Let's get the dasm for %s..." % section[0],
                 dasm = self.core.cmd_str('pD')
+                self.sections_lines.append( len(dasm.split('\n')) )
                 self.core.cmd0('b 512')
                 print " OK!"
                 self.text_dasm += dasm
+            self.sections_lines.append(sum(self.sections_lines))
         return self.text_dasm
 
     def get_fulldasm(self):
@@ -310,11 +317,15 @@ class Core():
             direction = '.'
 
         if output == 'hexadecimal':
-            void = self.core._cmd('px', True)
+            self.core.cmd0('e io.va=false')
+            self.core._cmd('px', True)
+            data= self.core.cmd_str(direction)
+            self.core.cmd0('e io.va=true')
         elif output == 'disassembly':
-            void = self.core._cmd('pd', True)
+            self.core._cmd('pd', True)
+            data= self.core.cmd_str(direction)
 
-        return self.core.cmd_str(direction)
+        return data
 
     def search(self, text, type):
         self.core.cmd0('e io.va=false')

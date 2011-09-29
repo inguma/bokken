@@ -160,7 +160,7 @@ class TextViews(gtk.HBox):
                     self.dasm = self.uicore.get_fulldasm()
                 self.buffer.set_text(self.dasm)
                 try:
-                    self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph())
+                    self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph())
                 except:
                     pass
 
@@ -181,7 +181,7 @@ class TextViews(gtk.HBox):
                 code = unicode(self.uicore.core.buf, 'iso8859-15')
             self.uicore.core.bsize = 512
             self.buffer.set_text(code)
-            self.right_notebook.xdot_widget.set_dot(self.uicore.http_dot)
+            self.right_notebook.xdot_box.set_dot(self.uicore.http_dot)
             self.hexdump = self.uicore.get_full_hexdump()
             self.hexdump_view.set_hexdump(self.hexdump)
         elif option == 'Plain Text':
@@ -218,9 +218,17 @@ class TextViews(gtk.HBox):
         #self.update_tabs(option)
 
     def update_interactive(self):
-        self.uicore.core.offset = 0
+        print "[*] Update interacive"
+        if self.uicore.backend == 'pyew':
+            self.uicore.core.offset = 0
+        elif self.uicore.backend == 'radare':
+            self.uicore.core.cmd0('e io.va=0')
+            self.uicore.core.cmd0('s 0')
+
         dump = self.uicore.get_hexdump()
         self.interactive_buffer.set_text(dump)
+        if self.uicore.backend == 'radare':
+            self.uicore.core.cmd0('e io.va=1')
 
     def create_completion(self):
         self.interactive_textview.interactive_buttons.set_completion()
@@ -318,7 +326,7 @@ class TextViews(gtk.HBox):
 
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]
-        self.right_notebook.xdot_widget.set_dot(self.uicore.get_callgraph(addr))
+        self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph(addr))
 
     def search(self, widget, search_string, iter = None):
         # Clean string to search

@@ -51,17 +51,12 @@ class SectionsBar(gtk.DrawingArea):
         self._scroll_height = self.scrollbar.allocation.height
         stepper_size = self.scrollbar.style_get_property("stepper-size")
         height = self._scroll_height - 1 - (2 * stepper_size)
-        #height = self._scroll_height - self._h_offset - 1
-        y_start = self._scroll_y - self.allocation.y + self._y_offset + 1
-        xpad = self.style_get_property('x-padding')
-        x0 = xpad
-        x1 = self.allocation.width - 2 * xpad
 
         context = self.window.cairo_create()
         #context.translate(0, y_start)
         context.translate(0, 0)
         context.set_line_width(1)
-        context.rectangle(0, stepper_size, 20, height + 1)
+        context.rectangle(0, stepper_size, 20, height - 1)
         context.clip()
 
         darken = lambda color: [x * 0.8 for x in color]
@@ -72,7 +67,7 @@ class SectionsBar(gtk.DrawingArea):
         if height == 0:
             return
 
-        sections_size = self.uicore.sections_size
+        sections_size = self.uicore.sections_lines
         if len(sections_size) < 2:
             sections_size = [height, height]
         # Get sections sizes
