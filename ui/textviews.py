@@ -366,10 +366,12 @@ class TextViews(gtk.HBox):
                 self.right_textview.seek_index += 1
                 self.right_textview.seeks.insert(self.right_textview.seek_index, self.match_start)
                 #print "Anadida nueva entrada en el indice %d" % self.right_textview.seek_index
+                return True
 
             else:
                 self.search_string = None      
                 self.last_search_iter = None
+                return False
 
     def get_language(self):
         if 'http' in self.uicore.core.filename:

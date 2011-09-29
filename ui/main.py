@@ -231,6 +231,14 @@ class MainApp:
                     link_name = "0x%08x" % self.uicore.core.num.get('entry0')
                     if link_name:
                         self.tviews.search(self, link_name)
+            elif 'pyew' in self.uicore.backend:
+                if self.uicore.core.format in ['PE', 'ELF']:
+                    if self.uicore.core.ep:
+                        link_name = "0x%08x" % self.uicore.core.ep
+                        if link_name:
+                            if not self.tviews.search(self, link_name):
+                                link_name = "0x%08x" % self.uicore.text_address
+                                self.tviews.search(self, link_name)
 
     def disable_all(self):
         if self.target:
