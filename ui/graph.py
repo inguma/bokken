@@ -35,7 +35,7 @@ class MyDotWidget(gtk.HBox):
         self.create_tree()
         self.pack_start(self.dot_widget, True, True, 0)
         if self.uicore.backend == 'radare':
-            self.pack_start(self.tree, False, False, 4)
+            self.pack_start(self.sw, False, False, 4)
 
     def set_dot(self, dotcode):
         self.dot_widget.set_dotcode(dotcode)
@@ -49,8 +49,15 @@ class MyDotWidget(gtk.HBox):
         self.dot_widget.on_zoom_fit(None)
 
     def create_tree(self):
+        # Scrolled Window
+        self.sw = gtk.ScrolledWindow()
+        self.sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+
         self.store = gtk.ListStore(str, str)
         self.tree = gtk.TreeView(self.store)
+
+        self.sw.add(self.tree)
 
         self.tree.set_rules_hint(True)
 
@@ -84,7 +91,7 @@ class MyDotWidget(gtk.HBox):
         self.tree.expand_all()
 
     def popup_menu(self, tree, event):
-        if event.button == 1:
+        if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
             (path, column) = tree.get_cursor()
             # Is it over a plugin name ?
             # Ge the information about the click
