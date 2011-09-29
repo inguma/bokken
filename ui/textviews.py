@@ -365,7 +365,7 @@ class TextViews(gtk.HBox):
 
                 self.right_textview.seek_index += 1
                 self.right_textview.seeks.insert(self.right_textview.seek_index, self.match_start)
-                print "Anadida nueva entrada en el indice %d" % self.right_textview.seek_index
+                #print "Anadida nueva entrada en el indice %d" % self.right_textview.seek_index
 
             else:
                 self.search_string = None      
