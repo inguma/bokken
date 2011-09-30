@@ -217,6 +217,8 @@ class RightTextView(gtk.VBox, Searchable):
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             elif 'reloc.' in search_string:
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
+            elif 'str.' in search_string:
+                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             elif 'sub_' in search_string:
                 self.search_string = '0x' + search_string[4:]
             elif '.' in search_string:
