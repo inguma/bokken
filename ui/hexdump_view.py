@@ -21,6 +21,7 @@ import os
 import gtk
 import pango
 import gtksourceview2
+from subprocess import call, Popen, PIPE
 
 class HexdumpView(gtk.HBox):
 
@@ -85,6 +86,7 @@ class HexdumpView(gtk.HBox):
 
         self.offset_view = gtksourceview2.View(self.offset_buffer)
         self.hex_view = gtksourceview2.View(self.hex_buffer)
+        self.hex_view.connect("button-release-event", self.get_selected_text)
         self.ascii_view = gtksourceview2.View(self.ascii_buffer)
         self.asm_view = gtksourceview2.View(self.asm_buffer)
 
@@ -224,3 +226,14 @@ class HexdumpView(gtk.HBox):
         hex_adj = self.hex_sw.get_vadjustment()
         hex_adj.set_value(value)
         hex_adj.changed()
+
+    def get_selected_text(self, widget, event):
+        start, end = self.hex_buffer.get_selection_bounds()
+        hex = self.hex_buffer.get_text(start, end, include_hidden_chars=True)
+        tmp_hex = hex.replace(' ', '')
+        tmp_hex = tmp_hex.replace('\n', '')
+        #asmcode = self.uicore.r_asm.mdisassemble_hexstr(hex)
+        #dasm = call(["rasm2", '-d', tmp_hex], True)
+        if self.uicore.backend == 'radare':
+            dasm = Popen("rasm2 -d " + tmp_hex, stdout=PIPE, shell=True).stdout.read()
+            self.asm_buffer.set_text(hex + '\n\n' + dasm)
