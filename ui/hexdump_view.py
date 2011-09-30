@@ -124,7 +124,7 @@ class HexdumpView(gtk.HBox):
     def add_content(self):
         hexdump = self.uicore.get_full_hexdump()
         self.set_hexdump(hexdump)
-        self.asm_buffer.set_text(';; WIP; Not yet working!!\n;; Select some hex bytes on the left\n;; to see them disassembled here')
+        self.asm_buffer.set_text(';; WIP; Not yet working!!\n\n;; Select some hex bytes on the left\n;; to see them disassembled here')
 
     def remove_content(self):
         self.offset_buffer.set_text('')

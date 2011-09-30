@@ -27,12 +27,13 @@ from r2.r_bin import *
 
 class Core():
 
-    def __init__(self, lower_case, do_anal, asm_syn, use_va):
+    def __init__(self, lower_case, do_anal, asm_syn, use_va, asm_bytes):
 
         self.do_anal = do_anal
         self.lower_case = lower_case
         self.use_va = use_va
         self.asm_syn = asm_syn
+        self.asm_bytes = asm_bytes
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -120,6 +121,10 @@ class Core():
             self.core.cmd0("e asm.syntax=att")
         else:
             self.core.cmd0("e asm.syntax=intel")
+        if self.asm_bytes:
+            self.core.cmd0("e asm.bytes=false")
+        else:
+            self.core.cmd0("e asm.bytes=true")
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
