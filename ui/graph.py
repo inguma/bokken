@@ -20,6 +20,7 @@
 import gtk
 
 from xdot import DotWidget
+import graph_bar
 
 #class MyDotWidget(DotWidget):
 class MyDotWidget(gtk.HBox):
@@ -34,6 +35,8 @@ class MyDotWidget(gtk.HBox):
         self.dot_widget = DotWidget()
         self.create_tree()
         self.pack_start(self.dot_widget, True, True, 0)
+        self.bar = graph_bar.GraphBar(self.dot_widget)
+        self.pack_start(self.bar, False, False, 0)
         if self.uicore.backend == 'radare':
             self.pack_start(self.sw, False, False, 4)
 
