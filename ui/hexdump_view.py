@@ -35,6 +35,15 @@ class HexdumpView(gtk.HBox):
         #################################################################
 
         self.uicore = core
+        if self.uicore.backend == 'pyew':
+            from pydistorm import Decode, Decode16Bits, Decode32Bits, Decode64Bits
+            self.Decode = Decode
+            if self.uicore.core.type == 16:
+                self.decode = Decode16Bits
+            elif self.uicore.core.type == 32:
+                self.decode = Decode32Bits
+            elif self.uicore.core.type == 64:
+                self.decode = Decode64Bits
 
         # Scrolledwindow for Offsets
         self.offset_sw = gtk.ScrolledWindow()
@@ -236,4 +245,11 @@ class HexdumpView(gtk.HBox):
         #dasm = call(["rasm2", '-d', tmp_hex], True)
         if self.uicore.backend == 'radare':
             dasm = Popen("rasm2 -d " + tmp_hex, stdout=PIPE, shell=True).stdout.read()
+            self.asm_buffer.set_text(hex + '\n\n' + dasm)
+        elif self.uicore.backend == 'pyew':
+            dasm = ''
+            for i in self.Decode(0, tmp_hex, self.decode):
+                mn = "%s " % i.mnemonic
+                op = "%s" % i.operands
+                dasm += mn.lower() + op.lower() + '\n'
             self.asm_buffer.set_text(hex + '\n\n' + dasm)
