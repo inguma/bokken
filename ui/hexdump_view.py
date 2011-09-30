@@ -17,6 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
 import gtk
 import pango
 import gtksourceview2
@@ -53,6 +54,11 @@ class HexdumpView(gtk.HBox):
         self.ascii_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
         self.ascii_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
+        # Scrolledwindow for DASM
+        self.asm_sw = gtk.ScrolledWindow()
+        self.asm_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.asm_sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+
         # Scrolling signals and callbacks
         self.offset_sw.connect("scroll-event", self._sync_vscroll_offset_scroll)
         self.hex_sw.connect("scroll-event", self._sync_vscroll_hex_scroll)
@@ -65,9 +71,22 @@ class HexdumpView(gtk.HBox):
         self.hex_buffer = gtksourceview2.Buffer()
         self.ascii_buffer = gtksourceview2.Buffer()
 
+        self.asm_buffer = gtksourceview2.Buffer()
+        # Add ui dir to language paths
+        lm = gtksourceview2.LanguageManager()
+        paths = lm.get_search_path()
+        paths.append(os.getcwd() + os.sep + 'ui' + os.sep + 'data' + os.sep)
+        lm.set_search_path(paths)
+        self.asm_buffer.set_data('languages-manager', lm)
+        self.asm_buffer.set_highlight_syntax(True)
+        manager = self.asm_buffer.get_data('languages-manager')
+        language = manager.get_language('asm')
+        self.asm_buffer.set_language(language)
+
         self.offset_view = gtksourceview2.View(self.offset_buffer)
         self.hex_view = gtksourceview2.View(self.hex_buffer)
         self.ascii_view = gtksourceview2.View(self.ascii_buffer)
+        self.asm_view = gtksourceview2.View(self.asm_buffer)
 
         # Margins for eye candy
         self.offset_view.set_show_right_margin(True)
@@ -79,12 +98,15 @@ class HexdumpView(gtk.HBox):
         self.hex_view.set_editable(False)
         self.ascii_view.set_editable(False)
         self.ascii_view.set_left_margin(10)
+        self.ascii_view.set_right_margin(10)
+        self.asm_view.set_left_margin(10)
 
         font_desc = pango.FontDescription('monospace 9')
         if font_desc:
             self.offset_view.modify_font(font_desc)
             self.hex_view.modify_font(font_desc)
             self.ascii_view.modify_font(font_desc)
+            self.asm_view.modify_font(font_desc)
 
         #print self.hex_buffer.get_line_count()
 
@@ -92,14 +114,17 @@ class HexdumpView(gtk.HBox):
         self.offset_sw.add(self.offset_view)
         self.hex_sw.add(self.hex_view)
         self.ascii_sw.add(self.ascii_view)
+        self.asm_sw.add(self.asm_view)
 
         self.pack_start(self.offset_sw, False, False, 0)
         self.pack_start(self.hex_sw, False, False, 0)
-        self.pack_start(self.ascii_sw, True, True, 0)
+        self.pack_start(self.ascii_sw, False, False, 0)
+        self.pack_start(self.asm_sw, True, True, 0)
 
     def add_content(self):
         hexdump = self.uicore.get_full_hexdump()
         self.set_hexdump(hexdump)
+        self.asm_buffer.set_text(';; WIP; Not yet working!!\n;; Select some hex bytes on the left\n;; to see them disassembled here')
 
     def remove_content(self):
         self.offset_buffer.set_text('')
