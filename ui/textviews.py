@@ -32,11 +32,11 @@ import ui.repr_textview as repr_textview
 import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
 
-class TextViews(gtk.HBox):
+class TextViews(gtk.HPaned):
     '''Main TextView elements'''
 
     def __init__(self, core):
-        super(TextViews,self).__init__(False, 1)
+        super(TextViews,self).__init__()
 
         self.uicore = core
 
@@ -50,8 +50,8 @@ class TextViews(gtk.HBox):
         # Left and right Vertical Boxes
         self.leftvb = gtk.VBox(False, 1)
         rightvb = gtk.VBox(False, 1)
-        self.pack_start(self.leftvb, True, True, 1)
-        self.pack_start(rightvb, True, True, 1)
+        self.pack1(self.leftvb, True, True)
+        self.pack2(rightvb, True, True)
 
         #################################################################
         # Left ListView and TreeView
