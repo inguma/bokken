@@ -90,7 +90,7 @@ class FileDialog(gtk.Dialog):
         # TextEntry
         self.model = gtk.ListStore(str)
         self.input_entry = gtk.ComboBoxEntry(self.model, column=0)
-        self.input_entry.get_child().connect("activate", self.get_file)
+        self.input_entry.get_child().connect("activate", self.fast_start)
         #self.input_entry = gtk.Entry(100)
         if self.file:
             self.input_entry.get_child().set_text(self.file)
@@ -176,11 +176,19 @@ class FileDialog(gtk.Dialog):
         self.destroy()
 
     def get_file(self, widget):
+        self.hide()
         self.file = self.input_entry.get_child().get_text()
         self.manager.add_item('file://' + self.file)
         self.get_backend()
         self.get_options()
         self.destroy()
+
+    def fast_start(self, widget):
+        self.file = self.input_entry.get_child().get_text()
+        if self.file:
+            self.get_file(widget)
+        else:
+            self.select_file(widget)
 
     def get_backend(self):
         self.backend = self.core_combo.get_active_text().lower()
