@@ -44,8 +44,6 @@ class Core():
         self.execsections = []
         self.sections_size = []
         self.sections_lines = []
-        self.sections_size = []
-        self.sections_lines = []
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
@@ -88,8 +86,6 @@ class Core():
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
-        self.sections_size = []
-        self.sections_lines = []
         self.sections_size = []
         self.sections_lines = []
         self.allimports = {}
@@ -183,8 +179,8 @@ class Core():
         if not self.text_dasm:
             self.core.lines = 100*100
             if self.core.format == 'PE':
+                dasm = ''
                 for section in self.execsections:
-                    dasm = ''
                     print "\t* Let's get the dasm for %s..." % section[0][0],
                     # Let's store text section information
                     #print hex(self.core.pe.OPTIONAL_HEADER.ImageBase + section.VirtualAddress)
@@ -198,14 +194,18 @@ class Core():
                     print "OK"
                 self.sections_lines.append(sum(self.sections_lines))
             elif self.core.format == 'ELF':
-                for section in self.elf.sections:
+                for section in self.execsections:
+                    print "\t* Let's get the dasm for %s..." % section[0][0],
                     # Let's store text section information
-                    if 'text' in section.getName():
-                        self.text_rsize = section.sh_size
-                        self.text_address = self.core.elf.secnames[section.getName()].sh_offset
-                        self.seek(self.text_address)
-                        dis = self.core.disassemble(self.core.buf, self.core.processor, self.core.type, self.core.lines, self.text_rsize, baseoffset=self.text_address)
-                        self.text_dasm = dis
+                    self.text_rsize = section[1]
+                    self.text_address = section[2]
+                    self.seek(self.text_address)
+                    dis = self.core.disassemble(self.core.buf, self.core.processor, self.core.type, self.core.lines, self.text_rsize, baseoffset=self.text_address)
+                    self.sections_lines.append( len(dis.split('\n')) )
+                    self.text_dasm += ';; ------------------------\n;; Section: %s\n;; ------------------------\n' % section[0]
+                    self.text_dasm += dis
+                    print "OK"
+                self.sections_lines.append(sum(self.sections_lines))
         self.core.bsize = 512
         self.core.lines = 40
         return self.text_dasm
@@ -337,7 +337,10 @@ class Core():
         elif self.core.format == 'ELF':
             if self.allsections == []:
                 for section in self.core.elf.secnames:
-                    self.allsections.append( [self.core.elf.secnames[section].getName(), "0x%08x" % (self.core.elf.secnames[section].sh_addr), "N/A", "N/A"] )
+                    if self.core.elf.secnames[section].sh_flags == 6:
+                        self.execsections.append([self.core.elf.secnames[section].getName(), self.core.elf.secnames[section].sh_size, self.core.elf.secnames[section].sh_offset])
+                        self.sections_size.append(self.core.elf.secnames[section].sh_size)
+                        self.allsections.append( [self.core.elf.secnames[section].getName(), "0x%08x" % (self.core.elf.secnames[section].sh_addr), "N/A", "N/A"] )
 
         return self.allsections
 

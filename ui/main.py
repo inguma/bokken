@@ -171,7 +171,7 @@ class MainApp:
 
         print "Loading file: %s..." % (target)
         self.uicore.load_file(target)
-        if self.uicore.core.format in ['PE', 'Elf', 'Program']:
+        if self.uicore.core.format in ['PE', 'Elf', 'ELF', 'Program']:
             self.uicore.get_sections()
         print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
