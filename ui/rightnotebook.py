@@ -27,6 +27,8 @@ class RightNotebook(gtk.Notebook):
     def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, uicore):
         super(RightNotebook,self).__init__()
 
+        self.last_fcn = ''
+
         self.tviews = tviews
         self.scrolled_window = scrolled_window
         self.strings_textview = strings_textview
@@ -114,6 +116,8 @@ class RightNotebook(gtk.Notebook):
             elif page == page_num and page not in avoid:
                 widget = self.get_nth_page(page)
                 widget.add_content()
+        if page_num == self.page_num(self.xdot_box):
+            self.xdot_box.set_dot(self.uicore.get_callgraph(self.last_fcn))
 
     def hide_tabs(self):
         self.set_show_tabs(False)
