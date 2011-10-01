@@ -146,6 +146,7 @@ class HexdumpView(gtk.HBox):
         self.offset_buffer.set_style_scheme(theme)
         self.hex_buffer.set_style_scheme(theme)
         self.ascii_buffer.set_style_scheme(theme)
+        self.asm_buffer.set_style_scheme(theme)
 
     def set_hexdump(self, dump):
         DUMP = dump
