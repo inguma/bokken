@@ -31,6 +31,7 @@ import ui.strings_textview as strings_textview
 import ui.repr_textview as repr_textview
 import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
+import ui.bindiff as bindiff
 
 class TextViews(gtk.HPaned):
     '''Main TextView elements'''
@@ -127,9 +128,16 @@ class TextViews(gtk.HPaned):
         self.repr_mgr = self.repr_textview.mgr
 
         #################################################################
+        # Bindiff widget
+        #################################################################
+
+        self.bindiff_widget = bindiff.Bindiff(self.uicore, self)
+        self.bindiff = self.bindiff_widget.dw
+
+        #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.uicore)
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb

@@ -28,6 +28,7 @@ ENDC = '\033[0m'
 
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
+import ui.diff_dialog as diff_dialog
 import ui.throbber as throbber
 
 class TopButtons(gtk.HBox):
@@ -37,6 +38,7 @@ class TopButtons(gtk.HBox):
         super(TopButtons,self).__init__(False, 1)
 
         self.main = main
+        self.diff_widget = self.main.tviews.bindiff_widget
 
         self.uicore = core
         self.toolbox = self
@@ -71,15 +73,21 @@ class TopButtons(gtk.HBox):
         self.asm_tb.connect("clicked", self._miau)
         self.main_tb.insert(self.asm_tb, 2)
 
+        # Bindiff button
+        self.diff_tb = gtk.ToolButton(gtk.STOCK_REFRESH)
+        self.diff_tb.set_tooltip_text('Do binary diffing')
+        self.diff_tb.connect("clicked", self._do_diff)
+        self.main_tb.insert(self.diff_tb, 3)
+
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 3)
+        self.main_tb.insert(self.sep, 4)
 
         # Search components
         self.search_tb = gtk.ToolItem()
         self.search_label = gtk.Label('  Search:  ')
         self.search_tb.add(self.search_label)
-        self.main_tb.insert(self.search_tb, 4)
+        self.main_tb.insert(self.search_tb, 5)
 
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo = gtk.combo_box_new_text()
@@ -89,12 +97,12 @@ class TopButtons(gtk.HBox):
             self.search_combo.append_text(option)
         self.search_combo.set_active(1)
         self.search_combo_tb.add(self.search_combo)
-        self.main_tb.insert(self.search_combo_tb, 5)
+        self.main_tb.insert(self.search_combo_tb, 6)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 6)
+        self.main_tb.insert(self.sep, 7)
 
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
@@ -103,35 +111,35 @@ class TopButtons(gtk.HBox):
         self.search_entry.connect("activate", self.search)
         self.search_entry.connect("icon-press", self.search)
         self.search_entry_tb.add(self.search_entry)
-        self.main_tb.insert(self.search_entry_tb, 7)
+        self.main_tb.insert(self.search_entry_tb, 8)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 8)
+        self.main_tb.insert(self.sep, 9)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 9)
+        self.main_tb.insert(self.exit_tb, 10)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 10)
+        self.main_tb.insert(self.sep, 11)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 11)
+        self.main_tb.insert(self.about_tb, 12)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 12)
+        self.main_tb.insert(self.throbber_tb, 13)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -144,6 +152,19 @@ class TopButtons(gtk.HBox):
 
     # Private methods
     #
+
+    def _do_diff(self, widget):
+        chooser = diff_dialog.DiffDialog(self.uicore)
+        self.response = chooser.run()
+        if self.response == gtk.RESPONSE_DELETE_EVENT or self.response == gtk.RESPONSE_REJECT:
+            print "Cancelled"
+            chooser.destroy()
+        else:
+            self.file_name = chooser.input_entry2.get_text()
+            self.diff_widget.set_file(self.file_name)
+            self.diff_widget.diff()
+            self.main.tviews.right_notebook.add_bindiff_tab()
+            chooser.destroy()
 
     def _miau(self, widgets):
         self.create_assemble_dialog()

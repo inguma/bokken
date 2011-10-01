@@ -56,7 +56,7 @@ class SectionsBar(gtk.DrawingArea):
         #context.translate(0, y_start)
         context.translate(0, 0)
         context.set_line_width(1)
-        context.rectangle(0, stepper_size, 20, height - 1)
+        context.rectangle(0, stepper_size + 1, 15, height - 1)
         context.clip()
 
         darken = lambda color: [x * 0.8 for x in color]
@@ -74,10 +74,10 @@ class SectionsBar(gtk.DrawingArea):
         total_size = sections_size[-1]
         prev_height = 0
         # Iterate sections
-        total_size = sections_size[-1]
         for size in sections_size[:-1]:
             # Calculate percentage
             perc_size = (float(size)*100)/float(total_size)
+            #print "%d is the %d percentage of %d" % (size, perc_size, total_size)
             # Get height
             tmp_height = height * perc_size / 100
             y1 = tmp_height
@@ -86,7 +86,7 @@ class SectionsBar(gtk.DrawingArea):
             color = colors[ sections_size.index(size) & 1]
             context.set_source_rgb(*color)
             context.set_line_width(1)
-            context.rectangle(0, stepper_size + prev_height + 0.5, 20, y1 + stepper_size + prev_height - 0.5)
+            context.rectangle(0, stepper_size + prev_height + 0.5, 15, y1 + stepper_size + prev_height - 0.5)
             context.fill_preserve()
             context.set_source_rgb(*darken(color))
             context.stroke()
