@@ -64,7 +64,6 @@ class Core():
 
         self.core = RCore()
         self.cons = RCons()
-        self.r_asm = RAsm()
         self.assembler = self.core.assembler
         self.core.format = ''
 

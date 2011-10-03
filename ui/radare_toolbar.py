@@ -29,6 +29,8 @@ ENDC = '\033[0m'
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
 import ui.diff_dialog as diff_dialog
+import ui.sections_dialog as sections_dialog
+import ui.calc_dialog as calc_dialog
 import ui.throbber as throbber
 
 class TopButtons(gtk.HBox):
@@ -79,15 +81,27 @@ class TopButtons(gtk.HBox):
         self.diff_tb.connect("clicked", self._do_diff)
         self.main_tb.insert(self.diff_tb, 3)
 
+        # Section bars button
+        self.sections_tb = gtk.ToolButton(gtk.STOCK_SORT_ASCENDING)
+        self.sections_tb.set_tooltip_text('Show section bars')
+        self.sections_tb.connect("clicked", self._do_sections)
+        self.main_tb.insert(self.sections_tb, 4)
+
+        # Calculator button
+        self.calc_tb = gtk.ToolButton(gtk.STOCK_EXECUTE)
+        self.calc_tb.set_tooltip_text('Show calculator')
+        self.calc_tb.connect("clicked", self._do_calc)
+        self.main_tb.insert(self.calc_tb, 5)
+
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 4)
+        self.main_tb.insert(self.sep, 6)
 
         # Search components
         self.search_tb = gtk.ToolItem()
         self.search_label = gtk.Label('  Search:  ')
         self.search_tb.add(self.search_label)
-        self.main_tb.insert(self.search_tb, 5)
+        self.main_tb.insert(self.search_tb, 7)
 
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo = gtk.combo_box_new_text()
@@ -97,12 +111,12 @@ class TopButtons(gtk.HBox):
             self.search_combo.append_text(option)
         self.search_combo.set_active(1)
         self.search_combo_tb.add(self.search_combo)
-        self.main_tb.insert(self.search_combo_tb, 6)
+        self.main_tb.insert(self.search_combo_tb, 8)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 7)
+        self.main_tb.insert(self.sep, 9)
 
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
@@ -111,35 +125,35 @@ class TopButtons(gtk.HBox):
         self.search_entry.connect("activate", self.search)
         self.search_entry.connect("icon-press", self.search)
         self.search_entry_tb.add(self.search_entry)
-        self.main_tb.insert(self.search_entry_tb, 8)
+        self.main_tb.insert(self.search_entry_tb, 10)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 9)
+        self.main_tb.insert(self.sep, 11)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 10)
+        self.main_tb.insert(self.exit_tb, 12)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 11)
+        self.main_tb.insert(self.sep, 13)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 12)
+        self.main_tb.insert(self.about_tb, 14)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 13)
+        self.main_tb.insert(self.throbber_tb, 15)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -157,7 +171,6 @@ class TopButtons(gtk.HBox):
         chooser = diff_dialog.DiffDialog(self.uicore)
         self.response = chooser.run()
         if self.response == gtk.RESPONSE_DELETE_EVENT or self.response == gtk.RESPONSE_REJECT:
-            print "Cancelled"
             chooser.destroy()
         else:
             self.file_name = chooser.input_entry2.get_text()
@@ -165,6 +178,14 @@ class TopButtons(gtk.HBox):
             self.diff_widget.diff()
             self.main.tviews.right_notebook.add_bindiff_tab()
             chooser.destroy()
+
+    def _do_sections(self, widget):
+        self.sec_dialog = sections_dialog.SectionsDialog(self.uicore)
+        return False
+
+    def _do_calc(self, widget):
+        self.calc_dialog = calc_dialog.CalcDialog(self.uicore)
+        return False
 
     def _miau(self, widgets):
         self.create_assemble_dialog()
