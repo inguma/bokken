@@ -119,6 +119,31 @@ class TreeViews(gtk.TreeView):
         self.set_model(self.treestore)
         self.expand_all()
 
+    def create_url_headers(self, url_headers):
+        # Create the column
+        headers = gtk.TreeViewColumn()
+        headers.set_title("Headers")
+
+        cell = gtk.CellRendererText()
+        headers.pack_start(cell, True)
+        headers.add_attribute(cell, "text", 0)
+
+        cell = gtk.CellRendererText()
+        headers.pack_start(cell, True)
+        headers.add_attribute(cell, "text", 1)
+
+        self.treestore = gtk.TreeStore(str, str)
+
+        # Iterate headers and add to the tree
+        it = self.treestore.append(None, ['URL Headers', ''])
+        for element in url_headers:
+            self.treestore.append(it, [element, url_headers[element]])
+
+        # Add column to tree
+        self.append_column(headers)
+        self.set_model(self.treestore)
+        self.expand_all()
+
     def create_url_tree(self, links):
         # Create the column
         imports = gtk.TreeViewColumn()

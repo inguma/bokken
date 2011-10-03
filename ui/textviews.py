@@ -283,6 +283,8 @@ class TextViews(gtk.HPaned):
             self.left_treeview.create_pdf_tree( self.uicore.get_pdf_info() )
         elif mode == 'URL':
             self.left_treeview.create_url_tree( self.uicore.parsed_links )
+        elif mode == 'Headers':
+            self.left_treeview.create_url_headers( self.uicore.url_headers )
 
 #    def update_tabs(self, mode):
 #        #print "Updating tabs!"
@@ -318,7 +320,7 @@ class TextViews(gtk.HPaned):
         elif self.uicore.core.format in ['PDF']:
             options = ['PDF Info']
         elif self.uicore.core.format in ['URL']:
-            options = ['Links']
+            options = ['Links', 'Headers', 'Cookies']
         elif self.uicore.core.format in ['Hexdump']:
             options = ['']
         else:

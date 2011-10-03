@@ -51,6 +51,8 @@ class Core():
         self.alllinks = []
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
+        self.url_headers = {}
+        self.url_cookies = {}
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -95,6 +97,8 @@ class Core():
         self.alllinks = []
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
+        self.url_headers = {}
+        self.url_cookies = {}
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -123,6 +127,7 @@ class Core():
             #print "URL! We've got URL!"
             self.search_http_src()
             self.parse_http_locals()
+            self.get_headers_cookies()
         elif self.core.format in ["raw"]:
             #print "We've got RAW!"
             self.core.format = 'Plain Text'
@@ -497,6 +502,46 @@ class Core():
                 self.links_struct.append( {element[0]:['']} )
         import ui.generate_dot as gendot
         self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
+
+    def get_headers_cookies(self):
+        import cookielib
+        import urllib2
+
+        urlopen = urllib2.urlopen
+        cj = cookielib.LWPCookieJar()
+        Request = urllib2.Request
+
+        if cj != None:
+            if cookielib:
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+                urllib2.install_opener(opener)
+        
+        theurl = self.core.filename
+        txdata = None
+        txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
+
+        req = Request(theurl, txdata, txheaders)
+        handle = urlopen(req)
+
+        print 'Here are the headers of the page :'
+        self.url_headers = dict(handle.info())
+#        for x in dict(handle.info()):
+#            print x, 
+#            print dict(handle.info())[x]
+
+        print 'These are the cookies we have received so far :'
+        for x, y in enumerate(cj):
+            print x, y
+        ns_headers = handle.headers.getheaders("Set-Cookie")
+        attrs_set = cookielib.parse_ns_headers(ns_headers)
+        cookie_tuples = cj._normalized_cookie_tuples(attrs_set)
+        cookies = {}
+        for tup in cookie_tuples:
+            name, value, standard, rest = tup
+            cookies[name] = value
+            cookies['standard'] = standard
+            cookies['rest'] = rest
+        self.url_cookies = cookies
 
     def get_file_text(self):
         file = open(self.core.filename, 'rb')
