@@ -21,7 +21,6 @@ import os
 import gtk
 import pango
 import gtksourceview2
-from subprocess import call, Popen, PIPE
 
 class HexdumpView(gtk.HBox):
 
@@ -241,11 +240,10 @@ class HexdumpView(gtk.HBox):
         hex = self.hex_buffer.get_text(start, end, include_hidden_chars=True)
         tmp_hex = hex.replace(' ', '')
         tmp_hex = tmp_hex.replace('\n', '')
-        #asmcode = self.uicore.r_asm.mdisassemble_hexstr(hex)
-        #dasm = call(["rasm2", '-d', tmp_hex], True)
         if self.uicore.backend == 'radare':
-            dasm = Popen("rasm2 -d " + tmp_hex, stdout=PIPE, shell=True).stdout.read()
-            self.asm_buffer.set_text(hex + '\n\n' + dasm)
+            dasm = self.uicore.core.assembler.mdisassemble_hexstr(hex)
+            if dasm:
+                self.asm_buffer.set_text(hex + '\n\n' + dasm.buf_asm)
         elif self.uicore.backend == 'pyew':
             dasm = ''
             for i in self.Decode(0, tmp_hex, self.decode):
