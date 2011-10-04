@@ -285,6 +285,8 @@ class TextViews(gtk.HPaned):
             self.left_treeview.create_url_tree( self.uicore.parsed_links )
         elif mode == 'Headers':
             self.left_treeview.create_url_headers( self.uicore.url_headers )
+        elif mode == 'Cookies':
+            self.left_treeview.create_cookies_tree( self.uicore.url_cookies )
 
 #    def update_tabs(self, mode):
 #        #print "Updating tabs!"

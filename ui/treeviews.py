@@ -119,6 +119,46 @@ class TreeViews(gtk.TreeView):
         self.set_model(self.treestore)
         self.expand_all()
 
+    def create_cookies_tree(self, url_cookies):
+        # Create the column
+        cookies = gtk.TreeViewColumn()
+        cookies.set_title("Cookies")
+
+        self.cell = gtk.CellRendererText()
+        cookies.pack_start(self.cell, True)
+        cookies.add_attribute(self.cell, "text", 0)
+        cookies.set_attributes(self.cell, markup=0)
+
+        cell = gtk.CellRendererText()
+        cookies.pack_start(cell, True)
+        cookies.add_attribute(cell, "text", 1)
+        cookies.add_attribute(cell, "markup", 1)
+        cell.set_property("markup", 1)
+
+        self.treestore = gtk.TreeStore(str, str)
+
+        # Iterate headers and add to the tree
+        for cook in url_cookies:
+            it = self.treestore.append(None, [cook[0], ''])
+            for element in cook[1:]:
+                if isinstance(element, str):
+                    if ':' in element:
+                        tmp = element.split(':')
+                        for x in tmp:
+                            x = x.split('=')
+                            self.treestore.append(it, [x[0], x[1]])
+                else:
+                    for x in element.keys():
+                        if 'httponly' in x.lower():
+                            self.treestore.append(it, ["<span foreground=\"blue\"><b>%s</b></span>" % x, element[x]])
+                        else:
+                            self.treestore.append(it, [x, element[x]])
+
+        # Add column to tree
+        self.append_column(cookies)
+        self.set_model(self.treestore)
+        self.expand_all()
+
     def create_url_headers(self, url_headers):
         # Create the column
         headers = gtk.TreeViewColumn()

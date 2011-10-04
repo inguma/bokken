@@ -52,7 +52,7 @@ class Core():
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
         self.url_headers = {}
-        self.url_cookies = {}
+        self.url_cookies = []
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -98,7 +98,7 @@ class Core():
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
         self.url_headers = {}
-        self.url_cookies = {}
+        self.url_cookies = []
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -523,25 +523,21 @@ class Core():
         req = Request(theurl, txdata, txheaders)
         handle = urlopen(req)
 
-        print 'Here are the headers of the page :'
+#        print 'Here are the headers of the page :'
         self.url_headers = dict(handle.info())
-#        for x in dict(handle.info()):
-#            print x, 
-#            print dict(handle.info())[x]
 
-        print 'These are the cookies we have received so far :'
-        for x, y in enumerate(cj):
-            print x, y
+#        print 'These are the cookies we have received so far :'
         ns_headers = handle.headers.getheaders("Set-Cookie")
         attrs_set = cookielib.parse_ns_headers(ns_headers)
-        cookie_tuples = cj._normalized_cookie_tuples(attrs_set)
-        cookies = {}
-        for tup in cookie_tuples:
-            name, value, standard, rest = tup
-            cookies[name] = value
-            cookies['standard'] = standard
-            cookies['rest'] = rest
-        self.url_cookies = cookies
+        self.url_cookies = cj._normalized_cookie_tuples(attrs_set)
+
+#        import ui.html_parser as html_parser
+#        parser = html_parser.MyHTMLParser()
+#        data = handle.read()
+#        parser.print_contents(data)
+#        print parser.scripts
+#        print parser.comments
+#        print parser.forms
 
     def get_file_text(self):
         file = open(self.core.filename, 'rb')
