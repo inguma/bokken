@@ -100,7 +100,8 @@ class RightNotebook(gtk.Notebook):
         # Hide callgraph for URL, Plain Text and PDF
         if self.uicore.core.format in ['Plain Text', 'PDF', 'Hexdump']:
             self.remove_page(1)
-            self.remove_page(0)
+            if self.uicore.core.format != 'Plain Text':
+                self.remove_page(0)
 
     def on_switch(self, notebook, page, page_num):
         # Tabs to avoid
