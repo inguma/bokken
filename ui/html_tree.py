@@ -86,10 +86,10 @@ class HtmlTree(gtk.TreeView):
                     self.treestore.append(it, [attr[0], attr[1], ''])
 
         for comment in comments:
-            self.treestore.append(comments_it, [comment, '', ''])
+            self.treestore.append(comments_it, ['', comment, ''])
 
         for script in scripts:
-            self.treestore.append(scripts_it, [script, '', ''])
+            self.treestore.append(scripts_it, ['', script, ''])
 
         # Add column to tree
         self.append_column(htmls)
