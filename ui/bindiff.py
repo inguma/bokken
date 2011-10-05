@@ -18,11 +18,9 @@
 #       MA 02110-1301, USA.
 
 import os
-import sys
 import gtk
 import gtk.gdk
 import xdot
-import time
 import tempfile
 from r2.r_core import *
 

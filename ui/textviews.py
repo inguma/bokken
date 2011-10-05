@@ -32,6 +32,7 @@ import ui.repr_textview as repr_textview
 import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
 import ui.bindiff as bindiff
+import ui.html_tree as html_tree
 
 class TextViews(gtk.HPaned):
     '''Main TextView elements'''
@@ -135,9 +136,15 @@ class TextViews(gtk.HPaned):
         self.bindiff = self.bindiff_widget.dw
 
         #################################################################
+        # HTML elements widget
+        #################################################################
+
+        self.html_widget = html_tree.HtmlWindow(self.uicore)
+
+        #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.html_widget, self.uicore)
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb
@@ -222,6 +229,8 @@ class TextViews(gtk.HPaned):
             self.leftvb.show()
         else:
             self.leftvb.hide()
+        if self.uicore.core.format == 'URL':
+            self.right_notebook.add_html_elements_tab()
 
         #self.update_tabs(option)
 

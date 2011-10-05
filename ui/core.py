@@ -20,7 +20,10 @@
 import os
 import sys
 import sqlite3
+import cookielib
+import urllib2
 
+import ui.html_parser as html_parser
 from hashlib import md5, sha1, sha256
 from config import DATABASE_PATH
 
@@ -504,9 +507,6 @@ class Core():
         self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
 
     def get_headers_cookies(self):
-        import cookielib
-        import urllib2
-
         urlopen = urllib2.urlopen
         cj = cookielib.LWPCookieJar()
         Request = urllib2.Request
@@ -531,13 +531,12 @@ class Core():
         attrs_set = cookielib.parse_ns_headers(ns_headers)
         self.url_cookies = cj._normalized_cookie_tuples(attrs_set)
 
-#        import ui.html_parser as html_parser
-#        parser = html_parser.MyHTMLParser()
-#        data = handle.read()
-#        parser.print_contents(data)
-#        print parser.scripts
-#        print parser.comments
-#        print parser.forms
+        parser = html_parser.MyHTMLParser()
+        data = handle.read()
+        parser.print_contents(data)
+        self.scripts = parser.scripts
+        self.comments = parser.comments
+        self.forms = parser.forms
 
     def get_file_text(self):
         file = open(self.core.filename, 'rb')
