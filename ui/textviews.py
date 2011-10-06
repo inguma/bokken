@@ -33,6 +33,7 @@ import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
 import ui.bindiff as bindiff
 import ui.html_tree as html_tree
+import ui.info_tree as info_tree
 
 class TextViews(gtk.HPaned):
     '''Main TextView elements'''
@@ -143,9 +144,15 @@ class TextViews(gtk.HPaned):
         self.html_widget = html_tree.HtmlWindow(self.uicore)
 
         #################################################################
+        # Full file info widget
+        #################################################################
+
+        self.info_widget = info_tree.InfoWindow(self.uicore)
+
+        #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.html_widget, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.html_widget, self.info_widget, self.uicore)
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb

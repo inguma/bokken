@@ -50,6 +50,7 @@ class Core():
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
+        self.full_fileinfo = {}
         self.pdfinfo = ''
         self.alllinks = []
         self.parsed_links = {'remotes':[], 'locals':[]}
@@ -85,6 +86,7 @@ class Core():
         self.allimports = {}
         self.allexports = []
         self.fileinfo = ''
+        self.full_fileinfo = {}
         self.pdfinfo = ''
         self.alllinks = []
         self.parsed_links = {'remotes':[], 'locals':[]}
@@ -301,6 +303,52 @@ class Core():
             self.fileinfo = {'name':self.file}
 
         return self.fileinfo
+
+    def get_full_file_info(self):
+        print "[*] Get file info"
+        if not self.full_fileinfo:
+            # get binary info
+            file_info = self.core.cmd_str('iI')
+            if file_info:
+                self.full_fileinfo['bin'] = []
+                for line in file_info.split('\n'):
+                    line = line.split('=')
+                    self.full_fileinfo['bin'].append(line)
+            # Get imports
+            imports = self.core.cmd_str('ii')
+            if imports:
+                self.full_fileinfo['imports'] = []
+                for line in imports.split('\n'):
+                    line = line.split(' ')
+                    self.full_fileinfo['imports'].append(line)
+            # Get entry points
+            entryp = self.core.cmd_str('ie')
+            if entryp:
+                self.full_fileinfo['eps'] = []
+                for line in entryp.split('\n'):
+                    line = line.split(' ')
+                    self.full_fileinfo['eps'].append(line)
+            # Get symbols
+            symbols = self.core.cmd_str('is')
+            if symbols:
+                self.full_fileinfo['symbols'] = []
+                for line in symbols.split('\n'):
+                    line = line.split(' ')
+                    self.full_fileinfo['symbols'].append(line)
+            # Get sections
+            sections = self.core.cmd_str('iS')
+            if sections:
+                self.full_fileinfo['sections'] = []
+                for line in sections.split('\n'):
+                    line = line.split(' ')
+                    self.full_fileinfo['sections'].append(line)
+            # Get strings
+            strings = self.core.cmd_str('iz')
+            if strings:
+                self.full_fileinfo['strings'] = []
+                for line in strings.split('\n'):
+                    line = line.split(' ')
+                    self.full_fileinfo['strings'].append(line)
 
     def seek(self, pos):
         print pos

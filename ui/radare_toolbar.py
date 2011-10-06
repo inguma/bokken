@@ -93,15 +93,21 @@ class TopButtons(gtk.HBox):
         self.calc_tb.connect("clicked", self._do_calc)
         self.main_tb.insert(self.calc_tb, 5)
 
+        # File info button
+        self.info_tb = gtk.ToolButton(gtk.STOCK_INFO)
+        self.info_tb.set_tooltip_text('Show full file info')
+        self.info_tb.connect("clicked", self._do_file_info)
+        self.main_tb.insert(self.info_tb, 6)
+
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 6)
+        self.main_tb.insert(self.sep, 7)
 
         # Search components
         self.search_tb = gtk.ToolItem()
         self.search_label = gtk.Label('  Search:  ')
         self.search_tb.add(self.search_label)
-        self.main_tb.insert(self.search_tb, 7)
+        self.main_tb.insert(self.search_tb, 8)
 
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo = gtk.combo_box_new_text()
@@ -111,12 +117,12 @@ class TopButtons(gtk.HBox):
             self.search_combo.append_text(option)
         self.search_combo.set_active(1)
         self.search_combo_tb.add(self.search_combo)
-        self.main_tb.insert(self.search_combo_tb, 8)
+        self.main_tb.insert(self.search_combo_tb, 9)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 9)
+        self.main_tb.insert(self.sep, 10)
 
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
@@ -125,29 +131,29 @@ class TopButtons(gtk.HBox):
         self.search_entry.connect("activate", self.search)
         self.search_entry.connect("icon-press", self.search)
         self.search_entry_tb.add(self.search_entry)
-        self.main_tb.insert(self.search_entry_tb, 10)
+        self.main_tb.insert(self.search_entry_tb, 11)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 11)
+        self.main_tb.insert(self.sep, 12)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 12)
+        self.main_tb.insert(self.exit_tb, 13)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 13)
+        self.main_tb.insert(self.sep, 14)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 14)
+        self.main_tb.insert(self.about_tb, 15)
 
         # Throbber
         self.throbber = throbber.Throbber()
@@ -178,6 +184,10 @@ class TopButtons(gtk.HBox):
             self.diff_widget.diff()
             self.main.tviews.right_notebook.add_bindiff_tab()
             chooser.destroy()
+
+    def _do_file_info(self, widget):
+        self.main.tviews.right_notebook.add_info_elements_tab()
+        widget.set_sensitive(False)
 
     def _do_sections(self, widget):
         self.sec_dialog = sections_dialog.SectionsDialog(self.uicore)

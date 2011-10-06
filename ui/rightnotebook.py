@@ -24,7 +24,7 @@ import ui.graph as graph
 class RightNotebook(gtk.Notebook):
     '''Right Notebook elements'''
 
-    def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, bindiff, html_elements, uicore):
+    def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, bindiff, html_elements, info_elements, uicore):
         super(RightNotebook,self).__init__()
 
         self.last_fcn = ''
@@ -37,6 +37,7 @@ class RightNotebook(gtk.Notebook):
         self.hexdump_view = self.tviews.hexdump_view
         self.bindiff = bindiff
         self.html_elements = html_elements
+        self.info_elements = info_elements
         self.uicore = uicore
 
         #################################################
@@ -110,7 +111,8 @@ class RightNotebook(gtk.Notebook):
                 self.page_num(self.xdot_box),
                 self.page_num(self.interactive_scrolled),
                 self.page_num(self.bindiff),
-                self.page_num(self.html_elements)
+                self.page_num(self.html_elements),
+                self.page_num(self.info_elements)
                 ]
         #avoid = [0, 1, 5]
         # walk through tabs and remove all content but the active one
@@ -148,6 +150,20 @@ class RightNotebook(gtk.Notebook):
             self.html_elements.html_tree.create_html_tree()
             self.show_all()
 
+    def add_info_elements_tab(self):
+        #################################################
+        # File info elements TAB
+        if self.uicore.backend == 'radare':
+            self.uicore.get_full_file_info()
+            self.append_page(self.info_elements)
+            tab = self.create_tab('File info', self.info_elements)
+
+            self.set_tab_label_packing(self.info_elements, False, False, gtk.PACK_START)
+            self.set_tab_label(self.info_elements, tab)
+            self.info_elements.info_tree.create_info_tree()
+            self.show_all()
+            self.set_current_page(6)
+
     def hide_tabs(self):
         self.set_show_tabs(False)
         self.set_current_page(0)
@@ -168,7 +184,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Code', 'Callgraph', 'Graph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements']:
+        if title in ['Code', 'Callgraph', 'Graph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
             close_button.hide()
 
         return tab_box
