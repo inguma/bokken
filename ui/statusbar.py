@@ -30,22 +30,22 @@ class Statusbar(gtk.Statusbar):
 
         self.sbar_context = self.get_context_id('sb')
 
-        # Theme change combo
-        # Theme Label
-        self.theme_label = gtk.Label('Color theme:')
-
-        # Theme ComboBox
-        self.theme_combo = gtk.combo_box_new_text()
-        options = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
-        for option in options:
-            self.theme_combo.append_text(option)
-        # Set first by default
-        self.theme_combo.set_active(0)
-
-        self.theme_combo.connect("changed", self.theme_combo_change)
+#        # Theme change combo
+#        # Theme Label
+#        self.theme_label = gtk.Label('Color theme:')
+#
+#        # Theme ComboBox
+#        self.theme_combo = gtk.combo_box_new_text()
+#        options = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
+#        for option in options:
+#            self.theme_combo.append_text(option)
+#        # Set first by default
+#        self.theme_combo.set_active(0)
+#
+#        self.theme_combo.connect("changed", self.theme_combo_change)
         self.pack_start(gtk.VSeparator(), False)
-        self.pack_start(self.theme_label, False, False, 2)
-        self.pack_start(self.theme_combo, False, False, 2)
+#        self.pack_start(self.theme_label, False, False, 2)
+#        self.pack_start(self.theme_combo, False, False, 2)
 
     # Method to add content to the status bar
     def add_text(self, data_dict, version):

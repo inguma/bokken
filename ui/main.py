@@ -128,8 +128,6 @@ class MainApp:
         # Create VBox to contain top buttons and other VBox
         self.supervb = gtk.VBox(False, 1)
 
-        # I move tviews here so can be used by radare_toolbar
-        self.tviews = textviews.TextViews(self.uicore)
         # Create top buttons and add to VBox
         if self.backend == 'pyew':
             import ui.pyew_toolbar as toolbar
@@ -144,7 +142,9 @@ class MainApp:
         self.supervb.pack_start(self.mainvb, True, True, 1)
 
         # Initialize and add TextViews
-        #self.tviews = textviews.TextViews(self.uicore)
+        self.tviews = textviews.TextViews(self.uicore, self)
+        # Create toolbar show/hide tabs menu
+        self.topbuttons.create_view_menu()
 
         # Initialize and add Statusbar
         self.sbar = statusbar.Statusbar(self.uicore, self.tviews)

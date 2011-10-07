@@ -24,7 +24,7 @@ import ui.graph as graph
 class RightNotebook(gtk.Notebook):
     '''Right Notebook elements'''
 
-    def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, bindiff, html_elements, info_elements, uicore):
+    def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, bindiff, html_elements, info_elements, uicore, main):
         super(RightNotebook,self).__init__()
 
         self.last_fcn = ''
@@ -39,6 +39,7 @@ class RightNotebook(gtk.Notebook):
         self.html_elements = html_elements
         self.info_elements = info_elements
         self.uicore = uicore
+        self.main = main
 
         #################################################
         # Code view TAB
@@ -96,6 +97,10 @@ class RightNotebook(gtk.Notebook):
         self.set_tab_label_packing(self.interactive_scrolled, False, False, gtk.PACK_START)
         self.set_tab_label(self.interactive_scrolled, tab)
 
+        if self.uicore.backend == 'radare':
+            self.add_info_elements_tab()
+        self.set_current_page(0)
+
         self.connect("switch-page", self.on_switch)
 
         # Hide callgraph for URL, Plain Text and PDF
@@ -136,7 +141,7 @@ class RightNotebook(gtk.Notebook):
             self.set_tab_label_packing(self.bindiff, False, False, gtk.PACK_START)
             self.set_tab_label(self.bindiff, tab)
             self.show_all()
-            self.set_current_page(6)
+            self.set_current_page(7)
 
     def add_html_elements_tab(self):
         #################################################
@@ -162,7 +167,6 @@ class RightNotebook(gtk.Notebook):
             self.set_tab_label(self.info_elements, tab)
             self.info_elements.info_tree.create_info_tree()
             self.show_all()
-            self.set_current_page(6)
 
     def hide_tabs(self):
         self.set_show_tabs(False)

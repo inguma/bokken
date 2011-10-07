@@ -53,6 +53,7 @@ class Core():
         self.full_fileinfo = {}
         self.pdfinfo = ''
         self.alllinks = []
+        self.ars_magica = ''
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
         self.dot = ''
@@ -89,6 +90,7 @@ class Core():
         self.full_fileinfo = {}
         self.pdfinfo = ''
         self.alllinks = []
+        self.ars_magica = ''
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
         self.dot = ''
@@ -349,6 +351,12 @@ class Core():
                 for line in strings.split('\n'):
                     line = line.split(' ')
                     self.full_fileinfo['strings'].append(line)
+
+    def get_magic(self):
+        self.core.cmd0('e io.va=false')
+        self.ars_magica = self.core.cmd_str('pm')
+        self.core.cmd0('e io.va=true')
+        print self.ars_magica
 
     def seek(self, pos):
         print pos

@@ -40,7 +40,6 @@ class TopButtons(gtk.HBox):
         super(TopButtons,self).__init__(False, 1)
 
         self.main = main
-        self.diff_widget = self.main.tviews.bindiff_widget
 
         self.uicore = core
         self.toolbox = self
@@ -93,15 +92,16 @@ class TopButtons(gtk.HBox):
         self.calc_tb.connect("clicked", self._do_calc)
         self.main_tb.insert(self.calc_tb, 5)
 
-        # File info button
-        self.info_tb = gtk.ToolButton(gtk.STOCK_INFO)
-        self.info_tb.set_tooltip_text('Show full file info')
-        self.info_tb.connect("clicked", self._do_file_info)
-        self.main_tb.insert(self.info_tb, 6)
+        # File magic button
+        self.magic_tb = gtk.ToolButton(gtk.STOCK_INFO)
+        self.magic_tb.set_tooltip_text('Show file magic')
+        self.magic_tb.connect("clicked", self._do_file_magic)
+        self.main_tb.insert(self.magic_tb, 6)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, 7)
+
 
         # Search components
         self.search_tb = gtk.ToolItem()
@@ -137,29 +137,55 @@ class TopButtons(gtk.HBox):
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, 12)
 
+        # Views menu tool button
+        self.views = gtk.MenuToolButton(gtk.STOCK_PREFERENCES)
+        self.views_menu = gtk.Menu()
+
+        self.views.set_menu(self.views_menu)
+        self.views_menu.show_all()
+        self.main_tb.insert(self.views, 13)
+
+        # Theme menu tool button
+        self.themes = gtk.MenuToolButton(gtk.STOCK_SELECT_COLOR)
+        self.themes_menu = gtk.Menu()
+        themes = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
+        for theme in themes:
+            item = gtk.MenuItem(theme)
+            item.connect("activate", self._on_theme_change)
+            self.themes_menu.append(item)
+        self.themes_menu.show_all()
+
+        self.themes.set_menu(self.themes_menu)
+        self.themes_menu.show_all()
+        self.main_tb.insert(self.themes, 14)
+
+        # Separator
+        self.sep = gtk.SeparatorToolItem()
+        self.main_tb.insert(self.sep, 15)
+
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 13)
+        self.main_tb.insert(self.exit_tb, 16)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 14)
+        self.main_tb.insert(self.sep, 17)
 
         # About button
         self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
         self.about_tb.connect("clicked", self.create_about_dialog)
         self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 15)
+        self.main_tb.insert(self.about_tb, 18)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 15)
+        self.main_tb.insert(self.throbber_tb, 19)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -174,6 +200,7 @@ class TopButtons(gtk.HBox):
     #
 
     def _do_diff(self, widget):
+        self.diff_widget = self.main.tviews.bindiff_widget
         chooser = diff_dialog.DiffDialog(self.uicore)
         self.response = chooser.run()
         if self.response == gtk.RESPONSE_DELETE_EVENT or self.response == gtk.RESPONSE_REJECT:
@@ -189,6 +216,9 @@ class TopButtons(gtk.HBox):
         self.main.tviews.right_notebook.add_info_elements_tab()
         widget.set_sensitive(False)
 
+    def _do_file_magic(self, widget):
+        self.uicore.get_magic()
+
     def _do_sections(self, widget):
         self.sec_dialog = sections_dialog.SectionsDialog(self.uicore)
         return False
@@ -199,6 +229,34 @@ class TopButtons(gtk.HBox):
 
     def _miau(self, widgets):
         self.create_assemble_dialog()
+
+    def _on_status_view(self, widget):
+        target = widget.get_label().split(' ')[1]
+        for x in self.nb.get_children():
+            y = self.nb.get_tab_label(x)
+            if target in y.get_children()[1].get_text().lower():
+                target = x
+                break
+        if widget.active:
+            x.show()
+        else:
+            x.hide()
+
+    def create_view_menu(self):
+        self.nb = self.main.tviews.right_notebook
+        for x in self.nb.get_children():
+            box = self.nb.get_tab_label(x)
+            element = box.get_children()[1].get_text().lower()
+            item = gtk.CheckMenuItem("Show " + element)
+            if element != 'full info':
+                item.set_active(True)
+            item.connect("activate", self._on_status_view)
+            self.views_menu.append(item)
+        self.views_menu.show_all()
+
+    def _on_theme_change(self, widget):
+        theme = widget.get_label()
+        self.main.tviews.update_theme(theme)
 
     def _bye(self, widget):
         msg = ("Do you really want to quit?")

@@ -38,10 +38,11 @@ import ui.info_tree as info_tree
 class TextViews(gtk.HPaned):
     '''Main TextView elements'''
 
-    def __init__(self, core):
+    def __init__(self, core, main):
         super(TextViews,self).__init__()
 
         self.uicore = core
+        self.main = main
 
         self.match_start = None
         self.match_end = None
@@ -152,7 +153,7 @@ class TextViews(gtk.HPaned):
         #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.html_widget, self.info_widget, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.html_widget, self.info_widget, self.uicore, self.main)
         #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
 
         # Add combo and textview to rightvb
