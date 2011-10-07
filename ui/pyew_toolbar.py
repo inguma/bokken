@@ -310,7 +310,7 @@ class TopButtons(gtk.HBox):
     #
     def new_file(self, widget, file=''):
         if not file:
-            dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, self.dependency_check.HAS_RADARE, 'pyew', '')
+            dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, False, 'pyew', '')
             dialog.run()
             self.file = dialog.file
         else:
