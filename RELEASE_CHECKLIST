@@ -1,0 +1,43 @@
+Things to do in order to release Bokken
+=======================================
+
+(All the following examples are made with 1.5, please change it accordingly)
+
+* Start writing a blog post in http://ingumadev.blogspot.com.  Our blog posts have to be always accompanied
+  by screenshots of the new features.  Review the existing images in Redmine and either replace
+  them or add more to the wiki.
+
+* Tag the final release in mercurial:
+
+hg tag -m "Tagged 1.5 release." 1.5
+hg push
+
+* Make a tar.gz and upload it to Redmine as bokken-1.5.tar.gz and under PROPER Version (1.5 in this case).
+
+* Publish the blog post once you have the download link.
+
+* Based on the post, write a simple new News entry in http://bokken.eu/projects/bokken/news/new
+  and refer to the blog article for further information.  See http://inguma.eu/news/6 as an example.
+
+* Tweet about the new release and point to the blog post.
+
+* Go to http://freshmeat.net/projects/bokken:
+  - Click on "Edit this project" (http://freshmeat.net/projects/bokken/edit), and change the "Latest release"
+    link to the new one.
+  - Click on "Submit a release" (http://freshmeat.net/projects/bokken/releases/new) and fill out the text
+    field with short sentences about the release.  Note that Freshmeat does not respect new lines, so
+    everything will appear as a long sentence.  If you are in doubt, preview your changes or see other
+    releases.
+
+* Go to the Roadmap page (http://inguma.eu/projects/bokken/roadmap) and move all the open bugs (if any!)
+  in the already-released version to the next one.  You can do it in bulk from the UI.  Click on "X open bugs",
+  and then select all of them (you can do it by clicking on a blank part in the first Subject field, then
+  Shift-click in the last issue, and then right-click...Target version...2.0).
+
+* Go back to the Roadmap page and move all the closed bugs in the Open Backlog (if any) into the
+  already-released version.  Same as above, click "N closed", then select all and assign them to 1.5.
+
+* Go to Redmine, to the Versions tab under Settings (http://inguma.eu/projects/bokken/settings/versions) and
+  close the current version and add the new one with the proposed schedule.
+
+* Take a breath.
