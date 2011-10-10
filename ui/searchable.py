@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 '''
 import gtk
+import gobject
 
 class Searchable(object):
     '''Class that gives the machinery to search to a TextView.
@@ -54,6 +55,7 @@ class Searchable(object):
         # build the search tab
         self._build_search(None)
         self.searching = True
+        self.timer_id = None
 
     def _key(self, widg, event):
         '''Handles keystrokes.'''
@@ -108,7 +110,7 @@ class Searchable(object):
         self.search_entry = gtk.Entry()
         self.search_entry.set_tooltip_text("Type here the phrase you want to find")
         self.search_entry.connect("activate", self._find, "next")
-        self.search_entry.connect("changed", self._find, "find")
+        self.search_entry.connect("changed", self._find_cb, "find")
         self.srchtab.pack_start(self.search_entry, expand=False, fill=False, padding=3)
         # find next button
         if self.small:
@@ -155,19 +157,27 @@ class Searchable(object):
         self._matchCaseValue = not self._matchCaseValue
         self._find(None, 'find')
 
+    def _find_cb(self, widget, data):
+        # This loop makes sure that we only call _find every 500 ms .
+        if self.timer_id:
+            # We destroy the last event source and create another one.
+            gobject.source_remove(self.timer_id)
+        self.timer_id = gobject.timeout_add(500, self._find, widget, data)
+
     def _find(self, widget, direction):
         '''Actually find the text, and handle highlight and selection.'''
         # if not searching, don't do anything
         if not self.searching:
-            return
+            return False
         # get widgets and info
+        self.timer_id = None
         self._clean()
         tosearch = self.search_entry.get_text()
         if not tosearch:
-            return
+            return False
         positions = self.highlight(tosearch, "yellow-background", self._matchCaseValue)
         if not len(positions):
-            return
+            return False
         # find where's the cursor in the found items
         cursor = self.textbuf.get_mark("insert")
         cursorIter = self.textbuf.get_iter_at_mark(cursor)
@@ -177,7 +187,7 @@ class Searchable(object):
                 break
         else:
             keypos = 0
-        # go next or previos, and adjust in the border
+        # go next or previous, and adjust in the border
         if direction == "next":
             keypos += 1
             if keypos >= len(positions):
@@ -190,6 +200,7 @@ class Searchable(object):
         (iterini, iterfin) = positions[keypos]
         self.textbuf.select_range(iterini, iterfin)
         self.textview.scroll_to_iter(iterini, 0, False)
+        return False
 
     def highlight(self, text, tag='yellow-background', case_sensitive=True):
         """Find the text, and handle highlight."""
