@@ -17,7 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os, sys
+import os
 
 import gtk, gobject
 import threading
@@ -293,9 +293,6 @@ class TopButtons(gtk.HBox):
         else:
             self.file = file
 
-        # Clean full vars where file parsed data is stored as cache
-        self.uicore.clean_fullvars()
-
         # Check if file name is an URL, pyew stores it as 'raw'
         self.uicore.is_url(self.file)
 
@@ -304,7 +301,10 @@ class TopButtons(gtk.HBox):
         # Just open the file if path is correct or an url
         if self.uicore.core.format != 'URL' and not os.path.isfile(self.file):
             print "Incorrect file argument:", FAIL, self.file, ENDC
-            sys.exit(1)
+            return False
+
+        # Clean full vars where file parsed data is stored as cache
+        self.uicore.clean_fullvars()
 
         # Use threads not to freeze GUI while loading
         # FIXME: Same code used in main.py, should be converted into a function
@@ -333,17 +333,18 @@ class TopButtons(gtk.HBox):
     #
     def search(self, widget, icon_pos=None, event=None):
         data = self.search_entry.get_text()
-        model = self.search_combo.get_model()
-        active = self.search_combo.get_active()
-        option = model[active][0]
-
-        results = self.uicore.search(data, self.options_dict[option])
-
-        self.create_search_dialog()
-        enditer = self.search_dialog.output_buffer.get_end_iter()
-
-        for element in results:
-            self.search_dialog.output_buffer.insert(enditer, element)
+        if data:
+            model = self.search_combo.get_model()
+            active = self.search_combo.get_active()
+            option = model[active][0]
+    
+            results = self.uicore.search(data, self.options_dict[option])
+    
+            self.create_search_dialog()
+            enditer = self.search_dialog.output_buffer.get_end_iter()
+    
+            for element in results:
+                self.search_dialog.output_buffer.insert(enditer, element)
 
     def create_assemble_dialog(self):
 
