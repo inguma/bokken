@@ -259,16 +259,24 @@ class TreeViews(gtk.TreeView):
             link_name = link_name.split("\t")
             # Elf/PE (function)
             if len( link_name ) == 1:
-                if self.uicore.backend == 'radare':
-                    # Just get graph for functions
-                    if 'fcn.' in link_name[0]:
-                        self.dograph = True
-                    link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
-                else:
-                    link_name = 'FUNCTION ' + link_name[0]
+                if self.uicore.backend == 'pyew':
+                    if '0x' in link_name[0]:
+                        rva = int(link_name[0], 16) - self.uicore.core.pe.OPTIONAL_HEADER.ImageBase
+                        link_name = hex( self.uicore.core.pe.get_offset_from_rva(rva) )
+                    else:
+                        link_name = 'FUNCTION ' + link_name[0]
+                elif self.uicore.backend == 'radare':
+                    if '0x' in link_name[0]:
+                        link_name = link_name[0]
+                    else:
+                        # Just get graph for functions
+                        if 'fcn.' in link_name[0]:
+                            self.dograph = True
+                        link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
-                link_name = link_name[1]
+                link_name =  "0x%08x" % int(link_name[0], 16)
+
             # URL
             else:
                 link_name = link_name[0]
@@ -322,7 +330,7 @@ class TreeViews(gtk.TreeView):
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
-                link_name = link_name[0]
+                link_name =  "0x%08x" % int(link_name[0], 16)
 
             # URL
             else:

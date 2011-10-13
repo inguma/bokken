@@ -121,47 +121,7 @@ class StringsTextView(gtk.VBox, Searchable):
             soffset = temp_offset
 
         self.textviews.right_textview._search(text[soffset:eoffset])
-
-#    def _search(self, search_string, iter = None):
-#
-#        self.search_string = ''
-#        if search_string:
-#            # If is an address, search lines begining by this address
-#            if '0x' in search_string:
-#                integer = int(search_string, 16)
-#                hex_addr = "0x%08x" % integer
-#                self.search_string = hex_addr
-#            elif 'str.' in search_string:
-#                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-#            else:
-#                pass
-#
-#            if self.search_string:
-#                startIter =  self.textbuf.get_start_iter()
-#                # find the positions where the phrase is found
-#                res = []
-#                while True:
-#                    result = startIter.forward_search(self.search_string, gtk.TEXT_SEARCH_TEXT_ONLY, None)
-#                    if result:
-#                        res.append((result[0], result[1]))
-#                        startIter = result[1]
-#                    else:
-#                        break
-#
-#                if res:
-#                    # Remove previous marks if exist
-#                    if self.match_start != None and self.match_end != None:
-#                        self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
-#                    for iter in res:
-#                        if iter[0].get_line_offset() < 16:
-#                            self.match_start, self.match_end = iter
-#
-#                        if self.match_start:
-#                            self.buffer.place_cursor(self.match_start)
-#                            self.view.scroll_to_iter(self.match_start, 0, True, 0, 0)
-#                            self.last_search_iter = self.match_end
-#                            self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
-#    
-#                else:
-#                    self.search_string = None      
-#                    self.last_search_iter = None
+        if self.uicore.backend == 'radare':
+            self.nb = self.textviews.right_notebook
+            num = self.nb.page_num(self.textviews.right_textview)
+            self.nb.set_current_page(num)
