@@ -58,7 +58,7 @@ class RightNotebook(gtk.Notebook):
         if self.uicore.backend == 'pyew':
             label = 'Callgraph'
         else:
-            label = 'Graph'
+            label = 'Flowgraph'
 
         tab = self.create_tab(label, self.xdot_box, 'ZOOM_FIT')
 
@@ -141,7 +141,7 @@ class RightNotebook(gtk.Notebook):
             self.set_tab_label_packing(self.bindiff, False, False, gtk.PACK_START)
             self.set_tab_label(self.bindiff, tab)
             self.show_all()
-            self.set_current_page(7)
+            self.set_current_page(8)
 
     def add_html_elements_tab(self):
         #################################################
@@ -192,7 +192,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Code', 'Callgraph', 'Graph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
+        if title in ['Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
             close_button.hide()
 
         return tab_box
