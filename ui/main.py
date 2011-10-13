@@ -48,7 +48,7 @@ if sys.platform == "win32":
 else:
     gtk.gdk.threads_init()
 
-MAINTITLE = "Bokken, a GUI for pyew and (WIP) radare2!"
+MAINTITLE = "Bokken, a GUI for pyew and radare2!"
 VERSION = "1.5-dev"
 
 FAIL = '\033[91m'

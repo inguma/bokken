@@ -28,7 +28,7 @@ class AboutDialog():
         about.set_program_name("Bokken")
         about.set_version("1.5-dev")
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
-        about.set_comments("A GUI for pyew and (WIP) radare2!")
+        about.set_comments("A GUI for pyew and radare2!")
         about.set_website("http://bokken.inguma.eu")
         about.set_authors(["Hugo Teso <hteso@inguma.eu>"])
         about.set_artists(["Marcos Gomez <renx67@gmail.com>"])
