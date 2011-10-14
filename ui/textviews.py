@@ -34,6 +34,7 @@ import ui.interactive_textview as interactive_textview
 import ui.bindiff as bindiff
 import ui.html_tree as html_tree
 import ui.info_tree as info_tree
+import ui.left_buttons as left_buttons
 
 class TextViews(gtk.HPaned):
     '''Main TextView elements'''
@@ -52,7 +53,7 @@ class TextViews(gtk.HPaned):
         #################################################################
 
         # Left and right Vertical Boxes
-        self.leftvb = gtk.VBox(False, 1)
+        self.leftvb = gtk.HBox(False, 1)
         rightvb = gtk.VBox(False, 1)
         self.pack1(self.leftvb, True, True)
         self.pack2(rightvb, True, True)
@@ -62,16 +63,16 @@ class TextViews(gtk.HPaned):
         #################################################################
 
         # Scrolled Window
-        left_scrolled_window = gtk.ScrolledWindow()
-        left_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        left_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        left_scrolled_window.set_size_request(150,-1)
-        left_scrolled_window.show()
+        self.left_scrolled_window = gtk.ScrolledWindow()
+        self.left_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.left_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.left_scrolled_window.set_size_request(150,-1)
+        self.left_scrolled_window.show()
 
         # Create left TreeView
         self.left_treeview = treeviews.TreeViews(self.uicore, self)
 
-        left_scrolled_window.add(self.left_treeview)
+        self.left_scrolled_window.add(self.left_treeview)
 
         #################################################################
         # Left ComboBox
@@ -79,65 +80,19 @@ class TextViews(gtk.HPaned):
         self.left_combo = gtk.combo_box_new_text()
         # Set grayed by default
         self.left_combo.set_sensitive(False)
-        self.connect = self.left_combo.connect("changed", self.update_left_content)
+        #self.connect = self.left_combo.connect("changed", self.update_left_content)
 
         # Add combo and textview to leftvb
-        self.leftvb.pack_start(self.left_combo, False, True, 2)
+        #self.leftvb.pack_start(self.left_combo, False, True, 2)
 
+        #################################################################
         # Left mini-toolbar
-        toolbar = gtk.Toolbar()
-        toolbar.set_style(gtk.TOOLBAR_ICONS)
+        #################################################################
 
-        self.fcn_pix = gtk.Image()
-        self.fcn_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'function.png')
-        self.bb_pix = gtk.Image()
-        self.bb_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'block.png')
-        self.imp_pix = gtk.Image()
-        self.imp_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'import.png')
-        self.exp_pix = gtk.Image()
-        self.exp_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'export.png')
-        a = gtk.VBox(False, 1)
-        fcntb = gtk.ToggleButton()
-        fcntb.set_active(True)
-#        fcntb.set_image(self.fcn_pix)
-        l = gtk.Label('Functions')
-        l.set_angle(90)
-        a.pack_start(l, False, False, 1)
-        a.pack_start(self.fcn_pix, False, False, 1)
-        fcntb.add(a)
-        sectb = gtk.Button()
-#        sectb.set_image(self.bb_pix)
-        a = gtk.VBox(False, 1)
-        l = gtk.Label('Sections')
-        l.set_angle(90)
-        a.pack_start(l, False, False, 1)
-        a.pack_start(self.bb_pix, False, False, 1)
-        sectb.add(a)
-        imptb = gtk.Button()
-#        imptb.set_image(self.imp_pix)
-        a = gtk.VBox(False, 1)
-        l = gtk.Label('Imports')
-        l.set_angle(90)
-        a.pack_start(l, False, False, 1)
-        a.pack_start(self.imp_pix, False, False, 1)
-        imptb.add(a)
-        exptb = gtk.Button()
-#        exptb.set_image(self.exp_pix)
-        a = gtk.VBox(False, 1)
-        l = gtk.Label('Exports')
-        l.set_angle(90)
-        a.pack_start(l, False, False, 1)
-        a.pack_start(self.exp_pix, False, False, 1)
-        exptb.add(a)
+        self.left_buttons = left_buttons.LeftButtons(self.main)
 
-        miau = gtk.VBox(False, 0)
-        miau.pack_start(fcntb, False, False, 0)
-        miau.pack_start(sectb, False, False, 0)
-        miau.pack_start(imptb, False, False, 0)
-        miau.pack_start(exptb, False, False, 0)
-
-        #self.leftvb.pack_start(miau, False, False, 0)
-        self.leftvb.pack_start(left_scrolled_window, True, True, 2)
+        self.leftvb.pack_start(self.left_buttons, False, False, 0)
+        self.leftvb.pack_start(self.left_scrolled_window, True, True, 0)
 
         #################################################################
         # Right Textview
@@ -373,6 +328,20 @@ class TextViews(gtk.HPaned):
         elif mode == 'Cookies':
             self.left_treeview.create_cookies_tree( self.uicore.url_cookies )
 
+    def _hide_tb_toggled(self, widget):
+        if widget.get_active():
+            self.main.topbuttons.hide()
+            self.main.mbar.hide()
+            i = gtk.Image()
+            i.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
+            widget.set_image(i)
+        else:
+            self.main.topbuttons.show()
+            self.main.mbar.show()
+            i = gtk.Image()
+            i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
+            widget.set_image(i)
+
 #    def update_tabs(self, mode):
 #        #print "Updating tabs!"
 #        if mode == 'Disassembly':
@@ -382,45 +351,68 @@ class TextViews(gtk.HPaned):
 #        else:
 #            self.right_notebook.set_show_tabs(False)
 #            self.right_notebook.set_current_page(0)
+#
+#    def update_left_content(self, widget):
+#        model = self.left_combo.get_model()
+#        active = self.left_combo.get_active()
+#        option = model[active][0]
+#        self.create_model(option)
 
-    def update_left_content(self, widget):
-        model = self.left_combo.get_model()
-        active = self.left_combo.get_active()
-        option = model[active][0]
-        self.create_model(option)
-
-    def update_left_combo(self):
-        self.left_combo.disconnect(self.connect)
-        # Empty the combo before adding new contents
-        model = self.left_combo.get_model()
-        model.clear()
+    def update_left_buttons(self):
+        # TODO: Empty the buttons to create new ones on new file open
 
         # Add combo content depending on file format
         if self.uicore.core.format in ['PE', 'Program']:
-            options = ['Functions', 'Sections', 'Imports', 'Exports']
+            options = 'full_bin'
         elif self.uicore.core.format in ['ELF']:
             # Pyew doesn't has support for Elf Imports/Exports parsing
             if 'pyew' in self.uicore.backend:
-                options = ['Functions', 'Sections']
+                options = 'half_bin'
             else:
-                options = ['Functions', 'Sections', 'Imports', 'Exports']
+                options = 'full_bin'
         elif self.uicore.core.format in ['PDF']:
-            options = ['PDF Info']
+            options = 'pdf'
         elif self.uicore.core.format in ['URL']:
-            options = ['Links', 'Headers', 'Cookies']
+            options = 'url'
         elif self.uicore.core.format in ['Hexdump']:
-            options = ['']
+            options = ''
         else:
-            options = ['']
+            options = ''
 
-        for option in options:
-            self.left_combo.append_text(option)
-        # Set First element by default
-        self.left_combo.set_active(0)
+        self.left_buttons.create_buttons(options)
 
-        self.connect = self.left_combo.connect("changed", self.update_left_content)
-
-        self.left_combo.set_sensitive(True)
+#    def update_left_combo(self):
+#        self.left_combo.disconnect(self.connect)
+#        # Empty the combo before adding new contents
+#        model = self.left_combo.get_model()
+#        model.clear()
+#
+#        # Add combo content depending on file format
+#        if self.uicore.core.format in ['PE', 'Program']:
+#            options = ['Functions', 'Sections', 'Imports', 'Exports']
+#        elif self.uicore.core.format in ['ELF']:
+#            # Pyew doesn't has support for Elf Imports/Exports parsing
+#            if 'pyew' in self.uicore.backend:
+#                options = ['Functions', 'Sections']
+#            else:
+#                options = ['Functions', 'Sections', 'Imports', 'Exports']
+#        elif self.uicore.core.format in ['PDF']:
+#            options = ['PDF Info']
+#        elif self.uicore.core.format in ['URL']:
+#            options = ['Links', 'Headers', 'Cookies']
+#        elif self.uicore.core.format in ['Hexdump']:
+#            options = ['']
+#        else:
+#            options = ['']
+#
+#        for option in options:
+#            self.left_combo.append_text(option)
+#        # Set First element by default
+#        self.left_combo.set_active(0)
+#
+#        self.connect = self.left_combo.connect("changed", self.update_left_content)
+#
+#        self.left_combo.set_sensitive(True)
 
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]

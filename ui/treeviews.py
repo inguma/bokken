@@ -42,6 +42,7 @@ class TreeViews(gtk.TreeView):
         self.fcn_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'function.png')
         self.bb_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'block.png')
         column = gtk.TreeViewColumn("Function")
+        column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
         column.set_attributes(rendererText, text=1)
@@ -57,6 +58,7 @@ class TreeViews(gtk.TreeView):
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Section")
+        column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
         column.set_attributes(rendererText, text=1)
@@ -87,6 +89,7 @@ class TreeViews(gtk.TreeView):
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Offset")
+        column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
         column.set_attributes(rendererText, text=1)
@@ -232,6 +235,7 @@ class TreeViews(gtk.TreeView):
         # Create the column
         imports = gtk.TreeViewColumn()
         imports.set_title("Imports")
+        imports.set_spacing(5)
 
         self.treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str)
 
