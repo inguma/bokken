@@ -17,13 +17,14 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
 import gtk
 
 class TreeViews(gtk.TreeView):
     '''Main TextView elements'''
 
     def __init__(self, core, textviews):
-        self.store = gtk.ListStore(str, str, str, str)
+        self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str)
         super(TreeViews,self).__init__(self.store)
 
         self.uicore = core
@@ -37,17 +38,30 @@ class TreeViews(gtk.TreeView):
     def create_functions_columns(self):
     
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Function", rendererText, text=0)
-        column.set_sort_column_id(0)
-        self.store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+        rendererPix = gtk.CellRendererPixbuf()
+        self.fcn_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'function.png')
+        self.bb_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'block.png')
+        column = gtk.TreeViewColumn("Function")
+        column.pack_start(rendererPix, False)
+        column.pack_start(rendererText, True)
+        column.set_attributes(rendererText, text=1)
+        column.set_attributes(rendererPix, pixbuf=0)
+        column.set_sort_column_id(1)
+        self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
         self.append_column(column)
         self.set_model(self.store)
 
     def create_sections_columns(self):
     
+        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'data-sec.png')
+        rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Section", rendererText, text=0)
-        column.set_sort_column_id(0)
+        column = gtk.TreeViewColumn("Section")
+        column.pack_start(rendererPix, False)
+        column.pack_start(rendererText, True)
+        column.set_attributes(rendererText, text=1)
+        column.set_attributes(rendererPix, pixbuf=0)
+        column.set_sort_column_id(1)
         self.append_column(column)
     
         rendererText = gtk.CellRendererText()
@@ -69,10 +83,16 @@ class TreeViews(gtk.TreeView):
 
     def create_exports_columns(self):
 
+        self.exp_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'export.png')
+        rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Offset", rendererText, text=0)
-        self.store.set_sort_column_id(0,gtk.SORT_ASCENDING)
-        column.set_sort_column_id(0)
+        column = gtk.TreeViewColumn("Offset")
+        column.pack_start(rendererPix, False)
+        column.pack_start(rendererText, True)
+        column.set_attributes(rendererText, text=1)
+        column.set_attributes(rendererPix, pixbuf=0)
+        self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
+        column.set_sort_column_id(1)
         self.append_column(column)
     
         rendererText = gtk.CellRendererText()
@@ -213,17 +233,21 @@ class TreeViews(gtk.TreeView):
         imports = gtk.TreeViewColumn()
         imports.set_title("Imports")
 
-        cell = gtk.CellRendererText()
-        imports.pack_start(cell, True)
-        imports.add_attribute(cell, "text", 0)
+        self.treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str)
 
-        self.treestore = gtk.TreeStore(str)
+        self.imp_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'import.png')
+        rendererPix = gtk.CellRendererPixbuf()
+        rendererText = gtk.CellRendererText()
+        imports.pack_start(rendererPix, False)
+        imports.pack_start(rendererText, True)
+        imports.set_attributes(rendererText, text=1)
+        imports.set_attributes(rendererPix, pixbuf=0)
 
         # Iterate imports and add to the tree
         for element in imps.keys():
-            it = self.treestore.append(None, [element])
+            it = self.treestore.append(None, [self.fcn_pix, element])
             for imp in imps[element]:
-                self.treestore.append(it, [imp[0] + '\t' + imp[1]])
+                self.treestore.append(it, [self.imp_pix, imp[0] + '\t' + imp[1]])
 
         # Add column to tree
         self.append_column(imports)
@@ -306,9 +330,9 @@ class TreeViews(gtk.TreeView):
             # Is it over a plugin name ?
             # Ge the information about the click
             if path is not None and len(path) == 1:
-                link_name = self.store[path][0]
+                link_name = self.store[path][1]
             elif path is not None and len(path) == 2:
-                link_name = self.treestore[path][0]
+                link_name = self.treestore[path][1]
 
             # Detect if search string is from URL or PE/ELF
             link_name = link_name.split("\t")

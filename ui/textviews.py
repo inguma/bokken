@@ -83,6 +83,60 @@ class TextViews(gtk.HPaned):
 
         # Add combo and textview to leftvb
         self.leftvb.pack_start(self.left_combo, False, True, 2)
+
+        # Left mini-toolbar
+        toolbar = gtk.Toolbar()
+        toolbar.set_style(gtk.TOOLBAR_ICONS)
+
+        self.fcn_pix = gtk.Image()
+        self.fcn_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'function.png')
+        self.bb_pix = gtk.Image()
+        self.bb_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'block.png')
+        self.imp_pix = gtk.Image()
+        self.imp_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'import.png')
+        self.exp_pix = gtk.Image()
+        self.exp_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'export.png')
+        a = gtk.VBox(False, 1)
+        fcntb = gtk.ToggleButton()
+        fcntb.set_active(True)
+#        fcntb.set_image(self.fcn_pix)
+        l = gtk.Label('Functions')
+        l.set_angle(90)
+        a.pack_start(l, False, False, 1)
+        a.pack_start(self.fcn_pix, False, False, 1)
+        fcntb.add(a)
+        sectb = gtk.Button()
+#        sectb.set_image(self.bb_pix)
+        a = gtk.VBox(False, 1)
+        l = gtk.Label('Sections')
+        l.set_angle(90)
+        a.pack_start(l, False, False, 1)
+        a.pack_start(self.bb_pix, False, False, 1)
+        sectb.add(a)
+        imptb = gtk.Button()
+#        imptb.set_image(self.imp_pix)
+        a = gtk.VBox(False, 1)
+        l = gtk.Label('Imports')
+        l.set_angle(90)
+        a.pack_start(l, False, False, 1)
+        a.pack_start(self.imp_pix, False, False, 1)
+        imptb.add(a)
+        exptb = gtk.Button()
+#        exptb.set_image(self.exp_pix)
+        a = gtk.VBox(False, 1)
+        l = gtk.Label('Exports')
+        l.set_angle(90)
+        a.pack_start(l, False, False, 1)
+        a.pack_start(self.exp_pix, False, False, 1)
+        exptb.add(a)
+
+        miau = gtk.VBox(False, 0)
+        miau.pack_start(fcntb, False, False, 0)
+        miau.pack_start(sectb, False, False, 0)
+        miau.pack_start(imptb, False, False, 0)
+        miau.pack_start(exptb, False, False, 0)
+
+        #self.leftvb.pack_start(miau, False, False, 0)
         self.leftvb.pack_start(left_scrolled_window, True, True, 2)
 
         #################################################################
@@ -275,11 +329,22 @@ class TextViews(gtk.HPaned):
         if mode == 'Functions':
             self.left_treeview.create_functions_columns()
             for function in self.uicore.get_functions():
-                self.left_treeview.store.append([function, '', '', ''])
+                if "fcn" in function or "sub" in function:
+                    self.left_treeview.store.append([self.left_treeview.fcn_pix, function, '', '', ''])
+                elif "loc" in function:
+                    self.left_treeview.store.append([self.left_treeview.bb_pix, function, '', '', ''])
+                else:
+                    self.left_treeview.store.append([self.left_treeview.fcn_pix, function, '', '', ''])
         elif mode == 'Sections':
             self.left_treeview.create_sections_columns()
+            execs = [x[0] for x in self.uicore.execsections]
+            if self.uicore.backend == 'pyew':
+                execs = [x[0] for x in execs]
             for section in self.uicore.get_sections():
-                tmp = []
+                if section[0] in execs:
+                    tmp = [self.left_treeview.fcn_pix]
+                else:
+                    tmp = [self.left_treeview.data_sec_pix]
                 for element in section:
                     tmp.append(element)
                 self.left_treeview.store.append(tmp)
@@ -296,6 +361,8 @@ class TextViews(gtk.HPaned):
         elif mode == 'Exports':
             self.left_treeview.create_exports_columns()
             for export in self.uicore.get_exports():
+                if len(export) < 5:
+                    export.insert(0, self.left_treeview.exp_pix)
                 self.left_treeview.store.append(export)
         elif mode == 'PDF':
             self.left_treeview.create_pdf_tree( self.uicore.get_pdf_info() )

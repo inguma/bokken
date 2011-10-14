@@ -339,8 +339,8 @@ class Core():
                 for section in self.pe.sections:
                     if section.__dict__.get('IMAGE_SCN_MEM_EXECUTE', False):
                         self.execsections.append([section.Name.split('\x00'[0]), section.SizeOfRawData, section.VirtualAddress])
-                        self.sections_size.append(section.SizeOfRawData)
-                        self.allsections.append( [section.Name.split('\x00')[0], hex(section.VirtualAddress), hex(section.Misc_VirtualSize), hex(section.SizeOfRawData)] )
+                    self.sections_size.append(section.SizeOfRawData)
+                    self.allsections.append( [section.Name.split('\x00')[0], hex(section.VirtualAddress), hex(section.Misc_VirtualSize), hex(section.SizeOfRawData)] )
 #                    print "  ", section.Name, hex(section.VirtualAddress), hex(section.Misc_VirtualSize), section.SizeOfRawData
         elif self.core.format == 'ELF':
             if self.allsections == []:
