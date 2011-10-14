@@ -38,6 +38,7 @@ print "  GTK version:", ".".join(str(x) for x in gtk.gtk_version)
 print "  PyGTK version:", ".".join(str(x) for x in gtk.pygtk_version)
 print
 
+import ui.menu_bar as menu_bar
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
@@ -128,6 +129,11 @@ class MainApp:
         # Create VBox to contain top buttons and other VBox
         self.supervb = gtk.VBox(False, 1)
 
+        # Menu bar
+        self.mbar = menu_bar.MenuBar(self)
+
+        self.supervb.pack_start(self.mbar, False, False, 1)
+
         # Create top buttons and add to VBox
         if self.backend == 'pyew':
             import ui.pyew_toolbar as toolbar
@@ -144,7 +150,7 @@ class MainApp:
         # Initialize and add TextViews
         self.tviews = textviews.TextViews(self.uicore, self)
         # Create toolbar show/hide tabs menu
-        self.topbuttons.create_view_menu()
+        self.mbar.create_view_menu()
 
         # Initialize and add Statusbar
         self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
