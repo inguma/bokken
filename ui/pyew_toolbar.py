@@ -203,55 +203,23 @@ class TopButtons(gtk.HBox):
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, 18)
 
-        # Views menu tool button
-        self.views = gtk.MenuToolButton(gtk.STOCK_PREFERENCES)
-        self.views_menu = gtk.Menu()
-
-        self.views.set_menu(self.views_menu)
-        self.views_menu.show_all()
-        self.main_tb.insert(self.views, 19)
-
-        # Theme menu tool button
-        self.themes = gtk.MenuToolButton(gtk.STOCK_SELECT_COLOR)
-        self.themes_menu = gtk.Menu()
-        themes = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
-        for theme in themes:
-            item = gtk.MenuItem(theme)
-            item.connect("activate", self._on_theme_change)
-            self.themes_menu.append(item)
-        self.themes_menu.show_all()
-
-        self.themes.set_menu(self.themes_menu)
-        self.themes_menu.show_all()
-        self.main_tb.insert(self.themes, 20)
-
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 21)
+        self.sep.set_expand(True)
+        self.sep.set_draw(False)
+        self.main_tb.insert(self.sep, 19)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 22)
-
-        # Separator
-        self.sep = gtk.SeparatorToolItem()
-        self.sep.set_expand(True)
-        self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 23)
-
-        # About button
-        self.about_tb = gtk.ToolButton(gtk.STOCK_ABOUT)
-        self.about_tb.connect("clicked", self.create_about_dialog)
-        self.about_tb.set_tooltip_text('About Bokken')
-        self.main_tb.insert(self.about_tb, 24)
+        self.main_tb.insert(self.exit_tb, 20)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 25)
+        self.main_tb.insert(self.throbber_tb, 21)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -289,34 +257,6 @@ class TopButtons(gtk.HBox):
         for toolbar in self:
             for child in toolbar:
                 child.set_sensitive(True)
-
-    def _on_status_view(self, widget):
-        target = widget.get_label().split(' ')[1]
-        for x in self.nb.get_children():
-            y = self.nb.get_tab_label(x)
-            if target in y.get_children()[1].get_text().lower():
-                target = x
-                break
-        if widget.active:
-            x.show()
-        else:
-            x.hide()
-
-    def create_view_menu(self):
-        self.nb = self.main.tviews.right_notebook
-        for x in self.nb.get_children():
-            box = self.nb.get_tab_label(x)
-            element = box.get_children()[1].get_text().lower()
-            item = gtk.CheckMenuItem("Show " + element)
-            if element != 'full info':
-                item.set_active(True)
-            item.connect("activate", self._on_status_view)
-            self.views_menu.append(item)
-        self.views_menu.show_all()
-
-    def _on_theme_change(self, widget):
-        theme = widget.get_label()
-        self.main.tviews.update_theme(theme)
 
     # New File related methods
     #
@@ -515,15 +455,6 @@ class TopButtons(gtk.HBox):
         self.search_dialog = search_dialog.SearchDialog()
 
         return False
-
-    def create_about_dialog(self, widget):
-        import ui.about as about
-
-        about_dlg = about.AboutDialog()
-        dialog = about_dlg.create_dialog()
-
-        dialog.run()
-        dialog.destroy()
 
     # Executes pyew's plugins
     def execute(self, widget, plugin):
