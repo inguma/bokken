@@ -190,7 +190,7 @@ class Bindiff():
         self.c2.bin_load(None)
         # Clear treeview
         self.dw.clear_functions()
-        self.dw.set_filename_l(self.c.file)
+        self.dw.set_filename_l(self.c.filename)
         self.dw.set_filename_r(file_r)
     
     def diff(self):
@@ -211,5 +211,5 @@ class Bindiff():
         for fcn in self.c2.anal.get_fcns():
             if ((fcn.type == FcnType_FCN or fcn.type == FcnType_SYM) and fcn.diff.type == BlockDiff_NULL):
                 self.dw.add_function(['', '', fcn.name, '0x%08x' % fcn.addr, "NEW"])
-        self.dw.show_all()
+        #self.dw.show_all()
 

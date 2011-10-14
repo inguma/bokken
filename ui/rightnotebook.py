@@ -131,17 +131,21 @@ class RightNotebook(gtk.Notebook):
         if page_num == self.page_num(self.xdot_box) and self.uicore.backend == 'radare':
             self.xdot_box.set_dot(self.uicore.get_callgraph(self.last_fcn))
 
-    def add_bindiff_tab(self):
+    def add_bindiff_tab(self, filename):
         #################################################
         # Bindiffing TAB
         if self.uicore.backend == 'radare':
             self.append_page(self.bindiff)
-            tab = self.create_tab('Bindiff', self.bindiff, 'COMPARE')
+            tab = self.create_tab('Bindiff', self.bindiff, 'REFRESH')
     
             self.set_tab_label_packing(self.bindiff, False, False, gtk.PACK_START)
             self.set_tab_label(self.bindiff, tab)
             self.show_all()
-            self.set_current_page(8)
+            num = self.page_num(self.bindiff)
+            self.set_current_page(num)
+
+            self.tviews.bindiff_widget.set_file(filename)
+            self.tviews.bindiff_widget.diff()
 
     def add_html_elements_tab(self):
         #################################################

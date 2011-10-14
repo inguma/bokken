@@ -30,7 +30,7 @@ class DiffDialog(gtk.Dialog):
 
         # the cancel button
         self.butt_ok = self.action_area.get_children()[0]
-        self.butt_ok.connect("clicked", self.get_file)
+        self.butt_ok.connect("clicked", self.select_file)
 
         # Window position
         self.set_position(gtk.WIN_POS_CENTER)
@@ -75,9 +75,9 @@ class DiffDialog(gtk.Dialog):
         self.hide()
         self.file = self.input_entry2.get_text()
 
-    def select_file(self, widget):
-        if widget.get_text():
-            self.get_file(widget)
+    def select_file(self, widget, icon_pos='', event=''):
+        if self.input_entry2.get_text():
+            self.get_file(self.input_entry2)
         else:
             chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                                   buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
