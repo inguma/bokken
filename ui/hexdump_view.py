@@ -89,6 +89,10 @@ class HexdumpView(gtk.HBox):
         self.asm_buffer.set_data('languages-manager', lm)
         self.asm_buffer.set_highlight_syntax(True)
         manager = self.asm_buffer.get_data('languages-manager')
+        language = manager.get_language('hex-ascii')
+        self.hex_buffer.set_language(language)
+        language = manager.get_language('ascii')
+        self.ascii_buffer.set_language(language)
         language = manager.get_language('asm')
         self.asm_buffer.set_language(language)
 

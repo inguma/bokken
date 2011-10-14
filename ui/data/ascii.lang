@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Author: David Martínez Moreno <ender@debian.org>
+ Copyright (C) 2011 David Martínez Moreno
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+
+-->
+<!--
+    Mostly copied and pasted from c.lang
+-->
+<language id="ascii" _name="ASCII" version="2.0" _section="Others">
+    <metadata>
+      <property name="mimetypes">text/plain</property>
+      <property name="globs">*.txt</property>
+      <property name="line-comment-start">;</property>
+    </metadata>
+
+    <styles>
+        <style id="string"            _name="String"              map-to="def:string"/>
+    </styles>
+
+    <default-regex-options case-sensitive="false"/>
+
+    <definitions>
+        <context id="ascii">
+            <include>
+
+                <context id="7bit" style-ref="string">
+                    <!-- I had to remove . on purpose because is the replacement for non-printable characters. :-( - ender -->
+                    <!--<match>[A-Z0-9/\?,'"!@#\$%\^&amp;\*\(\)-_=\+"&lt;&gt;;:\\/\|\}\{\[\]`~]</match>-->
+                    <match>[A-Z0-9/\?,'"!@#\$%\^&amp;\*\(\)\-_=\+"&lt;&gt;;:\\/\|\}\{\[\]`~]</match>
+                </context>
+
+            </include>
+        </context>
+    </definitions>
+</language>
