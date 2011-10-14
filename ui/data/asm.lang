@@ -96,25 +96,24 @@
                 </context>
 
                 <!-- 
-                Contexto para que en instrucciones de branch/jump subraye la dirección a la que ir
-                La expresión regular, está formada por una primera parte, que "recupera" el opcode(instruccion),
-                una segunda que captura si tiene el tipo
-                y una tercera que recupera la siguiente palabra que se toma como la direccion.
+                Context for underlining address to jump to in branch/jump instructions.
+                The regular expression has a first part that matches the opcode (instruction), a second one
+                that gets (if any) the type of opcode, and a third one that matches the next word as the address to link.
                 -->
                 <context id="ir-direction">
                    <match extended="true">
                     (?&lt;![\w\.])
                                 (?P&lt;opcode&gt;((J|CMOV|SET)N?(AE|BE|PE|PO|LE|GE|O|B|C|Z|E|A|S|P|L|G))|(FCMOVN?(BE|B|E|U))|CALL) ## Regex que captura el opcode
-                    (\s+(?P&lt;tipo&gt;(DWORD|BYTE)\s+)?) ## Regex que captura los espacios y el tipo dword y byte en este caso
-                    (?P&lt;direccion&gt;\S+) ## Regex que captura la siguiente palabra para subrayarla.
+                    (\s+(?P&lt;matched_type&gt;(DWORD|BYTE)\s+)?) ## Regex matching blanks and the dword/byte if it exists.
+                    (?P&lt;address&gt;\S+) ## Regex matching the next word to underline it.
                     (?![\w\.])
                    </match>
                    <include>
                     <!--context sub-pattern="0" style-ref="comment"/-->
                     <context sub-pattern="opcode" style-ref="opcode"/>
-                    <context sub-pattern="tipo" style-ref="type"/>
-                    <context sub-pattern="direccion" style-ref="ir-direction"/>
-                    <context sub-pattern="direccion" style-ref="comment"/>
+                    <context sub-pattern="matched_type" style-ref="type"/>
+                    <context sub-pattern="address" style-ref="ir-direction"/>
+                    <context sub-pattern="address" style-ref="comment"/>
                     <context sub-pattern="hex" style-ref="hexadecimal"/>
                    </include>
                 </context>
