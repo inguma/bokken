@@ -36,11 +36,19 @@ import ui.html_tree as html_tree
 import ui.info_tree as info_tree
 import ui.left_buttons as left_buttons
 
-class TextViews(gtk.HPaned):
+'''
+Layout:
+
+---------------------------- HBox ------------------------------
+Left Buttons | ---------------------Paned ----------------------
+             | Left Treeview | ----------- Notebook ------------
+'''
+
+class TextViews(gtk.HBox):
     '''Main TextView elements'''
 
     def __init__(self, core, main):
-        super(TextViews,self).__init__()
+        super(TextViews,self).__init__(False, 1)
 
         self.uicore = core
         self.main = main
@@ -49,14 +57,20 @@ class TextViews(gtk.HPaned):
         self.match_end = None
 
         #################################################################
-        # Main HBox (self) and VBoxes
+        # Main HBox (self) and HPaned
         #################################################################
 
         # Left and right Vertical Boxes
-        self.leftvb = gtk.HBox(False, 1)
-        rightvb = gtk.VBox(False, 1)
-        self.pack1(self.leftvb, True, True)
-        self.pack2(rightvb, True, True)
+        self.left_paned = gtk.HPaned()
+
+        #################################################################
+        # Left mini-toolbar
+        #################################################################
+
+        self.left_buttons = left_buttons.LeftButtons(self.main)
+
+        self.pack_start(self.left_buttons, False, False, 1)
+        self.pack_start(self.left_paned, True, True, 1)
 
         #################################################################
         # Left ListView and TreeView
@@ -73,26 +87,7 @@ class TextViews(gtk.HPaned):
         self.left_treeview = treeviews.TreeViews(self.uicore, self)
 
         self.left_scrolled_window.add(self.left_treeview)
-
-        #################################################################
-        # Left ComboBox
-        #################################################################
-        self.left_combo = gtk.combo_box_new_text()
-        # Set grayed by default
-        self.left_combo.set_sensitive(False)
-        #self.connect = self.left_combo.connect("changed", self.update_left_content)
-
-        # Add combo and textview to leftvb
-        #self.leftvb.pack_start(self.left_combo, False, True, 2)
-
-        #################################################################
-        # Left mini-toolbar
-        #################################################################
-
-        self.left_buttons = left_buttons.LeftButtons(self.main)
-
-        self.leftvb.pack_start(self.left_buttons, False, False, 0)
-        self.leftvb.pack_start(self.left_scrolled_window, True, True, 0)
+        self.left_paned.pack1(self.left_scrolled_window, True, True)
 
         #################################################################
         # Right Textview
@@ -102,11 +97,6 @@ class TextViews(gtk.HPaned):
         self.buffer = self.right_textview.buffer
         self.view = self.right_textview.view
         self.mgr = self.right_textview.mgr
-
-        #################################################################
-        # Right ComboBox
-        #################################################################
-        #self.right_combo = rightcombo.RightCombo(self, self.uicore)
 
         #################################################################
         # Right Interactive Textview
@@ -162,12 +152,12 @@ class TextViews(gtk.HPaned):
         #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, self.strings_textview, self.repr_textview, self.interactive_textview, self.bindiff, self.html_widget, self.info_widget, self.uicore, self.main)
-        #self.right_notebook = rightnotebook.RightNotebook(self, self.right_scrolled_window, self.uicore)
+        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, \
+                              self.strings_textview, self.repr_textview, self.interactive_textview, \
+                              self.bindiff, self.html_widget, self.info_widget, self.uicore, self.main)
 
-        # Add combo and textview to rightvb
-        #rightvb.pack_start(self.right_combo, False, True, 2)
-        rightvb.pack_start(self.right_notebook, True, True, 2)
+        # Add notebook to the paned
+        self.left_paned.pack2(self.right_notebook, True, True)
         self.right_notebook.show()
 
     def update_lefttext(self, text):
@@ -244,9 +234,9 @@ class TextViews(gtk.HPaned):
 
         # Hide left content for 'Plain Text'
         if self.uicore.core.format not in ['Plain Text', 'Hexdump']:
-            self.leftvb.show()
+            self.left_scrolled_window.show()
         else:
-            self.leftvb.hide()
+            self.left_scrolled_window.hide()
         if self.uicore.core.format == 'URL':
             self.right_notebook.add_html_elements_tab()
 
@@ -342,22 +332,6 @@ class TextViews(gtk.HPaned):
             i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
             widget.set_image(i)
 
-#    def update_tabs(self, mode):
-#        #print "Updating tabs!"
-#        if mode == 'Disassembly':
-#            self.right_notebook.set_show_tabs(True)
-#        elif mode == 'URL':
-#            self.right_notebook.set_show_tabs(True)
-#        else:
-#            self.right_notebook.set_show_tabs(False)
-#            self.right_notebook.set_current_page(0)
-#
-#    def update_left_content(self, widget):
-#        model = self.left_combo.get_model()
-#        active = self.left_combo.get_active()
-#        option = model[active][0]
-#        self.create_model(option)
-
     def update_left_buttons(self):
         # TODO: Empty the buttons to create new ones on new file open
 
@@ -380,39 +354,6 @@ class TextViews(gtk.HPaned):
             options = ''
 
         self.left_buttons.create_buttons(options)
-
-#    def update_left_combo(self):
-#        self.left_combo.disconnect(self.connect)
-#        # Empty the combo before adding new contents
-#        model = self.left_combo.get_model()
-#        model.clear()
-#
-#        # Add combo content depending on file format
-#        if self.uicore.core.format in ['PE', 'Program']:
-#            options = ['Functions', 'Sections', 'Imports', 'Exports']
-#        elif self.uicore.core.format in ['ELF']:
-#            # Pyew doesn't has support for Elf Imports/Exports parsing
-#            if 'pyew' in self.uicore.backend:
-#                options = ['Functions', 'Sections']
-#            else:
-#                options = ['Functions', 'Sections', 'Imports', 'Exports']
-#        elif self.uicore.core.format in ['PDF']:
-#            options = ['PDF Info']
-#        elif self.uicore.core.format in ['URL']:
-#            options = ['Links', 'Headers', 'Cookies']
-#        elif self.uicore.core.format in ['Hexdump']:
-#            options = ['']
-#        else:
-#            options = ['']
-#
-#        for option in options:
-#            self.left_combo.append_text(option)
-#        # Set First element by default
-#        self.left_combo.set_active(0)
-#
-#        self.connect = self.left_combo.connect("changed", self.update_left_content)
-#
-#        self.left_combo.set_sensitive(True)
 
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]

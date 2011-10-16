@@ -214,7 +214,6 @@ class MainApp:
             # Load data to LEFT Tree
             if self.uicore.core.format in ["PE", "ELF", "Program"]:
                 self.tviews.create_model('Functions')
-                self.tviews.left_combo.set_active(0)
         
             elif self.uicore.core.format in ["PDF"]:
                 # Why?! Oh why in the name of God....!!
