@@ -83,7 +83,7 @@ class SectionsBar(gtk.DrawingArea):
             y1 = tmp_height
     
             # Draw
-            color = colors[ sections_size.index(size) & 1]
+            color = colors[sections_size.index(size) & 1]
             context.set_source_rgb(*color)
             context.set_line_width(1)
             context.rectangle(0, stepper_size + prev_height + 0.5, 15, y1 + stepper_size + prev_height - 0.5)
