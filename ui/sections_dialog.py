@@ -54,7 +54,7 @@ class SectionsDialog(gtk.Dialog):
         self.scrolled_window.is_visible = True
 
         # List view
-        self.store = gtk.ListStore(str, str, str, str, int)
+        self.store = gtk.ListStore(str, str, str, str, str, int)
         self.tv = gtk.TreeView(self.store)
         self.tv.set_rules_hint(True)
 
@@ -67,7 +67,7 @@ class SectionsDialog(gtk.Dialog):
     
         # Color Bar
         rendererBar = ColoredBarRenderer()
-        column = gtk.TreeViewColumn("Section size", rendererBar, text=1, start=0, end=2, size=4)
+        column = gtk.TreeViewColumn("Section size", rendererBar, text=1, start=0, end=2, size=5)
         column.set_min_width(300)
         column.set_sort_column_id(1)
         self.tv.append_column(column)
@@ -77,14 +77,14 @@ class SectionsDialog(gtk.Dialog):
         column.set_sort_column_id(2)
         self.tv.append_column(column)
 
-        #rendererText = gtk.CellRendererText()
-        #column = gtk.TreeViewColumn("Flags", rendererText, text=3)
-        #column.set_sort_column_id(3)
-        #self.tv.append_column(column)
-        #self.tv.set_model(self.store)
+        rendererText = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("Flags", rendererText, text=3)
+        column.set_sort_column_id(3)
+        self.tv.append_column(column)
+        self.tv.set_model(self.store)
 
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Name", rendererText, text=3)
+        column = gtk.TreeViewColumn("Name", rendererText, text=4)
         column.set_sort_column_id(4)
         self.tv.append_column(column)
         self.tv.set_model(self.store)
