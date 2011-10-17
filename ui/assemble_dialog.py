@@ -25,7 +25,7 @@ class AssembleDialog(gtk.Dialog):
     '''Assembler plugin dialog'''
 
     def __init__(self, core):
-        super(AssembleDialog,self).__init__('Assembler plugin', None, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+        super(AssembleDialog,self).__init__('Assembler plugin', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
 
         self.uicore = core
 

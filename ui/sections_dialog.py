@@ -23,7 +23,7 @@ class SectionsDialog(gtk.Dialog):
     '''Window to popup sections info'''
 
     def __init__(self, core):
-        super(SectionsDialog,self).__init__('Extended sections information', None, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+        super(SectionsDialog,self).__init__('Extended sections information', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
 
         self.uicore = core
         self.sec_bars = ''
