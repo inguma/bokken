@@ -63,23 +63,23 @@ class TreeViews(gtk.TreeView):
         column.pack_start(rendererText, True)
         column.set_attributes(rendererText, text=1)
         column.set_attributes(rendererPix, pixbuf=0)
-        column.set_sort_column_id(1)
+        column.set_sort_column_id(0)
         self.append_column(column)
     
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Virtual Address", rendererText, text=1)
-        self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
-        column.set_sort_column_id(1)
-        self.append_column(column)
-
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Virtual Size", rendererText, text=2)
+        column = gtk.TreeViewColumn("Virtual Address", rendererText, text=2)
+        self.store.set_sort_column_id(2,gtk.SORT_ASCENDING)
         column.set_sort_column_id(2)
         self.append_column(column)
 
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Raw Size", rendererText, text=3)
+        column = gtk.TreeViewColumn("Virtual Size", rendererText, text=3)
         column.set_sort_column_id(3)
+        self.append_column(column)
+
+        rendererText = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("Raw Size", rendererText, text=4)
+        column.set_sort_column_id(4)
         self.append_column(column)
         self.set_model(self.store)
 
@@ -99,13 +99,13 @@ class TreeViews(gtk.TreeView):
         self.append_column(column)
     
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Name", rendererText, text=1)
-        column.set_sort_column_id(1)
+        column = gtk.TreeViewColumn("Name", rendererText, text=2)
+        column.set_sort_column_id(2)
         self.append_column(column)
 
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Ordinal", rendererText, text=2)
-        column.set_sort_column_id(2)
+        column = gtk.TreeViewColumn("Ordinal", rendererText, text=3)
+        column.set_sort_column_id(3)
         self.append_column(column)
         self.set_model(self.store)
 
@@ -279,9 +279,9 @@ class TreeViews(gtk.TreeView):
             # Is it over a plugin name ?
             # Get the information about the click
             if path is not None and len(path) == 1:
-                link_name = self.store[path][0]
+                link_name = self.store[path][1]
             elif path is not None and len(path) == 2:
-                link_name = self.treestore[path][0]
+                link_name = self.treestore[path][1]
 
             # Detect if search string is from URL or PE/ELF
             link_name = link_name.split("\t")
@@ -300,6 +300,9 @@ class TreeViews(gtk.TreeView):
                         # Just get graph for functions
                         if 'fcn.' in link_name[0]:
                             self.dograph = True
+                        # Adjust section name to search inside r2 flags
+                        elif link_name[0][0] == '.':
+                            link_name[0] = 'section.' + link_name[0]
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
@@ -355,6 +358,9 @@ class TreeViews(gtk.TreeView):
                         # Just get graph for functions
                         if 'fcn.' in link_name[0]:
                             self.dograph = True
+                        # Adjust section name to search inside r2 flags
+                        elif link_name[0][0] == '.':
+                            link_name[0] = 'section.' + link_name[0]
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
