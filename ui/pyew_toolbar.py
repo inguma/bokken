@@ -50,6 +50,7 @@ class TopButtons(gtk.HBox):
 
         # New file button
         self.new_tb = gtk.MenuToolButton(gtk.STOCK_NEW)
+        self.new_tb.set_label("New")
         self.new_tb.set_tooltip_text('Open new file')
         self.new_tb.connect("clicked", self.new_file)
         self.main_tb.insert(self.new_tb, 0)
@@ -211,6 +212,7 @@ class TopButtons(gtk.HBox):
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
+        self.exit_tb.set_label('Quit')
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
         self.main_tb.insert(self.exit_tb, 20)
@@ -248,10 +250,10 @@ class TopButtons(gtk.HBox):
         for child in self:
             for button in child:
                 try:
-                    if button.get_label() not in ['New', 'Quit', 'About']:
+                    if button.get_label() not in ['New', 'Quit']:
                         button.set_sensitive(False)
                 except:
-                    pass
+                    button.set_sensitive(False)
 
     def enable_all(self):
         for toolbar in self:

@@ -53,6 +53,7 @@ class TopButtons(gtk.HBox):
 
         # New file button
         self.new_tb = gtk.MenuToolButton(gtk.STOCK_NEW)
+        self.new_tb.set_label('New')
         self.new_tb.set_tooltip_text('Open new file')
         self.new_tb.connect("clicked", self.new_file)
         self.main_tb.insert(self.new_tb, 0)
@@ -144,6 +145,7 @@ class TopButtons(gtk.HBox):
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
+        self.exit_tb.set_label('Quit')
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
         self.main_tb.insert(self.exit_tb, 14)
@@ -183,7 +185,9 @@ class TopButtons(gtk.HBox):
         widget.set_sensitive(False)
 
     def _do_file_magic(self, widget):
-        self.uicore.get_magic()
+        self.uicore.core.cmd0('e io.va=0')
+        self.uicore.core.cmd0('s 0')
+        print self.uicore.core.cmd_str('pm')
 
     def _do_sections(self, widget):
         self.sec_dialog = sections_dialog.SectionsDialog(self.uicore)
@@ -210,11 +214,12 @@ class TopButtons(gtk.HBox):
 
     def disable_all(self):
         for child in self:
-            try:
-                if child.label.label not in ['New', 'Quit', 'About']:
-                    child.set_sensitive(False)
-            except:
-                pass
+            for button in child:
+                try:
+                    if button.get_label() not in ['New', 'Quit']:
+                        button.set_sensitive(False)
+                except:
+                    button.set_sensitive(False)
 
     def enable_all(self):
         for toolbar in self:
