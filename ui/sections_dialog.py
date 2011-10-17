@@ -176,7 +176,8 @@ class ColoredBarRenderer(gtk.GenericCellRenderer):
         darken = lambda color: [x * 0.8 for x in color]
 
         # http://colorschemedesigner.com/#2N42mhWs0g0g0
-        context.set_line_width(1)
+        context.set_line_width(0.5)
+        context.save()
 
         context.set_source_rgb(*split_color(0xe7c583))
         context.rectangle(x+1, y+1 , w-2, h-2)
@@ -184,16 +185,19 @@ class ColoredBarRenderer(gtk.GenericCellRenderer):
         context.set_source_rgb(*darken(split_color(0xe7c583)))
         context.stroke_preserve()
         context.clip()
+        context.restore()
 
         begin = int(self.get_property('start'), 16) * (w-2) / self.get_property('size')
         finish = int(self.get_property('end'), 16) * (w-2) / self.get_property('size')
 
+        context.save()
         context.set_source_rgb(*split_color(0x6b82af))
         context.rectangle(x+begin+1, y+1, finish - begin, h-2)
         context.fill_preserve()
         context.set_source_rgb(*darken(split_color(0x6b82af)))
         context.stroke_preserve()
         context.clip()
+        context.restore()
 
     def on_activate(self, event, widget, path, background_area, cell_area, flags):
         pass
