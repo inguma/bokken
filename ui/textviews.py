@@ -80,7 +80,7 @@ class TextViews(gtk.HBox):
         self.left_scrolled_window = gtk.ScrolledWindow()
         self.left_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
         self.left_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.left_scrolled_window.set_size_request(150,-1)
+#        self.left_scrolled_window.set_size_request(100, 1)
         self.left_scrolled_window.show()
 
         # Create left TreeView

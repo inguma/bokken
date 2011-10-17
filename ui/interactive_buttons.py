@@ -38,80 +38,93 @@ class InteractiveButtons(gtk.HBox):
         self.uicore = uicore
         self.toolbox = self
 
+        self.int_tb = gtk.Toolbar()
+        self.int_tb.set_style(gtk.TOOLBAR_ICONS)
+
         # Previous buffer button
-        b = SemiStockButton("", gtk.STOCK_GO_UP, 'Previous buffer')
-        b.connect("clicked", self.move, 'b')
-        b.label.label = 'Previous'
-        self.toolbox.pack_start(b, False, False)
+        self.prev = gtk.ToolButton(gtk.STOCK_GO_UP)
+        self.prev.set_tooltip_text('Previous buffer')
+        self.prev.connect("clicked", self.move, 'b')
+        self.prev.label = 'Previous'
+        self.int_tb.insert(self.prev, 0)
 
         # Next buffer button
-        b = SemiStockButton("", gtk.STOCK_GO_DOWN, 'Next buffer')
-        b.connect("clicked", self.move, 'f')
-        b.label.label = 'Next'
-        self.toolbox.pack_start(b, False, False)
+        self.next = gtk.ToolButton(gtk.STOCK_GO_DOWN)
+        self.next.set_tooltip_text('Next buffer')
+        self.next.connect("clicked", self.move, 'f')
+        self.next.label = 'Next'
+        self.int_tb.insert(self.next, 1)
 
         # Separator
-        self.sep = gtk.HSeparator()
-        self.toolbox.pack_start(self.sep, False, False)
+        self.sep = gtk.SeparatorToolItem()
+        self.int_tb.insert(self.sep, 2)
 
         # Seek to...
-        self.seek_label = gtk.Label('     Seek:')
-        self.toolbox.pack_start(self.seek_label, False, False)
+        self.seek_tb = gtk.ToolItem()
+        self.seek_label = gtk.Label(' Seek: ')
+        self.seek_tb.add(self.seek_label)
+        self.int_tb.insert(self.seek_tb, 3)
 
-        self.seek_entry = gtk.Entry(10)
-        # Default action on pressing Enter
-        self.seek_entry.set_activates_default(True)
-        self.seek_entry.connect("activate", self.seek)
+        self.seek_entry_tb = gtk.ToolItem()
+        self.seek_entry = gtk.Entry(100)
         self.seek_entry.set_icon_from_stock(1, gtk.STOCK_GO_FORWARD)
+        self.seek_entry.set_icon_tooltip_text(1, 'Seek to')
+        self.seek_entry.connect("activate", self.seek)
         self.seek_entry.connect("icon-press", self.seek)
-        self.seek_entry.set_icon_tooltip_text(1, 'Go')
-
-        self.toolbox.pack_start(self.seek_entry, False, False)
+        self.seek_entry_tb.add(self.seek_entry)
+        self.int_tb.insert(self.seek_entry_tb, 4)
 
         # Separator
-        self.sep = gtk.HSeparator()
-        self.toolbox.pack_start(self.sep, False, False)
+        self.sep = gtk.SeparatorToolItem()
+        self.int_tb.insert(self.sep, 5)
 
         # Buffer size
-        self.buffer_label = gtk.Label('     Buffer size:')
-        self.toolbox.pack_start(self.buffer_label, False, False)
+        self.buffer_tb = gtk.ToolItem()
+        self.buffer_label = gtk.Label(' Buffer size: ')
+        self.buffer_tb.add(self.buffer_label)
+        self.int_tb.insert(self.buffer_tb, 6)
 
-        self.buffer_entry = gtk.Entry(5)
-        self.buffer_entry.set_text('512')
+        self.buffer_entry_tb = gtk.ToolItem()
+        self.buffer_entry = gtk.Entry(100)
         self.buffer_entry.set_icon_from_stock(1, gtk.STOCK_APPLY)
-        # Default action on pressing Enter
-        self.buffer_entry.set_activates_default(True)
+        self.buffer_entry.set_icon_tooltip_text(1, 'Apply')
         self.buffer_entry.connect("activate", self.set_buffer_size)
         self.buffer_entry.connect("icon-press", self.set_buffer_size)
-        self.buffer_entry.set_icon_tooltip_text(1, 'Apply')
-
-        self.toolbox.pack_start(self.buffer_entry, False, False)
+        self.buffer_entry_tb.add(self.buffer_entry)
+        self.int_tb.insert(self.buffer_entry_tb, 7)
 
         # Separator
-        self.sep = gtk.HSeparator()
-        self.toolbox.pack_start(self.sep, False, False)
+        self.sep = gtk.SeparatorToolItem()
+        self.int_tb.insert(self.sep, 8)
 
         # Radio buttons (output format)
-        self.hex_button = gtk.RadioButton(None, "Hexadecimal")
+
+        self.hex_button = gtk.RadioToolButton(None, None)
+        self.hex_button.set_label("HEX")
         self.hex_button.connect("toggled", self.callback, "Hexadecimal")
         self.hex_button.set_active(True)
-        self.toolbox.pack_start(self.hex_button, False, False)
+        self.int_tb.insert(self.hex_button, 9)
 
-        self.dasm_button = gtk.RadioButton(self.hex_button, "Disassembly")
+        self.dasm_button = gtk.RadioToolButton(self.hex_button, None)
+        self.dasm_button.set_label("ASM")
         self.dasm_button.connect("toggled", self.callback, "Disassembly")
-        self.toolbox.pack_start(self.dasm_button, False, False)
+        self.int_tb.insert(self.dasm_button, 10)
 
         if 'radare' in self.uicore.backend:
             # Separator
-            self.sep = gtk.HSeparator()
-            self.toolbox.pack_start(self.sep, False, False)
+            self.sep = gtk.SeparatorToolItem()
+            self.int_tb.insert(self.sep, 11)
 
-            self.exec_entry = gtk.Entry(20)
+            self.exec_entry_tb = gtk.ToolItem()
+            self.exec_entry = gtk.Entry(100)
             self.exec_entry.set_icon_from_stock(1, gtk.STOCK_EXECUTE)
+            self.exec_entry.set_icon_tooltip_text(1, 'Execute')
             self.exec_entry.connect("activate", self.r2_exec)
             self.exec_entry.connect("icon-press", self.r2_exec)
-            self.exec_entry.set_icon_tooltip_text(1, 'Execute')
-            self.toolbox.pack_start(self.exec_entry, False, False)
+            self.exec_entry_tb.add(self.exec_entry)
+            self.int_tb.insert(self.exec_entry_tb, 12)
+
+        self.pack_start(self.int_tb, True, True)
 
         self.uicore.core.bsize = 512
 

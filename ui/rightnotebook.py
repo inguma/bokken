@@ -41,6 +41,8 @@ class RightNotebook(gtk.Notebook):
         self.uicore = uicore
         self.main = main
 
+        self.set_scrollable(True)
+
         #################################################
         # Code view TAB
         self.append_page(self.scrolled_window)
