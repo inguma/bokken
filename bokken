@@ -2,4 +2,4 @@
 
 export LD_LIBRARY_PATH=`dirname $0`/lib
 #gdb --args python ./bokken.py $@
-./bokken.py $@
+`dirname $0`/bokken.py $@
