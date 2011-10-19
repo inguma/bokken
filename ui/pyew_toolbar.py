@@ -171,11 +171,6 @@ class TopButtons(gtk.HBox):
         self.main_tb.insert(self.sep, 13)
 
         # Search components
-        self.search_tb = gtk.ToolItem()
-        self.search_label = gtk.Label('  Search:  ')
-        self.search_tb.add(self.search_label)
-        self.main_tb.insert(self.search_tb, 14)
-
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo = gtk.combo_box_new_text()
 
@@ -184,44 +179,47 @@ class TopButtons(gtk.HBox):
             self.search_combo.append_text(option)
         self.search_combo.set_active(1)
         self.search_combo_tb.add(self.search_combo)
-        self.main_tb.insert(self.search_combo_tb, 15)
+        self.main_tb.insert(self.search_combo_tb, 14)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 16)
+        self.main_tb.insert(self.sep, 15)
 
         self.search_entry_tb = gtk.ToolItem()
         self.search_entry = gtk.Entry(100)
+        self.search_entry.set_text('Text to search')
         self.search_entry.set_icon_from_stock(1, gtk.STOCK_FIND)
         self.search_entry.set_icon_tooltip_text(1, 'Search')
         self.search_entry.connect("activate", self.search)
         self.search_entry.connect("icon-press", self.search)
+        self.search_entry.connect('focus-in-event', self._clean, 'in')
+        self.search_entry.connect('focus-out-event', self._clean, 'out')
         self.search_entry_tb.add(self.search_entry)
-        self.main_tb.insert(self.search_entry_tb, 17)
+        self.main_tb.insert(self.search_entry_tb, 16)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 18)
+        self.main_tb.insert(self.sep, 17)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 19)
+        self.main_tb.insert(self.sep, 18)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.set_label('Quit')
         self.exit_tb.connect("clicked", self._bye)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 20)
+        self.main_tb.insert(self.exit_tb, 19)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 21)
+        self.main_tb.insert(self.throbber_tb, 20)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -234,6 +232,15 @@ class TopButtons(gtk.HBox):
 
     # Private methods
     #
+
+    def _clean(self, widget, event, data):
+        if data == 'in':
+            if widget.get_text() == 'Text to search':
+                widget.set_text('')
+        elif data == 'out':
+            if widget.get_text() == '':
+                widget.set_text('Text to search')
+
     def _bye(self, widget):
         msg = ("Do you really want to quit?")
         dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
