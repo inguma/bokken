@@ -142,7 +142,7 @@ class AssembleDialog(gtk.Dialog):
         self.hex_buffer.set_language(language)
 
         self.hex_scrolled = gtk.ScrolledWindow()
-        self.hex_scrolled.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.hex_scrolled.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.hex_scrolled.is_visible = True
 
         # Add Textview to Scrolled Window
