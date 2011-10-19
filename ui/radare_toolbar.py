@@ -72,7 +72,7 @@ class TopButtons(gtk.HBox):
         # Assembler button
         self.asm_tb = gtk.ToolButton(gtk.STOCK_EXECUTE)
         self.asm_tb.set_tooltip_text('Open assembler dialog')
-        self.asm_tb.connect("clicked", self._miau)
+        self.asm_tb.connect("clicked", self._assembler)
         self.main_tb.insert(self.asm_tb, 2)
 
         # Bindiff button
@@ -193,7 +193,13 @@ class TopButtons(gtk.HBox):
     def _do_file_magic(self, widget):
         self.uicore.core.cmd0('e io.va=0')
         self.uicore.core.cmd0('s 0')
-        print self.uicore.core.cmd_str('pm')
+        magic = self.uicore.core.cmd_str('pm')
+        if magic:
+            md = gtk.MessageDialog(None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, 
+                gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
+            md.set_markup("<b>Detected file magic:</b>\n\n" + magic)
+            md.run()
+            md.destroy()
 
     def _do_sections(self, widget):
         self.sec_dialog = sections_dialog.SectionsDialog(self.uicore)
@@ -203,7 +209,7 @@ class TopButtons(gtk.HBox):
         self.calc_dialog = calc_dialog.CalcDialog(self.uicore)
         return False
 
-    def _miau(self, widgets):
+    def _assembler(self, widgets):
         self.create_assemble_dialog()
 
     def _bye(self, widget):
