@@ -394,9 +394,10 @@ class TextViews(gtk.HBox):
                 self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                 self.last_search_iter = self.match_end
                 self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
+                self.right_textview.marks.append([self.match_start, self.match_end])
 
                 self.right_textview.seek_index += 1
-                self.right_textview.seeks.insert(self.right_textview.seek_index, self.match_start)
+                self.right_textview.seeks.insert(self.right_textview.seek_index, [self.match_start, self.match_end])
                 #print "Anadida nueva entrada en el indice %d" % self.right_textview.seek_index
                 return True
 

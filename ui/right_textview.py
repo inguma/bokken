@@ -40,6 +40,7 @@ class RightTextView(gtk.VBox, Searchable):
 
         self.seek_index = 0
         self.seeks = []
+        self.marks = []
 
         #################################################
         # Move buttons
@@ -115,9 +116,16 @@ class RightTextView(gtk.VBox, Searchable):
                 self.seek_index += 1
             #print "Nuevo indice %d" % self.seek_index
 
+            # Remove previous marks if exist
+            for mark in self.marks:
+                self.buffer.remove_tag_by_name('green-background', mark[0], mark[1])
+            self.marks = []
+
             #print "Me muevo al indice %d de %d" % (self.seek_index-1, self.seek_index)
-            mark = self.buffer.create_mark(None, self.seeks[self.seek_index-1], False)
+            mark = self.buffer.create_mark(None, self.seeks[self.seek_index-1][0], False)
             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
+            self.buffer.apply_tag_by_name('green-background', self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1])
+            self.marks.append([self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1]])
             #self.view.scroll_to_iter(self.seeks[self.seek_index-1], 0, True, 0, 0)
 
     def set_completion(self):
@@ -249,8 +257,12 @@ class RightTextView(gtk.VBox, Searchable):
 
                 if res:
                     # Remove previous marks if exist
+                    for mark in self.marks:
+                        self.buffer.remove_tag_by_name('green-background', mark[0], mark[1])
+                    self.marks = []
                     if self.match_start != None and self.match_end != None:
                         self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
+
                     for iter in res:
                         self.match_start, self.match_end = iter
 
@@ -261,10 +273,11 @@ class RightTextView(gtk.VBox, Searchable):
                             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                             self.last_search_iter = self.match_end
                             self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
+                            self.marks.append([self.match_start, self.match_end])
 
                     # Update seeks
                     if self.match_start != self.seeks[-1]:
-                        self.seeks.insert(self.seek_index, self.match_start)
+                        self.seeks.insert(self.seek_index, [self.match_start, self.match_end])
                         self.seek_index += 1
                         if len(self.seeks) != self.seek_index:
                             self.seeks = self.seeks[:self.seek_index]
