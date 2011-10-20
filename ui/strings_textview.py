@@ -37,6 +37,8 @@ class StringsTextView(gtk.VBox, Searchable):
         self.uicore = core
         self.textviews = textviews
 
+        self.press_coords = []
+
         # Use GtkSourceView to add eye candy :P
         # create buffer
         lm = gtksourceview2.LanguageManager()
@@ -48,7 +50,8 @@ class StringsTextView(gtk.VBox, Searchable):
         self.buffer.create_tag("green-background", background="green", foreground="black")
         self.buffer.set_data('languages-manager', lm)
         self.view = gtksourceview2.View(self.buffer)
-        self.view.connect("button-release-event", self._get_clicked_word)
+        self.view.connect("button-press-event", self._get_press)
+        self.view.connect("button-release-event", self._get_release)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
@@ -92,7 +95,16 @@ class StringsTextView(gtk.VBox, Searchable):
     def remove_content(self):
         self.buffer.set_text('')
 
-    def _get_clicked_word(self, widget, event):
+    def _get_press(self, widget, event):
+        x, y = event.get_coords()
+        self.press_coords = [x, y]
+
+    def _get_release(self, widget, event):
+        x, y = event.get_coords()
+        if [x, y] == self.press_coords:
+            self._get_clicked_word()
+
+    def _get_clicked_word(self):
         # Get textbuffer coordinates from texview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
