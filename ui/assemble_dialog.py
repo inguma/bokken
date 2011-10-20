@@ -100,30 +100,34 @@ class AssembleDialog(gtk.Dialog):
         self.asm_label.set_alignment(0.05, 0.5)
 
         self.hex_info = gtk.Button('')
+        self.hex_info.set_tooltip_text('Fill the text area with example code.\nWARNING: This will remove actual text area contents!')
         self.hex_info.connect('clicked', self._help, 'hex')
         i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_MENU)
+        i.set_from_stock(gtk.STOCK_HELP, gtk.ICON_SIZE_MENU)
         self.hex_info.set_image(i)
         l = self.hex_info.get_children()[0]
         l = l.get_children()[0].get_children()[1]
         l = l.set_label('')
 
         self.asm_info = gtk.Button('')
+        self.asm_info.set_tooltip_text('Fill the text area with example code.\nWARNING: This will remove actual text area contents!')
         self.asm_info.connect('clicked', self._help, 'asm')
         i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_MENU)
+        i.set_from_stock(gtk.STOCK_HELP, gtk.ICON_SIZE_MENU)
         self.asm_info.set_image(i)
         l = self.asm_info.get_children()[0]
         l = l.get_children()[0].get_children()[1]
         l = l.set_label('')
 
         self.arch_combo = gtk.combo_box_new_text()
+        self.arch_combo.set_tooltip_text('Select the architecture to use')
         options = ['x86', 'x86.olly', 'ppc', 'mips', 'arm']
         for option in options:
             self.arch_combo.append_text(option)
         self.arch_combo.set_active(0)
 
         self.bits_combo = gtk.combo_box_new_text()
+        self.bits_combo.set_tooltip_text('Select the bits to use')
         options = ['16', '32', '64']
         for option in options:
             self.bits_combo.append_text(option)
@@ -215,13 +219,14 @@ class AssembleDialog(gtk.Dialog):
         self.export_combo.set_active(0)
 
         self.export_bt = gtk.Button('')
+        self.export_bt.set_tooltip_text('Export the generated code in the selected format')
         self.export_bt.connect('clicked', self._export)
         i = gtk.Image()
         i.set_from_stock(gtk.STOCK_CONVERT, gtk.ICON_SIZE_MENU)
         self.export_bt.set_image(i)
         l = self.export_bt.get_children()[0]
         l = l.get_children()[0].get_children()[1]
-        l = l.set_label('')
+        l = l.set_label('Export')
 
         self.export_hb.pack_start(self.export_label, False, False, 1)
         self.export_hb.pack_start(self.export_combo, False, False, 1)
