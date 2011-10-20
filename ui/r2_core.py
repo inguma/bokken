@@ -40,6 +40,7 @@ class Core():
         self.pythondasm = ''
         self.textsize= 0
         self.fullhex = ''
+        self.hexdump = ''
         self.fullstr = ''
         self.allstrings = ''
         self.allfuncs = []
@@ -77,6 +78,7 @@ class Core():
         self.pythondasm = ''
         self.textsize= 0
         self.fullhex = ''
+        self.hexdump = ''
         self.fullstr = ''
         self.allstrings = ''
         self.allfuncs = []
@@ -146,6 +148,20 @@ class Core():
         # Check if file name is an URL
         self.is_url(file)
 
+        # Preload all this data in this function that runs
+        # on it's own thread
+        if self.core.format == 'Program':
+            self.get_sections()
+            self.get_text_dasm()
+            self.get_callgraph()
+            self.get_functions()
+        self.get_full_hexdump()
+        self.get_hexdump()
+        self.get_strings()
+        self.get_repr()
+        self.get_full_file_info()
+        self.get_file_info()
+
     def is_url(self, file):
         #print "[*] Checking if is URL"
         self.filename = file
@@ -168,6 +184,14 @@ class Core():
             print "[*] Get functions"
             #self.core.cmd0('aa')
             self.core.cmd0('fs functions')
+            if self.bin.get_sym(0):
+                self.allfuncs.append('entry0')
+            if self.bin.get_sym(1):
+                self.allfuncs.append('sym._init')
+            if self.bin.get_sym(2):
+                self.allfuncs.append('main')
+            if self.bin.get_sym(3):
+                self.allfuncs.append('sym._fini')
             for fcn in self.core.cmd_str('f').split('\n'):
                 if fcn:
                     #print ' 0x%08x' % fcn.addr, fcn.name
@@ -176,11 +200,12 @@ class Core():
         return self.allfuncs
 
     def get_hexdump(self):
-        print "[*] Get hexdump"
-        #self.core.cmd0('e io.va=0')
-        hexdump = self.core.cmd_str('px')
-        #self.core.cmd0('e io.va=1')
-        return hexdump
+        if not self.hexdump:
+            print "[*] Get hexdump"
+            #self.core.cmd0('e io.va=0')
+            self.hexdump = self.core.cmd_str('px')
+            #self.core.cmd0('e io.va=1')
+        return self.hexdump
 
     def get_full_hexdump(self):
         if self.fullhex == '':
@@ -307,7 +332,7 @@ class Core():
         return self.fileinfo
 
     def get_full_file_info(self):
-        print "[*] Get file info"
+        print "[*] Get full file info"
         if not self.full_fileinfo:
             # get binary info
             file_info = self.core.cmd_str('iI')

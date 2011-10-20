@@ -103,11 +103,11 @@ class MainApp:
                 print "Incorrect file argument:", FAIL, self.target, ENDC
                 sys.exit(1)
     
-            # Use threads to avoid freezing the GUI load
-            thread = threading.Thread(target=self.load_file, args=(self.target,))
-            thread.start()
-            # This call must not depend on load_file data
-            gobject.timeout_add(500, self.show_file_data, thread)
+#            # Use threads to avoid freezing the GUI load
+#            thread = threading.Thread(target=self.load_file, args=(self.target,))
+#            thread.start()
+#            # This call must not depend on load_file data
+#            gobject.timeout_add(500, self.show_file_data, thread)
         else:
             self.empty_gui = True
 
@@ -172,7 +172,13 @@ class MainApp:
 
         self.window.show_all()
 
-        gtk.main()
+    def _preload(self):
+        if self.target:
+            # Use threads to avoid freezing the GUI load
+            thread = threading.Thread(target=self.load_file, args=(self.target,))
+            thread.start()
+            # This call must not depend on load_file data
+            gobject.timeout_add(500, self.show_file_data, thread)
 
     # Do all the core stuff of parsing file
     def load_file(self, target):
@@ -280,4 +286,6 @@ class MainApp:
         return True
 
 def main(target, backend):
-    MainApp(target, backend)
+    main = MainApp(target, backend)
+    main._preload()
+    gtk.main()

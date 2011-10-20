@@ -298,7 +298,7 @@ class TreeViews(gtk.TreeView):
                         link_name = link_name[0]
                     else:
                         # Just get graph for functions
-                        if 'fcn.' in link_name[0]:
+                        if not 'loc.' in link_name[0]:
                             self.dograph = True
                         # Adjust section name to search inside r2 flags
                         elif link_name[0][0] == '.':
@@ -356,7 +356,7 @@ class TreeViews(gtk.TreeView):
                         link_name = link_name[0]
                     else:
                         # Just get graph for functions
-                        if 'fcn.' in link_name[0]:
+                        if not 'loc.' in link_name[0]:
                             self.dograph = True
                         # Adjust section name to search inside r2 flags
                         elif link_name[0][0] == '.':
