@@ -33,8 +33,14 @@ class AssembleDialog(gtk.Dialog):
         self.uicore = core
         self.timer_id = None
 
+        self.butt_ok = self.action_area.get_children()[0]
+        self.butt_ok.connect("clicked", self._bye)
+
+        self.original_arch = self.uicore.core.cmd_str('e asm.arch')
+        self.original_bits = self.uicore.core.cmd_str('e asm.bits')
+
         self.hex_tip = '; Example of hexadecimal input\n; Comments will be ignored\n905851e93ff1bfff\n; Look that the asm code for this hexadecimal\n; has appeared on the other text area'
-        self.asm_tip = '; Example of assembly input\n; Comments will be ignored\nnop\npush eax\npop ecx\njmp 0x200\ncall 0x100;\n; Look that the hex code for this assembly\n; has appeared on the other text area'
+        self.asm_tip = '; Example of assembly input\n; Comments will be ignored\nnop\npush eax\npop ecx\njmp 0x200\ncall 0x100\n; Look that the hex code for this assembly\n; has appeared on the other text area'
         self.action = 'hex'
 
         # the cancel button
@@ -96,7 +102,7 @@ class AssembleDialog(gtk.Dialog):
         self.hex_info = gtk.Button('')
         self.hex_info.connect('clicked', self._help, 'hex')
         i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
+        i.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_MENU)
         self.hex_info.set_image(i)
         l = self.hex_info.get_children()[0]
         l = l.get_children()[0].get_children()[1]
@@ -105,16 +111,30 @@ class AssembleDialog(gtk.Dialog):
         self.asm_info = gtk.Button('')
         self.asm_info.connect('clicked', self._help, 'asm')
         i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
+        i.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_MENU)
         self.asm_info.set_image(i)
         l = self.asm_info.get_children()[0]
         l = l.get_children()[0].get_children()[1]
         l = l.set_label('')
 
+        self.arch_combo = gtk.combo_box_new_text()
+        options = ['x86', 'x86.olly', 'ppc', 'mips', 'arm']
+        for option in options:
+            self.arch_combo.append_text(option)
+        self.arch_combo.set_active(0)
+
+        self.bits_combo = gtk.combo_box_new_text()
+        options = ['16', '32', '64']
+        for option in options:
+            self.bits_combo.append_text(option)
+        self.bits_combo.set_active(1)
+
         # Packing...
         self.hex_hb.pack_start(self.hex_label, True, True, 1)
         self.hex_hb.pack_start(self.hex_info, False, False, 1)
         self.asm_hb.pack_start(self.asm_label, True, True, 1)
+        self.asm_hb.pack_start(self.arch_combo, False, False, 1)
+        self.asm_hb.pack_start(self.bits_combo, False, False, 1)
         self.asm_hb.pack_start(self.asm_info, False, False, 1)
         
         # Add ui dir to language paths
@@ -150,6 +170,10 @@ class AssembleDialog(gtk.Dialog):
 
         self.hex_vb.pack_start(self.hex_scrolled, True, True, 1)
 
+        # Connect once created hex_buffer to avoid warnings
+        self.arch_combo.connect("changed", self._update_arch_bits, "arch")
+        self.bits_combo.connect("changed", self._update_arch_bits, "bits")
+
         # ASM TextView
         #################################################################
         self.asm_buffer = gtksourceview2.Buffer()
@@ -175,6 +199,39 @@ class AssembleDialog(gtk.Dialog):
 
         self.asm_vb.pack_start(self.asm_scrolled, True, True, 1)
 
+        sep = gtk.HSeparator()
+        self.vbox.pack_start(sep, False, False, 1)
+
+        # Export buttons
+        self.export_hb = gtk.HBox(False, 3)
+
+        self.export_label = gtk.Label('Select the export format:')
+
+        self.export_combo = gtk.combo_box_new_text()
+
+        options = ['Python buffer', 'C Array']
+        for option in options:
+            self.export_combo.append_text(option)
+        self.export_combo.set_active(0)
+
+        self.export_bt = gtk.Button('')
+        self.export_bt.connect('clicked', self._export)
+        i = gtk.Image()
+        i.set_from_stock(gtk.STOCK_CONVERT, gtk.ICON_SIZE_MENU)
+        self.export_bt.set_image(i)
+        l = self.export_bt.get_children()[0]
+        l = l.get_children()[0].get_children()[1]
+        l = l.set_label('')
+
+        self.export_hb.pack_start(self.export_label, False, False, 1)
+        self.export_hb.pack_start(self.export_combo, False, False, 1)
+        self.export_hb.pack_start(self.export_bt, False, False, 1)
+
+        halign = gtk.Alignment(0, 1, 0, 0)
+        halign.add(self.export_hb)
+
+        self.vbox.pack_start(halign, False, False, 1)
+
         self.show_all()
 
     #
@@ -185,6 +242,55 @@ class AssembleDialog(gtk.Dialog):
             self.hex_buffer.set_text(self.hex_tip)
         else:
             self.asm_buffer.set_text(self.asm_tip)
+
+    def _update_arch_bits(self, widget, data):
+        model = widget.get_model()
+        active = widget.get_active()
+        value = model[active][0]
+
+        if data == 'arch':
+            self.uicore.core.cmd_str('e asm.arch = ' + value)
+        else:
+            self.uicore.core.cmd_str('e asm.bits = ' + value)
+
+        self.hex_buffer.emit("changed")
+
+    def _export(self, widget):
+        model = self.export_combo.get_model()
+        active = self.export_combo.get_active()
+        option = model[active][0]
+
+        start, end = self.hex_buffer.get_bounds()
+        data = self.hex_buffer.get_text(start, end, False)
+
+        # Remove comments from input
+        clean_data = []
+        data = data.split('\n')
+        for x in data:
+            if x:
+                if x[0] != ';':
+                    clean_data.append(x)
+        data = ''.join(clean_data)
+
+        if data:
+            if 'Python' in option:
+                output = 'buff = ""\n'
+                data = [data[x:x+2] for x in xrange(0,len(data),2)]
+                # Group every 10 elements
+                for x in [data[i:i+10] for i in xrange(0, len(data), 10)]:
+                    output += "buf += '" + "\\x".join(x) + "'\n"
+            else:
+                output = 'char buf[] =\n'
+                data = [data[x:x+2] for x in xrange(0,len(data),2)]
+                # Group every 10 elements
+                for x in [data[i:i+10] for i in xrange(0, len(data), 10)]:
+                    output += '\t"' + "\\x".join(x) + '"\n'
+                output = output[:-1]
+                output += ';'
+
+            import search_dialog
+            self.search_dialog = search_dialog.SearchDialog()
+            self.search_dialog.output_buffer.set_text(output)
 
     def _update(self, widget, data=None):
         # This loop makes sure that we only call _find every 500 ms .
@@ -240,3 +346,8 @@ class AssembleDialog(gtk.Dialog):
             self.asm_buffer.handler_block(self.asm_handler)
             self.asm_buffer.set_text( code.buf_asm )
             self.asm_buffer.handler_unblock(self.asm_handler)
+
+    def _bye(self, widget):
+        # Restore original arch and bits values
+        self.uicore.core.cmd_str("e asm.arch = " + self.original_arch)
+        self.uicore.core.cmd_str("e asm.bits = " + self.original_bits)
