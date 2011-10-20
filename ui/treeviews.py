@@ -298,10 +298,10 @@ class TreeViews(gtk.TreeView):
                         link_name = link_name[0]
                     else:
                         # Just get graph for functions
-                        if not 'loc.' in link_name[0]:
+                        if not 'loc.' in link_name[0] and link_name[0][0] != '.':
                             self.dograph = True
                         # Adjust section name to search inside r2 flags
-                        elif link_name[0][0] == '.':
+                        if link_name[0][0] == '.':
                             link_name[0] = 'section.' + link_name[0]
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
@@ -356,10 +356,10 @@ class TreeViews(gtk.TreeView):
                         link_name = link_name[0]
                     else:
                         # Just get graph for functions
-                        if not 'loc.' in link_name[0]:
+                        if not 'loc.' in link_name[0] and link_name[0][0] != '.':
                             self.dograph = True
                         # Adjust section name to search inside r2 flags
-                        elif link_name[0][0] == '.':
+                        if link_name[0][0] == '.':
                             link_name[0] = 'section.' + link_name[0]
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
