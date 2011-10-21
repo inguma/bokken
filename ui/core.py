@@ -31,10 +31,11 @@ from pyew_core import CPyew
 
 class Core():
 
-    def __init__(self, case, deep_anal):
+    def __init__(self, case, deep_anal, progress_bar=None):
 
         self.low_case = case
         self.deep_anal = deep_anal
+        self.progress_bar = progress_bar
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -621,3 +622,12 @@ class Core():
         except:
             pass
 
+    def update_progress_bar(self, text, percent):
+        """ Easy function to clean up the event queue and force a repaint. """
+        import ui.core_functions
+
+        if not self.progress_bar:
+            return
+        self.progress_bar.set_fraction(percent)
+        self.progress_bar.set_text(text)
+        ui.core_functions.repaint()
