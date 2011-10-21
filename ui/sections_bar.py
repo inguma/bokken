@@ -50,13 +50,13 @@ class SectionsBar(gtk.DrawingArea):
     def do_expose_event(self, event):
         self._scroll_height = self.scrollbar.allocation.height
         stepper_size = self.scrollbar.style_get_property("stepper-size")
-        height = self._scroll_height - 1 - (2 * stepper_size)
+        height = self._scroll_height - (2 * stepper_size)
 
         context = self.window.cairo_create()
         #context.translate(0, y_start)
         context.translate(0, 0)
         context.set_line_width(1)
-        context.rectangle(0, stepper_size + 1, 15, height - 1)
+        context.rectangle(0, stepper_size, 15, height)
         context.clip()
 
         darken = lambda color: [x * 0.8 for x in color]
@@ -87,7 +87,7 @@ class SectionsBar(gtk.DrawingArea):
             color = colors[counter & 1]
             context.set_source_rgb(*color)
             context.set_line_width(1)
-            context.rectangle(0, stepper_size + prev_height + 0.5, 15, y1 + stepper_size + prev_height - 0.5)
+            context.rectangle(0, stepper_size + prev_height, 15, y1 + prev_height)
             context.fill_preserve()
             context.set_source_rgb(*darken(color))
             context.stroke()
