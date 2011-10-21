@@ -19,8 +19,8 @@
 
 import os
 
-import gtk, gobject
-import threading
+import gtk
+
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -199,13 +199,9 @@ class MenuBar(gtk.MenuBar):
         # Clean full vars where file parsed data is stored as cache
         self.uicore.clean_fullvars()
 
-        # Use threads not to freeze GUI while loading
-        # FIXME: Same code used in main.py, should be converted into a function
-        self.throbber = self.main.topbuttons.throbber
-        self.throbber.running(True)
-        t = threading.Thread(target=self.main.load_file, args=(self.file,))
-        t.start()
-        gobject.timeout_add(500, self.load_data, t)
+        self.uicore.progress_bar = dialog.progress_bar
+        self.main.load_file(self.file)
+        self.main.show_file_data()
 
     def recent_kb(self, widget):
         """Activated when an item from the recent projects menu is clicked"""
@@ -214,14 +210,6 @@ class MenuBar(gtk.MenuBar):
         # Strip 'file://' from the beginning of the uri
         file_to_open = uri[7:]
         self.new_file(None, file_to_open)
-
-    def load_data(self, thread):
-        if thread.isAlive() == True:
-            return True
-        else:
-            self.throbber.running('')
-            self.main.show_file_data(thread)
-            return False
 
     def create_about_dialog(self, widget):
         import ui.about as about
