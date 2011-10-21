@@ -620,4 +620,4 @@ class Core():
             db.execute(sql)
         except:
             pass
-    
+

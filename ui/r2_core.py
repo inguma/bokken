@@ -27,13 +27,14 @@ from r2.r_bin import *
 
 class Core():
 
-    def __init__(self, lower_case, do_anal, asm_syn, use_va, asm_bytes):
+    def __init__(self, lower_case, do_anal, asm_syn, use_va, asm_bytes, progress_bar=None):
 
         self.do_anal = do_anal
         self.lower_case = lower_case
         self.use_va = use_va
         self.asm_syn = asm_syn
         self.asm_bytes = asm_bytes
+        self.progress_bar = progress_bar
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -101,7 +102,8 @@ class Core():
         self.last_cmd = ''
 
     def load_file(self, file):
-        print "[*] Loading file"
+        #print "[*] Loading file"
+        self.update_progress_bar("Loading file", 0.1)
         self.file = file
         # Init core
         # Returns True/False (check)
@@ -156,7 +158,8 @@ class Core():
 
     def get_strings(self):
         if not self.allstrings:
-            print "[*] Get strings"
+            #print "[*] Get strings"
+            self.update_progress_bar("Getting strings", 0.6)
             strings = ''
             self.core.cmd0('fs strings')
             strings = self.core.cmd_str('f')
@@ -165,7 +168,8 @@ class Core():
 
     def get_functions(self):
         if not self.allfuncs:
-            print "[*] Get functions"
+            #print "[*] Get functions"
+            self.update_progress_bar("Getting functions", 0.8)
             #self.core.cmd0('aa')
             self.core.cmd0('fs functions')
             for fcn in self.core.cmd_str('f').split('\n'):
@@ -176,7 +180,8 @@ class Core():
         return self.allfuncs
 
     def get_hexdump(self):
-        print "[*] Get hexdump"
+        #print "[*] Get hexdump"
+        self.update_progress_bar("Getting hexdump", 0.75)
         #self.core.cmd0('e io.va=0')
         hexdump = self.core.cmd_str('px')
         #self.core.cmd0('e io.va=1')
@@ -184,7 +189,8 @@ class Core():
 
     def get_full_hexdump(self):
         if self.fullhex == '':
-            print "[*] Get full hexdump"
+            #print "[*] Get full hexdump"
+            self.update_progress_bar("Getting full hexdump", 0.5)
             self.core.cmd0('e io.va=0')
             self.core.cmd0('s 0')
             self.core.cmd0('b ' + str(self.size))
@@ -196,23 +202,33 @@ class Core():
         return self.fullhex
 
     def get_dasm(self):
-        print "[*] Get dasm"
+        #print "[*] Get dasm"
+        self.update_progress_bar("Getting dasm",0.25)
         dasm = self.core.cmd_str('pd')
         return dasm
 
     def get_text_dasm(self):
+        base_percent = 0.3
+        step = 0.01
+
         if not self.text_dasm:
-            print "[*] Get text dasm"
+            #print "[*] Get text dasm"
+            self.update_progress_bar("Getting text dasm",base_percent)
+            percent = base_percent
             for section in self.execsections:
+                percent += step
                 dasm = ''
                 self.core.cmd0('s section.' + section[0])
                 self.core.cmd0('b ' + str(section[1]))
-                print "\t* Let's get the dasm for %s..." % section[0],
+                #print "\t* Let's get the dasm for %s..." % section[0],
+                self.update_progress_bar("Reading assembler for section %s..." % section[0], percent)
                 dasm = self.core.cmd_str('pD')
                 self.sections_lines.append( len(dasm.split('\n')) )
                 self.core.cmd0('b 512')
-                print " OK!"
+                #print " OK!"
                 self.text_dasm += dasm
+                if percent == base_percent + step * 10:
+                    percent -= step
             self.sections_lines.append(sum(self.sections_lines))
         return self.text_dasm
 
@@ -228,7 +244,8 @@ class Core():
 
     def get_repr(self):
         if not self.fullstr:
-            print "[*] Get string repr"
+            #print "[*] Get string repr"
+            self.update_progress_bar("Getting string representation", 0.65)
             self.core.cmd0('e io.va=0')
             self.core.cmd0('s 0')
             self.core.cmd0('b ' + str(self.size))
@@ -241,7 +258,8 @@ class Core():
 
     def get_sections(self):
         if self.allsections == [] and self.core.format != 'Hexdump':
-            print "[*] Get sections"
+            #print "[*] Get sections"
+            self.update_progress_bar("Getting sections", 0.15)
             for section in self.bin.get_sections():
                 self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
                 if section.srwx & 1 == 1:
@@ -284,7 +302,8 @@ class Core():
 
     def get_callgraph(self, addr=''):
         #if not self.dot:
-        print "[*] Get callgraph"
+        #print "[*] Get callgraph"
+        self.update_progress_bar("Loading callgraph", 0.4)
         file = tempfile.gettempdir() + os.sep + 'miau.dot'
         if not addr:
             self.core.cmd0('ag section..text > ' + file)
@@ -298,7 +317,8 @@ class Core():
         return self.dot
 
     def get_file_info(self):
-        print "[*] Get file info"
+        #print "[*] Get file info"
+        self.update_progress_bar("Getting additional file info", 0.9)
         if 'Program' in self.core.format:
            self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine}
         else:
@@ -307,7 +327,8 @@ class Core():
         return self.fileinfo
 
     def get_full_file_info(self):
-        print "[*] Get file info"
+        #print "[*] Get file structure"
+        self.update_progress_bar("Loading full file structure", 0.2)
         if not self.full_fileinfo:
             # get binary info
             file_info = self.core.cmd_str('iI')
@@ -422,3 +443,12 @@ class Core():
         import ui.generate_dot as gendot
         self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
 
+    def update_progress_bar(self, text, percent):
+        """ Easy function to clean up the event queue and force a repaint. """
+        import ui.core_functions
+
+        if not self.progress_bar:
+            return
+        self.progress_bar.set_fraction(percent)
+        self.progress_bar.set_text(text)
+        ui.core_functions.repaint()

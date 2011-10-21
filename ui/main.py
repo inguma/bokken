@@ -17,7 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os, sys, threading
+import os, sys
 
 # Add plugins directory to the path
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
@@ -28,7 +28,7 @@ import ui.dependency_check as dependency_check
 dependency_check.check_all()
 
 # Now that I know that I have them, import them!
-import gtk, gobject
+import gtk
 
 # This is just general info, to help people knowing their system
 print "Starting bokken, running on:"
@@ -42,12 +42,6 @@ import ui.menu_bar as menu_bar
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
-
-# Threading initializer
-if sys.platform == "win32":
-    gobject.threads_init()
-else:
-    gtk.gdk.threads_init()
 
 MAINTITLE = "Bokken, a GUI for pyew and radare2!"
 VERSION = "1.5-dev"
@@ -91,7 +85,7 @@ class MainApp:
             self.uicore = core.Core(dialog.case, dialog.deep)
         elif self.backend == 'radare':
             import ui.r2_core as r2_core
-            self.uicore = r2_core.Core(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va, dialog.asm_byt)
+            self.uicore = r2_core.Core(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va, dialog.asm_byt, dialog.progress_bar)
         self.uicore.backend = self.backend
 
         # Check if target name is an URL, pyew stores it as 'raw'
@@ -102,12 +96,12 @@ class MainApp:
             if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
                 print "Incorrect file argument:", FAIL, self.target, ENDC
                 sys.exit(1)
-    
-            # Use threads to avoid freezing the GUI load
-            thread = threading.Thread(target=self.load_file, args=(self.target,))
-            thread.start()
-            # This call must not depend on load_file data
-            gobject.timeout_add(500, self.show_file_data, thread)
+
+            self.load_file(self.target)
+
+            import ui.core_functions
+            ui.core_functions.repaint()
+
         else:
             self.empty_gui = True
 
@@ -124,7 +118,7 @@ class MainApp:
         self.window.resize(800, 600)
         self.window.move(25, 25)
         # Maximize window
-        self.window.maximize()
+        #self.window.maximize()
 
         # Create VBox to contain top buttons and other VBox
         self.supervb = gtk.VBox(False, 1)
@@ -161,92 +155,89 @@ class MainApp:
 
         self.window.add(self.supervb)
 
-        # Start the throbber while the thread is running...
-        self.topbuttons.throbber.running(True)
-
         # Disable all until file loads
         self.disable_all()
 
         if self.empty_gui:
             self.show_empty_gui()
 
+        self.show_file_data()
         self.window.show_all()
-
+        dialog.destroy()
+        # We make sure that we remove the reference to the scrollbar to avoid errors.
+        self.uicore.core.progress_bar = None
         gtk.main()
 
     # Do all the core stuff of parsing file
     def load_file(self, target):
 
-        print "Loading file: %s..." % (target)
+        #print "Loading file: %s..." % (target)
         self.uicore.load_file(target)
         if self.uicore.core.format in ['PE', 'Elf', 'ELF', 'Program']:
             self.uicore.get_sections()
-        print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
+        #print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
     def show_empty_gui(self):
         self.topbuttons.throbber.running('')
 
     # Once we have the file info, let's create the GUI
-    def show_file_data(self, thread):
-        if thread.isAlive() == True:
-            return True
+    def show_file_data(self):
+        #print "File format detected: %s" % (self.uicore.core.format)
+        # Create left combo depending on file format
+        #self.tviews.update_left_combo()
+        self.tviews.update_left_buttons()
+
+        # Add data to RIGHT TextView
+        if self.uicore.core.format in ["PE", "ELF", "Program"]:
+            self.tviews.update_righttext('Disassembly')
+        elif self.uicore.core.format in ["PYC"]:
+            self.tviews.update_righttext('Python')
+        elif self.uicore.core.format in ['URL']:
+            self.tviews.update_righttext('URL')
+        elif self.uicore.core.format in ['Plain Text']:
+            self.tviews.update_righttext('Plain Text')
         else:
-            #print "File format detected: %s" % (self.uicore.core.format)
-            # Create left combo depending on file format
-            #self.tviews.update_left_combo()
-            self.tviews.update_left_buttons()
+            self.tviews.update_righttext('Hexdump')
 
-            # Add data to RIGHT TextView
-            if self.uicore.core.format in ["PE", "ELF", "Program"]:
-                self.tviews.update_righttext('Disassembly')
-            elif self.uicore.core.format in ["PYC"]:
-                self.tviews.update_righttext('Python')
-            elif self.uicore.core.format in ['URL']:
-                self.tviews.update_righttext('URL')
-            elif self.uicore.core.format in ['Plain Text']:
-                self.tviews.update_righttext('Plain Text')
-            else:
-                self.tviews.update_righttext('Hexdump')
+        # Add data to INTERACTIVE TextView
+        self.tviews.update_interactive()
 
-            # Add data to INTERACTIVE TextView
-            self.tviews.update_interactive()
+        # Load data to LEFT Tree
+        if self.uicore.core.format in ["PE", "ELF", "Program"]:
+            self.tviews.create_model('Functions')
 
-            # Load data to LEFT Tree
-            if self.uicore.core.format in ["PE", "ELF", "Program"]:
-                self.tviews.create_model('Functions')
-        
-            elif self.uicore.core.format in ["PDF"]:
-                # Why?! Oh why in the name of God....!!
-                self.tviews.create_model('PDF')
-        
-            elif self.uicore.core.format in ["URL"]:
-                self.tviews.create_model('URL')
+        elif self.uicore.core.format in ["PDF"]:
+            # Why?! Oh why in the name of God....!!
+            self.tviews.create_model('PDF')
 
-            # Update statusbar with file info
-            info = self.uicore.get_file_info()
-            self.sbar.add_text(info, '')
+        elif self.uicore.core.format in ["URL"]:
+            self.tviews.create_model('URL')
 
-            # Create seek entry autocompletion of function names...
-            self.tviews.create_completion()
+        # Update statusbar with file info
+        info = self.uicore.get_file_info()
+        self.sbar.add_text(info, '')
 
-            # Enable GUI
-            self.enable_all()
-            self.topbuttons.throbber.running('')
+        # Create seek entry autocompletion of function names...
+        self.tviews.create_completion()
 
-            if 'radare' in self.uicore.backend:
-                if self.uicore.core.format == 'Program':
-                    self.tviews.update_graph(self, 'entry0')
-                    link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+        # Enable GUI
+        self.enable_all()
+        self.topbuttons.throbber.running('')
+
+        if 'radare' in self.uicore.backend:
+            if self.uicore.core.format == 'Program':
+                self.tviews.update_graph(self, 'entry0')
+                link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+                if link_name:
+                    self.tviews.search(self, link_name)
+        elif 'pyew' in self.uicore.backend:
+            if self.uicore.core.format in ['PE', 'ELF']:
+                if self.uicore.core.ep:
+                    link_name = "0x%08x" % self.uicore.core.ep
                     if link_name:
-                        self.tviews.search(self, link_name)
-            elif 'pyew' in self.uicore.backend:
-                if self.uicore.core.format in ['PE', 'ELF']:
-                    if self.uicore.core.ep:
-                        link_name = "0x%08x" % self.uicore.core.ep
-                        if link_name:
-                            if not self.tviews.search(self, link_name):
-                                link_name = "0x%08x" % self.uicore.text_address
-                                self.tviews.search(self, link_name)
+                        if not self.tviews.search(self, link_name):
+                            link_name = "0x%08x" % self.uicore.text_address
+                            self.tviews.search(self, link_name)
 
     def disable_all(self):
         if self.target:

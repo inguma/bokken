@@ -24,7 +24,7 @@ class FileDialog(gtk.Dialog):
 
     def __init__(self, has_pyew, has_radare, core='', file=''):
         super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-
+        import os
 
         self.has_pyew = has_pyew
         self.has_radare = has_radare
@@ -47,13 +47,13 @@ class FileDialog(gtk.Dialog):
 
         # Logo
         self.logo = gtk.Image()
-        self.logo.set_from_file('ui/data/logo.png')
-        # logo label
+        self.logo.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'logo.png')
+        # Logo label
         self.logo_text = gtk.Label()
         self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.5-dev</b></span>')
 
         # Logo label
-        self.label = gtk.Label('Select a file or enter the path manually.\nValid inputs are: PE/Elf, PDF, plain text files and URLs')
+        self.label = gtk.Label('Select a file or enter the path manually.\nValid inputs are: PE/ELF, PDF, plain text files and URLs')
         self.label.set_alignment(0, 0.5)
         # Horizontal Separator
         self.hseparator1 = gtk.HSeparator()
@@ -163,6 +163,7 @@ class FileDialog(gtk.Dialog):
         self.vbox.pack_start(self.main_vbox)
         self.set_focus(self.input_entry.get_child())
         self.show_all()
+
         if self.core == 'pyew':
             self.radare_box.set_visible(False)
         elif self.core == 'radare':
@@ -176,12 +177,34 @@ class FileDialog(gtk.Dialog):
         self.destroy()
 
     def get_file(self, widget):
-        self.hide()
+        import re
+        import ui.core_functions
+
+        # Disable all the interface and Ok button.
+        self.core_hbox.set_sensitive(False)
+        self.hbox.set_sensitive(False)
+        self.options_hbox.set_sensitive(False)
+        self.butt_ok.set_sensitive(False)
+
+        # Progress bar
+        self.progress_box = gtk.VBox(False, 0)
+        self.hseparator4 = gtk.HSeparator()
+        self.progress_bar = gtk.ProgressBar()
+        self.progress_box.pack_start(self.hseparator4, False, False, 0)
+        self.progress_box.pack_start(self.progress_bar, False, False, 0)
+
+        self.main_vbox.pack_start(self.progress_box, False, False, 2)
+        self.progress_box.show_all()
+
+        ui.core_functions.repaint()
+
         self.file = self.input_entry.get_child().get_text()
-        self.manager.add_item('file://' + self.file)
+        if not re.match('[a-z]+://', self.file):
+            # It's a local file.
+            self.manager.add_item('file://' + self.file)
         self.get_backend()
         self.get_options()
-        self.destroy()
+        self.response(0)
 
     def fast_start(self, widget):
         self.file = self.input_entry.get_child().get_text()

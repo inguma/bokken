@@ -243,7 +243,7 @@ class TextViews(gtk.HBox):
         #self.update_tabs(option)
 
     def update_interactive(self):
-        print "[*] Update interacive"
+        #print "[*] Update interacive"
         if self.uicore.backend == 'pyew':
             self.uicore.core.offset = 0
         elif self.uicore.backend == 'radare':
