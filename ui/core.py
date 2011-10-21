@@ -370,8 +370,8 @@ class Core():
                 for section in self.core.elf.secnames:
                     if self.core.elf.secnames[section].sh_flags == 6:
                         self.execsections.append([self.core.elf.secnames[section].getName(), self.core.elf.secnames[section].sh_size, self.core.elf.secnames[section].sh_offset])
-                        self.sections_size.append(self.core.elf.secnames[section].sh_size)
-                        self.allsections.append( [self.core.elf.secnames[section].getName(), "0x%08x" % (self.core.elf.secnames[section].sh_addr), "N/A", "N/A"] )
+                    self.sections_size.append(self.core.elf.secnames[section].sh_size)
+                    self.allsections.append( [self.core.elf.secnames[section].getName(), "0x%08x" % (self.core.elf.secnames[section].sh_addr), "N/A", "N/A"] )
 
         return self.allsections
 

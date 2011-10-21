@@ -283,7 +283,7 @@ class TextViews(gtk.HBox):
         elif mode == 'Sections':
             self.left_treeview.create_sections_columns()
             execs = [x[0] for x in self.uicore.execsections]
-            if self.uicore.backend == 'pyew':
+            if self.uicore.backend == 'pyew' and self.uicore.core.format != 'ELF':
                 execs = [x[0] for x in execs]
             for section in self.uicore.get_sections():
                 if section[0] in execs:
