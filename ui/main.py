@@ -81,7 +81,7 @@ class MainApp:
 
         # Load selected core
         if self.backend == 'pyew':
-            import ui.yew_core as core
+            import ui.core as core
             self.uicore = core.Core(dialog.case, dialog.deep, dialog.progress_bar)
         elif self.backend == 'radare':
             import ui.radare_core as radare_core
@@ -118,7 +118,7 @@ class MainApp:
         self.window.resize(800, 600)
         self.window.move(25, 25)
         # Maximize window
-        #self.window.maximize()
+        self.window.maximize()
 
         # Create VBox to contain top buttons and other VBox
         self.supervb = gtk.VBox(False, 1)

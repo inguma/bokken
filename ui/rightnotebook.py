@@ -160,6 +160,7 @@ class RightNotebook(gtk.Notebook):
             self.set_tab_label(self.html_elements, tab)
             self.html_elements.html_tree.create_html_tree()
             self.show_all()
+            self.set_current_page(0)
 
     def add_info_elements_tab(self):
         #################################################
