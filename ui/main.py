@@ -81,7 +81,7 @@ class MainApp:
 
         # Load selected core
         if self.backend == 'pyew':
-            import ui.core as core
+            import ui.pyew_core as core
             self.uicore = core.Core(dialog.case, dialog.deep, dialog.progress_bar)
         elif self.backend == 'radare':
             import ui.r2_core as r2_core
