@@ -229,7 +229,7 @@ class RightTextView(gtk.VBox, Searchable):
                 self.search_string = hex_addr
             elif 'loc.' in search_string:
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-            elif 'fcn.' in search_string:
+            elif any( k in search_string for k in ['fcn.', 'main', 'entry0', '_init', '_fini'] ):
                 self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
                 self.dograph = True
             elif 'imp.' in search_string:
