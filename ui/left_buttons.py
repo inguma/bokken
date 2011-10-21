@@ -127,10 +127,11 @@ class LeftButtons(gtk.VBox):
         elif option == 'url':
             # URL
             lnktb = gtk.ToggleButton()
+            lnktb.set_active(True)
             handler = lnktb.connect('toggled', self._on_toggle)
             lnktb.handler = handler
             a = gtk.VBox(False, 1)
-            l = gtk.Label('Links')
+            l = gtk.Label('URL')
             l.set_angle(90)
             a.pack_start(l, False, False, 1)
             a.pack_start(self.fcn_pix, False, False, 1)

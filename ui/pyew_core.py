@@ -110,6 +110,7 @@ class Core():
         self.last_cmd = ''
 
     def load_file(self, file):
+        self.update_progress_bar("Loading file", 0.1)
         # Set default file format to raw
         self.core.format = 'raw'
 
@@ -149,6 +150,7 @@ class Core():
 
     def get_strings(self):
         if not self.allstrings:
+            self.update_progress_bar("Getting strings", 0.6)
             self.allstrings = self.core.strings(self.core.buf)
             strings = ''
             FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
@@ -160,39 +162,50 @@ class Core():
 
     def get_functions(self):
         if not self.allfuncs:
+            self.update_progress_bar("Getting functions", 0.8)
             for func in self.core.functions:
                  #print "0x%08x" % (func)
                  self.allfuncs.append(self.core.names[func])
         return self.allfuncs
 
     def get_hexdump(self):
+        self.update_progress_bar("Getting hexdump", 0.75)
         hexdump = self.core.hexdump(self.core.buf, self.core.hexcolumns, baseoffset=self.core.offset, bsize=self.core.bsize)
         return hexdump
 
     def get_full_hexdump(self):
-        self.core.bsize = self.core.maxsize
-        self.core.seek(0)
         if self.fullhex == '':
+            self.update_progress_bar("Getting full hexdump", 0.5)
+            self.core.bsize = self.core.maxsize
+            self.core.seek(0)
             hexdump = self.core.hexdump(self.core.buf, self.core.hexcolumns, baseoffset=0, bsize=self.core.bsize)
             self.fullhex = hexdump
         self.core.bsize = 512
         return self.fullhex
 
     def get_dasm(self):
+        self.update_progress_bar("Getting dasm",0.25)
         dis = self.core.disassemble(self.core.buf, self.core.processor, self.core.type, self.core.lines, self.core.bsize, baseoffset=self.core.offset)
         return dis
 
     def get_text_dasm(self):
         self.core.bsize = self.core.maxsize
+
+        base_percent = 0.3
+        step = 0.01
+
         #self.seek(0)
         if not self.text_dasm:
+            self.update_progress_bar("Getting text dasm",base_percent)
+            percent = base_percent
             self.core.lines = 100*100
             if self.core.format == 'PE':
-                dasm = ''
+                #dasm = ''
                 for section in self.execsections:
-                    print "\t* Let's get the dasm for %s..." % section[0][0],
+                    percent += step
                     # Let's store text section information
                     #print hex(self.core.pe.OPTIONAL_HEADER.ImageBase + section.VirtualAddress)
+                    self.update_progress_bar("Reading assembler for section %s..." % section[0][0], percent)
                     self.text_rsize = section[1]
                     self.text_address = section[2]
                     self.seek(self.text_address)
@@ -200,11 +213,15 @@ class Core():
                     self.sections_lines.append( len(dis.split('\n')) )
                     self.text_dasm += ';; ------------------------\n;; Section: %s\n;; ------------------------\n' % section[0][0]
                     self.text_dasm += dis
-                    print "OK"
+                    #print "OK"
+                    if percent == base_percent + step * 10:
+                        percent -= step
                 self.sections_lines.append(sum(self.sections_lines))
             elif self.core.format == 'ELF':
                 for section in self.execsections:
-                    print "\t* Let's get the dasm for %s..." % section[0][0],
+                    percent += step
+                    #print "\t* Let's get the dasm for %s..." % section[0][0],
+                    self.update_progress_bar("Reading assembler for section %s..." % section[0][0], percent)
                     # Let's store text section information
                     self.text_rsize = section[1]
                     self.text_address = section[2]
@@ -213,13 +230,16 @@ class Core():
                     self.sections_lines.append( len(dis.split('\n')) )
                     self.text_dasm += ';; ------------------------\n;; Section: %s\n;; ------------------------\n' % section[0]
                     self.text_dasm += dis
-                    print "OK"
+                    #print "OK"
+                    if percent == base_percent + step * 10:
+                        percent -= step
                 self.sections_lines.append(sum(self.sections_lines))
         self.core.bsize = 512
         self.core.lines = 40
         return self.text_dasm
 
     def get_fulldasm(self):
+        self.update_progress_bar("Getting text dasm", 0.3)
         self.core.bsize = self.core.maxsize
         self.seek(0)
         if not self.fulldasm:
@@ -329,12 +349,14 @@ class Core():
 
     def get_repr(self):
         if not self.fullstr:
+            self.update_progress_bar("Getting string representation", 0.65)
             self.fullstr = repr(self.core.buf)
         return self.fullstr
 
     def get_sections(self):
+        self.update_progress_bar("Getting sections", 0.15)
         if self.core.format == 'PE':
-            import pefile
+            #import pefile
             #image_flags = self.core.pe.retrieve_flags(pefile.SECTION_CHARACTERISTICS, 'IMAGE_SCN_')
             if self.allsections == []:
                 for section in self.pe.sections:
@@ -406,6 +428,7 @@ class Core():
             return hex(va), hex(ep)
 
     def get_file_info(self):
+        self.update_progress_bar("Getting additional file info", 0.9)
         if self.core.format in ["PE"]:
             # pyew.filename        : /home/hteso/Pocs/MRxNet/mrxnet.sys
             # pyew.format          : PE
@@ -437,6 +460,7 @@ class Core():
         return self.streams
 
     def get_callgraph(self):
+        self.update_progress_bar("Loading callgraph", 0.4)
         import ui.plugins.cgraph as cgraph
         dot_code = cgraph.showCallGraph(self.core)
         return dot_code
@@ -480,6 +504,7 @@ class Core():
         return results
 
     def search_http_src(self):
+        self.update_progress_bar("Parsing HTTP source", 0.2)
         srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)
         hrefs = self.core.dosearch(self.core.f, 's', 'href="', offset=self.core.offset, cols=100, doprint=False)
         results = srcs + hrefs
@@ -493,6 +518,7 @@ class Core():
 
     # Parse http resources to create graph
     def parse_http_locals(self):
+        self.update_progress_bar("Extracting source links", 0.3)
         for element in self.parsed_links['locals']:
             element = element.strip(' ').split('/')
             if len(element) > 1:
@@ -508,6 +534,7 @@ class Core():
         self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
 
     def get_headers_cookies(self):
+        self.update_progress_bar("Extracting headres and cookies", 0.4)
         urlopen = urllib2.urlopen
         cj = cookielib.LWPCookieJar()
         Request = urllib2.Request
@@ -540,6 +567,7 @@ class Core():
         self.forms = parser.forms
 
     def get_file_text(self):
+        self.update_progress_bar("Getting plain text", 0.3)
         file = open(self.core.filename, 'rb')
         data = file.read()
         file.close()
