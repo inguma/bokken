@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#       r2_core.py
+#       radare_core.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
 #       
