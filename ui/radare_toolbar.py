@@ -176,18 +176,18 @@ class TopButtons(gtk.HBox):
         #self.diff_widget = self.main.tviews.bindiff_widget
         chooser = diff_dialog.DiffDialog(self.uicore)
         self.response = chooser.run()
-        if self.response == gtk.RESPONSE_DELETE_EVENT or self.response == gtk.RESPONSE_REJECT:
+        if self.response in [gtk.RESPONSE_DELETE_EVENT, gtk.RESPONSE_REJECT, -3]:
             chooser.destroy()
         else:
             self.file_name = chooser.input_entry2.get_text()
             self.fcn_thr = int(chooser.scale.get_value())
             self.bb_thr = int(chooser.bb_scale.get_value())
             self.bytes = chooser.bytes_check.get_active()
-            print self.file_name, self.fcn_thr, self.bb_thr, self.bytes
             chooser.destroy()
             self.main.tviews.right_notebook.add_bindiff_tab(self.file_name, self.fcn_thr, self.bb_thr, self.bytes)
             #self.diff_widget.set_file(self.file_name)
             #self.diff_widget.diff()
+            widget.set_sensitive(False)
 
     def _do_file_info(self, widget):
         self.main.tviews.right_notebook.add_info_elements_tab()

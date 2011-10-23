@@ -128,9 +128,11 @@ class DiffDialog(gtk.Dialog):
             self.get_file(self.input_entry2)
         else:
             chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                  buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+                      buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
             self.response = chooser.run()
-            if self.response == gtk.RESPONSE_OK:
+            if self.response == gtk.RESPONSE_DELETE_EVENT or self.response == gtk.RESPONSE_REJECT or self.response == gtk.RESPONSE_CANCEL:
+                chooser.destroy()
+            else:
                 self.file_name = chooser.get_filename()
                 self.input_entry2.set_text(self.file_name)
-            chooser.destroy()
+                chooser.destroy()

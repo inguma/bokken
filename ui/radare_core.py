@@ -410,7 +410,7 @@ class Core():
             self.core.cmd0('e io.va=false')
             self.core._cmd('px', True)
             data= self.core.cmd_str(direction)
-            self.core.cmd0('e io.va=true')
+            #self.core.cmd0('e io.va=true')
         elif output == 'disassembly':
             self.core._cmd('pd', True)
             data= self.core.cmd_str(direction)
