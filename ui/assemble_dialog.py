@@ -279,22 +279,24 @@ class AssembleDialog(gtk.Dialog):
 
         if data:
             if 'Python' in option:
-                output = 'buff = ""\n'
+                output = 'buf = ""\n'
                 data = [data[x:x+2] for x in xrange(0,len(data),2)]
                 # Group every 10 elements
                 for x in [data[i:i+10] for i in xrange(0, len(data), 10)]:
-                    output += "buf += '" + "\\x".join(x) + "'\n"
+                    x = ["\\x"+str(i) for i in x]
+                    output += "buf += '" + "".join(x) + "'\n"
             else:
                 output = 'char buf[] =\n'
                 data = [data[x:x+2] for x in xrange(0,len(data),2)]
                 # Group every 10 elements
                 for x in [data[i:i+10] for i in xrange(0, len(data), 10)]:
-                    output += '\t"' + "\\x".join(x) + '"\n'
+                    x = ["\\x"+str(i) for i in x]
+                    output += '\t"' + "".join(x) + '"\n'
                 output = output[:-1]
-                output += ';'
+                output += ';\n'
 
             import search_dialog
-            self.search_dialog = search_dialog.SearchDialog()
+            self.search_dialog = search_dialog.SearchDialog('Exported ' + option)
             self.search_dialog.output_buffer.set_text(output)
 
     def _update(self, widget, data=None):
