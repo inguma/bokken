@@ -180,8 +180,12 @@ class TopButtons(gtk.HBox):
             chooser.destroy()
         else:
             self.file_name = chooser.input_entry2.get_text()
+            self.fcn_thr = int(chooser.scale.get_value())
+            self.bb_thr = int(chooser.bb_scale.get_value())
+            self.bytes = chooser.bytes_check.get_active()
+            print self.file_name, self.fcn_thr, self.bb_thr, self.bytes
             chooser.destroy()
-            self.main.tviews.right_notebook.add_bindiff_tab(self.file_name)
+            self.main.tviews.right_notebook.add_bindiff_tab(self.file_name, self.fcn_thr, self.bb_thr, self.bytes)
             #self.diff_widget.set_file(self.file_name)
             #self.diff_widget.diff()
 

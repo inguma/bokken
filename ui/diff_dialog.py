@@ -28,6 +28,9 @@ class DiffDialog(gtk.Dialog):
         self.core = core
         self.file = self.core.filename
 
+        # Set dialog resizeable and auto-shrink
+        self.set_policy(False, False, True)
+
         # the cancel button
         self.butt_ok = self.action_area.get_children()[0]
         self.butt_ok.connect("clicked", self.select_file)
@@ -63,10 +66,55 @@ class DiffDialog(gtk.Dialog):
         # Pack elements into hbox
         self.hbox2.pack_start(self.input_entry2, True, True, 2)
 
+        #########################################################
+        # Options elements
+        self.options_box = gtk.VBox(False, 2)
+
+        self.sep = gtk.HSeparator()
+        self.options_exp = gtk.Expander("Binary diffing options:")
+
+        # HScale for function matching threshold
+        self.thresh_label = gtk.Label("Function matching threshold:")
+        self.thresh_label.set_alignment(0, 0.5)
+        self.scale = gtk.HScale()
+        self.scale.set_range(0, 100)
+        self.scale.set_increments(1, 10)
+        self.scale.set_digits(0)
+        self.scale.set_value_pos(gtk.POS_RIGHT)
+        self.scale.set_value(70)
+        self.scale.add_mark(0, gtk.POS_BOTTOM, "0")
+        self.scale.add_mark(50, gtk.POS_BOTTOM, "50")
+        self.scale.add_mark(100, gtk.POS_BOTTOM, "100")
+
+        # HScale for basic block matching threshold
+        self.bb_thresh_label = gtk.Label("Basic block matching threshold:")
+        self.bb_thresh_label.set_alignment(0, 0.5)
+        self.bb_scale = gtk.HScale()
+        self.bb_scale.set_range(0, 100)
+        self.bb_scale.set_increments(1, 10)
+        self.bb_scale.set_digits(0)
+        self.bb_scale.set_value_pos(gtk.POS_RIGHT)
+        self.bb_scale.set_value(70)
+        self.bb_scale.add_mark(0, gtk.POS_BOTTOM, "0")
+        self.bb_scale.add_mark(50, gtk.POS_BOTTOM, "50")
+        self.bb_scale.add_mark(100, gtk.POS_BOTTOM, "100")
+
+        self.bytes_check = gtk.CheckButton("Do code diffing with all bytes", use_underline=True)
+
+        self.options_box.pack_start(self.thresh_label, False, False, 1)
+        self.options_box.pack_start(self.scale, False, False, 1)
+        self.options_box.pack_start(self.bb_thresh_label, False, False, 1)
+        self.options_box.pack_start(self.bb_scale, False, False, 1)
+        self.options_box.pack_start(self.bytes_check, False, False, 1)
+
+        self.options_exp.add(self.options_box)
+
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.label, False, False, 2)
         self.main_vbox.pack_start(self.hbox1, False, False, 2)
         self.main_vbox.pack_start(self.hbox2, False, False, 2)
+        self.main_vbox.pack_start(self.sep, False, False, 2)
+        self.main_vbox.pack_start(self.options_exp, False, False, 2)
 
         self.vbox.pack_start(self.main_vbox)
         self.show_all()

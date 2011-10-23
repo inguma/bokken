@@ -133,7 +133,7 @@ class RightNotebook(gtk.Notebook):
         if page_num == self.page_num(self.xdot_box) and self.uicore.backend == 'radare':
             self.xdot_box.set_dot(self.uicore.get_callgraph(self.last_fcn))
 
-    def add_bindiff_tab(self, filename):
+    def add_bindiff_tab(self, filename, fcn_thr, bb_thr, bytes):
         #################################################
         # Bindiffing TAB
         if self.uicore.backend == 'radare':
@@ -146,7 +146,7 @@ class RightNotebook(gtk.Notebook):
             num = self.page_num(self.bindiff)
             self.set_current_page(num)
 
-            self.tviews.bindiff_widget.set_file(filename)
+            self.tviews.bindiff_widget.set_file(filename, fcn_thr, bb_thr, bytes)
             self.tviews.bindiff_widget.diff()
 
     def add_html_elements_tab(self):
