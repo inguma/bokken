@@ -1,0 +1,6 @@
+Release 1.5 (xx-11-2011)
+
+ * Full support for Radare2.  Now the opening dialog allows to choose the
+   engine.
+ * Lots and lots of enhancements in the UI, from the general layout to
+   polished details, the interface has taken a lot of work.
