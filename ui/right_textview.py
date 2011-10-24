@@ -190,12 +190,14 @@ class RightTextView(gtk.VBox, Searchable):
         self.back_img = gtk.Image()
         self.back_img.set_from_stock(gtk.STOCK_GO_BACK, gtk.ICON_SIZE_MENU)
         self.back.set_image(self.back_img)
+        self.back.set_relief(gtk.RELIEF_NONE)
         self.back.connect('clicked', self.do_seek, 'b')
 
         self.forward = gtk.Button()
         self.forward_img = gtk.Image()
         self.forward_img.set_from_stock(gtk.STOCK_GO_FORWARD, gtk.ICON_SIZE_MENU)
         self.forward.set_image(self.forward_img)
+        self.forward.set_relief(gtk.RELIEF_NONE)
         self.forward.connect('clicked', self.do_seek, 'f')
 
         self.seek = gtk.Entry(30)

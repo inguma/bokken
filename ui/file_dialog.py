@@ -32,6 +32,9 @@ class FileDialog(gtk.Dialog):
         self.core = core
         self.file = file
 
+        # Set dialog resizeable and auto-shrink
+        self.set_policy(False, False, True)
+
         # the cancel button
         self.butt_ok = self.action_area.get_children()[0]
         self.butt_ok.connect("clicked", self.get_file)

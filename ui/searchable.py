@@ -118,6 +118,7 @@ class Searchable(object):
         else:
             but_text = 'Next'
         butn = SemiStockButton(but_text, gtk.STOCK_GO_DOWN)
+        butn.set_relief(gtk.RELIEF_NONE)
         butn.connect("clicked", self._find, "next")
         butn.set_tooltip_text("Find the next ocurrence of the phrase")
         self.srchtab.pack_start(butn, expand=False, fill=False, padding=3)
@@ -127,6 +128,7 @@ class Searchable(object):
         else:
             but_text = ('Previous')
         butp = SemiStockButton(but_text, gtk.STOCK_GO_UP)
+        butp.set_relief(gtk.RELIEF_NONE)
         butp.connect("clicked", self._find, "previous")
         butp.set_tooltip_text("Find the previous ocurrence of the phrase")
         self.srchtab.pack_start(butp, expand=False, fill=False, padding=3)
