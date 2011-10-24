@@ -213,18 +213,27 @@ class TreeViews(gtk.TreeView):
         imports.set_title("URL")
 
         cell = gtk.CellRendererText()
+        rendererPix = gtk.CellRendererPixbuf()
+        imports.pack_start(rendererPix, False)
         imports.pack_start(cell, True)
-        imports.add_attribute(cell, "text", 0)
+        imports.set_attributes(cell, text=1)
+        imports.set_attributes(rendererPix, pixbuf=0)
+        #imports.add_attribute(cell, "text", 0)
 
-        self.treestore = gtk.TreeStore(str)
+        self.treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str)
+
+        self.remote_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'function.png')
+        self.local_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'block.png')
+        self.exp_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'export.png')
+        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'data-sec.png')
 
         # Iterate links and add to the tree
-        it = self.treestore.append(None, ['Remote links'])
+        it = self.treestore.append(None, [self.exp_pix, 'Remote links'])
         for element in links['remotes']:
-            self.treestore.append(it, [element + '\t' + ''])
-        it = self.treestore.append(None, ['Local resources'])
+            self.treestore.append(it, [self.remote_pix, element + '\t' + ''])
+        it = self.treestore.append(None, [self.data_sec_pix, 'Local resources'])
         for element in links['locals']:
-            self.treestore.append(it, [element + '\t' + ''])
+            self.treestore.append(it, [self.local_pix, element + '\t' + ''])
 
         # Add column to tree
         self.append_column(imports)
