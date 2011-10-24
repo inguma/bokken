@@ -117,8 +117,6 @@ class Core():
             self.core.cmd0('e asm.ucase=true')
         else:
             self.core.cmd0('e asm.ucase=false')
-        if self.do_anal:
-            self.core.cmd0("aa")
         if self.use_va:
             self.core.cmd0("e io.va=false")
         else:
@@ -131,6 +129,8 @@ class Core():
             self.core.cmd0("e asm.bytes=false")
         else:
             self.core.cmd0("e asm.bytes=true")
+        if self.do_anal:
+            self.core.cmd0("aa")
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
@@ -418,9 +418,10 @@ class Core():
         return data
 
     def search(self, text, type):
-        self.core.cmd0('e io.va=false')
+        self.core.cmd0('e io.va=0')
+        print "Searching %s with format %s" % (text, type)
         hits = self.core.cmd_str('/' + type + text)
-        self.core.cmd0('e io.va=true')
+        self.core.cmd0('e io.va=1')
         return hits
 
     def search_http_src(self):
