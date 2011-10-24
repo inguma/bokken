@@ -99,7 +99,7 @@ class CalcDialog(gtk.Dialog):
         if res:
             self.input_entry2.set_text(str(res))
     
-            self.hex_lbl.set_markup( "<b>Hexacecimal:</b>\t" + hex(res) )
+            self.hex_lbl.set_markup( "<b>Hexadecimal:</b>\t" + hex(res) )
             self.dec_lbl.set_markup( "<b>Decimal</b>:\t\t" + str(int(str(res), 10)) )
             self.oct_lbl.set_markup( "<b>Octal:</b>\t\t" + str(int(str(res), 8)) )
             self.bin_lbl.set_markup( "<b>Binary:</b>\t\t" + bin(res)[2:] )

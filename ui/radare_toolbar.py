@@ -87,7 +87,10 @@ class TopButtons(gtk.HBox):
         self.main_tb.insert(self.sections_tb, 4)
 
         # Calculator button
-        self.calc_tb = gtk.ToolButton(gtk.STOCK_EXECUTE)
+        self.image = gtk.Image()
+        self.image.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'calc.png')
+        self.calc_tb = gtk.ToolButton()
+        self.calc_tb.set_icon_widget(self.image)
         self.calc_tb.set_tooltip_text('Show calculator')
         self.calc_tb.connect("clicked", self._do_calc)
         self.main_tb.insert(self.calc_tb, 5)
