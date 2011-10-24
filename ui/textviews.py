@@ -62,6 +62,7 @@ class TextViews(gtk.HBox):
 
         # Left and right Vertical Boxes
         self.left_paned = gtk.HPaned()
+        self.left_paned.set_position(125)
 
         #################################################################
         # Left mini-toolbar

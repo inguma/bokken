@@ -228,10 +228,10 @@ class TreeViews(gtk.TreeView):
         self.data_sec_pix = gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'data-sec.png')
 
         # Iterate links and add to the tree
-        it = self.treestore.append(None, [self.exp_pix, 'Remote links'])
+        it = self.treestore.append(None, [self.remote_pix, 'Remote links'])
         for element in links['remotes']:
             self.treestore.append(it, [self.remote_pix, element + '\t' + ''])
-        it = self.treestore.append(None, [self.data_sec_pix, 'Local resources'])
+        it = self.treestore.append(None, [self.local_pix, 'Local resources'])
         for element in links['locals']:
             self.treestore.append(it, [self.local_pix, element + '\t' + ''])
 
