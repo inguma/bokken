@@ -295,7 +295,10 @@ class Core():
             for imp in self.bin.get_imports():
                 if not 'Imports' in self.allimports.keys():
                     self.allimports['Imports'] = []
-                self.allimports['Imports'].append( [hex(self.baddr+imp.rva), imp.name] )
+                if not self.use_va:
+                    self.allimports['Imports'].append( [hex(self.baddr+imp.rva), imp.name] )
+                else:
+                    self.allimports['Imports'].append( [hex(imp.rva), imp.name] )
         return self.allimports
 
     def get_imports(self):
@@ -308,14 +311,20 @@ class Core():
                     dll, imp_name = imp.name.split('_')
                 if not dll in self.allimports.keys():
                     self.allimports[dll] = []
-                self.allimports[dll].append( [hex(self.baddr+imp.rva), imp_name] )
+                if not self.use_va:
+                    self.allimports[dll].append( [hex(self.baddr+imp.rva), imp_name] )
+                else:
+                    self.allimports[dll].append( [hex(imp.rva), imp.name] )
         return self.allimports
 
     def get_exports(self):
         if not self.allexports:
             print "[*] Get exports"
             for sym in self.bin.get_symbols():
-                self.allexports.append( [hex(self.baddr+sym.rva), sym.name, '', ''] )
+                if not self.use_va:
+                    self.allexports.append( [hex(self.baddr+sym.rva), "sym." + sym.name, '', ''] )
+                else:
+                    self.allexports.append( [hex(sym.rva), "sym." + sym.name, '', ''] )
         return self.allexports
 
     def get_callgraph(self, addr=''):

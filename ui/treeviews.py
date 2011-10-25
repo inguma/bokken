@@ -352,6 +352,9 @@ class TreeViews(gtk.TreeView):
             # Ge the information about the click
             if path is not None and len(path) == 1:
                 link_name = self.store[path][1]
+                # Special for exports
+                if '0x' in link_name:
+                    link_name = self.store[path][2]
             elif path is not None and len(path) == 2:
                 link_name = self.treestore[path][1]
 
