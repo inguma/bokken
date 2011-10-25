@@ -200,7 +200,7 @@ class TopButtons(gtk.HBox):
         self.uicore.core.cmd0('e io.va=0')
         self.uicore.core.cmd0('s 0')
         magic = self.uicore.core.cmd_str('pm')
-        self.uicore.core.cmd0('e io.va=1')
+        #self.uicore.core.cmd0('e io.va=1')
         if magic:
             md = gtk.MessageDialog(None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, 
                 gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)

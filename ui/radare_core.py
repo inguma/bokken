@@ -118,9 +118,9 @@ class Core():
         else:
             self.core.cmd0('e asm.ucase=false')
         if self.use_va:
-            self.core.cmd0("e io.va=false")
+            self.core.cmd0("e io.va=0")
         else:
-            self.core.cmd0("e io.va=true")
+            self.core.cmd0("e io.va=1")
         if self.asm_syn:
             self.core.cmd0("e asm.syntax=att")
         else:
@@ -148,6 +148,12 @@ class Core():
         # Check if file name is an URL
         self.is_url(file)
 
+    def restore_va(self):
+        if self.use_va:
+            self.core.cmd0("e io.va=0")
+        else:
+            self.core.cmd0("e io.va=1")
+
     def is_url(self, file):
         #print "[*] Checking if is URL"
         self.filename = file
@@ -160,6 +166,10 @@ class Core():
         if not self.allstrings:
             #print "[*] Get strings"
             self.update_progress_bar("Getting strings", 0.6)
+            if self.use_va:
+                self.core.cmd0('e io.va=0')
+            else:
+                self.core.cmd0('e io.va=1')
             strings = ''
             self.core.cmd0('fs strings')
             strings = self.core.cmd_str('f')
@@ -205,7 +215,7 @@ class Core():
             hexdump = self.core.cmd_str('px')
             self.core.cmd0('s ' + str(self.baddr))
             self.core.cmd0('b 512')
-            self.core.cmd0('e io.va=1')
+            #self.core.cmd0('e io.va=1')
             self.fullhex = hexdump
         return self.fullhex
 
@@ -259,7 +269,7 @@ class Core():
             self.core.cmd0('b ' + str(self.size))
             self.fullstr = self.core.cmd_str('ps ' + str(self.size))
             #self.core.cmd0('b 1024')
-            self.core.cmd0('e io.va=1')
+            #self.core.cmd0('e io.va=1')
             self.core.cmd0('s section..text')
             self.core.cmd0('b 512')
         return self.fullstr
@@ -382,13 +392,13 @@ class Core():
                     self.full_fileinfo['strings'].append(line)
 
     def get_magic(self):
-        self.core.cmd0('e io.va=false')
+        self.core.cmd0('e io.va=0')
         self.ars_magica = self.core.cmd_str('pm')
-        self.core.cmd0('e io.va=true')
-        print self.ars_magica
+        #self.core.cmd0('e io.va=true')
+        #print self.ars_magica
 
     def seek(self, pos):
-        print pos
+        #print pos
         self.core.cmd0('s ' + str(pos))
         return True
 
@@ -407,21 +417,23 @@ class Core():
             direction = '.'
 
         if output == 'hexadecimal':
-            self.core.cmd0('e io.va=false')
+            #self.core.cmd0('e io.va=0')
             self.core._cmd('px', True)
-            data= self.core.cmd_str(direction)
+            data = self.core.cmd_str(direction)
             #self.core.cmd0('e io.va=true')
         elif output == 'disassembly':
+            #self.core.cmd0('e io.va=1')
             self.core._cmd('pd', True)
-            data= self.core.cmd_str(direction)
+            data = self.core.cmd_str(direction)
 
         return data
 
     def search(self, text, type):
         self.core.cmd0('e io.va=0')
+        self.core.cmd0('s 0')
         print "Searching %s with format %s" % (text, type)
         hits = self.core.cmd_str('/' + type + text)
-        self.core.cmd0('e io.va=1')
+        #self.core.cmd0('e io.va=1')
         return hits
 
     def search_http_src(self):

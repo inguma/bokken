@@ -225,6 +225,7 @@ class MainApp:
         self.topbuttons.throbber.running('')
 
         if 'radare' in self.uicore.backend:
+            self.uicore.restore_va()
             if self.uicore.core.format == 'Program':
                 self.tviews.update_graph(self, 'entry0')
                 link_name = "0x%08x" % self.uicore.core.num.get('entry0')

@@ -137,15 +137,18 @@ class InteractiveButtons(gtk.HBox):
 
             # Only highlight syntax for disassembly
             if self.output_type == 'hexadecimal':
+                if self.uicore.backend == 'radare':
+                    self.uicore.core.cmd0('e io.va=0')
                 self.buffer.set_highlight_syntax(False)
             else:
+                if self.uicore.backend == 'radare':
+                    self.uicore.core.cmd0('e io.va=1')
                 self.buffer.set_highlight_syntax(True)
 
             self.refresh()
 
     def move(self, widget, direction):
         data = self.uicore.move(direction, self.output_type)
-        #print data
         if data:
             self.buffer.set_text(data)
 
@@ -155,6 +158,7 @@ class InteractiveButtons(gtk.HBox):
             self.uicore.core.bsize = size
         elif self.uicore.backend == 'radare':
             self.uicore.set_bsize(size)
+        self.buffer_entry.set_text('')
         self.refresh()
 
     def r2_exec(self, widget, icon_pos=None, event=None):

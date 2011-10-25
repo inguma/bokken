@@ -109,7 +109,7 @@ class InteractiveTextView(gtk.VBox):
         # Number
         if event.keyval in [self.key_1, self.key_2, self.key_3, self.key_4, self.key_5,\
                             self.key_6, self.key_7, self.key_8, self.key_9]:
-            self.interactive_buttons.seek(self, event.string)
+            self.interactive_buttons.seek(self, None, None, event.string)
         elif event.keyval == self.key_b:
             self.interactive_buttons.move(self, event.string)
         elif event.keyval == self.key_f:
