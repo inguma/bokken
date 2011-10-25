@@ -126,6 +126,7 @@ class DiffDialog(gtk.Dialog):
     def select_file(self, widget, icon_pos='', event=''):
         if self.input_entry2.get_text():
             self.get_file(self.input_entry2)
+            self.response(0)
         else:
             chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                       buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))

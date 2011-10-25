@@ -188,8 +188,8 @@ class Bindiff():
         self.c2.config.set_i("anal.split", 1)
         self.c2.file_open(file_r, 0, 0)
         self.c2.bin_load(None)
-        self.c.core.anal.diff_setup_i (bytes, fcn_thr, bb_thr)
-        self.c2.anal.diff_setup_i (bytes, fcn_thr, bb_thr)
+        self.c.core.anal.diff_setup_i(bytes, fcn_thr, bb_thr)
+        self.c2.anal.diff_setup_i(bytes, fcn_thr, bb_thr)
         # Clear treeview
         self.dw.clear_functions()
         self.dw.set_filename_l(self.c.filename)
