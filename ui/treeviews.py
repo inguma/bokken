@@ -280,11 +280,11 @@ class TreeViews(gtk.TreeView):
         '''
 
         self.dograph = False
-
-        if self.uicore.use_va:
-            self.uicore.core.cmd0('e io.va=0')
-        else:
-            self.uicore.core.cmd0('e io.va=1')
+        if self.uicore.backend == 'radare':
+            if self.uicore.use_va:
+                self.uicore.core.cmd0('e io.va=0')
+            else:
+                self.uicore.core.cmd0('e io.va=1')
 
         if event.button == 3:
             # It's a right click !
