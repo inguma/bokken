@@ -37,7 +37,7 @@ class FileDialog(gtk.Dialog):
 
         # the cancel button
         self.butt_ok = self.action_area.get_children()[0]
-        self.butt_ok.connect("clicked", self.get_file)
+        self.butt_ok.connect("clicked", self.fast_start)
         self.butt_cancel = self.action_area.get_children()[1]
         self.butt_cancel.connect("clicked", self.cancel)
 
@@ -234,11 +234,12 @@ class FileDialog(gtk.Dialog):
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                               buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
-        self.response = chooser.run()
-        if self.response == gtk.RESPONSE_OK:
+        self.resp = chooser.run()
+        if self.resp == gtk.RESPONSE_OK:
             self.file_name = chooser.get_filename()
             self.input_entry.get_child().set_text(self.file_name)
         chooser.destroy()
+        self.get_file(widget)
 
     def _on_change(self, widget):
         active = widget.get_active_text()
