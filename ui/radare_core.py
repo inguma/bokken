@@ -434,6 +434,7 @@ class Core():
         print "Searching %s with format %s" % (text, type)
         hits = self.core.cmd_str('/' + type + text)
         #self.core.cmd0('e io.va=1')
+        self.restore_va()
         return hits
 
     def search_http_src(self):
