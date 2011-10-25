@@ -41,7 +41,7 @@ class InteractiveTextView(gtk.VBox):
         lm = gtksourceview2.LanguageManager()
         # Add ui dir to language paths
         paths = lm.get_search_path()
-        paths.append(os.getcwd() + os.sep + 'ui' + os.sep + 'data' + os.sep)
+        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
         self.buffer = gtksourceview2.Buffer()
         self.buffer.create_tag("green-background", background="green", foreground="black")

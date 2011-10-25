@@ -38,13 +38,13 @@ class LeftButtons(gtk.VBox):
 
         # Icons
         self.fcn_pix = gtk.Image()
-        self.fcn_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'function.png')
+        self.fcn_pix.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'function.png')
         self.bb_pix = gtk.Image()
-        self.bb_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'block.png')
+        self.bb_pix.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'block.png')
         self.imp_pix = gtk.Image()
-        self.imp_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'import.png')
+        self.imp_pix.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'import.png')
         self.exp_pix = gtk.Image()
-        self.exp_pix.set_from_file('ui' + os.sep + 'data' + os.sep + 'export.png')
+        self.exp_pix.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'export.png')
 
         # Show/hide toolbar and menu
         self.hide_tb = gtk.ToggleButton()

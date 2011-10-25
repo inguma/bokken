@@ -144,7 +144,7 @@ class AssembleDialog(gtk.Dialog):
         # Add ui dir to language paths
         lm = gtksourceview2.LanguageManager()
         paths = lm.get_search_path()
-        paths.append(os.getcwd() + os.sep + 'ui' + os.sep + 'data' + os.sep)
+        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
 
         # HEX textview
