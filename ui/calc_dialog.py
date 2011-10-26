@@ -101,7 +101,7 @@ class CalcDialog(gtk.Dialog):
     
             self.hex_lbl.set_markup( "<b>Hexadecimal:</b>\t" + hex(res) )
             self.dec_lbl.set_markup( "<b>Decimal</b>:\t\t" + str(int(str(res), 10)) )
-            self.oct_lbl.set_markup( "<b>Octal:</b>\t\t" + str(int(str(res), 8)) )
+            self.oct_lbl.set_markup( "<b>Octal:</b>\t\t" + str(oct(res)) )
             self.bin_lbl.set_markup( "<b>Binary:</b>\t\t" + bin(res)[2:] )
             try:
                 self.chr_lbl.set_markup( "<b>Character:</b>\t" + chr(res))
