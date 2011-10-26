@@ -53,11 +53,26 @@ class MenuBar(gtk.MenuBar):
             mod, gtk.ACCEL_VISIBLE)
         filemenu.append(newi)
 
-        savem = gtk.ImageMenuItem(gtk.STOCK_SAVE, agr)
-        key, mod = gtk.accelerator_parse("<Control>S")
-        savem.add_accelerator("activate", agr, key, 
-            mod, gtk.ACCEL_VISIBLE)
+        smenu = gtk.Menu()
+
+        savem = gtk.ImageMenuItem(gtk.STOCK_SAVE)
+        savem.get_children()[0].set_label('Save')
+        savem.set_submenu(smenu)
+
+        saves = [['All', gtk.STOCK_SAVE_AS], ['Disassembly', gtk.STOCK_SORT_DESCENDING], ['Hexdump', gtk.STOCK_INDEX], ['Strings', gtk.STOCK_JUSTIFY_CENTER], ['String repr', gtk.STOCK_JUSTIFY_FILL]]
+        for save in saves:
+            savei = gtk.ImageMenuItem(save[1])
+            savei.get_children()[0].set_label(save[0])
+            #savei.connect("activate", self._on_theme_change)
+            smenu.append(savei)
+
         filemenu.append(savem)
+
+#        savem = gtk.ImageMenuItem(gtk.STOCK_SAVE, agr)
+#        key, mod = gtk.accelerator_parse("<Control>S")
+#        savem.add_accelerator("activate", agr, key, 
+#            mod, gtk.ACCEL_VISIBLE)
+#        filemenu.append(savem)
 
         sep = gtk.SeparatorMenuItem()
         filemenu.append(sep)
