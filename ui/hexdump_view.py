@@ -84,7 +84,7 @@ class HexdumpView(gtk.HBox):
         # Add ui dir to language paths
         lm = gtksourceview2.LanguageManager()
         paths = lm.get_search_path()
-        paths.append(os.getcwd() + os.sep + 'ui' + os.sep + 'data' + os.sep)
+        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
         self.asm_buffer.set_data('languages-manager', lm)
         self.asm_buffer.set_highlight_syntax(True)

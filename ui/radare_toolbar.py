@@ -44,7 +44,7 @@ class TopButtons(gtk.HBox):
         self.toolbox = self
         self.dependency_check = self.main.dependency_check
 
-        self.img_path = 'ui' + os.sep + 'data' + os.sep
+        self.img_path = os.path.dirname(__file__) + os.sep + 'data' + os.sep
         self.options_dict = {'Hexadecimal':'x ', 'String':' ', 'String no case':'i ', 'Regexp':'e '}
 
         self.main_tb = gtk.Toolbar()
