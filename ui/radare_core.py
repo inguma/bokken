@@ -425,13 +425,17 @@ class Core():
         elif direction == 'b':
             direction = '.'
 
+        va = self.core.cmd_str('e io.va').rstrip()
+
         if output == 'hexadecimal':
-            #self.core.cmd0('e io.va=0')
+            if va == "true":
+                self.core.cmd0('e io.va=0')
             self.core._cmd('px', True)
             data = self.core.cmd_str(direction)
             #self.core.cmd0('e io.va=true')
         elif output == 'disassembly':
-            #self.core.cmd0('e io.va=1')
+            if va == "false":
+                self.core.cmd0('e io.va=1')
             self.core._cmd('pd', True)
             data = self.core.cmd_str(direction)
 

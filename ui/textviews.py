@@ -249,12 +249,9 @@ class TextViews(gtk.HBox):
             self.uicore.core.offset = 0
         elif self.uicore.backend == 'radare':
             self.uicore.core.cmd0('e io.va=0')
-            self.uicore.core.cmd0('s 0')
 
         dump = self.uicore.get_hexdump()
         self.interactive_buffer.set_text(dump)
-#        if self.uicore.backend == 'radare':
-#            self.uicore.core.cmd0('e io.va=1')
 
     def create_completion(self):
         self.interactive_textview.interactive_buttons.set_completion()

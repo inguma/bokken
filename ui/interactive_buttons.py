@@ -134,15 +134,20 @@ class InteractiveButtons(gtk.HBox):
     def callback(self, widget, data=None):
         if widget.get_active() == True:
             self.output_type = data.lower()
+            addr = int(self.uicore.core.cmd_str('s').rstrip(), 0)
 
             # Only highlight syntax for disassembly
             if self.output_type == 'hexadecimal':
                 if self.uicore.backend == 'radare':
                     self.uicore.core.cmd0('e io.va=0')
+                    addr = self.uicore.core.io.section_vaddr_to_offset(addr)
+                    self.uicore.core.cmd0('s ' + str(addr))
                 self.buffer.set_highlight_syntax(False)
             else:
                 if self.uicore.backend == 'radare':
                     self.uicore.core.cmd0('e io.va=1')
+                    addr = self.uicore.core.io.section_offset_to_vaddr(addr)
+                    self.uicore.core.cmd0('s ' + str(addr))
                 self.buffer.set_highlight_syntax(True)
 
             self.refresh()
