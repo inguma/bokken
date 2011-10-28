@@ -347,9 +347,9 @@ class Core():
         #print "[*] Get file info"
         self.update_progress_bar("Getting additional file info", 0.9)
         if 'Program' in self.core.format:
-           self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine}
+            self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine, 'OS':self.info.os, 'size':self.size}
         else:
-            self.fileinfo = {'name':self.file}
+            self.fileinfo = {'name':self.info.file, 'size':self.size}
 
         return self.fileinfo
 

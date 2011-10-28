@@ -40,7 +40,8 @@ print
 
 import ui.menu_bar as menu_bar
 import ui.textviews as textviews
-import ui.statusbar as statusbar
+#import ui.statusbar as statusbar
+import ui.new_statusbar as new_statusbar
 import ui.file_dialog as file_dialog
 
 MAINTITLE = "Bokken, a GUI for pyew and radare2!"
@@ -147,7 +148,9 @@ class MainApp:
         self.mbar.create_view_menu()
 
         # Initialize and add Statusbar
-        self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
+        #self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
+        self.sbar = new_statusbar.Statusbar(self.uicore, self.tviews)
+        self.sbar.create_statusbar()
 
         # Add textviews and statusbar to the VBox
         self.mainvb.pack_start(self.tviews, True, True, 1)
@@ -215,7 +218,9 @@ class MainApp:
 
         # Update statusbar with file info
         info = self.uicore.get_file_info()
-        self.sbar.add_text(info, '')
+        self.sbar.add_text(info, VERSION)
+        self.sbar.hide_all()
+        self.sbar._statusbar.show_all()
 
         # Create seek entry autocompletion of function names...
         self.tviews.create_completion()
@@ -241,10 +246,10 @@ class MainApp:
                             self.tviews.search(self, link_name)
 
     def disable_all(self):
-        if self.target:
-            self.sbar.add_text({'Please wait while loading file':self.target}, VERSION)
-        else:
-            self.sbar.add_text({'Open a new file to start':''}, VERSION)
+#        if self.target:
+#            self.sbar.add_text({'Please wait while loading file':self.target}, VERSION)
+#        else:
+#            self.sbar.add_text({'Open a new file to start':''}, VERSION)
         self.topbuttons.disable_all()
         self.tviews.set_sensitive(False)
 
