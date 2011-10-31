@@ -1,4 +1,4 @@
-#       textviews.py
+#       statusbar.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
 #       
@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 import gtk
+import pango
 
 class Statusbar(gtk.Statusbar):
     '''Statusbar for main window'''
@@ -28,32 +29,56 @@ class Statusbar(gtk.Statusbar):
         self.uicore = core
         self.tviews = tviews
 
-        self.sbar_context = self.get_context_id('sb')
+        self.icons = {'processor':'ui/data/processor_small.png', 'name':gtk.STOCK_FILE, 
+                        'format':gtk.STOCK_EXECUTE, 'size':gtk.STOCK_PREFERENCES, 'OS':gtk.STOCK_INFO, 
+                        'type':gtk.STOCK_INFO, 'va':gtk.STOCK_UNINDENT, 'ep': gtk.STOCK_INDENT}
 
-        self.pack_start(gtk.VSeparator(), False)
+    def create_statusbar(self):
+        self._statusbar = gtk.HBox()
+        self._status_holder = self
+        # OMG
+        frame = self._status_holder.get_children()[0]
+        box = frame.get_children()[0]
+        frame.remove(box)
+        frame.add(self._statusbar)
 
     # Method to add content to the status bar
     def add_text(self, data_dict, version):
         '''data_dict ontains text to be added.
            Key will be the title
            Value will be... well, the value :)'''
-        self.text = ''
+        self.box = gtk.HBox(False, 1)
+        self._statusbar.pack_start(self.box, False, False, 1)
+        ellipsize=pango.ELLIPSIZE_NONE
         for element in data_dict.keys():
-            self.text += element.capitalize() + ': ' + str(data_dict[element]) + ' | '
-        self.push(self.sbar_context, self.text)
+            # Element icon
+            if element == 'processor':
+                _icon = gtk.image_new_from_file('ui/data/processor_small.png')
+                self.box.pack_start(_icon, False, False, 0)
+            else:
+                _icon = gtk.image_new_from_stock(self.icons[element], gtk.ICON_SIZE_MENU)
+                self.box.pack_start(_icon, False, False, 0)
+            # Element label
+            label = gtk.Label()
+            label.set_markup('<b>' + element.capitalize() + ':</b>')
+            label.set_padding(3, 3)
+            label.set_max_width_chars(len(element) + 1)
+            label.set_single_line_mode(True)
+            label.set_ellipsize(ellipsize)
+            self.box.pack_start(label, True, True, 1)
+            # Element content
+            label = gtk.Label(str(data_dict[element]))
+            label.set_padding(3, 3)
+            label.set_max_width_chars(len(str(data_dict[element])))
+            label.set_single_line_mode(True)
+            label.set_ellipsize(ellipsize)
+            self.box.pack_start(label, True, True, 1)
+            sep = gtk.VSeparator()
+            self.box.pack_start(sep, True, True, 1)
 
         if version:
+            _icon = gtk.image_new_from_file('ui/data/icon-small.png')
+            self.pack_start(_icon, False, False, 1)
             self.pack_end(gtk.Label('Bokken ' + version), False)
-            self.pack_end(gtk.VSeparator(), False)
 
         self.show_all()
-
-    # Method to clear the statusbar before adding new content
-    def clear_sbar(self):
-        self.push(self.sbar_context, '')
-
-    def theme_combo_change(self, widget):
-        model = self.theme_combo.get_model()
-        active = self.theme_combo.get_active()
-        option = model[active][0]
-        self.tviews.update_theme(option)
