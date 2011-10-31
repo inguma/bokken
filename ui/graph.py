@@ -94,7 +94,9 @@ class MyDotWidget(gtk.HBox):
         self.treestore.clear()
         # Iterate bb and add to the tree
         it = self.treestore.append(None, [function])
-        for element in self.nodes.keys():
+        nodes = self.nodes.keys()
+        nodes.sort()
+        for element in nodes:
             self.treestore.append(it, [element])
 
         self.tree.set_model(self.treestore)
