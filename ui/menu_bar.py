@@ -59,11 +59,11 @@ class MenuBar(gtk.MenuBar):
         savem.get_children()[0].set_label('Save')
         savem.set_submenu(smenu)
 
-        saves = [['All', gtk.STOCK_SAVE_AS], ['Disassembly', gtk.STOCK_SORT_DESCENDING], ['Hexdump', gtk.STOCK_INDEX], ['Strings', gtk.STOCK_JUSTIFY_CENTER], ['String repr', gtk.STOCK_JUSTIFY_FILL]]
+        saves = [['All', gtk.STOCK_SAVE_AS, 'all'], ['Disassembly', gtk.STOCK_SORT_DESCENDING, 'asm'], ['Hexdump', gtk.STOCK_INDEX, 'hex'], ['Strings', gtk.STOCK_JUSTIFY_CENTER, 'str'], ['String repr', gtk.STOCK_JUSTIFY_FILL, 'repr']]
         for save in saves:
             savei = gtk.ImageMenuItem(save[1])
             savei.get_children()[0].set_label(save[0])
-            #savei.connect("activate", self._on_theme_change)
+            savei.connect("activate", self._save, save[2])
             smenu.append(savei)
 
         filemenu.append(savem)
@@ -234,3 +234,29 @@ class MenuBar(gtk.MenuBar):
 
         dialog.run()
         dialog.destroy()
+
+    def _get_content(self, type):
+        types = {'asm':self.uicore.text_dasm, 'hex':self.uicore.fullhex, 'str':self.uicore.allstrings, 'repr':self.uicore.fullstr}
+        return types[type]
+
+    def _save(self, widget, data):
+        chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+        response = chooser.run()
+
+        if response == gtk.RESPONSE_OK:
+            all = ['asm', 'hex', 'str', 'repr']
+            filename = chooser.get_filename()
+            if data != 'all':
+                output = open(filename + '.' + data, 'wb')
+                content = self._get_content(data)
+                output.write(content)
+                output.close()
+            else:
+                for fmt in all:
+                    output = open(filename + '.' + fmt, 'wb')
+                    content = self._get_content(fmt)
+                    output.write(content)
+                    output.close()
+#        elif response == gtk.RESPONSE_CANCEL:
+#            return False
+        chooser.destroy()
