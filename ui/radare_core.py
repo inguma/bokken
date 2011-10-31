@@ -58,6 +58,7 @@ class Core():
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
         self.dot = ''
+        self.graph_layout = 'flow'
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -95,6 +96,7 @@ class Core():
         self.parsed_links = {'remotes':[], 'locals':[]}
         self.links_struct = []
         self.dot = ''
+        self.graph_layout = 'flow'
         self.http_dot = ''
         self.checked_urls = []
         self.bad_urls = []
@@ -332,11 +334,17 @@ class Core():
         #print "[*] Get callgraph"
         self.update_progress_bar("Loading callgraph", 0.4)
         file = tempfile.gettempdir() + os.sep + 'miau.dot'
+
+        if self.graph_layout == 'flow':
+            cmd = 'ag '
+        else:
+            cmd = 'agc '
+
         if not addr:
-            self.core.cmd0('ag section..text > ' + file)
+            self.core.cmd0(cmd + 'section..text > ' + file)
             #self.core.cmd_str('aga > ' + file)
         else:
-            self.core.cmd0('ag ' + addr + ' > ' + file)
+            self.core.cmd0(cmd + addr + ' > ' + file)
         f = open(file, 'r')
         self.dot = f.read()
         f.close()

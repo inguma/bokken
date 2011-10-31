@@ -40,8 +40,7 @@ print
 
 import ui.menu_bar as menu_bar
 import ui.textviews as textviews
-#import ui.statusbar as statusbar
-import ui.new_statusbar as new_statusbar
+import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
 
 MAINTITLE = "Bokken, a GUI for pyew and radare2!"
@@ -148,8 +147,7 @@ class MainApp:
         self.mbar.create_view_menu()
 
         # Initialize and add Statusbar
-        #self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
-        self.sbar = new_statusbar.Statusbar(self.uicore, self.tviews)
+        self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
         self.sbar.create_statusbar()
 
         # Add textviews and statusbar to the VBox
