@@ -22,9 +22,12 @@ import gtk
 
 class GraphBar(gtk.VBox):
     ''' Bar for the xdot graph widget '''
-    def __init__(self, graph):
+    def __init__(self, graph, mydot, core):
         gtk.VBox.__init__(self)
+
         self.graph = graph
+        self.mydot = mydot
+        self.uicore = core
 
         self.toolbox = self
         b = SemiStockButton("", gtk.STOCK_ZOOM_IN, 'Zoom In')
@@ -43,6 +46,12 @@ class GraphBar(gtk.VBox):
         self.sep = gtk.HSeparator()
         self.toolbox.pack_start(self.sep, False, False)
 
+        # Change between Callgraph and Flowgraph
+        if self.uicore.backend == 'radare':
+            self.grpah_layout = gtk.ToggleToolButton(stock_id=gtk.STOCK_FULLSCREEN)
+            self.grpah_layout.connect("clicked", self._change_layout)
+            self.toolbox.pack_start(self.grpah_layout, False, False)
+
         # Grayed?
         self.toolbox.set_sensitive(True)
         self.show_all()
@@ -50,6 +59,15 @@ class GraphBar(gtk.VBox):
     def _zoom(self, widg, what):
         f = getattr(self.graph, "on_zoom_"+what)
         f(None)
+
+    def _change_layout(self, widget):
+        if widget.get_active():
+            self.uicore.graph_layout = 'call'
+            widget.set_stock_id(gtk.STOCK_LEAVE_FULLSCREEN)
+        else:
+            self.uicore.graph_layout = 'flow'
+            widget.set_stock_id(gtk.STOCK_FULLSCREEN)
+        self.mydot.set_dot(self.uicore.get_callgraph(self.mydot.last_fcn))
 
 class SemiStockButton(gtk.Button):
     '''Takes the image from the stock, but the label which is passed.

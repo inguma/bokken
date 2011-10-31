@@ -29,13 +29,15 @@ class MyDotWidget(gtk.HBox):
     def __init__(self, core):
 
         self.uicore = core
+        self.last_fcn = ''
+
         #dotcode = self.uicore.get_callgraph()
         gtk.HBox.__init__(self, False, 1)
 
         self.dot_widget = DotWidget()
         self.create_tree()
         self.pack_start(self.dot_widget, True, True, 0)
-        self.bar = graph_bar.GraphBar(self.dot_widget)
+        self.bar = graph_bar.GraphBar(self.dot_widget, self, self.uicore)
         self.pack_start(self.bar, False, False, 0)
         if self.uicore.backend == 'radare':
             self.pack_start(self.sw, False, False, 4)
@@ -43,14 +45,17 @@ class MyDotWidget(gtk.HBox):
     def set_dot(self, dotcode):
         dotcode = dotcode.replace('color=lightgray, style=filled', 'color=blue')
         dotcode = dotcode.replace('color="lightgray"', 'color="blue"')
+        dotcode = dotcode.replace('color="green"', 'color="green" fontname="Courier" fontsize="8"')
         self.dot_widget.set_dotcode(dotcode)
-        #self.animate_to( self.graph.nodes[-1].x, self.graph.nodes[-1].y)
         if self.uicore.backend == 'radare':
             self.nodes = {}
             for node in self.dot_widget.graph.nodes:
-                function, node_name = node.url.split('/')
-                self.nodes[node_name] = [node.x, node.y]
-            self.update_tree(function)
+                function = ''
+                if node.url:
+                    function, node_name = node.url.split('/')
+                    self.nodes[node_name] = [node.x, node.y]
+            if function:
+                self.update_tree(function)
         self.dot_widget.on_zoom_fit(None)
 
     def create_tree(self):
@@ -100,6 +105,6 @@ class MyDotWidget(gtk.HBox):
             (path, column) = tree.get_cursor()
             # Is it over a plugin name ?
             # Ge the information about the click
-            if path is not None and len(path) == 2:
+            if path is not None and len(path) == 2 and self.nodes:
                 node = self.treestore[path][0]
                 self.dot_widget.animate_to( int(self.nodes[node][0]), int(self.nodes[node][1]) )

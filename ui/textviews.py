@@ -356,6 +356,7 @@ class TextViews(gtk.HBox):
     def update_graph(self, widget, addr):
         addr = addr.split(' ')[-1]
         self.right_notebook.last_fcn = addr
+        self.right_notebook.xdot_box.last_fcn = addr
         if self.right_notebook.get_current_page() == 1:
             self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph(addr))
 
