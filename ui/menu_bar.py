@@ -18,9 +18,7 @@
 #       MA 02110-1301, USA.
 
 import os
-
 import gtk
-
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'

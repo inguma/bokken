@@ -19,10 +19,9 @@
 
 import gtk
 
-from xdot import DotWidget
+import ui.mydot_widget as mydot_widget
 import graph_bar
 
-#class MyDotWidget(DotWidget):
 class MyDotWidget(gtk.HBox):
     '''Working'''
 
@@ -34,7 +33,8 @@ class MyDotWidget(gtk.HBox):
         #dotcode = self.uicore.get_callgraph()
         gtk.HBox.__init__(self, False, 1)
 
-        self.dot_widget = DotWidget()
+        #self.dot_widget = DotWidget()
+        self.dot_widget = mydot_widget.MyDotWidget(self.uicore)
         self.create_tree()
         self.pack_start(self.dot_widget, True, True, 0)
         self.bar = graph_bar.GraphBar(self.dot_widget, self, self.uicore)
