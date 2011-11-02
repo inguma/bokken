@@ -36,8 +36,11 @@ class MyDotWidget(xdot.DotWidget):
                 menu = self.xmenu.create_menu(addr)
                 menu.popup(None, None, None, 1, event.time)
                 menu.show_all()
-#                fcn = self.uicore.core.anal.get_fcn_at(addr)
-#
+                addr = self.uicore.core.num.get(addr)
+                print addr
+                fcn = self.uicore.core.anal.get_fcn_at(addr)
+#                print dir(fcn.refs)
+
 #                for a in fcn.refs:
 #                    print dir(a)
 #                for a in fcn.xrefs:

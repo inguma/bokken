@@ -164,6 +164,11 @@ class MainApp:
 
         self.show_file_data()
         self.window.show_all()
+
+        # Hide left tree for plain or unsupported formats
+        if self.uicore.core.format in ['Hexdump', 'Plain Text', 'OLE2']:
+            self.tviews.left_scrolled_window.hide()
+
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
         self.uicore.core.progress_bar = None
