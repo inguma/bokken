@@ -27,37 +27,38 @@ class MyDotWidget(xdot.DotWidget):
         xdot.DotWidget.__init__(self)
         self.xmenu = xrefs_menu.XrefsMenu()
 
-    def on_area_button_release(self, area, event):
-        if event.button == 3:
-            x, y = int(event.x), int(event.y)
-            url = self.get_url(x, y)
-            if url is not None:
-                addr = url.url.split('/')[0]
-                menu = self.xmenu.create_menu(addr)
-                menu.popup(None, None, None, 1, event.time)
-                menu.show_all()
-                addr = self.uicore.core.num.get(addr)
-                print addr
-                fcn = self.uicore.core.anal.get_fcn_at(addr)
-#                print dir(fcn.refs)
+#
+# Removed until the next release due to problems with the radare bindings
+#
 
-#                for a in fcn.refs:
-#                    print dir(a)
-#                for a in fcn.xrefs:
-#                    print dir(a)
-
-#            jump = self.get_jump(x, y)
-#            if jump is not None and url is not None:
-#                #Right Click on Node!!
-#                # Check if it's an OSVDB node
-#                if url.url.split(':')[0] == 'OSVDB':
-#                    self.context.show_browser('action', url.url.split(':')[1])
-#                elif 'poc_' in url.url:
-#                    self.context.show_browser('action', url.url)
-#                else:
-#                    # If not is a target node
-#                    self.context.set_data(url.url)
-#                    self.context.popmenu.popup(None, None, None, 1, event.time)
-        else:
-            super(MyDotWidget, self).on_area_button_release(area, event)
-
+#    def on_area_button_release(self, area, event):
+#        if event.button == 3:
+#            x, y = int(event.x), int(event.y)
+#            url = self.get_url(x, y)
+#            if url is not None:
+#                addr = url.url.split('/')[0]
+#                menu = self.xmenu.create_menu(addr)
+#                menu.popup(None, None, None, 1, event.time)
+#                menu.show_all()
+#                addr = self.uicore.core.num.get(addr)
+##                fcn = self.uicore.core.anal.get_fcn_at(addr)
+#
+##                for a in fcn.refs:
+##                    print dir(a)
+##                for a in fcn.xrefs:
+##                    print dir(a)
+#
+##            jump = self.get_jump(x, y)
+##            if jump is not None and url is not None:
+##                #Right Click on Node!!
+##                # Check if it's an OSVDB node
+##                if url.url.split(':')[0] == 'OSVDB':
+##                    self.context.show_browser('action', url.url.split(':')[1])
+##                elif 'poc_' in url.url:
+##                    self.context.show_browser('action', url.url)
+##                else:
+##                    # If not is a target node
+##                    self.context.set_data(url.url)
+##                    self.context.popmenu.popup(None, None, None, 1, event.time)
+#        else:
+#            super(MyDotWidget, self).on_area_button_release(area, event)
