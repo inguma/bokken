@@ -109,6 +109,19 @@ class Core():
         self.cmd = ''
         self.last_cmd = ''
 
+    def set_options(self, low_case, deep_anal, progress_bar):
+        if deep_anal:
+            self.core.deepcodeanalysis = True
+        else:
+            self.core.deepcodeanalysis = False
+
+        if low_case:
+            self.core.case = 'low'
+        else:
+            self.core.case = 'high'
+
+        self.progress_bar = progress_bar
+
     def load_file(self, file):
         self.update_progress_bar("Loading file", 0.1)
         # Set default file format to raw

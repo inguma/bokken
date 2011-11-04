@@ -277,25 +277,7 @@ class TopButtons(gtk.HBox):
         else:
             self.file = file
 
-        # Check if file name is an URL, pyew stores it as 'raw'
-        self.uicore.is_url(self.file)
-
-        # Just open the file if path is correct or an url
-        if self.uicore.core.format != 'URL' and not os.path.isfile(self.file):
-            print "Incorrect file argument:", FAIL, self.file, ENDC
-            return False
-
-        # Clean full vars where file parsed data is stored as cache
-        self.uicore.clean_fullvars()
-
-        self.manager.add_item('file://' + self.file)
-
-        # Use threads not to freeze GUI while loading
-        # FIXME: Same code used in main.py, should be converted into a function
-        self.throbber.running(True)
-        t = threading.Thread(target=self.main.load_file, args=(self.file,))
-        t.start()
-        gobject.timeout_add(500, self.load_data, t)
+        self.main.load_new_file(dialog, self.file)
 
     def recent_kb(self, widget):
         """Activated when an item from the recent projects menu is clicked"""

@@ -255,22 +255,7 @@ class TopButtons(gtk.HBox):
         else:
             self.file = file
 
-        # Check if file name is an URL, pyew stores it as 'raw'
-        self.uicore.is_url(self.file)
-
-        self.manager.add_item('file://' + self.file)
-
-        # Just open the file if path is correct or an url
-        if self.uicore.core.format != 'URL' and not os.path.isfile(self.file):
-            print "Incorrect file argument:", FAIL, self.file, ENDC
-            return False
-
-        # Clean full vars where file parsed data is stored as cache
-        self.uicore.clean_fullvars()
-
-        self.uicore.progress_bar = dialog.progress_bar
-        self.main.load_file(self.file)
-        self.main.show_file_data()
+        self.main.load_new_file(dialog, self.file)
 
     def recent_kb(self, widget):
         """Activated when an item from the recent projects menu is clicked"""

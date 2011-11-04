@@ -36,6 +36,10 @@ class LeftButtons(gtk.VBox):
         toolbar = gtk.Toolbar()
         toolbar.set_style(gtk.TOOLBAR_ICONS)
 
+    ##################################
+    # Methods
+
+    def create_buttons(self, option):
         # Icons
         self.fcn_pix = gtk.Image()
         self.fcn_pix.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'function.png')
@@ -56,10 +60,6 @@ class LeftButtons(gtk.VBox):
 
         self.pack_start(self.hide_tb, False, False, 0)
 
-    ##################################
-    # Methods
-
-    def create_buttons(self, option):
         if 'bin' in option:
             # Functions
             a = gtk.VBox(False, 1)
@@ -197,3 +197,6 @@ class LeftButtons(gtk.VBox):
             i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
             widget.set_image(i)
 
+    def remove_all(self):
+        for child in self.get_children():
+            self.remove(child)

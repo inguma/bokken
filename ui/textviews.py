@@ -272,7 +272,7 @@ class TextViews(gtk.HBox):
         if mode == 'Functions':
             self.left_treeview.create_functions_columns()
             for function in self.uicore.get_functions():
-                if "fcn" in function or "sub" in function:
+                if function in ["fcn", "sub"]:
                     self.left_treeview.store.append([self.left_treeview.fcn_pix, function, '', '', ''])
                 elif "loc" in function:
                     self.left_treeview.store.append([self.left_treeview.bb_pix, function, '', '', ''])

@@ -82,3 +82,10 @@ class Statusbar(gtk.Statusbar):
             self.pack_end(gtk.Label('Bokken ' + version), False)
 
         self.show_all()
+
+    def remove_all(self):
+        for child in self.box.get_children():
+            self.box.remove(child)
+        for child in self.get_children():
+            if type(child) is not gtk.Frame:
+                self.remove(child)

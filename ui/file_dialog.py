@@ -239,7 +239,6 @@ class FileDialog(gtk.Dialog):
             self.file_name = chooser.get_filename()
             self.input_entry.get_child().set_text(self.file_name)
         chooser.destroy()
-        self.get_file(widget)
 
     def _on_change(self, widget):
         active = widget.get_active_text()

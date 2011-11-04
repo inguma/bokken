@@ -150,6 +150,14 @@ class Core():
         # Check if file name is an URL
         self.is_url(file)
 
+    def set_options(self, lower_case, do_anal, asm_syn, use_va, asm_bytes, progress_bar):
+        self.do_anal = do_anal
+        self.lower_case = lower_case
+        self.use_va = use_va
+        self.asm_syn = asm_syn
+        self.asm_bytes = asm_bytes
+        self.progress_bar = progress_bar
+
     def restore_va(self):
         if self.use_va:
             self.core.cmd0("e io.va=0")

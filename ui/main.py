@@ -261,6 +261,53 @@ class MainApp:
         self.topbuttons.enable_all()
         self.tviews.set_sensitive(True)
 
+    def load_new_file(self, dialog, target):
+        self.disable_all()
+        self.target = target
+        # Check if target name is an URL, pyew stores it as 'raw'
+        self.uicore.is_url(self.target)
+
+        if self.target:
+            # Just open the target if path is correct or an url
+            if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
+                print "Incorrect file argument:", FAIL, self.target, ENDC
+                sys.exit(1)
+
+            # Get dialog selected file, backend and options
+            self.backend = dialog.backend
+
+            # Set user selected options
+            if self.backend == 'pyew':
+                self.uicore.set_options(dialog.case, dialog.deep, dialog.progress_bar)
+            elif self.backend == 'radare':
+                self.uicore.set_options(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va, dialog.asm_byt, dialog.progress_bar)
+
+            self.uicore.backend = self.backend
+
+            self.uicore.clean_fullvars()
+
+            self.load_file(self.target)
+
+            import ui.core_functions
+            ui.core_functions.repaint()
+
+        # Clean UI
+        self.tviews.left_buttons.remove_all()
+        self.tviews.right_notebook.remove_tabs()
+        self.tviews.left_treeview.remove_columns()
+        self.sbar.remove_all()
+
+        # Add new content
+        self.tviews.right_notebook.create_tabs()
+        self.show_file_data()
+
+        self.uicore.core.progress_bar = None
+
+        # Show UI
+        self.enable_all()
+        self.sbar.show_all()
+        dialog.destroy()
+
     def quit(self, widget, event, data=None):
         '''Main quit.
 

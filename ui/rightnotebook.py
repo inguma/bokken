@@ -42,6 +42,9 @@ class RightNotebook(gtk.Notebook):
         self.main = main
 
         self.set_scrollable(True)
+        self.create_tabs()
+
+    def create_tabs(self):
 
         #################################################
         # Code view TAB
@@ -212,3 +215,7 @@ class RightNotebook(gtk.Notebook):
             child.destroy()
 
         child.destroy()
+
+    def remove_tabs(self):
+        for tab in range(self.get_n_pages()):
+            self.remove_page(-1)

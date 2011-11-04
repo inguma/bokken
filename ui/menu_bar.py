@@ -17,7 +17,6 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
 
 FAIL = '\033[91m'
@@ -193,28 +192,13 @@ class MenuBar(gtk.MenuBar):
     #
     def new_file(self, widget, file=''):
         if not file:
-            dialog = file_dialog.FileDialog(False, self.dependency_check.HAS_RADARE, 'radare', '')
+            dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, self.dependency_check.HAS_RADARE, self.uicore.backend, '')
             dialog.run()
             self.file = dialog.file
         else:
             self.file = file
 
-        # Check if file name is an URL, pyew stores it as 'raw'
-        self.uicore.is_url(self.file)
-
-        #self.manager.add_item('file://' + self.file)
-
-        # Just open the file if path is correct or an url
-        if self.uicore.core.format != 'URL' and not os.path.isfile(self.file):
-            print "Incorrect file argument:", FAIL, self.file, ENDC
-            return False
-
-        # Clean full vars where file parsed data is stored as cache
-        self.uicore.clean_fullvars()
-
-        self.uicore.progress_bar = dialog.progress_bar
-        self.main.load_file(self.file)
-        self.main.show_file_data()
+        self.main.load_new_file(dialog, self.file)
 
     def recent_kb(self, widget):
         """Activated when an item from the recent projects menu is clicked"""
@@ -255,6 +239,4 @@ class MenuBar(gtk.MenuBar):
                     content = self._get_content(fmt)
                     output.write(content)
                     output.close()
-#        elif response == gtk.RESPONSE_CANCEL:
-#            return False
         chooser.destroy()
