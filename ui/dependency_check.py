@@ -37,7 +37,7 @@ def python_version():
     print '\tPython version...',
     if sys.version_info[0] == 3:
         print FAIL + "\tD'oh!" + ENDC
-        sys.stderr.write("Python3 not supported, install python 2.7 to run bokken")
+        sys.stderr.write("Python3 not supported, install python 2.7 to run Bokken")
         exit(1)
     else:
         print OKGREEN + "\tOK" + ENDC
@@ -52,7 +52,7 @@ def tidy_dependency_check():
         print OKGREEN + "\tOK" + ENDC
     except ImportError:
         print FAIL + "\tD'oh!" + ENDC
-        msg = 'No tidy module found. HTTP code won\'t be properly formated\n'
+        msg = 'No tidy module found. HTTP code won\'t be properly formatted\n'
         print msg
 
 def pyew_dependency_check():
@@ -68,8 +68,8 @@ def pyew_dependency_check():
         HAS_PYEW = True
     except:
         print FAIL + "\tD'oh!" + ENDC
-        msg = 'You need pyew for making this software work. Download it from its web:\n'
-        msg += '    - code.google.com/p/pyew/\n'
+        msg = 'You need pyew in order to use pyew backend in binaries and PDFs. Download it from its web:\n'
+        msg += '    - http://code.google.com/p/pyew/\n'
         print msg
         HAS_PYEW = False
         #sys.exit( 1 )
@@ -87,15 +87,15 @@ def radare_dependency_check():
     except:
         print FAIL + "\tD'oh!" + ENDC
         msg = 'You need radare2 bindings to use r2 backend. Download it from its web:\n'
-        msg += '    - www.radare.org\n'
+        msg += '    - http://www.radare.org\n'
         print msg
         HAS_RADARE = False
 
 def cores():
     if not HAS_PYEW and not HAS_RADARE:
         print "You need at least one core, either pyew or radare:"
-        print '    - code.google.com/p/pyew/'
-        print '    - www.radare.org'
+        print '    - http://code.google.com/p/pyew/'
+        print '    - http://www.radare.org'
         sys.exit( 1 )
 
 def psyco_dependency_check():
