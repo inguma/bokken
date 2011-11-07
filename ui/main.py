@@ -73,7 +73,7 @@ class MainApp:
         # Launch file selection dialog
         dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target)
         resp = dialog.run()
-        if resp == gtk.RESPONSE_DELETE_EVENT:
+        if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             sys.exit(1)
         # Get dialog selected file, backend and options
         self.target = dialog.file
@@ -108,7 +108,7 @@ class MainApp:
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_focus = True
         self.window.connect("delete_event", self.quit)
-        self.window.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'icon.png')
+        self.window.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
         gtk.settings_get_default().set_long_property("gtk-button-images", True, "main") 
 
         # Title

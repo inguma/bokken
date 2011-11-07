@@ -17,6 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
 import gtk
 
 class DiffDialog(gtk.Dialog):
@@ -30,6 +31,7 @@ class DiffDialog(gtk.Dialog):
 
         # Set dialog resizeable and auto-shrink
         self.set_policy(False, False, True)
+        self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
 
         # the cancel button
         self.butt_ok = self.action_area.get_children()[0]

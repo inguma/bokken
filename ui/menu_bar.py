@@ -191,14 +191,15 @@ class MenuBar(gtk.MenuBar):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        if not file:
-            dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, self.dependency_check.HAS_RADARE, self.uicore.backend, '')
-            dialog.run()
-            self.file = dialog.file
+        dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, False, 'pyew', file)
+        resp = dialog.run()
+        if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
+            dialog.destroy()
         else:
-            self.file = file
+            self.file = dialog.file
 
-        self.main.load_new_file(dialog, self.file)
+            self.main.load_new_file(dialog, self.file)
+            dialog.destroy()
 
     def recent_kb(self, widget):
         """Activated when an item from the recent projects menu is clicked"""

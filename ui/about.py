@@ -17,6 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
 import gtk
 
 class AboutDialog():
@@ -26,12 +27,13 @@ class AboutDialog():
 
         about = gtk.AboutDialog()
         about.set_program_name("Bokken")
+        about.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
         about.set_version("1.5-dev")
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
         about.set_comments("A GUI for pyew and radare2!")
         about.set_website("http://bokken.inguma.eu")
         about.set_authors(["Hugo Teso <hteso@inguma.eu>"])
         about.set_artists(["Marcos Gomez <renx67@gmail.com>"])
-        about.set_logo(gtk.gdk.pixbuf_new_from_file("ui/data/logo.png"))
+        about.set_logo(gtk.gdk.pixbuf_new_from_file('ui' + os.sep + 'data' + os.sep + 'bokken.svg'))
 
         return about

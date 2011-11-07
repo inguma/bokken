@@ -34,12 +34,13 @@ class FileDialog(gtk.Dialog):
 
         # Set dialog resizeable and auto-shrink
         self.set_policy(False, False, True)
+        self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
 
         # the cancel button
         self.butt_ok = self.action_area.get_children()[0]
         self.butt_ok.connect("clicked", self.fast_start)
         self.butt_cancel = self.action_area.get_children()[1]
-        self.butt_cancel.connect("clicked", self.cancel)
+        #self.butt_cancel.connect("clicked", self.cancel)
 
         # Window position
         self.set_position(gtk.WIN_POS_CENTER)
