@@ -241,7 +241,7 @@ class Core():
 
         if not self.text_dasm:
             #print "[*] Get text dasm"
-            self.update_progress_bar("Getting text dasm",base_percent)
+            #self.update_progress_bar("Getting text dasm",base_percent)
             percent = base_percent
             for section in self.execsections:
                 percent += step
@@ -249,7 +249,7 @@ class Core():
                 self.core.cmd0('s section.' + section[0])
                 self.core.cmd0('b ' + str(section[1]))
                 #print "\t* Let's get the dasm for %s..." % section[0],
-                self.update_progress_bar("Reading assembler for section %s..." % section[0], percent)
+                #self.update_progress_bar("Reading assembler for section %s..." % section[0], percent)
                 dasm = self.core.cmd_str('pD')
                 self.sections_lines.append( len(dasm.split('\n')) )
                 self.core.cmd0('b 512')
@@ -260,15 +260,27 @@ class Core():
             self.sections_lines.append(sum(self.sections_lines))
         return self.text_dasm
 
+    def get_text_dasm_through_queue(self, queue, event):
+        queue.put(self.get_text_dasm())
+        event.set()
+
     def get_fulldasm(self):
         if not self.fulldasm:
-            print "[*] Get full dasm"
+            #print "[*] Get full dasm"
             self.core.cmd0('s ' + str(self.baddr))
             self.core.cmd0('b ' + str(self.size))
             dasm = self.core.cmd_str('pd')
             self.core.cmd0('b 512')
             self.fulldasm = dasm
         return self.fulldasm
+
+    def get_fulldasm_through_queue(self, queue, event):
+        queue.put(self.get_fulldasm())
+        event.set()
+
+    def test_alive(self):
+        print "Child alive."
+        return False
 
     def get_repr(self):
         if not self.fullstr:

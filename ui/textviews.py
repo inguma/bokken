@@ -174,15 +174,27 @@ class TextViews(gtk.HBox):
         self.hexdump_view.update_theme(style_scheme)
 
     def update_righttext(self, option):
+        self.dasm = ''
+        from multiprocessing import Process, Queue, Event
         # Fill right textview with selected content
         if option in ['Disassembly', 'Hexdump', 'Program']:
             # We don't want dasm and graph for not analyzed programs or other files
             if option != 'Hexdump':
+                # These functions are extremely expensive, so we fork a process for them.
                 if self.uicore.allsections:
-                    self.dasm = self.uicore.get_text_dasm()
+                    self.main.dasm_callback = self.uicore.get_text_dasm_through_queue
                 else:
-                    self.dasm = self.uicore.get_fulldasm()
-                self.buffer.set_text(self.dasm)
+                    self.main.dasm_callback = self.uicore.get_fulldasm_through_queue
+
+                # We fork another process to bypass the GIL because r2/SWIG holds it while inside 'pD'.
+                # We create a queue to receive the dasm result and an event to signal a thread that
+                # the queue is ready to be read.
+                # If the multiprocessing.Queue object is atomic on put(), the Event() won't be necessary.
+                self.main.dasm_event = Event()
+                self.main.dasm_queue = Queue()
+                self.main.dasm_process = Process(target=self.main.dasm_callback, args=(self.main.dasm_queue, self.main.dasm_event))
+                self.main.dasm_process.start()
+
                 try:
                     self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph())
                 except:
@@ -445,5 +457,4 @@ class TextViews(gtk.HBox):
                 if m == mime:
                     return lang
         return None
-
 

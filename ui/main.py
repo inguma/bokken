@@ -60,6 +60,8 @@ class MainApp:
         self.target = target
         self.backend = backend
         self.empty_gui = False
+        # Variable to hold the Process object in case we choose to disassemble a binary.
+        self.dasm_process = False
 
         # Check if we have, at least, one core; else: exit
         if not dependency_check.HAS_PYEW and not dependency_check.HAS_RADARE:
@@ -188,6 +190,8 @@ class MainApp:
 
     # Once we have the file info, let's create the GUI
     def show_file_data(self):
+        import gobject
+
         #print "File format detected: %s" % (self.uicore.core.format)
         # Create left combo depending on file format
         #self.tviews.update_left_combo()
@@ -204,6 +208,8 @@ class MainApp:
             self.tviews.update_righttext('Plain Text')
         else:
             self.tviews.update_righttext('Hexdump')
+
+        gobject.timeout_add(250, self.merge_dasm_rightextview)
 
         # Add data to INTERACTIVE TextView
         self.tviews.update_interactive()
@@ -247,6 +253,20 @@ class MainApp:
                         if not self.tviews.search(self, link_name):
                             link_name = "0x%08x" % self.uicore.text_address
                             self.tviews.search(self, link_name)
+
+    def merge_dasm_rightextview(self):
+        """ Timeout to make sure we join the spawned process for disassembling a binary. """
+        if not self.dasm_process:
+            # We don't need a process for this file.
+            return False
+        if not self.dasm_event.is_set():
+            # Keep retrying.
+            return True
+        print "DEBUG: DASM finished, reading from queue!"
+        # We read from the queue the disassembly.
+        self.uicore.export_dasm = self.dasm_queue.get()
+        print "DEBUG: Got a disassembly of", len(self.uicore.export_dasm), "bytes."
+        return False
 
     def disable_all(self):
 #        if self.target:
@@ -324,6 +344,8 @@ class MainApp:
             return True
 
         gtk.main_quit()
+        if self.dasm_process:
+            self.dasm_process.terminate()
         return True
 
 def main(target, backend):
