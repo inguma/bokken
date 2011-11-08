@@ -255,6 +255,10 @@ class TextViews(gtk.HBox):
 
         #self.update_tabs(option)
 
+    def update_dasm(self, dasm):
+        self.buffer.set_text(dasm)
+        self.right_textview.setup_sections_bar()
+
     def update_interactive(self):
         #print "[*] Update interacive"
         if self.uicore.backend == 'pyew':

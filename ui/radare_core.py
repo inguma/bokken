@@ -240,7 +240,7 @@ class Core():
         step = 0.01
 
         if not self.text_dasm:
-            #print "[*] Get text dasm"
+            print "[*] Get text dasm"
             #self.update_progress_bar("Getting text dasm",base_percent)
             percent = base_percent
             for section in self.execsections:
@@ -248,17 +248,17 @@ class Core():
                 dasm = ''
                 self.core.cmd0('s section.' + section[0])
                 self.core.cmd0('b ' + str(section[1]))
-                #print "\t* Let's get the dasm for %s..." % section[0],
+                print "\t* Let's get the dasm for %s..." % section[0],
                 #self.update_progress_bar("Reading assembler for section %s..." % section[0], percent)
                 dasm = self.core.cmd_str('pD')
                 self.sections_lines.append( len(dasm.split('\n')) )
                 self.core.cmd0('b 512')
-                #print " OK!"
+                print " OK!"
                 self.text_dasm += dasm
                 if percent == base_percent + step * 10:
                     percent -= step
             self.sections_lines.append(sum(self.sections_lines))
-        return self.text_dasm
+        return [self.text_dasm, self.sections_lines]
 
     def get_text_dasm_through_queue(self, queue, event):
         queue.put(self.get_text_dasm())

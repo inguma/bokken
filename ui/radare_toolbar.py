@@ -204,6 +204,7 @@ class TopButtons(gtk.HBox):
         if magic:
             md = gtk.MessageDialog(None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, 
                 gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
+            md.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
             md.set_markup("<b>Detected file magic:</b>\n\n" + magic)
             md.run()
             md.destroy()

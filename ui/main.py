@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 import os, sys
+import gobject
 
 # Add plugins directory to the path
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
@@ -186,15 +187,13 @@ class MainApp:
         #print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
     def show_empty_gui(self):
-        self.topbuttons.throbber.running('')
+        self.topbuttons.throbber.running('start')
 
     # Once we have the file info, let's create the GUI
     def show_file_data(self):
-        import gobject
 
         #print "File format detected: %s" % (self.uicore.core.format)
-        # Create left combo depending on file format
-        #self.tviews.update_left_combo()
+        # Create left buttons depending on file format
         self.tviews.update_left_buttons()
 
         # Add data to RIGHT TextView
@@ -236,23 +235,10 @@ class MainApp:
 
         # Enable GUI
         self.enable_all()
-        self.topbuttons.throbber.running('')
-
-        if 'radare' in self.uicore.backend:
-            self.uicore.restore_va()
-            if self.uicore.core.format == 'Program':
-                self.tviews.update_graph(self, 'entry0')
-                link_name = "0x%08x" % self.uicore.core.num.get('entry0')
-                if link_name:
-                    self.tviews.search(self, link_name)
-        elif 'pyew' in self.uicore.backend:
-            if self.uicore.core.format in ['PE', 'ELF']:
-                if self.uicore.core.ep:
-                    link_name = "0x%08x" % self.uicore.core.ep
-                    if link_name:
-                        if not self.tviews.search(self, link_name):
-                            link_name = "0x%08x" % self.uicore.text_address
-                            self.tviews.search(self, link_name)
+        if self.uicore.core.format not in ["PE", "ELF", "Program"]:
+            self.topbuttons.throbber.running('')
+        else:
+            self.topbuttons.throbber.running('start')
 
     def merge_dasm_rightextview(self):
         """ Timeout to make sure we join the spawned process for disassembling a binary. """
@@ -264,15 +250,34 @@ class MainApp:
             return True
         print "DEBUG: DASM finished, reading from queue!"
         # We read from the queue the disassembly.
-        self.uicore.export_dasm = self.dasm_queue.get()
-        print "DEBUG: Got a disassembly of", len(self.uicore.export_dasm), "bytes."
+        if 'radare' in self.uicore.backend:
+            self.uicore.text_dasm, self.uicore.sections_lines = self.dasm_queue.get()
+        elif 'pyew' in self.uicore.backend:
+            self.uicore.text_dasm, self.uicore.sections_lines, self.uicore.text_address, self.uicore.text_rsize = self.dasm_queue.get()
+        print "DEBUG: Got a disassembly of", len(self.uicore.text_dasm), "bytes."
+        print "DEBUG: Section lines created", self.uicore.sections_lines
+
+        self.tviews.update_dasm(self.uicore.text_dasm)
+        if 'radare' in self.uicore.backend:
+            self.uicore.restore_va()
+            if self.uicore.core.format == 'Program':
+                link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+                self.tviews.update_graph(self, link_name)
+                if link_name:
+                    self.tviews.search(self, link_name)
+        elif 'pyew' in self.uicore.backend:
+            if self.uicore.core.format in ['PE', 'ELF']:
+                if self.uicore.core.ep:
+                    link_name = "0x%08x" % self.uicore.core.ep
+                    if link_name:
+                        if not self.tviews.search(self, link_name):
+                            link_name = "0x%08x" % self.uicore.text_address
+                            self.tviews.search(self, link_name)
+
+        self.topbuttons.throbber.running('')
         return False
 
     def disable_all(self):
-#        if self.target:
-#            self.sbar.add_text({'Please wait while loading file':self.target}, VERSION)
-#        else:
-#            self.sbar.add_text({'Open a new file to start':''}, VERSION)
         self.topbuttons.disable_all()
         self.tviews.set_sensitive(False)
 

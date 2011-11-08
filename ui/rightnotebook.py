@@ -104,15 +104,18 @@ class RightNotebook(gtk.Notebook):
 
         if self.uicore.backend == 'radare':
             self.add_info_elements_tab()
-        self.set_current_page(0)
 
         self.connect("switch-page", self.on_switch)
 
+        #self.set_current_page(0)
         # Hide callgraph for URL, Plain Text and PDF
         if self.uicore.core.format in ['Plain Text', 'PDF', 'Hexdump']:
             self.remove_page(1)
             if self.uicore.core.format != 'Plain Text':
                 self.remove_page(0)
+        elif self.uicore.core.format in ['Program', 'PE', 'ELF']:
+            # Set flowgraph view as default while disassembly finishes
+            self.set_current_page(1)
 
     def on_switch(self, notebook, page, page_num):
         # Tabs to avoid
@@ -178,9 +181,9 @@ class RightNotebook(gtk.Notebook):
             self.info_elements.info_tree.create_info_tree()
             self.show_all()
 
-    def hide_tabs(self):
-        self.set_show_tabs(False)
-        self.set_current_page(0)
+#    def hide_tabs(self):
+#        self.set_show_tabs(False)
+#        self.set_current_page(0)
 
     def create_tab(self, title, tab_child, icon=''):
         tab_box = gtk.HBox(False, 3)

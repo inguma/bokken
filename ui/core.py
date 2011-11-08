@@ -209,7 +209,7 @@ class Core():
 
         #self.seek(0)
         if not self.text_dasm:
-            self.update_progress_bar("Getting text dasm",base_percent)
+            #self.update_progress_bar("Getting text dasm",base_percent)
             percent = base_percent
             self.core.lines = 100*100
             if self.core.format == 'PE':
@@ -218,7 +218,7 @@ class Core():
                     percent += step
                     # Let's store text section information
                     #print hex(self.core.pe.OPTIONAL_HEADER.ImageBase + section.VirtualAddress)
-                    self.update_progress_bar("Reading assembler for section %s..." % section[0][0], percent)
+                    #self.update_progress_bar("Reading assembler for section %s..." % section[0][0], percent)
                     self.text_rsize = section[1]
                     self.text_address = section[2]
                     self.seek(self.text_address)
@@ -234,7 +234,7 @@ class Core():
                 for section in self.execsections:
                     percent += step
                     #print "\t* Let's get the dasm for %s..." % section[0][0],
-                    self.update_progress_bar("Reading assembler for section %s..." % section[0][0], percent)
+                    #self.update_progress_bar("Reading assembler for section %s..." % section[0][0], percent)
                     # Let's store text section information
                     self.text_rsize = section[1]
                     self.text_address = section[2]
@@ -249,10 +249,14 @@ class Core():
                 self.sections_lines.append(sum(self.sections_lines))
         self.core.bsize = 512
         self.core.lines = 40
-        return self.text_dasm
+        return self.text_dasm, self.sections_lines, self.text_address, self.text_rsize
+
+    def get_text_dasm_through_queue(self, queue, event):
+        queue.put(self.get_text_dasm())
+        event.set()
 
     def get_fulldasm(self):
-        self.update_progress_bar("Getting text dasm", 0.3)
+        #self.update_progress_bar("Getting text dasm", 0.3)
         self.core.bsize = self.core.maxsize
         self.seek(0)
         if not self.fulldasm:
@@ -262,6 +266,10 @@ class Core():
         self.core.bsize = 512
         self.core.lines = 40
         return self.fulldasm
+
+    def get_fulldasm_through_queue(self, queue, event):
+        queue.put(self.get_fulldasm())
+        event.set()
 
     def seek(self, pos):
         data = ''

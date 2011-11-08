@@ -48,7 +48,6 @@ class RightTextView(gtk.VBox, Searchable):
         self.move_buttons = self.create_seek_buttons()
         self.pack_start(self.move_buttons, False, False, 1)
 
-        self.sec_bar = sections_bar.SectionsBar(self.uicore)
         self.hbox = gtk.HBox(False, 0)
 
         # Use GtkSourceView to add eye candy :P
@@ -91,15 +90,10 @@ class RightTextView(gtk.VBox, Searchable):
         # Add Textview to Scrolled Window
         self.right_scrolled_window.add(self.view)
         self.hbox.pack_start(self.right_scrolled_window, expand=True, fill=True)
-        self.hbox.pack_start(self.sec_bar, False, False, 0)
         self.pack_start(self.hbox, expand=True, fill=True)
 
         # Create the search widget
         Searchable.__init__(self, self.view, small=True)
-
-        # Setup sections bar
-        vscrollbar = self.right_scrolled_window.get_vscrollbar()
-        self.sec_bar.setup(vscrollbar)
 
         # Used for code navidation on _search function
         self.match_start = None
@@ -128,7 +122,14 @@ class RightTextView(gtk.VBox, Searchable):
             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
             self.buffer.apply_tag_by_name('green-background', self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1])
             self.marks.append([self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1]])
-            #self.view.scroll_to_iter(self.seeks[self.seek_index-1], 0, True, 0, 0)
+
+    def setup_sections_bar(self):
+        # Setup sections bar
+        self.sec_bar = sections_bar.SectionsBar(self.uicore)
+        self.hbox.pack_start(self.sec_bar, False, False, 0)
+        self.sec_bar.show()
+        vscrollbar = self.right_scrolled_window.get_vscrollbar()
+        self.sec_bar.setup(vscrollbar)
 
     def set_completion(self):
         # Seek entry EntryCompletion
@@ -180,8 +181,6 @@ class RightTextView(gtk.VBox, Searchable):
             soffset = temp_offset
 
         self._search(text[soffset:eoffset])
-#        if self.uicore.backend == 'radare':
-#            self.textviews.update_graph(self, text[soffset:eoffset])
 
     def create_seek_buttons(self):
         self.hbox = gtk.HBox(False, 1)
@@ -249,10 +248,6 @@ class RightTextView(gtk.VBox, Searchable):
                     search_string = search_string.strip('[').strip(']')
                 if self.uicore.backend == 'radare':
                     self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
-#                if 'ELF' in self.uicore.core.format:
-#                    self.search_string = '; ' + search_string
-#                else:
-#                    self.search_string = search_string + ':'
             else:
                 pass
 
@@ -281,7 +276,6 @@ class RightTextView(gtk.VBox, Searchable):
 
                         if self.match_start:
                             self.buffer.place_cursor(self.match_start)
-                            #self.view.scroll_to_iter(self.match_start, 0, True, 0, 0)
                             mark = self.buffer.create_mark(None, self.match_start, False)
                             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                             self.last_search_iter = self.match_end
