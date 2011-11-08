@@ -328,7 +328,7 @@ class MainApp:
         self.sbar.show_all()
         dialog.destroy()
 
-    def quit(self, widget, event, data=None):
+    def quit(self, widget, event=None, data=None):
         '''Main quit.
 
         @param widget: who sent the signal.

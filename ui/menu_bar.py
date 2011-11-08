@@ -79,7 +79,7 @@ class MenuBar(gtk.MenuBar):
         exit.add_accelerator("activate", agr, key, 
             mod, gtk.ACCEL_VISIBLE)
 
-        exit.connect("activate", self._bye)
+        exit.connect("activate", self.main.quit)
         
         filemenu.append(exit)
 
@@ -175,18 +175,6 @@ class MenuBar(gtk.MenuBar):
     def _on_theme_change(self, widget):
         theme = widget.get_label()
         self.main.tviews.update_theme(theme)
-
-    def _bye(self, widget):
-        msg = ("Do you really want to quit?")
-        dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
-        opt = dlg.run()
-        dlg.destroy()
-
-        if opt != gtk.RESPONSE_YES:
-            return True
-
-        gtk.main_quit()
-        return False
 
     # New File related methods
     #

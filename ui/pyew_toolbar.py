@@ -211,7 +211,7 @@ class TopButtons(gtk.HBox):
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.set_label('Quit')
-        self.exit_tb.connect("clicked", self._bye)
+        self.exit_tb.connect("clicked", self.main.quit)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
         self.main_tb.insert(self.exit_tb, 19)
 
@@ -240,18 +240,6 @@ class TopButtons(gtk.HBox):
         elif data == 'out':
             if widget.get_text() == '':
                 widget.set_text('Text to search')
-
-    def _bye(self, widget):
-        msg = ("Do you really want to quit?")
-        dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
-        opt = dlg.run()
-        dlg.destroy()
-
-        if opt != gtk.RESPONSE_YES:
-            return True
-
-        gtk.main_quit()
-        return False
 
     def disable_all(self):
         for child in self:
