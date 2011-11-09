@@ -45,7 +45,7 @@ class TopButtons(gtk.HBox):
         self.dependency_check = self.main.dependency_check
 
         self.img_path = os.path.dirname(__file__) + os.sep + 'data' + os.sep
-        self.options_dict = {'Hexadecimal':'x ', 'String':' ', 'String no case':'i ', 'Regexp':'e '}
+        self.options_dict = {'String':' ', 'String no case':'i ', 'Hexadecimal':'x ', 'Regexp':'e '}
 
         self.main_tb = gtk.Toolbar()
         self.main_tb.set_style(gtk.TOOLBAR_ICONS)
@@ -57,7 +57,7 @@ class TopButtons(gtk.HBox):
         self.new_tb.connect("clicked", self.new_file)
         self.main_tb.insert(self.new_tb, 0)
 
-        # Rcent files menu
+        # Recent files menu
         self.manager = gtk.recent_manager_get_default()
         self.recent_menu = gtk.RecentChooserMenu(self.manager)
         self.new_tb.set_menu(self.recent_menu)
@@ -107,13 +107,15 @@ class TopButtons(gtk.HBox):
 
         # Search components
         self.search_combo_tb = gtk.ToolItem()
+        self.search_combo_align = gtk.Alignment(yalign=0.5)
         self.search_combo = gtk.combo_box_new_text()
 
-        options = ['Hexadecimal', 'String', 'String no case', 'Regexp']
+        options = ['String', 'String no case', 'Hexadecimal', 'Regexp']
         for option in options:
             self.search_combo.append_text(option)
-        self.search_combo.set_active(1)
-        self.search_combo_tb.add(self.search_combo)
+        self.search_combo.set_active(0)
+        self.search_combo_align.add(self.search_combo)
+        self.search_combo_tb.add(self.search_combo_align)
         self.main_tb.insert(self.search_combo_tb, 8)
 
         # Separator
