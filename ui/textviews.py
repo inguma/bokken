@@ -175,25 +175,31 @@ class TextViews(gtk.HBox):
 
     def update_righttext(self, option):
         self.dasm = ''
-        from multiprocessing import Process, Queue, Event
         # Fill right textview with selected content
         if option in ['Disassembly', 'Hexdump', 'Program']:
             # We don't want dasm and graph for not analyzed programs or other files
             if option != 'Hexdump':
-                # These functions are extremely expensive, so we fork a process for them.
-                if self.uicore.allsections:
-                    self.main.dasm_callback = self.uicore.get_text_dasm_through_queue
-                else:
-                    self.main.dasm_callback = self.uicore.get_fulldasm_through_queue
+                if self.uicore.backend == 'radare':
+                    from multiprocessing import Process, Queue, Event
+                    # These functions are extremely expensive, so we fork a process for them.
+                    if self.uicore.allsections:
+                        self.main.dasm_callback = self.uicore.get_text_dasm_through_queue
+                    else:
+                        self.main.dasm_callback = self.uicore.get_fulldasm_through_queue
 
-                # We fork another process to bypass the GIL because r2/SWIG holds it while inside 'pD'.
-                # We create a queue to receive the dasm result and an event to signal a thread that
-                # the queue is ready to be read.
-                # If the multiprocessing.Queue object is atomic on put(), the Event() won't be necessary.
-                self.main.dasm_event = Event()
-                self.main.dasm_queue = Queue()
-                self.main.dasm_process = Process(target=self.main.dasm_callback, args=(self.main.dasm_queue, self.main.dasm_event))
-                self.main.dasm_process.start()
+                    # We fork another process to bypass the GIL because r2/SWIG holds it while inside 'pD'.
+                    # We create a queue to receive the dasm result and an event to signal a thread that
+                    # the queue is ready to be read.
+                    # If the multiprocessing.Queue object is atomic on put(), the Event() won't be necessary.
+                    self.main.dasm_event = Event()
+                    self.main.dasm_queue = Queue()
+                    self.main.dasm_process = Process(target=self.main.dasm_callback, args=(self.main.dasm_queue, self.main.dasm_event))
+                    self.main.dasm_process.start()
+                else:
+                    if self.uicore.allsections:
+                        self.uicore.get_text_dasm()
+                    else:
+                        self.uicore.get_fulldasm()
 
                 try:
                     self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph())
@@ -216,6 +222,7 @@ class TextViews(gtk.HBox):
             except:
                 code = unicode(self.uicore.core.buf, 'iso8859-15')
             self.uicore.core.bsize = 512
+            print "set text to buffer"
             self.buffer.set_text(code)
             self.right_notebook.xdot_box.set_dot(self.uicore.http_dot)
             self.hexdump = self.uicore.get_full_hexdump()

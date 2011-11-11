@@ -125,11 +125,14 @@ class RightTextView(gtk.VBox, Searchable):
 
     def setup_sections_bar(self):
         # Setup sections bar
-        self.sec_bar = sections_bar.SectionsBar(self.uicore)
-        self.hbox.pack_start(self.sec_bar, False, False, 0)
-        self.sec_bar.show()
-        vscrollbar = self.right_scrolled_window.get_vscrollbar()
-        self.sec_bar.setup(vscrollbar)
+        # The check is used to avoid dupplicated bars
+        # when loading a new file from inside bokken
+        if not hasattr(self,"sec_bar"):
+            self.sec_bar = sections_bar.SectionsBar(self.uicore)
+            self.hbox.pack_start(self.sec_bar, False, False, 0)
+            self.sec_bar.show()
+            vscrollbar = self.right_scrolled_window.get_vscrollbar()
+            self.sec_bar.setup(vscrollbar)
 
     def set_completion(self):
         # Seek entry EntryCompletion

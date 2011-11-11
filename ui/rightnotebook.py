@@ -41,6 +41,9 @@ class RightNotebook(gtk.Notebook):
         self.uicore = uicore
         self.main = main
 
+        self.xdot_box = graph.MyDotWidget(self.uicore)
+        self.xdot_widget = self.xdot_box.dot_widget
+
         self.set_scrollable(True)
         self.create_tabs()
 
@@ -56,8 +59,6 @@ class RightNotebook(gtk.Notebook):
 
         #################################################
         # Graph map TAB
-        self.xdot_box = graph.MyDotWidget(self.uicore)
-        self.xdot_widget = self.xdot_box.dot_widget
         self.append_page(self.xdot_box)
 
         if self.uicore.backend == 'pyew':
@@ -113,7 +114,7 @@ class RightNotebook(gtk.Notebook):
             self.remove_page(1)
             if self.uicore.core.format != 'Plain Text':
                 self.remove_page(0)
-        elif self.uicore.core.format in ['Program', 'PE', 'ELF']:
+        elif self.uicore.core.format in ['Program', 'PE', 'ELF'] and self.uicore.backend == 'radare':
             # Set flowgraph view as default while disassembly finishes
             self.set_current_page(1)
 

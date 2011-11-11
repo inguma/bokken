@@ -208,7 +208,22 @@ class MainApp:
         else:
             self.tviews.update_righttext('Hexdump')
 
-        gobject.timeout_add(250, self.merge_dasm_rightextview)
+        if 'radare' in self.uicore.backend:
+            gobject.timeout_add(250, self.merge_dasm_rightextview)
+        else:
+            if self.uicore.text_dasm:
+                self.tviews.update_dasm(self.uicore.text_dasm)
+            elif self.uicore.fulldasm:
+                self.tviews.update_dasm(self.uicore.fulldasm)
+            if self.uicore.core.format in ['PE', 'ELF']:
+                if self.uicore.core.ep:
+                    link_name = "0x%08x" % self.uicore.core.ep
+                    if link_name:
+                        if not self.tviews.search(self, link_name):
+                            link_name = "0x%08x" % self.uicore.text_address
+                            self.tviews.search(self, link_name)
+
+            self.topbuttons.throbber.running('')
 
         # Add data to INTERACTIVE TextView
         self.tviews.update_interactive()
@@ -235,29 +250,38 @@ class MainApp:
 
         # Enable GUI
         self.enable_all()
-        if self.uicore.core.format not in ["PE", "ELF", "Program"]:
-            self.topbuttons.throbber.running('')
-        else:
-            self.topbuttons.throbber.running('start')
+        if self.uicore.backend == 'radare':
+            if self.uicore.core.format not in ["PE", "ELF", "Program"]:
+                self.topbuttons.throbber.running('')
+            else:
+                self.topbuttons.throbber.running('start')
 
     def merge_dasm_rightextview(self):
         """ Timeout to make sure we join the spawned process for disassembling a binary. """
-        if not self.dasm_process:
-            # We don't need a process for this file.
-            return False
-        if not self.dasm_event.is_set():
-            # Keep retrying.
-            return True
+        if self.uicore.backend == 'radare':
+            if not self.dasm_process:
+                # We don't need a process for this file.
+                return False
+            if not self.dasm_event.is_set():
+                # Keep retrying.
+                return True
+        else:
+            if self.dasm_process.is_alive():
+                return True
+
+        # Once finished the load, let's fill the UI
         print "DEBUG: DASM finished, reading from queue!"
+        print "Process state", self.dasm_process.is_alive()
         # We read from the queue the disassembly.
-        if 'radare' in self.uicore.backend:
+        if 'radare' in self.uicore.backend and self.uicore.do_anal:
             self.uicore.text_dasm, self.uicore.sections_lines = self.dasm_queue.get()
-        elif 'pyew' in self.uicore.backend:
-            self.uicore.text_dasm, self.uicore.sections_lines, self.uicore.text_address, self.uicore.text_rsize = self.dasm_queue.get()
         print "DEBUG: Got a disassembly of", len(self.uicore.text_dasm), "bytes."
         print "DEBUG: Section lines created", self.uicore.sections_lines
 
-        self.tviews.update_dasm(self.uicore.text_dasm)
+        if self.uicore.text_dasm:
+            self.tviews.update_dasm(self.uicore.text_dasm)
+        else:
+            self.tviews.update_dasm(self.uicore.fulldasm)
         if 'radare' in self.uicore.backend:
             self.uicore.restore_va()
             if self.uicore.core.format == 'Program':
@@ -272,7 +296,7 @@ class MainApp:
                     if link_name:
                         if not self.tviews.search(self, link_name):
                             link_name = "0x%08x" % self.uicore.text_address
-                            self.tviews.search(self, link_name)
+                            #self.tviews.search(self, link_name)
 
         self.topbuttons.throbber.running('')
         return False
@@ -317,6 +341,7 @@ class MainApp:
             ui.core_functions.repaint()
 
         # Clean UI
+        self.mbar.delete_view_menu()
         self.tviews.left_buttons.remove_all()
         self.tviews.right_notebook.remove_tabs()
         self.tviews.left_treeview.remove_columns()
@@ -324,6 +349,7 @@ class MainApp:
 
         # Add new content
         self.tviews.right_notebook.create_tabs()
+        self.mbar.create_view_menu()
         self.show_file_data()
 
         self.uicore.core.progress_bar = None
@@ -331,6 +357,7 @@ class MainApp:
         # Show UI
         self.enable_all()
         self.sbar.show_all()
+        self.tviews.right_notebook.show_all()
         dialog.destroy()
 
     def quit(self, widget, event=None, data=None):
@@ -349,7 +376,7 @@ class MainApp:
             return True
 
         gtk.main_quit()
-        if self.dasm_process:
+        if self.dasm_process and self.uicore.backend == 'radare':
             self.dasm_process.terminate()
         return True
 

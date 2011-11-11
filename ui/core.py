@@ -249,7 +249,8 @@ class Core():
                 self.sections_lines.append(sum(self.sections_lines))
         self.core.bsize = 512
         self.core.lines = 40
-        return self.text_dasm, self.sections_lines, self.text_address, self.text_rsize
+        #return self.text_dasm, self.sections_lines, self.text_address, self.text_rsize
+        return self.text_dasm
 
     def get_text_dasm_through_queue(self, queue, event):
         queue.put(self.get_text_dasm())
