@@ -72,12 +72,8 @@ class MyDotWidget(gtk.HBox):
 
         self.tree.set_rules_hint(True)
 
-#
-# Removed until the next release due to problems with the radare bindings
-#
-
-#        # Connect right click popup search menu
-#        self.pupoup_handler = self.tree.connect('button-press-event', self.popup_menu)
+        # Connect right click popup search menu
+        self.pupoup_handler = self.tree.connect('button-press-event', self.popup_menu)
 
         # Create the column
         bblocks = gtk.TreeViewColumn()
@@ -107,15 +103,11 @@ class MyDotWidget(gtk.HBox):
         self.tree.set_model(self.treestore)
         self.tree.expand_all()
 
-#
-# Removed until the next release due to problems with the radare bindings
-#
-
-#    def popup_menu(self, tree, event):
-#        if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
-#            (path, column) = tree.get_cursor()
-#            # Is it over a plugin name ?
-#            # Ge the information about the click
-#            if path is not None and len(path) == 2 and self.nodes:
-#                node = self.treestore[path][0]
-#                self.dot_widget.animate_to( int(self.nodes[node][0]), int(self.nodes[node][1]) )
+    def popup_menu(self, tree, event):
+        if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
+            (path, column) = tree.get_cursor()
+            # Is it over a plugin name ?
+            # Ge the information about the click
+            if path is not None and len(path) == 2 and self.nodes:
+                node = self.treestore[path][0]
+                self.dot_widget.animate_to( int(self.nodes[node][0]), int(self.nodes[node][1]) )
