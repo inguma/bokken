@@ -172,13 +172,15 @@ class TopButtons(gtk.HBox):
 
         # Search components
         self.search_combo_tb = gtk.ToolItem()
+        self.search_combo_align = gtk.Alignment(yalign=0.5)
         self.search_combo = gtk.combo_box_new_text()
 
         options = ['Hexadecimal', 'String', 'String no case', 'Regexp', 'Unicode', 'Unicode no case']
         for option in options:
             self.search_combo.append_text(option)
-        self.search_combo.set_active(1)
-        self.search_combo_tb.add(self.search_combo)
+        self.search_combo.set_active(0)
+        self.search_combo_align.add(self.search_combo)
+        self.search_combo_tb.add(self.search_combo_align)
         self.main_tb.insert(self.search_combo_tb, 14)
 
         # Separator
