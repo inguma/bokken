@@ -63,14 +63,14 @@ class Statusbar(gtk.Statusbar):
             # Element label
             label = gtk.Label()
             label.set_markup('<b>' + element.capitalize() + ':</b>')
-            label.set_padding(3, 3)
+            label.set_padding(1, 5)
             label.set_max_width_chars(len(element) + 1)
             label.set_single_line_mode(True)
             label.set_ellipsize(ellipsize)
             self.box.pack_start(label, True, True, 1)
             # Element content
             label = gtk.Label(str(data_dict[element]))
-            label.set_padding(3, 3)
+            label.set_padding(1, 5)
             label.set_max_width_chars(len(str(data_dict[element])))
             label.set_single_line_mode(True)
             label.set_ellipsize(ellipsize)
@@ -81,7 +81,10 @@ class Statusbar(gtk.Statusbar):
         if version:
             _icon = gtk.image_new_from_file('ui' + os.sep + 'data' + os.sep + 'bokken-small.svg')
             self.pack_start(_icon, False, False, 1)
-            self.pack_end(gtk.Label('Bokken ' + version), False)
+            label = gtk.Label()
+            label.set_markup('<b>Bokken ' + version + '</b> (' + self.uicore.backend.capitalize() + ')')
+            label.set_padding(3, 3)
+            self.pack_end(label, False)
 
         self.show_all()
 
