@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 import gtk
+import webbrowser
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -64,12 +65,6 @@ class MenuBar(gtk.MenuBar):
             smenu.append(savei)
 
         filemenu.append(savem)
-
-#        savem = gtk.ImageMenuItem(gtk.STOCK_SAVE, agr)
-#        key, mod = gtk.accelerator_parse("<Control>S")
-#        savem.add_accelerator("activate", agr, key, 
-#            mod, gtk.ACCEL_VISIBLE)
-#        filemenu.append(savem)
 
         sep = gtk.SeparatorMenuItem()
         filemenu.append(sep)
@@ -127,6 +122,7 @@ class MenuBar(gtk.MenuBar):
         helpm.set_submenu(helpmenu)
        
         helpi = gtk.ImageMenuItem(gtk.STOCK_HELP, agr)
+        helpi.connect("activate", self.show_wiki)
         key, mod = gtk.accelerator_parse("<Control>H")
         helpi.add_accelerator("activate", agr, key, 
             mod, gtk.ACCEL_VISIBLE)
@@ -147,6 +143,11 @@ class MenuBar(gtk.MenuBar):
 
     # Private methods
     #
+
+    def delete_view_menu(self):
+        for x in self.vmenu.get_children():
+            self.vmenu.remove(x)
+        self.vmenu.show_all()
 
     def create_view_menu(self):
         self.nb = self.main.tviews.right_notebook
@@ -175,6 +176,9 @@ class MenuBar(gtk.MenuBar):
     def _on_theme_change(self, widget):
         theme = widget.get_label()
         self.main.tviews.update_theme(theme)
+
+    def show_wiki(self, widget):
+        webbrowser.open_new_tab('http://inguma.eu/projects/bokken/wiki')
 
     # New File related methods
     #
