@@ -360,7 +360,7 @@ class Core():
         #if not self.dot:
         #print "[*] Get callgraph"
         self.update_progress_bar("Loading callgraph", 0.4)
-        file = tempfile.gettempdir() + os.sep + 'miau.dot'
+        file = tempfile.gettempdir() + os.sep + 'graph.dot'
 
         if self.graph_layout == 'flow':
             cmd = 'ag '
