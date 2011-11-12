@@ -82,7 +82,7 @@ class MenuBar(gtk.MenuBar):
 
         # Edit Menu
         editmenu = gtk.Menu()
-        editm = gtk.MenuItem("Edit")
+        editm = gtk.MenuItem("_Edit")
         editm.set_submenu(editmenu)
 
         self.append(editm)
@@ -183,7 +183,7 @@ class MenuBar(gtk.MenuBar):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, False, 'pyew', file)
+        dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, self.dependency_check.HAS_RADARE, self.uicore.backend, file)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             dialog.destroy()
