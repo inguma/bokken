@@ -354,6 +354,10 @@ class MainApp:
 
         self.uicore.core.progress_bar = None
 
+        # Hide left tree for plain or unsupported formats
+        if self.uicore.core.format in ['Hexdump', 'Plain Text', 'OLE2']:
+            self.tviews.left_scrolled_window.hide()
+
         # Show UI
         self.enable_all()
         self.sbar.show_all()
