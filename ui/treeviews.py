@@ -33,7 +33,7 @@ class TreeViews(gtk.TreeView):
         self.set_rules_hint(True)
 
         # Connect right click popup search menu
-        self.pupoup_handler = self.connect('button-press-event', self.popup_menu)
+        self.popup_handler = self.connect('button-press-event', self.popup_menu)
 
     def create_functions_columns(self):
     
@@ -280,6 +280,12 @@ class TreeViews(gtk.TreeView):
         '''
 
         self.dograph = False
+
+        # I do this to return fast (and to avoid leaking memory in 'e io.va' for now).
+        if (event.button != 3) and not (event.button ==1 and event.type == gtk.gdk._2BUTTON_PRESS):
+            return False
+
+        # FIXME: We should do this on the uicore, possibly in every operation.
         if self.uicore.backend == 'radare':
             if self.uicore.use_va:
                 self.uicore.core.cmd0('e io.va=0')
