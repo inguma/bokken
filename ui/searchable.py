@@ -82,7 +82,9 @@ class Searchable(object):
     def _populate_popup(self, textview, menu):
         '''Populates the menu with the Find item.'''
         menu.append(gtk.SeparatorMenuItem())
-        opc = gtk.MenuItem(("Find..."))
+        opc = gtk.ImageMenuItem((gtk.STOCK_FIND))
+        opc.get_children()[0].set_label('Find...')
+        #opc = gtk.MenuItem(("Find..."))
         menu.append(opc)
         opc.connect("activate", self.show_search)
         menu.show_all()
