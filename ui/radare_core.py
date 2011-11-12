@@ -103,6 +103,13 @@ class Core():
         self.cmd = ''
         self.last_cmd = ''
 
+        self.core = RCore()
+        self.cons = RCons()
+        self.assembler = self.core.assembler
+        self.core.format = ''
+
+        self.backend = 'radare'
+
     def load_file(self, file):
         #print "[*] Loading file"
         self.update_progress_bar("Loading file", 0.1)
