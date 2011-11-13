@@ -23,6 +23,7 @@ import gtk, pango
 import gtksourceview2
 
 import ui.sections_bar as sections_bar
+import ui.comments_dialog as comments_dialog
 from ui.searchable import Searchable
 
 class RightTextView(gtk.VBox, Searchable):
@@ -100,6 +101,8 @@ class RightTextView(gtk.VBox, Searchable):
         self.match_end = None
         self.search_string = ''
 
+        self.view.connect("populate-popup", self._populate_comments_menu)
+
     def do_seek(self, widget, direction):
         if self.seek_index <= 1 and direction == 'b':
             pass
@@ -133,6 +136,60 @@ class RightTextView(gtk.VBox, Searchable):
             self.sec_bar.show()
             vscrollbar = self.right_scrolled_window.get_vscrollbar()
             self.sec_bar.setup(vscrollbar)
+
+    def _populate_comments_menu(self, textview, menu):
+        '''Populates the menu with the Comments item.'''
+        # Get textbuffer coordinates from texview ones
+        x, y = self.view.get_pointer()
+        x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
+        iter = self.view.get_line_at_y(y)[0]
+        # Get text iter and offset at coordinates
+        #iter = self.view.get_iter_at_location(x, y)
+        offset = iter.get_offset()
+        # Get complete buffer text
+        siter, eiter = self.buffer.get_bounds()
+        text = self.buffer.get_text(siter, eiter)
+
+        # Get clicked word
+        word_seps = [' ', ',', "\t", "\n", '(', ')']
+
+        # Get start word offset
+        temp_offset = offset+1
+        while not text[temp_offset:temp_offset+1] in word_seps:
+            temp_offset += 1
+        else:
+            soffset = temp_offset+1
+
+        # Get end word offset
+        temp_offset = soffset
+        while not text[temp_offset:temp_offset+1] in word_seps:
+            temp_offset += 1
+        else:
+            eoffset = temp_offset
+
+        addr = text[soffset:eoffset]
+
+        # Just show the comment menu if the line has offset/va
+        if addr[0:2] == '0x':
+            menu.append(gtk.SeparatorMenuItem())
+            opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
+            opc.get_children()[0].set_label('Add comment')
+            menu.prepend(opc)
+            opc.connect("activate", self._call_comments_dialog, iter, addr)
+        menu.show_all()
+
+    def _call_comments_dialog(self, widget, iter, offset):
+        dialog = comments_dialog.CommentsDialog()
+        resp = dialog.run()
+        if resp == gtk.RESPONSE_ACCEPT:
+            start, end = dialog.input_buffer.get_bounds()
+            comment = dialog.input_buffer.get_text(start, end)
+            tainted_comment = comment.replace('\n', '\n  ; ')
+            tainted_comment = '  ; ' + tainted_comment
+            dialog.destroy()
+            self.buffer.insert(iter, tainted_comment + '\n')
+            if self.uicore.backend == 'radare':
+                self.uicore.add_comment(offset, comment)
 
     def set_completion(self):
         # Seek entry EntryCompletion

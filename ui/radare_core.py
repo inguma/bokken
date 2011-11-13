@@ -454,6 +454,11 @@ class Core():
         res = self.core.cmd_str(command)
         return res
 
+    def add_comment(self, offset, comment):
+        print 'CC 1 ' + comment + ' @ ' + offset
+        self.core.cmd0('CC 1 ' + comment + ' @ ' + offset)
+        return True
+
     def move(self, direction, output):
         if direction == 'f':
             direction = ''
