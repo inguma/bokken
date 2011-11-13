@@ -139,24 +139,30 @@ class TopButtons(gtk.HBox):
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, 11)
 
+        # Cheatsheet button
+        self.cheatsheet_tb = gtk.ToolButton(gtk.STOCK_JUSTIFY_FILL)
+        self.cheatsheet_tb.set_tooltip_text('Show assembler reference sheet')
+        self.cheatsheet_tb.connect("clicked", self.create_cheatsheet_dialog)
+        self.main_tb.insert(self.cheatsheet_tb, 12)
+
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 12)
+        self.main_tb.insert(self.sep, 13)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.set_label('Quit')
         self.exit_tb.connect("clicked", self.main.quit)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 13)
+        self.main_tb.insert(self.exit_tb, 14)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 14)
+        self.main_tb.insert(self.throbber_tb, 15)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -285,5 +291,12 @@ class TopButtons(gtk.HBox):
 
         import search_dialog
         self.search_dialog = search_dialog.SearchDialog()
+
+        return False
+
+    def create_cheatsheet_dialog(self, widget):
+
+        import cheatsheet_dialog
+        self.cheatsheet_dialog = cheatsheet_dialog.CheatsheetDialog()
 
         return False

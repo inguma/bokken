@@ -73,7 +73,7 @@ class MyDotWidget(gtk.HBox):
         self.tree.set_rules_hint(True)
 
         # Connect right click popup search menu
-        self.pupoup_handler = self.tree.connect('button-press-event', self.popup_menu)
+        self.popup_handler = self.tree.connect('button-press-event', self.popup_menu)
 
         # Create the column
         bblocks = gtk.TreeViewColumn()
