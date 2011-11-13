@@ -56,9 +56,21 @@ class FileDialog(gtk.Dialog):
         self.logo_text = gtk.Label()
         self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.5-dev</b></span>')
 
-        # Logo label
-        self.label = gtk.Label('Select a file or enter the path manually.\nValid inputs are: PE/ELF, PDF, plain text files and URLs')
+        # Common label
+        self.label = gtk.Label('Select a target or enter the path manually.')
+        self.label.set_padding(0, 3)
         self.label.set_alignment(0, 0.5)
+
+        # Pyew targets label
+        self.pyew_label = gtk.Label()
+        self.pyew_label.set_markup('Valid inputs are: <b>PE/ELF, PDF, plain text files and URLs</b>')
+        self.pyew_label.set_padding(0, 2)
+
+        # Radare targets label
+        self.radare_label = gtk.Label()
+        self.radare_label.set_markup('Valid inputs are: <b>PE, ELF, mach0 and java/dex classes</b>')
+        self.radare_label.set_padding(0, 2)
+
         # Horizontal Separator
         self.hseparator1 = gtk.HSeparator()
 
@@ -159,6 +171,8 @@ class FileDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.core_hbox, False, False, 2)
         self.main_vbox.pack_start(self.hseparator2, False, False, 2)
         self.main_vbox.pack_start(self.label, False, False, 2)
+        self.main_vbox.pack_start(self.pyew_label, False, False, 1)
+        self.main_vbox.pack_start(self.radare_label, False, False, 1)
         self.main_vbox.pack_start(self.hbox, False, False, 2)
         self.main_vbox.pack_start(self.hseparator3, False, False, 2)
         self.main_vbox.pack_start(self.anal_label, False, False, 2)
@@ -170,10 +184,13 @@ class FileDialog(gtk.Dialog):
 
         if self.core == 'pyew':
             self.radare_box.set_visible(False)
+            self.radare_label.set_visible(False)
         elif self.core == 'radare':
             self.pyew_box.set_visible(False)
+            self.pyew_label.set_visible(False)
         else:
             self.radare_box.set_visible(False)
+            self.radare_label.set_visible(False)
 
     def cancel(self, widget):
         import sys
@@ -233,7 +250,7 @@ class FileDialog(gtk.Dialog):
             self.asm_byt = self.asm_bytes.get_active()
 
     def select_file(self, widget):
-        chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
+        chooser = gtk.FileChooserDialog(title="Select target",action=gtk.FILE_CHOOSER_ACTION_OPEN,
                               buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
         self.resp = chooser.run()
         if self.resp == gtk.RESPONSE_OK:
@@ -246,6 +263,10 @@ class FileDialog(gtk.Dialog):
         if active == 'Pyew':
             self.pyew_box.set_visible(True)
             self.radare_box.set_visible(False)
+            self.pyew_label.set_visible(True)
+            self.radare_label.set_visible(False)
         elif active == 'Radare':
             self.pyew_box.set_visible(False)
             self.radare_box.set_visible(True)
+            self.pyew_label.set_visible(False)
+            self.radare_label.set_visible(True)
