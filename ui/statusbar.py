@@ -31,7 +31,7 @@ class Statusbar(gtk.Statusbar):
         self.uicore = core
         self.tviews = tviews
 
-        self.icons = {'processor':'ui' + os.sep + 'data' + os.sep + 'processor_small.png', 'name':gtk.STOCK_FILE, 
+        self.icons = {'processor':os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'processor_small.png', 'name':gtk.STOCK_FILE, 
                         'format':gtk.STOCK_EXECUTE, 'size':gtk.STOCK_PREFERENCES, 'OS':gtk.STOCK_INFO, 
                         'type':gtk.STOCK_INFO, 'va':gtk.STOCK_UNINDENT, 'ep': gtk.STOCK_INDENT}
 
@@ -55,7 +55,7 @@ class Statusbar(gtk.Statusbar):
         for element in data_dict.keys():
             # Element icon
             if element == 'processor':
-                _icon = gtk.image_new_from_file('ui' + os.sep + 'data' + os.sep + 'processor_small.png')
+                _icon = gtk.image_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'processor_small.png')
                 self.box.pack_start(_icon, False, False, 0)
             else:
                 _icon = gtk.image_new_from_stock(self.icons[element], gtk.ICON_SIZE_MENU)
@@ -79,7 +79,7 @@ class Statusbar(gtk.Statusbar):
             self.box.pack_start(sep, True, True, 1)
 
         if version:
-            _icon = gtk.image_new_from_file('ui' + os.sep + 'data' + os.sep + 'bokken-small.svg')
+            _icon = gtk.image_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken-small.svg')
             self.pack_start(_icon, False, False, 1)
             label = gtk.Label()
             label.set_markup('<b>Bokken ' + version + '</b> (' + self.uicore.backend.capitalize() + ')')
