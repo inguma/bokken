@@ -298,6 +298,7 @@ class FileDialog(gtk.Dialog):
             self.radare_box.set_visible(True)
             self.pyew_label.set_visible(False)
             self.radare_label.set_visible(True)
+
         self._validate(self.input_entry.get_child())
 
     def _no_anal(self, widget):

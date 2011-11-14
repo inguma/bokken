@@ -313,6 +313,7 @@ class MainApp:
         self.tviews.set_sensitive(True)
 
     def load_new_file(self, dialog, target):
+        self.window.hide()
         self.disable_all()
         self.target = target
         # Check if target name is an URL, pyew stores it as 'raw'
@@ -322,7 +323,7 @@ class MainApp:
             # Just open the target if path is correct or an url
             if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
                 print "Incorrect file argument:", FAIL, self.target, ENDC
-                sys.exit(1)
+                #sys.exit(1)
 
             # Get dialog selected file, backend and options
             self.backend = dialog.backend
@@ -364,6 +365,7 @@ class MainApp:
         self.enable_all()
         self.sbar.show_all()
         self.tviews.right_notebook.show_all()
+        self.window.show()
         dialog.destroy()
 
     def quit(self, widget, event=None, data=None):
