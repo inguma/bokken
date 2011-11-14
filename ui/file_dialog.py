@@ -152,6 +152,7 @@ class FileDialog(gtk.Dialog):
 
         # Radare options
         self.anal_bin = gtk.CheckButton(label='Analyze program')
+        self.anal_bin.connect("toggled", self._no_anal)
         self.anal_bin.set_active(True)
         self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
         self.radare_dasm.set_active(True)
@@ -270,3 +271,15 @@ class FileDialog(gtk.Dialog):
             self.radare_box.set_visible(True)
             self.pyew_label.set_visible(False)
             self.radare_label.set_visible(True)
+
+    def _no_anal(self, widget):
+        if widget.get_active():
+            self.radare_dasm.set_sensitive(True)
+            self.io_va.set_sensitive(True)
+            self.asm_syntax.set_sensitive(True)
+            self.asm_bytes.set_sensitive(True)
+        else:
+            self.radare_dasm.set_sensitive(False)
+            self.io_va.set_sensitive(False)
+            self.asm_syntax.set_sensitive(False)
+            self.asm_bytes.set_sensitive(False)
