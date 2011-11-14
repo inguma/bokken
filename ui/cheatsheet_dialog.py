@@ -26,12 +26,18 @@ class CheatsheetDialog(gtk.Dialog):
     '''Window to popup cheatsheet output'''
 
     # Just x86 instructions for now.
-    summary = 'Instruction listings contain at least a mnemonic, which is the operation to be performed. Many instructions will take operands. Instructions with multiple operands list the destination operand first and the source operand second (&lt;dest&gt;, &lt;source&gt;). Assembler directives may also be listed which appear similar to instructions.\n\n\n'
+    summary = 'Instruction listings contain at least a mnemonic, which is the operation to be performed. Many instructions will take operands. Instructions with multiple operands list the destination operand first and the source operand second (&lt;dest&gt;, &lt;source&gt;). Assembler directives may also be listed which appear similar to instructions.'
 
-    directives = [
+    assembler_directives = [
             ("DB <byte>", "Define Byte. Reserves an explicit byte of memory at the current location. Initialized to <byte> value."),
             ("DW <word>", "Define Word. 2 bytes."),
             ("DD <dword>", "Define DWord. 4 bytes."),
+        ]
+
+    operand_types = [
+            ("Immediate", "A numeric operand, hard coded."),
+            ("Register", "A numeric operand, hard coded."),
+            ("Memory", "A general purpose register."),
         ]
 
     terms = [
@@ -98,15 +104,36 @@ class CheatsheetDialog(gtk.Dialog):
         self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
 
         vbox_summary = gtk.VBox(False, 1)
-        vbox_summary.pack_start(self.create_h2_label('Assembly Language'), False, False, 4)
+        vbox_summary.pack_start(self.create_h1_label('Assembly language'), False, False, 4)
         label_summary = gtk.Label()
         label_summary.set_markup(self.summary)
         label_summary.set_line_wrap(True)
         label_summary.set_alignment(0, 0)
         vbox_summary.add(label_summary)
 
+        vbox_summary.pack_start(self.create_h2_label('Assembly directives'), False, False, 4)
+        assembler_directives_tv = self.populate_treeview(self.assembler_directives)
+        sw = gtk.ScrolledWindow()
+        sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+
+        assembler_directives_tv = self.populate_treeview(self.assembler_directives)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=0)
+        assembler_directives_tv.append_column(column)
+
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=1)
+        renderer_text.set_property("wrap_width", 300)
+        renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
+        assembler_directives_tv.append_column(column)
+        assembler_directives_tv.set_headers_visible(False)
+
+        sw.add(assembler_directives_tv)
+        vbox_summary.add(sw)
+
         vbox_terminology = gtk.VBox(False, 1)
-        vbox_terminology.pack_start(self.create_h2_label('Terminology and Functions'), False, False, 4)
+        vbox_terminology.pack_start(self.create_h1_label('Terminology and Functions'), False, False, 4)
         sw = gtk.ScrolledWindow()
         sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
         sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -121,11 +148,12 @@ class CheatsheetDialog(gtk.Dialog):
         renderer_text.set_property("wrap_width", 300)
         renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
         terminology_tv.append_column(column)
+        terminology_tv.set_headers_visible(False)
 
         sw.add(terminology_tv)
         vbox_terminology.add(sw)
 
-        self.hbox = gtk.HBox(True, 1)
+        self.hbox = gtk.HBox(False, 1)
         self.hbox.add(vbox_summary)
         self.hbox.add(vbox_terminology)
 
@@ -163,6 +191,15 @@ class CheatsheetDialog(gtk.Dialog):
         tv.set_rules_hint(True)
 
         return tv
+
+    def create_h1_label(self, string):
+        """ Accepts a string and return a label formatted with black background and larger bold white font size."""
+
+        label = gtk.Label()
+        label.set_markup('<span background="black" color="white" font_weight="bold" size="larger">' + string + '</span>')
+        label.set_alignment(0, 0)
+
+        return label
 
     def create_h2_label(self, string):
         """ Accepts a string and return a label formatted with grey background and larger font size."""
