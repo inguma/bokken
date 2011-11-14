@@ -167,7 +167,10 @@ class RightTextView(gtk.VBox, Searchable):
         else:
             eoffset = temp_offset
 
-        addr = text[soffset:eoffset]
+        if self.uicore.backend == 'radare':
+           addr = text[soffset:eoffset]
+        else:
+           addr = text[offset:eoffset]
 
         # Just show the comment menu if the line has offset/va
         if addr[0:2] == '0x':
