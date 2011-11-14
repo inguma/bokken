@@ -245,7 +245,7 @@ class TopButtons(gtk.HBox):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(False, self.dependency_check.HAS_RADARE, 'radare', '')
+        dialog = file_dialog.FileDialog(False, self.dependency_check.HAS_RADARE, 'radare', file)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             dialog.destroy()
