@@ -17,20 +17,24 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
+
 import gtk
+import gobject
 
 class FileDialog(gtk.Dialog):
     '''Window popup to select file'''
 
     def __init__(self, has_pyew, has_radare, core='', file=''):
         super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-        import os
 
         self.has_pyew = has_pyew
         self.has_radare = has_radare
 
         self.core = core
         self.file = file
+
+        self.timer_id = None
 
         # Set dialog resizeable and auto-shrink
         self.set_policy(False, False, True)
@@ -107,6 +111,7 @@ class FileDialog(gtk.Dialog):
         self.model = gtk.ListStore(str)
         self.input_entry = gtk.ComboBoxEntry(self.model, column=0)
         self.input_entry.get_child().connect("activate", self.fast_start)
+        self.input_entry.connect("changed", self._validate_cb)
         #self.input_entry = gtk.Entry(100)
         if self.file:
             self.input_entry.get_child().set_text(self.file)
@@ -259,6 +264,28 @@ class FileDialog(gtk.Dialog):
             self.input_entry.get_child().set_text(self.file_name)
         chooser.destroy()
 
+    def _validate_cb(self, widget):
+        if self.timer_id:
+            # We destroy the last event source and create another one.
+            gobject.source_remove(self.timer_id)
+        self.timer_id = gobject.timeout_add(500, self._validate, widget.get_child())
+
+    def _validate(self, widget):
+        text = widget.get_text()
+        core = self.core_combo.get_active_text()
+        colormap = widget.get_colormap()
+        bg_ok = colormap.alloc_color("white")
+        bg_not_valid = colormap.alloc_color("red")
+        if 'http' in text:
+            if core == 'Radare':
+                widget.modify_base(gtk.STATE_NORMAL, bg_not_valid)
+            else:
+                widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+        elif not os.path.isfile(text):
+            widget.modify_base(gtk.STATE_NORMAL, bg_not_valid)
+        else:
+            widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+
     def _on_change(self, widget):
         active = widget.get_active_text()
         if active == 'Pyew':
@@ -271,6 +298,7 @@ class FileDialog(gtk.Dialog):
             self.radare_box.set_visible(True)
             self.pyew_label.set_visible(False)
             self.radare_label.set_visible(True)
+        self._validate(self.input_entry.get_child())
 
     def _no_anal(self, widget):
         if widget.get_active():
