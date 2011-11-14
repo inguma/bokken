@@ -39,6 +39,7 @@ class CommentsDialog(gtk.Dialog):
         #################################################################
         self.input_text = gtk.TextView(buffer=None)
         self.input_text.set_wrap_mode(gtk.WRAP_NONE)
+        self.input_text.set_left_margin(10)
         self.input_buffer = self.input_text.get_buffer()
 
         self.scrolled_window = gtk.ScrolledWindow()

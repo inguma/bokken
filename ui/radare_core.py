@@ -455,7 +455,6 @@ class Core():
         return res
 
     def add_comment(self, offset, comment):
-        print 'CC 1 ' + comment + ' @ ' + offset
         self.core.cmd0('CC 1 ' + comment + ' @ ' + offset)
         return True
 
