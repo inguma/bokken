@@ -254,6 +254,7 @@ class MainApp:
             if self.uicore.core.format not in ["PE", "ELF", "Program"]:
                 self.topbuttons.throbber.running('')
             else:
+                self.tviews.right_textview.right_scrolled_window.set_sensitive(False)
                 self.topbuttons.throbber.running('start')
 
     def merge_dasm_rightextview(self):
@@ -298,6 +299,7 @@ class MainApp:
                             link_name = "0x%08x" % self.uicore.text_address
                             #self.tviews.search(self, link_name)
 
+        self.tviews.right_textview.right_scrolled_window.set_sensitive(True)
         self.topbuttons.throbber.running('')
         return False
 

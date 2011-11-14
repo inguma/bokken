@@ -152,13 +152,13 @@ class FileDialog(gtk.Dialog):
 
         # Radare options
         self.anal_bin = gtk.CheckButton(label='Analyze program')
-        self.anal_bin.connect("toggled", self._no_anal)
         self.anal_bin.set_active(True)
         self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
         self.radare_dasm.set_active(True)
         self.io_va = gtk.CheckButton(label='Don\'t use VA')
         self.asm_syntax = gtk.CheckButton(label='Use AT&T syntax')
         self.asm_bytes = gtk.CheckButton(label='Don\'t show asm bytes')
+        self.anal_bin.connect("toggled", self._no_anal)
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
         self.radare_box.pack_start(self.io_va, False, False, 2)
