@@ -108,11 +108,24 @@ class TopButtons(gtk.HBox):
         # Search components
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo_align = gtk.Alignment(yalign=0.5)
-        self.search_combo = gtk.combo_box_new_text()
+        store = gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.search_combo = gtk.ComboBox(store)
+        rendererText = gtk.CellRendererText()
+        rendererPix = gtk.CellRendererPixbuf()
+        self.search_combo.pack_start(rendererPix, False)
+        self.search_combo.pack_start(rendererText, True)
+        self.search_combo.add_attribute(rendererPix, 'pixbuf', 0)
+        self.search_combo.add_attribute(rendererText, 'text', 1)
 
-        options = ['String', 'String no case', 'Hexadecimal', 'Regexp']
-        for option in options:
-            self.search_combo.append_text(option)
+        options = {
+            'String':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_16.png'),
+            'String no case':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_no_case_16.png'),
+            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_hexadecimal_16.png'),
+            'Regexp':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_regexp_16.png')
+        }
+
+        for option in options.keys():
+            store.append([options[option], option])
         self.search_combo.set_active(0)
         self.search_combo_align.add(self.search_combo)
         self.search_combo_tb.add(self.search_combo_align)
@@ -270,7 +283,7 @@ class TopButtons(gtk.HBox):
         if data:
             model = self.search_combo.get_model()
             active = self.search_combo.get_active()
-            option = model[active][0]
+            option = model[active][1]
     
             results = self.uicore.search(data, self.options_dict[option])
     

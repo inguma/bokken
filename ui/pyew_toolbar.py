@@ -173,11 +173,24 @@ class TopButtons(gtk.HBox):
         # Search components
         self.search_combo_tb = gtk.ToolItem()
         self.search_combo_align = gtk.Alignment(yalign=0.5)
-        self.search_combo = gtk.combo_box_new_text()
+        store = gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.search_combo = gtk.ComboBox(store)
+        rendererText = gtk.CellRendererText()
+        rendererPix = gtk.CellRendererPixbuf()
+        self.search_combo.pack_start(rendererPix, False)
+        self.search_combo.pack_start(rendererText, True)
+        self.search_combo.add_attribute(rendererPix, 'pixbuf', 0)
+        self.search_combo.add_attribute(rendererText, 'text', 1)
 
-        options = ['Hexadecimal', 'String', 'String no case', 'Regexp', 'Unicode', 'Unicode no case']
-        for option in options:
-            self.search_combo.append_text(option)
+        options = {
+            'String':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_16.png'),
+            'String no case':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_no_case_16.png'),
+            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_hexadecimal_16.png'),
+            'Regexp':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_regexp_16.png')
+        }
+
+        for option in options.keys():
+            store.append([options[option], option])
         self.search_combo.set_active(0)
         self.search_combo_align.add(self.search_combo)
         self.search_combo_tb.add(self.search_combo_align)
@@ -204,24 +217,30 @@ class TopButtons(gtk.HBox):
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, 17)
 
+        # Cheatsheet button
+        self.cheatsheet_tb = gtk.ToolButton(gtk.STOCK_JUSTIFY_FILL)
+        self.cheatsheet_tb.set_tooltip_text('Show assembler reference sheet')
+        self.cheatsheet_tb.connect("clicked", self.create_cheatsheet_dialog)
+        self.main_tb.insert(self.cheatsheet_tb, 18)
+
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 18)
+        self.main_tb.insert(self.sep, 19)
 
         # Exit button
         self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
         self.exit_tb.set_label('Quit')
         self.exit_tb.connect("clicked", self.main.quit)
         self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 19)
+        self.main_tb.insert(self.exit_tb, 20)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 20)
+        self.main_tb.insert(self.throbber_tb, 21)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
@@ -310,7 +329,7 @@ class TopButtons(gtk.HBox):
         if data:
             model = self.search_combo.get_model()
             active = self.search_combo.get_active()
-            option = model[active][0]
+            option = model[active][1]
     
             results = self.uicore.dosearch(data, self.options_dict[option])
     
@@ -435,6 +454,13 @@ class TopButtons(gtk.HBox):
 
         import search_dialog
         self.search_dialog = search_dialog.SearchDialog()
+
+        return False
+
+    def create_cheatsheet_dialog(self, widget):
+
+        import cheatsheet_dialog
+        self.cheatsheet_dialog = cheatsheet_dialog.CheatsheetDialog()
 
         return False
 
