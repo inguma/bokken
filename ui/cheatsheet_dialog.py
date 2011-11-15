@@ -36,8 +36,8 @@ class CheatsheetDialog(gtk.Dialog):
 
     operand_types = [
             ("Immediate", "A numeric operand, hard coded."),
-            ("Register", "A numeric operand, hard coded."),
-            ("Memory", "A general purpose register."),
+            ("Register", "A general purpose register."),
+            ("Memory", "Memory address w/ brackets [ ]."),
         ]
 
     terms = [
@@ -283,7 +283,7 @@ class CheatsheetDialog(gtk.Dialog):
 
         renderer_text = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Description", renderer_text, text=1)
-        renderer_text.set_property("wrap_width", 700)
+        renderer_text.set_property("wrap_width", 390)
         renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
 
         self.treeview.append_column(column)
@@ -321,7 +321,7 @@ class CheatsheetDialog(gtk.Dialog):
 
         renderer_text = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Description", renderer_text, text=1)
-        renderer_text.set_property("wrap_width", 700)
+        renderer_text.set_property("wrap_width", 300)
         renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
 
         treeview.append_column(column)
