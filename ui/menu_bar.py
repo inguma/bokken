@@ -121,6 +121,17 @@ class MenuBar(gtk.MenuBar):
         helpm = gtk.MenuItem("_Help")
         helpm.set_submenu(helpmenu)
        
+        cheati = gtk.ImageMenuItem(gtk.STOCK_JUSTIFY_FILL, agr)
+        cheati.get_children()[0].set_label('Cheat sheet')
+        cheati.connect("activate", self.create_cheatsheet_dialog)
+        key, mod = gtk.accelerator_parse("F1")
+        cheati.add_accelerator("activate", agr, key,
+            mod, gtk.ACCEL_VISIBLE)
+        helpmenu.append(cheati)
+
+        sep = gtk.SeparatorMenuItem()
+        helpmenu.append(sep)
+
         helpi = gtk.ImageMenuItem(gtk.STOCK_HELP, agr)
         helpi.connect("activate", self.show_wiki)
         key, mod = gtk.accelerator_parse("<Control>H")
@@ -200,6 +211,13 @@ class MenuBar(gtk.MenuBar):
         # Strip 'file://' from the beginning of the uri
         file_to_open = uri[7:]
         self.new_file(None, file_to_open)
+
+    def create_cheatsheet_dialog(self, widget):
+
+        import cheatsheet_dialog
+        self.cheatsheet_dialog = cheatsheet_dialog.CheatsheetDialog()
+
+        return False
 
     def create_about_dialog(self, widget):
         import ui.about as about
