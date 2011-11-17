@@ -26,6 +26,8 @@ import ui.sections_bar as sections_bar
 import ui.comments_dialog as comments_dialog
 from ui.searchable import Searchable
 
+from ui.opcodes import *
+
 class RightTextView(gtk.VBox, Searchable):
     '''Right TextView elements'''
 
@@ -167,18 +169,46 @@ class RightTextView(gtk.VBox, Searchable):
         else:
             eoffset = temp_offset
 
+        # Get line word offset
+        temp_offset = soffset
+        while not text[temp_offset:temp_offset+1] == '\n':
+            temp_offset += 1
+        else:
+            line_offset = temp_offset
+
         if self.uicore.backend == 'radare':
            addr = text[soffset:eoffset]
         else:
            addr = text[offset:eoffset]
 
+        for opcode in instructions.keys():
+            if opcode.split(' ')[0].lower() in text[offset:line_offset] or opcode.split(' ')[0] in text[offset:line_offset]:
+                # Add a menu entry with opcode information
+                opmenu = gtk.Menu()
+
+                opcodem = gtk.ImageMenuItem((gtk.STOCK_INFO))
+                opcodem.set_submenu(opmenu)
+                opcodem.get_children()[0].set_markup('Opcode info: <b>' + opcode.split(' ')[0].lower() + '</b>')
+
+                opcode1 = gtk.ImageMenuItem(gtk.STOCK_EXECUTE)
+                opcode_text = opcode.replace('<', '"').replace('>', '"').lower()
+                opcode1.get_children()[0].set_markup('<b>' + opcode_text + '</b>')
+
+                opcode2 = gtk.MenuItem("")
+                opcode2.get_children()[0].set_markup(instructions[opcode].replace('<', '"').replace('>', '"'))
+
+                opmenu.append(opcode1)
+                opmenu.append(gtk.SeparatorMenuItem())
+                opmenu.append(opcode2)
+                menu.prepend(opcodem)
+
         # Just show the comment menu if the line has offset/va
         if addr[0:2] == '0x':
-            menu.append(gtk.SeparatorMenuItem())
             opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
             opc.get_children()[0].set_label('Add comment')
             menu.prepend(opc)
             opc.connect("activate", self._call_comments_dialog, iter, addr)
+
         menu.show_all()
 
     def _call_comments_dialog(self, widget, iter, offset):
