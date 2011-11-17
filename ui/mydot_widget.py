@@ -43,10 +43,10 @@ class MyDotWidget(xdot.DotWidget):
 #                addr = self.uicore.core.num.get(addr)
 ##                fcn = self.uicore.core.anal.get_fcn_at(addr)
 #
-##                for a in fcn.refs:
-##                    print dir(a)
-##                for a in fcn.xrefs:
-##                    print dir(a)
+##                for ref in fcn.get_refs():
+##                    print ref.addr
+##                for xref in fcn.get_xrefs():
+##                    print xref.addr
 #
 ##            jump = self.get_jump(x, y)
 ##            if jump is not None and url is not None:

@@ -124,13 +124,16 @@ class CheatsheetDialog(gtk.Dialog):
         ]
 
     def __init__(self, title='Reference Sheet for x86 Assembler'):
-        super(CheatsheetDialog,self).__init__(title, None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        super(CheatsheetDialog,self).__init__(title, None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_ABOUT, gtk.RESPONSE_ACCEPT, gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
         import pango
 
         # The Cancel button.
         self.butt_cancel = self.action_area.get_children()[0]
         self.butt_cancel.connect("clicked", lambda x: self.destroy())
+
+        self.butt_about = self.action_area.get_children()[1]
+        self.butt_about.connect("clicked", self._show_about)
 
         self.vbox.set_spacing(3)
 
@@ -249,6 +252,7 @@ class CheatsheetDialog(gtk.Dialog):
         lang_vbox.pack_start(directives_vbox, False, False, 0)
         lang_vbox.pack_start(operands_vbox, False, False, 0)
         self.hbox.add(lang_vbox)
+        self.hbox.pack_start(gtk.VSeparator(), False, False, 0)
         self.hbox.add(vbox_terminology)
 
         # Hbox for instructions and registers
@@ -262,6 +266,7 @@ class CheatsheetDialog(gtk.Dialog):
         stack_button = gtk.Button()
         stack_button.set_tooltip_text("Stack diagram")
         stack_button.set_image(info_icon)
+        stack_button.set_label('The stack')
         stack_button.connect('clicked', self.popup_stack)
         instructions_hbox.pack_start(instructions_icon, False, False, 2)
         instructions_label = self.create_h1_label('Instructions')
@@ -301,6 +306,7 @@ class CheatsheetDialog(gtk.Dialog):
         registers_button = gtk.Button()
         registers_button.set_tooltip_text("16 and 8 bits registers")
         registers_button.set_image(info_icon)
+        registers_button.set_label('16/8 Bits')
         registers_button.connect('clicked', self.popup_registers)
         registers_hbox.pack_start(registers_icon, False, False, 2)
         registers_label = self.create_h1_label('Registers')
@@ -317,6 +323,9 @@ class CheatsheetDialog(gtk.Dialog):
         renderer_text = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Register", renderer_text, text=0)
         column.set_sort_column_id(0)
+        column.set_attributes(renderer_text, markup=0)
+        column.add_attribute(renderer_text, "markup", 1)
+        renderer_text.set_property("markup", 1)
         treeview.append_column(column)
 
         renderer_text = gtk.CellRendererText()
@@ -332,6 +341,7 @@ class CheatsheetDialog(gtk.Dialog):
         registers_vbox.pack_start(sw, True, True, 1)
 
         self.bottom_hbox.pack_start(instructions_vbox, True, True, 1)
+        self.bottom_hbox.pack_start(gtk.VSeparator(), False, False, 1)
         self.bottom_hbox.pack_start(registers_vbox, False, False, 1)
 
         # Last packaging
@@ -346,7 +356,7 @@ class CheatsheetDialog(gtk.Dialog):
 
         # FIXME: Ugly to use eval and a secondary list...
         for group in groups:
-            header = group.replace('_', ' ').capitalize()
+            header = '<span background=\"#5a58ff\" foreground=\"white\"><b>  ' + group.replace('_', ' ').capitalize() + '\t</b></span>'
             it = store.append(None, [header, ''])
             for row in eval('self.' + group):
                 store.append(it, [row[0], row[1]])
@@ -412,3 +422,12 @@ class CheatsheetDialog(gtk.Dialog):
         dialog.show_all()
         dialog.run()
         dialog.destroy()
+
+    def _show_about(self, widget):
+        md = gtk.MessageDialog(self, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, 
+            gtk.BUTTONS_CLOSE, "")
+        md.set_markup('The data for this cheat sheet\nhas been borrowed from:\n\n<a href="http://www.rnicrosoft.net">http://www.rnicrosoft.net</a>\n\nThe original cheat sheet can be\ndownloaded from <a href="http://www.rnicrosoft.net/docs/X86_Win32_Reverse_Engineering_Cheat_Sheet.pdf">here</a>')
+        md.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        md.run()
+        md.destroy()
