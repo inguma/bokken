@@ -172,6 +172,10 @@ class MainApp:
         if self.uicore.core.format in ['Hexdump', 'Plain Text', 'OLE2']:
             self.tviews.left_scrolled_window.hide()
 
+        if not self.uicore.do_anal:
+            print "Disable bindiff"
+            self.topbuttons.diff_tb.set_sensitive(False)
+
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
         self.uicore.core.progress_bar = None
@@ -365,6 +369,11 @@ class MainApp:
         self.enable_all()
         self.sbar.show_all()
         self.tviews.right_notebook.show_all()
+
+        if not self.uicore.do_anal:
+            print "Disable bindiff"
+            self.topbuttons.diff_tb.set_sensitive(False)
+
         self.window.show()
         dialog.destroy()
 
