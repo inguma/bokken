@@ -32,8 +32,8 @@ class AboutDialog():
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
         about.set_comments("A GUI for pyew and radare2!")
         about.set_website("http://bokken.inguma.eu")
-        about.set_authors(["Hugo Teso <hteso@inguma.eu>"])
-        about.set_artists(["Marcos Gomez <renx67@gmail.com>"])
+        about.set_authors(["Hugo Teso <hteso@inguma.eu>", "David Martinez <ender@inguma.eu>"])
+        about.set_artists(["Ana Muniesa <ana.muniesa@gmail.com>", "Huahe <juanje@gmail.com> twitter: @huahe", "Marcos Gomez <renx67@gmail.com>"])
         about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken.svg'))
 
         return about
