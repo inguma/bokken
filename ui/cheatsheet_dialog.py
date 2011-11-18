@@ -141,6 +141,7 @@ class CheatsheetDialog(gtk.Dialog):
         self.resize(600, 700)
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        self.pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'block.png')
 
         # Font
         font_desc = pango.FontDescription("FreeSans 9")
@@ -320,16 +321,21 @@ class CheatsheetDialog(gtk.Dialog):
 
         treeview = self.populate_tree(self.all_registers)
 
+        rendererPix = gtk.CellRendererPixbuf()
         renderer_text = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Register", renderer_text, text=0)
+        column = gtk.TreeViewColumn("Register")
+        column.pack_start(rendererPix, False)
+        column.pack_start(renderer_text, True)
+        column.set_attributes(renderer_text, text=1)
+        column.set_attributes(rendererPix, pixbuf=0)
         column.set_sort_column_id(0)
-        column.set_attributes(renderer_text, markup=0)
-        column.add_attribute(renderer_text, "markup", 1)
-        renderer_text.set_property("markup", 1)
+#        column.set_attributes(renderer_text, markup=0)
+#        column.add_attribute(renderer_text, "markup", 1)
+#        renderer_text.set_property("markup", 1)
         treeview.append_column(column)
 
         renderer_text = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Description", renderer_text, text=1)
+        column = gtk.TreeViewColumn("Description", renderer_text, text=2)
         renderer_text.set_property("wrap_width", 300)
         renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
 
@@ -352,18 +358,20 @@ class CheatsheetDialog(gtk.Dialog):
     def populate_tree(self, groups):
         """ Accepts an array of n rows made of 2 elements each, and returns a TreeView."""
 
-        store = gtk.TreeStore(str, str)
+        store = gtk.TreeStore(gtk.gdk.Pixbuf, str, str)
 
-        # FIXME: Ugly to use eval and a secondary list...
         for group in groups:
-            header = '<span background=\"#5a58ff\" foreground=\"white\"><b>  ' + group.replace('_', ' ').capitalize() + '\t</b></span>'
-            it = store.append(None, [header, ''])
+            #header = '<span background=\"#5a58ff\" foreground=\"white\"><b> ' + group.replace('_', ' ').capitalize() + '\t</b></span>'
+            header = group.replace('_', ' ').capitalize()
+            it = store.append(None, [self.pix, header, ''])
             for row in eval('self.' + group):
-                store.append(it, [row[0], row[1]])
+                store.append(it, [None, row[0], row[1]])
 
         tv = gtk.TreeView(store)
-        tv.set_rules_hint(True)
+        #tv.set_rules_hint(True)
+        #tv.set_enable_tree_lines(True)
         tv.set_show_expanders(False)
+        tv.set_level_indentation(10)
         tv.expand_all()
 
         return tv
