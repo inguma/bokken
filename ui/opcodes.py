@@ -35,7 +35,7 @@ instructions = {
     "JNZ <loc>":"Jump if Not Zero (ZF=0) to <loc>.",
     "JZ <loc>":"Jump if Zero (ZF=1) to <loc>.",
     "LEA <dst>, <src>":"Load Effective Address.\nGets a pointer to the memory expression <src> and stores it in <dst>.",
-    "MOV <dst>, <src>":"Move data from <src> to <dst>.\n<src> may be an immediate value, register, or a memory address.\nDest may be either a memory address or a register.\nBoth <src> and <dst> may not be memory addresses.",
+    "MOV <dst>, <src>":"Move data from <src> to <dst>.\n<src> may be an immediate value, register, or a memory address.\n<dst> may be either a memory address or a register.\nBoth <src> and <dst> may not be memory addresses.",
     "MUL <src>":"Multiply the EDX:EAX registers (64‐bit combo) by <src>.\n<src> may be a register or memory.",
     "POP <dst>":"Take a 32‐bit value from the stack and store it in <dst>.\nESP is incremented by 4.\n<dst> may be a register, including segment registers, or memory.",
     "PUSH <value>":"Adds a 32‐bit value to the top of the stack.\nDecrements ESP by 4.\n<value> may be a register, segment register, memory or immediate value.",

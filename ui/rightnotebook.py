@@ -52,10 +52,16 @@ class RightNotebook(gtk.Notebook):
         #################################################
         # Code view TAB
         self.append_page(self.scrolled_window)
-        tab = self.create_tab('Code', self.scrolled_window, 'SORT_DESCENDING')
+        if self.uicore.backend == 'radare':
+            text = 'Loading dasm...'
+        else:
+            text = 'Code'
+        self.code_tab = self.create_tab(text, self.scrolled_window, 'SORT_DESCENDING')
 
         self.set_tab_label_packing(self.scrolled_window, False, False, gtk.PACK_START)
-        self.set_tab_label(self.scrolled_window, tab)
+        self.set_tab_label(self.scrolled_window, self.code_tab)
+        if self.uicore.backend == 'radare':
+            self.code_tab.get_children()[0].set_sensitive(False)
 
         #################################################
         # Graph map TAB
@@ -206,7 +212,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
+        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
             close_button.hide()
 
         return tab_box
@@ -223,3 +229,7 @@ class RightNotebook(gtk.Notebook):
     def remove_tabs(self):
         for tab in range(self.get_n_pages()):
             self.remove_page(-1)
+
+    def finish_dasm(self):
+        self.code_tab.get_children()[0].set_sensitive(True)
+        self.code_tab.get_children()[1].set_text('Code')

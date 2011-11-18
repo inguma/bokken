@@ -171,10 +171,10 @@ class MainApp:
         # Hide left tree for plain or unsupported formats
         if self.uicore.core.format in ['Hexdump', 'Plain Text', 'OLE2']:
             self.tviews.left_scrolled_window.hide()
-
-        if not self.uicore.do_anal:
-            print "Disable bindiff"
-            self.topbuttons.diff_tb.set_sensitive(False)
+        if self.uicore.backend == 'radare':
+            if not self.uicore.do_anal:
+                print "Disable bindiff"
+                self.topbuttons.diff_tb.set_sensitive(False)
 
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
@@ -294,6 +294,7 @@ class MainApp:
                 self.tviews.update_graph(self, link_name)
                 if link_name:
                     self.tviews.search(self, link_name)
+            self.tviews.right_notebook.finish_dasm()
         elif 'pyew' in self.uicore.backend:
             if self.uicore.core.format in ['PE', 'ELF']:
                 if self.uicore.core.ep:
