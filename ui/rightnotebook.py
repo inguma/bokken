@@ -41,7 +41,7 @@ class RightNotebook(gtk.Notebook):
         self.uicore = uicore
         self.main = main
 
-        self.xdot_box = graph.MyDotWidget(self.uicore)
+        self.xdot_box = graph.MyDotWidget(self.uicore, self.main)
         self.xdot_widget = self.xdot_box.dot_widget
 
         self.set_scrollable(True)

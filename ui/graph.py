@@ -25,16 +25,17 @@ import graph_bar
 class MyDotWidget(gtk.HBox):
     '''Working'''
 
-    def __init__(self, core):
+    def __init__(self, core, main):
 
         self.uicore = core
+        self.main = main
         self.last_fcn = ''
 
         #dotcode = self.uicore.get_callgraph()
         gtk.HBox.__init__(self, False, 1)
 
         #self.dot_widget = DotWidget()
-        self.dot_widget = mydot_widget.MyDotWidget(self.uicore)
+        self.dot_widget = mydot_widget.MyDotWidget(self.uicore, self.main)
         self.create_tree()
         self.pack_start(self.dot_widget, True, True, 0)
         self.bar = graph_bar.GraphBar(self.dot_widget, self, self.uicore)

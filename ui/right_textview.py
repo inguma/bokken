@@ -24,14 +24,15 @@ import gtksourceview2
 
 import ui.sections_bar as sections_bar
 import ui.comments_dialog as comments_dialog
-from ui.searchable import Searchable
+import ui.xrefs_menu as xrefs_menu
 
+from ui.searchable import Searchable
 from ui.opcodes import *
 
 class RightTextView(gtk.VBox, Searchable):
     '''Right TextView elements'''
 
-    def __init__(self, core, textviews):
+    def __init__(self, core, textviews, main):
         super(RightTextView,self).__init__(False, 1)
 
         #################################################################
@@ -39,6 +40,7 @@ class RightTextView(gtk.VBox, Searchable):
         #################################################################
 
         self.uicore = core
+        self.main = main
         self.textviews = textviews
 
         self.seek_index = 0
@@ -204,10 +206,36 @@ class RightTextView(gtk.VBox, Searchable):
 
         # Just show the comment menu if the line has offset/va
         if addr[0:2] == '0x':
+            # Add comment menu
             opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
             opc.get_children()[0].set_label('Add comment')
             menu.prepend(opc)
             opc.connect("activate", self._call_comments_dialog, iter, addr)
+
+            if self.uicore.backend == 'radare':
+                # Add Xrefs menu
+                refs = []
+                xrefs = []
+    
+                xmenu = xrefs_menu.XrefsMenu(self.uicore, self.main)
+                addr = self.uicore.core.num.get(addr)
+                fcn = self.uicore.core.anal.get_fcn_at(addr)
+    
+                for ref in fcn.get_refs():
+                    if not "0x%08x" % ref.addr in refs:
+                        refs.append("0x%08x" % ref.addr)
+                for xref in fcn.get_xrefs():
+                    if not "0x%08x" % xref.addr in xrefs:
+                        xrefs.append("0x%08x" % xref.addr)
+    
+                refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
+                sep = gtk.SeparatorMenuItem()
+                menu.prepend(sep)
+                if hasattr(xmenu, 'xfrommenu'):
+                    menu.prepend(xmenu.xfrommenu)
+                if hasattr(xmenu, 'xtomenu'):
+                    menu.prepend(xmenu.xtomenu)
+                menu.prepend(xmenu.fcnm)
 
         menu.show_all()
 
