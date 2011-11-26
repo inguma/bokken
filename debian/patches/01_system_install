@@ -1,0 +1,14 @@
+Description: Make Bokken available for wide system use.
+ This allows the repo to be run locally but makes Bokken only able to run
+ inside a normal system directory.
+Author: David Martínez Moreno <ender@debian.org>
+Forwarded: not-needed
+Last-Update: <2011-11-26>
+
+--- bokken-1.5.orig/bokken
++++ bokken-1.5/bokken
+@@ -1,3 +1,3 @@
+ #!/bin/sh
+ 
+-`dirname $0`/bokken.py $@
++/usr/share/pyshared/bokken/bokken.py $@

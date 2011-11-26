@@ -1,0 +1,33 @@
+Source: bokken
+Section: python
+Priority: extra
+Maintainer: David Martínez Moreno <ender@debian.org>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+Homepage: http://bokken.inguma.eu
+Vcs-Hg: http://inguma.eu/repos/bokken
+Vcs-Browser: http://inguma.eu/projects/bokken/repository
+
+Package: bokken
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-gtk2, python-gtksourceview2
+Recommends: python-radare2, pyew
+Description: reverse code engineering GUI for pyew and radare
+ Bokken is a GUI for pyew, the malware analysis tool, and radare2, the reverse
+ engineering framework.  Bokken is also the RCE tool for the Inguma project.
+ .
+ Actually Bokken supports the following formats:
+  - PE
+  - ELF
+  - Java (.class)
+  - Web
+  - PDF
+ .
+ Most of this functionality comes from either pyew or radare2, so it offers
+ almost all the features that pyew has and some of radare's.  It's intended to
+ be used as a basic disassembler, mainly, to analyze malware and
+ vulnerabilities.
+ .
+ Currently Bokken is neither an hexadecimal editor nor a full featured
+ disassembler YET, so it should not be used for deep code analysis or to try to
+ modify files with it.
