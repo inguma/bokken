@@ -1,5 +1,5 @@
 bokken (1.5-1) unstable; urgency=low
 
-  * Initial release (closes: #666666).
+  * Initial release (closes: #650076).
 
- -- David Martínez Moreno <ender@debian.org>  Sat, 26 Nov 2011 01:53:40 -0800
+ -- David Martínez Moreno <ender@debian.org>  Sat, 26 Nov 2011 03:11:56 -0800
