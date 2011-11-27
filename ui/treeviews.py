@@ -337,7 +337,7 @@ class TreeViews(gtk.TreeView):
             gm = gtk.Menu()
 
             # And the items
-            e = gtk.MenuItem("Search")
+            e = gtk.MenuItem("Go to")
             if 'radare' in self.uicore.backend:
                 e.connect('activate', self.search_and_graph, link_name)
             else:
