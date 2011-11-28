@@ -143,6 +143,16 @@ class Core():
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
+        if not self.info:
+            list = self.core.cmd_str('i').split('\n')
+            for line in list:
+                if line:
+                    line = line.split('\t')
+                    if line[0] == 'size':
+                        self.size = line[1]
+                    elif line[0] == 'uri':
+                        self.info_file = line[1]
+
         self.baddr = self.bin.get_baddr()
         self.size = hex(self.core.file.size)
         self.core.cmd0('e search.flags=false')
@@ -384,7 +394,7 @@ class Core():
         if 'Program' in self.core.format:
             self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine, 'OS':self.info.os, 'size':self.size}
         else:
-            self.fileinfo = {'name':self.info.file, 'size':self.size}
+            self.fileinfo = {'name':self.info_file, 'size':self.size}
 
         return self.fileinfo
 
