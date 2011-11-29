@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 import os, sys
+import platform
 import gobject
 
 # Add plugins directory to the path
@@ -173,7 +174,6 @@ class MainApp:
             self.tviews.left_scrolled_window.hide()
         if self.uicore.backend == 'radare':
             if not self.uicore.do_anal:
-                print "Disable bindiff"
                 self.topbuttons.diff_tb.set_sensitive(False)
 
         dialog.destroy()
@@ -212,20 +212,31 @@ class MainApp:
         else:
             self.tviews.update_righttext('Hexdump')
 
-        if 'radare' in self.uicore.backend:
+        if 'radare' in self.uicore.backend and platform.system() != 'Windows':
             gobject.timeout_add(250, self.merge_dasm_rightextview)
         else:
             if self.uicore.text_dasm:
                 self.tviews.update_dasm(self.uicore.text_dasm)
             elif self.uicore.fulldasm:
                 self.tviews.update_dasm(self.uicore.fulldasm)
-            if self.uicore.core.format in ['PE', 'ELF']:
-                if self.uicore.core.ep:
-                    link_name = "0x%08x" % self.uicore.core.ep
-                    if link_name:
-                        if not self.tviews.search(self, link_name):
-                            link_name = "0x%08x" % self.uicore.text_address
-                            self.tviews.search(self, link_name)
+            if 'radare' in self.uicore.backend:
+                self.uicore.restore_va()
+                if self.uicore.core.format == 'Program':
+                    link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+                    if not link_name:
+                        link_name = "0x%08x" % self.uicore.core.num.get('section..text')
+                    if not link_name:
+                        link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
+                    self.tviews.update_graph(self, link_name)
+                    self.tviews.search(self, link_name)
+            elif 'pyew' in self.uicore.backend:
+                if self.uicore.core.format in ['PE', 'ELF']:
+                    if self.uicore.core.ep:
+                        link_name = "0x%08x" % self.uicore.core.ep
+                        if link_name:
+                            if not self.tviews.search(self, link_name):
+                                link_name = "0x%08x" % self.uicore.text_address
+                                self.tviews.search(self, link_name)
 
             self.topbuttons.throbber.running('')
 
@@ -254,7 +265,7 @@ class MainApp:
 
         # Enable GUI
         self.enable_all()
-        if self.uicore.backend == 'radare':
+        if self.uicore.backend == 'radare' and platform.system() != 'Windows':
             if self.uicore.core.format not in ["PE", "ELF", "Program"]:
                 self.topbuttons.throbber.running('')
             else:
@@ -289,11 +300,13 @@ class MainApp:
             self.tviews.update_dasm(self.uicore.fulldasm)
         if 'radare' in self.uicore.backend:
             self.uicore.restore_va()
-            if self.uicore.core.format == 'Program':
-                link_name = "0x%08x" % self.uicore.core.num.get('entry0')
-                self.tviews.update_graph(self, link_name)
-                if link_name:
-                    self.tviews.search(self, link_name)
+            link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+            if not link_name:
+                link_name = "0x%08x" % self.uicore.core.num.get('section..text')
+            if not link_name:
+                link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
+            self.tviews.update_graph(self, link_name)
+            self.tviews.search(self, link_name)
             self.tviews.right_notebook.finish_dasm()
         elif 'pyew' in self.uicore.backend:
             if self.uicore.core.format in ['PE', 'ELF']:
@@ -372,7 +385,6 @@ class MainApp:
         self.tviews.right_notebook.show_all()
 
         if not self.uicore.do_anal:
-            print "Disable bindiff"
             self.topbuttons.diff_tb.set_sensitive(False)
 
         self.window.show()

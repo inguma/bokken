@@ -19,6 +19,7 @@
 
 import os
 import gio
+import platform
 
 import gtk
 import gtksourceview2
@@ -179,7 +180,7 @@ class TextViews(gtk.HBox):
         if option in ['Disassembly', 'Hexdump', 'Program']:
             # We don't want dasm and graph for not analyzed programs or other files
             if option != 'Hexdump':
-                if self.uicore.backend == 'radare':
+                if self.uicore.backend == 'radare' and platform.system() != 'Windows':
                     from multiprocessing import Process, Queue, Event
                     # These functions are extremely expensive, so we fork a process for them.
                     if self.uicore.allsections:

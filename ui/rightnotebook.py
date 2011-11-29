@@ -16,6 +16,7 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+import platform
 
 import gtk
 
@@ -52,7 +53,7 @@ class RightNotebook(gtk.Notebook):
         #################################################
         # Code view TAB
         self.append_page(self.scrolled_window)
-        if self.uicore.backend == 'radare':
+        if self.uicore.backend == 'radare' and platform.system() != 'Windows':
             text = 'Loading dasm...'
         else:
             text = 'Code'

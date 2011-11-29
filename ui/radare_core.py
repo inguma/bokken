@@ -378,7 +378,16 @@ class Core():
             cmd = 'agc '
 
         if not addr:
-            self.core.cmd0(cmd + 'section..text > ' + file)
+            sct = False
+            for section in self.execsections:
+                if '.text' in section:
+                    self.core.cmd0(cmd + 'section..text > ' + file)
+                    sct = False
+                    break
+                else:
+                    sct = True
+            if sct:
+                self.core.cmd0(cmd + 'section' + self.execsections[0][0] +' > ' + file)
             #self.core.cmd_str('aga > ' + file)
         else:
             self.core.cmd0(cmd + addr + ' > ' + file)
