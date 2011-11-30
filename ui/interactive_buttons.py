@@ -42,18 +42,26 @@ class InteractiveButtons(gtk.HBox):
         self.int_tb.set_style(gtk.TOOLBAR_ICONS)
 
         # Previous buffer button
+        self.prev_ti = gtk.ToolItem()
+        self.prev_align = gtk.Alignment(yalign=0.5)
+        self.prev_ti.add(self.prev_align)
         self.prev = gtk.ToolButton(gtk.STOCK_GO_UP)
         self.prev.set_tooltip_text('Previous buffer')
         self.prev.connect("clicked", self.move, 'b')
         self.prev.label = 'Previous'
-        self.int_tb.insert(self.prev, 0)
+        self.prev_align.add(self.prev)
+        self.int_tb.insert(self.prev_ti, 0)
 
         # Next buffer button
+        self.next_ti = gtk.ToolItem()
+        self.next_align = gtk.Alignment(yalign=0.5)
+        self.next_ti.add(self.next_align)
         self.next = gtk.ToolButton(gtk.STOCK_GO_DOWN)
         self.next.set_tooltip_text('Next buffer')
         self.next.connect("clicked", self.move, 'f')
         self.next.label = 'Next'
-        self.int_tb.insert(self.next, 1)
+        self.next_align.add(self.next)
+        self.int_tb.insert(self.next_ti, 1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
@@ -99,16 +107,24 @@ class InteractiveButtons(gtk.HBox):
 
         # Radio buttons (output format)
 
+        self.hex_ti = gtk.ToolItem()
+        self.hex_align = gtk.Alignment(yalign=0.5)
+        self.hex_ti.add(self.hex_align)
         self.hex_button = gtk.RadioToolButton(None, None)
         self.hex_button.set_label("HEX")
         self.hex_button.connect("toggled", self.callback, "Hexadecimal")
         self.hex_button.set_active(True)
-        self.int_tb.insert(self.hex_button, 9)
+        self.hex_align.add(self.hex_button)
+        self.int_tb.insert(self.hex_ti, 9)
 
+        self.dasm_ti = gtk.ToolItem()
+        self.dasm_align = gtk.Alignment(yalign=0.5)
+        self.dasm_ti.add(self.dasm_align)
         self.dasm_button = gtk.RadioToolButton(self.hex_button, None)
         self.dasm_button.set_label("ASM")
         self.dasm_button.connect("toggled", self.callback, "Disassembly")
-        self.int_tb.insert(self.dasm_button, 10)
+        self.dasm_align.add(self.dasm_button)
+        self.int_tb.insert(self.dasm_ti, 10)
 
         if 'radare' in self.uicore.backend:
             # Separator
