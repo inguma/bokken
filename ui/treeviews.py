@@ -274,7 +274,7 @@ class TreeViews(gtk.TreeView):
 
     def popup_menu(self, tv, event):
         '''Shows a menu when you right click on a plugin.
-        
+
         @param tv: the treeview.
         @parameter event: The GTK event 
         '''
@@ -282,7 +282,8 @@ class TreeViews(gtk.TreeView):
         self.dograph = False
 
         # I do this to return fast (and to avoid leaking memory in 'e io.va' for now).
-        if (event.button != 3) and not (event.button ==1 and event.type == gtk.gdk._2BUTTON_PRESS):
+        #if (event.button != 3) and not (event.button ==1 and event.type == gtk.gdk._2BUTTON_PRESS):
+        if (event.button != 3) and (event.button !=1):
             return False
 
         # FIXME: We should do this on the uicore, possibly in every operation.
@@ -293,9 +294,9 @@ class TreeViews(gtk.TreeView):
                 self.uicore.core.cmd0('e io.va=1')
 
         if event.button == 3:
-            # It's a right click !
+            # It's a right click!
             _time = event.time
-            (path, column) = tv.get_cursor()
+            (path, column, x, y) = tv.get_path_at_pos(int(event.x), int(event.y))
             # Is it over a plugin name ?
             # Get the information about the click
             if path is not None and len(path) == 1:
@@ -351,11 +352,12 @@ class TreeViews(gtk.TreeView):
 
             gm.popup( None, None, None, event.button, _time)
 
-        elif event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
-            # It's a double click !
-            (path, column) = tv.get_cursor()
+        #elif event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
+        elif event.button == 1:
+            # It's a double-click!
+            (path, column, x, y) = tv.get_path_at_pos(int(event.x), int(event.y))
             # Is it over a plugin name ?
-            # Ge the information about the click
+            # Get the information about the click
             if path is not None and len(path) == 1:
                 link_name = self.store[path][1]
                 # Special for exports
