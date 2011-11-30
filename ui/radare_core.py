@@ -400,7 +400,8 @@ class Core():
     def get_file_info(self):
         #print "[*] Get file info"
         self.update_progress_bar("Getting additional file info", 0.9)
-        if 'Program' in self.core.format:
+
+        if self.info:
             self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine, 'OS':self.info.os, 'size':self.size}
         else:
             self.fileinfo = {'name':self.info_file, 'size':self.size}
