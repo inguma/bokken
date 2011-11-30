@@ -62,7 +62,7 @@ class XrefsMenu(gtk.MenuBar):
                 if fcn.name:
                     if not fcn.name in tmp_refs:
                         tmp_refs.append(fcn.name)
-                        xtoi = gtk.ImageMenuItem(fcn.name)
+                        xtoi = gtk.MenuItem(fcn.name, use_underline=False)
                         xtoi.connect("activate", self._get_fcn)
                         tomenu.append(xtoi)
             if pack:
@@ -83,7 +83,7 @@ class XrefsMenu(gtk.MenuBar):
                 if fcn.name:
                     if not fcn.name in tmp_xrefs:
                         tmp_xrefs.append(fcn.name)
-                        xfromi = gtk.ImageMenuItem(fcn.name)
+                        xfromi = gtk.MenuItem(fcn.name, use_underline=False)
                         xfromi.connect("activate", self._get_fcn)
                         frommenu.append(xfromi)
             if pack:
