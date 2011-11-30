@@ -1,0 +1,2 @@
+?package(bokken):needs="X11" section="Applications/System/Security"\
+  title="Bokken" command="/usr/bin/bokken" icon="/usr/share/pyshared/bokken/ui/data/bokken.svg"

@@ -1,0 +1,110 @@
+Format: http://dep.debian.net/deps/dep5
+Upstream-Name: bokken
+Source: http://inguma.eu/projects/bokken
+
+Files: *
+Copyright: 2009-2011 Hugo Teso Torío <hugo.teso@gmail.com>
+           2011 David Martínez Moreno <ender@debian.org>
+License: GPL-2.0+
+
+Files: ui/xdot.py
+Copyright: 2008 Jose Fonseca
+           2002 Cynthia Brewer <cbrewer@psu.edu>, Mark Harrower, and The Pennsylvania State University
+License: LGPL-3.0+
+License: Apache-ColorBrewer
+
+Files: ui/searchable.py
+Copyright: 2008 Andres Riancho <andres.riancho@gmail.com>
+License: GPL-2.0
+
+Files: debian/*
+Copyright: 2011 David Martínez Moreno <ender@debian.org>
+License: GPL-2.0+
+
+License: GPL-2.0+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+
+License: GPL-2.0
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, version 2 of the License.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+
+License: LGPL-3.0+
+ This program is free software: you can redistribute it and/or modify it
+ under the terms of the GNU Lesser General Public License as published
+ by the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License version 3 can be found in "/usr/share/common-licenses/LGPL-3".
+
+License: Apache-ColorBrewer
+ Apache-Style Software License for ColorBrewer software and ColorBrewer Color
+ Schemes, Version 1.1
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ .
+    1. Redistributions as source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.  
+ .
+    2. The end-user documentation included with the redistribution, if any,
+    must include the following acknowledgment:
+ .
+       This product includes color specifications and designs developed by
+       Cynthia Brewer (http://colorbrewer.org/).
+ .
+    Alternately, this acknowledgment may appear in the software itself, if and
+    wherever such third-party acknowledgments normally appear.  
+ .
+    3. The name "ColorBrewer" must not be used to endorse or promote products
+    derived from this software without prior written permission. For written
+    permission, please contact Cynthia Brewer at cbrewer@psu.edu.
+ .
+    4. Products derived from this software may not be called "ColorBrewer",
+    nor may "ColorBrewer" appear in their name, without prior written
+    permission of Cynthia Brewer. 
+ .
+ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL CYNTHIA
+ BREWER, MARK HARROWER, OR THE PENNSYLVANIA STATE UNIVERSITY BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
