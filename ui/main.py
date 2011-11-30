@@ -46,7 +46,7 @@ import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
 
 MAINTITLE = "Bokken, a GUI for pyew and radare2!"
-VERSION = "1.5-dev"
+VERSION = "1.5"
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'

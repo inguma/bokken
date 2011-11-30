@@ -58,7 +58,7 @@ class FileDialog(gtk.Dialog):
         self.logo.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
         # Logo label
         self.logo_text = gtk.Label()
-        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.5-dev</b></span>')
+        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.5</b></span>')
 
         # Common label
         self.label = gtk.Label('Select a target or enter the path manually.')
