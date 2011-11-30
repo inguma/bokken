@@ -345,7 +345,7 @@ class RightTextView(gtk.VBox, Searchable):
             # If is an address, search lines begining by this address
             if '[' in search_string:
                 search_string = search_string.strip('[').strip(']')
-            if '0x' in search_string:
+            if '0x' in search_string[0:2]:
                 integer = int(search_string, 16)
                 hex_addr = "0x%08x" % integer
                 self.search_string = hex_addr

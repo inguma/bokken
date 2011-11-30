@@ -378,11 +378,12 @@ class TextViews(gtk.HBox):
         self.left_buttons.create_buttons(options)
 
     def update_graph(self, widget, addr):
-        addr = addr.split(' ')[-1]
-        self.right_notebook.last_fcn = addr
-        self.right_notebook.xdot_box.last_fcn = addr
-        if self.right_notebook.get_current_page() == 1:
-            self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph(addr))
+        if addr:
+            addr = addr.split(' ')[-1]
+            self.right_notebook.last_fcn = addr
+            self.right_notebook.xdot_box.last_fcn = addr
+            if self.right_notebook.get_current_page() == 1:
+                self.right_notebook.xdot_box.set_dot(self.uicore.get_callgraph(addr))
 
     def search(self, widget, search_string, iter = None):
         # Clean string to search

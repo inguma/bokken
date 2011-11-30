@@ -181,13 +181,14 @@ class InteractiveButtons(gtk.HBox):
             self.buffer.set_text(data)
 
     def set_buffer_size(self, widget, icon_pos=None, event=None):
-        size = int(self.buffer_entry.get_text())
-        if self.uicore.backend == 'pyew':
-            self.uicore.core.bsize = size
-        elif self.uicore.backend == 'radare':
-            self.uicore.set_bsize(size)
-        self.buffer_entry.set_text('')
-        self.refresh()
+        if self.buffer_entry.get_text().isdigit():
+            size = int(self.buffer_entry.get_text())
+            if self.uicore.backend == 'pyew':
+                self.uicore.core.bsize = size
+            elif self.uicore.backend == 'radare':
+                self.uicore.set_bsize(size)
+            self.buffer_entry.set_text('')
+            self.refresh()
 
     def r2_exec(self, widget, icon_pos=None, event=None):
         command = self.exec_entry.get_text()

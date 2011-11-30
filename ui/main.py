@@ -229,6 +229,7 @@ class MainApp:
                         link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
                     self.tviews.update_graph(self, link_name)
                     self.tviews.search(self, link_name)
+                    self.tviews.right_notebook.finish_dasm()
             elif 'pyew' in self.uicore.backend:
                 if self.uicore.core.format in ['PE', 'ELF']:
                     if self.uicore.core.ep:
