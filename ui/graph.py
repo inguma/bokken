@@ -105,8 +105,9 @@ class MyDotWidget(gtk.HBox):
         self.tree.expand_all()
 
     def popup_menu(self, tree, event):
-        if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
-            (path, column) = tree.get_cursor()
+        if event.button == 1:
+            #(path, column) = tree.get_cursor()
+            (path, column, x, y) = tree.get_path_at_pos(int(event.x), int(event.y))
             # Is it over a plugin name ?
             # Ge the information about the click
             if path is not None and len(path) == 2 and self.nodes:
