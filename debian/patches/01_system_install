@@ -3,12 +3,16 @@ Description: Make Bokken available for wide system use.
  inside a normal system directory.
 Author: David Martínez Moreno <ender@debian.org>
 Forwarded: not-needed
-Last-Update: <2011-11-26>
+Last-Update: <2011-12-01>
 
 --- bokken-1.5.orig/bokken
 +++ bokken-1.5/bokken
-@@ -1,3 +1,3 @@
- #!/bin/sh
+@@ -2,7 +2,7 @@
  
--`dirname $0`/bokken.py $@
-+/usr/share/pyshared/bokken/bokken.py $@
+ PYTHON_EXECUTABLE="python"
+ PYTHON_VER=`python -V 2>&1 |sed 's,Python \(.\)\..*,\1,'`
+-BOKKEN_DIR=`dirname $0`
++BOKKEN_DIR="/usr/share/pyshared/bokken/"
+ 
+ if [ "$PYTHON_VER" -eq 3 ];then
+     # The python executable points to Python 3.

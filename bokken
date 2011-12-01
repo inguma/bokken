@@ -1,4 +1,14 @@
 #!/bin/sh
 
-export LD_LIBRARY_PATH=`dirname $0`/lib
-python2 `dirname $0`/bokken.py $@
+PYTHON_EXECUTABLE="python"
+PYTHON_VER=`python -V 2>&1 |sed 's,Python \(.\)\..*,\1,'`
+BOKKEN_DIR=`dirname $0`
+
+if [ "$PYTHON_VER" -eq 3 ];then
+    # The python executable points to Python 3.
+    PYTHON_EXECUTABLE="python2"
+fi
+
+# distorm in bokken+pyew mode needs this for now.
+export LD_LIBRARY_PATH=$BOKKEN_DIR/lib
+$PYTHON_EXECUTABLE $BOKKEN_DIR/bokken.py $@
