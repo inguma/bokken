@@ -121,6 +121,7 @@ class RightNotebook(gtk.Notebook):
             self.remove_page(1)
             if self.uicore.core.format != 'Plain Text':
                 self.remove_page(0)
+            self.set_current_page(0)
         elif self.uicore.core.format in ['Program', 'PE', 'ELF'] and self.uicore.backend == 'radare':
             # Set flowgraph view as default while disassembly finishes
             self.set_current_page(1)
