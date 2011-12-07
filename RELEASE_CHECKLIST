@@ -3,6 +3,8 @@ Things to do in order to release Bokken
 
 (All the following examples are made with 1.5, please change it accordingly)
 
+* Think that this will take quite some time.  Try to allocate the next two hours in your agenda.
+
 * Start writing a blog post in http://ingumadev.blogspot.com.  Our blog posts have to be always accompanied
   by screenshots of the new features.  Review the existing images in Redmine and either replace
   them or add more to the wiki.
@@ -26,7 +28,8 @@ hg push
 * Make a tar.gz and upload it with the Debian and Windows packages to Redmine as bokken-1.5.tar.gz (and so on) and
   under PROPER Version (1.5 in this case).
 
-* Publish the blog post once you have the download link.
+* Publish the blog post once you have the download links, with special attention to the published date (it will
+  reflect when you started to write, possibly days ago).
 
 * Based on the post and the Changelog, write a simple new News entry in http://bokken.eu/projects/bokken/news/new
   and refer to the blog article for further information.  See http://inguma.eu/news/6 as an example.
@@ -35,13 +38,19 @@ hg push
 
 * Send a message to bokken-devel with the post/Changelog to spread the news.
 
-* Go to http://freshmeat.net/projects/bokken:
-  - Click on "Edit this project" (http://freshmeat.net/projects/bokken/edit), and change the "Latest release"
+* Go to http://freecode.com/projects/bokken:
+  - Click on "Edit this project" (http://freecode.com/projects/bokken/edit), and change the "Latest release"
     link to the new one.
-  - Click on "Submit a release" (http://freshmeat.net/projects/bokken/releases/new) and fill out the text
+  - Click on "Submit a release" (http://freecode.com/projects/bokken/releases/new) and fill out the text
     field with short sentences about the release, using possibly the Changelog as base.  Note that Freshmeat
     does not respect new lines, so everything will appear as a long sentence.  If you are in doubt, preview
-    your changes or see other releases.
+    your changes or see other releases.  You have 600 characters (as of 07-12-2011) for the changelog.
+
+* Go to Redmine, to the Versions tab under Settings (http://inguma.eu/projects/bokken/settings/versions) and
+  open a new release (say 2.0) with a release date.
+
+* Go to the Roadmap settings (http://inguma.eu/projects/bokken/settings/versions), open a new release (say 2.0),
+  and add to new one the proposed schedule.
 
 * Go to the Roadmap page (http://inguma.eu/projects/bokken/roadmap) and move all the open bugs (if any!)
   in the already-released version to the next one.  You can do it in bulk from the UI.  Click on "X open bugs",
@@ -52,6 +61,6 @@ hg push
   already-released version.  Same as above, click "N closed", then select all and assign them to 1.5.
 
 * Go to Redmine, to the Versions tab under Settings (http://inguma.eu/projects/bokken/settings/versions) and
-  close the current version and add the new one with the proposed schedule.
+  close the current version.
 
 * Take a breath.
