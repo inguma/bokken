@@ -1,7 +1,17 @@
-Release 1.5 (xx-11-2011)
+Release 1.5 (07-12-2011)
 
  * Full support for Radare2.  Now the opening dialog allows to choose the
    engine.
- * Several new tabs: Strings representation, ...??????????
+ * Now you can open Java, mach0 and more ELF variants.  The rest of formats
+   supported by radare2 are untested.
+ * Dissasembly has been enhanced: more precise, w/full dump of sections,
+   symbols and more.
+ * Several new tabs: Flowgraph, File info, Binary diffing, URL elements.
+ * Enhanced support for web analysis.
+ * Awesome code navigation à la HTML.
+ * Crossed references and comments in code.
+ * Interactive hexdump.
+ * Advanced calculator.
+ * x86 RCE cheat sheet.
  * Lots and lots of enhancements in the UI, from the general layout to
    polished details, the interface has taken a lot of work.
