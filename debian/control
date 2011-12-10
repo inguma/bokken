@@ -11,7 +11,8 @@ Vcs-Browser: http://inguma.eu/projects/bokken/repository
 Package: bokken
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-gtk2, python-gtksourceview2
-Recommends: python-radare2, pyew
+Recommends: python-radare2 (>= 0.9), pyew
+Conflicts: python-radare2 (<< 0.9)
 Description: reverse code engineering GUI for pyew and radare
  Bokken is a GUI for pyew, the malware analysis tool, and radare2, the reverse
  engineering framework.  Bokken is also the RCE tool for the Inguma project.

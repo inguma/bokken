@@ -1,10 +1,10 @@
 Release 1.5 (07-12-2011)
 
- * Full support for Radare2.  Now the opening dialog allows to choose the
-   engine.
+ * Full support for Radare2.  Now the opening dialog allows one to choosei
+   the engine.
  * Now you can open Java, mach0 and more ELF variants.  The rest of formats
    supported by radare2 are untested.
- * Dissasembly has been enhanced: more precise, w/full dump of sections,
+ * Disassembly has been enhanced: more precise, w/full dump of sections,
    symbols and more.
  * Several new tabs: Flowgraph, File info, Binary diffing, URL elements.
  * Enhanced support for web analysis.

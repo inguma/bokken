@@ -1,5 +1,21 @@
 bokken (1.5-1) unstable; urgency=low
 
   * Initial release (closes: #650076).
+  * Main changes in this release are:
+    - Full support for Radare2.  Now the opening dialog allows one to choose
+      the engine.
+    - Now you can open Java, mach0 and more ELF variants.  The rest of formats
+      supported by radare2 are untested.
+    - Disassembly has been enhanced: more precise, w/full dump of sections,
+      symbols and more.
+    - Several new tabs: Flowgraph, File info, Binary diffing, URL elements.
+    - Enhanced support for web analysis.
+    - Awesome code navigation à la HTML.
+    - Crossed references and comments in code.
+    - Interactive hexdump.
+    - Advanced calculator.
+    - x86 RCE cheat sheet.
+    - Lots and lots of enhancements in the UI: from the general layout to
+      polished details, the interface has taken a lot of work.
 
- -- David Martínez Moreno <ender@debian.org>  Sat, 26 Nov 2011 03:11:56 -0800
+ -- David Martínez Moreno <ender@debian.org>  Sat, 10 Dec 2011 01:41:05 -0800
