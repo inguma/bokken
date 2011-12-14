@@ -2,3 +2,11 @@ syntax: glob
 *.pyc
 *.swp
 *.log-psyco
+
+# Debian rules
+debian/stamp-patched
+debian/files
+debian/bokken/
+debian/*debhelper*
+debian/*substvars
+.pc/
