@@ -2,8 +2,9 @@ bokken (1.5-3) unstable; urgency=high
 
   * debian/patches/02_tmp_symlink_vulnerability: Fixed symlink attack
     vulnerability in /tmp (closes: #651931).
+  * Adjusted order of patches to leave packaging-related ones at the end.
 
- -- David Martínez Moreno <ender@debian.org>  Wed, 14 Dec 2011 01:15:21 -0800
+ -- David Martínez Moreno <ender@debian.org>  Wed, 14 Dec 2011 01:23:05 -0800
 
 bokken (1.5-2) unstable; urgency=low
 
