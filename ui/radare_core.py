@@ -370,7 +370,7 @@ class Core():
         #if not self.dot:
         #print "[*] Get callgraph"
         self.update_progress_bar("Loading callgraph", 0.4)
-        file = tempfile.gettempdir() + os.sep + 'graph.dot'
+        file = tempfile.NamedTemporaryFile()
 
         if self.graph_layout == 'flow':
             cmd = 'ag '
@@ -381,20 +381,19 @@ class Core():
             sct = False
             for section in self.execsections:
                 if '.text' in section:
-                    self.core.cmd0(cmd + 'section..text > ' + file)
+                    self.core.cmd0(cmd + 'section..text > ' + file.name)
                     sct = False
                     break
                 else:
                     sct = True
             if sct:
-                self.core.cmd0(cmd + 'section' + self.execsections[0][0] +' > ' + file)
-            #self.core.cmd_str('aga > ' + file)
+                self.core.cmd0(cmd + 'section' + self.execsections[0][0] +' > ' + file.name)
+            #self.core.cmd_str('aga > ' + file.name)
         else:
-            self.core.cmd0(cmd + addr + ' > ' + file)
-        f = open(file, 'r')
+            self.core.cmd0(cmd + addr + ' > ' + file.name)
+        f = open(file.name, 'r')
         self.dot = f.read()
         f.close()
-        os.unlink(file)
         return self.dot
 
     def get_file_info(self):
