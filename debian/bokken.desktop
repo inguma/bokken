@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Bokken
+Comment=Reverse engineering suite
+GenericName=Reverse engineering suite
+Icon=/usr/share/pyshared/bokken/ui/data/bokken.svg
+TryExec=bokken
+Exec=bokken
+Categories=System;Security;

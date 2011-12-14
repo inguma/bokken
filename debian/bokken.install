@@ -2,3 +2,4 @@ bokken  /usr/bin/
 bokken.py /usr/share/pyshared/bokken
 ui/     /usr/share/pyshared/bokken
 debian/bokken.xpm   /usr/share/pixmaps/
+debian/bokken.desktop   /usr/share/applications/

@@ -1,3 +1,10 @@
+bokken (1.5-2) unstable; urgency=low
+
+  * Added .desktop file.
+  * debian/control: Added radare2 and pyew as a dual dependency.
+
+ -- David Martínez Moreno <ender@debian.org>  Sat, 10 Dec 2011 13:05:16 -0800
+
 bokken (1.5-1) unstable; urgency=low
 
   * Initial release (closes: #650076).
