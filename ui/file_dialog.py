@@ -25,7 +25,7 @@ import gobject
 class FileDialog(gtk.Dialog):
     '''Window popup to select file'''
 
-    def __init__(self, has_pyew, has_radare, core='', file=''):
+    def __init__(self, has_pyew, has_radare, core='', file='', first_run=False):
         super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
 
         self.has_pyew = has_pyew
@@ -94,8 +94,12 @@ class FileDialog(gtk.Dialog):
             self.core_combo.set_active(0)
         elif self.core == 'pyew':
             self.core_combo.set_active(0)
+            if not first_run:
+                self.core_combo.remove_text(1)
         elif self.core == 'radare':
             self.core_combo.set_active(1)
+            if not first_run:
+                self.core_combo.remove_text(0)
         self.core = self.core_combo.get_active_text().lower()
 
         # Core combo Horizontal Box
