@@ -186,13 +186,11 @@ class LeftButtons(gtk.VBox):
     def _hide_tb_toggled(self, widget):
         if widget.get_active():
             self.main.topbuttons.hide()
-            self.main.mbar.hide()
             i = gtk.Image()
             i.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
             widget.set_image(i)
         else:
             self.main.topbuttons.show()
-            self.main.mbar.show()
             i = gtk.Image()
             i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
             widget.set_image(i)

@@ -1,4 +1,4 @@
-#       menu_bar.py
+#       main_button_menu.py
 #       
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
 #       
@@ -20,14 +20,10 @@
 import gtk
 import webbrowser
 
-FAIL = '\033[91m'
-OKGREEN = '\033[92m'
-ENDC = '\033[0m'
-
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
 
-class MenuBar(gtk.MenuBar):
+class MenuBar(gtk.Menu):
     '''Main TextView elements'''
 
     def __init__(self, main):
@@ -36,20 +32,26 @@ class MenuBar(gtk.MenuBar):
         self.uicore = self.main.uicore
         self.dependency_check = self.main.dependency_check
 
-        # File Menu
-        filemenu = gtk.Menu()
-        filem = gtk.MenuItem("_File")
-        filem.set_submenu(filemenu)
-       
         agr = gtk.AccelGroup()
         self.main.window.add_accel_group(agr)
 
+        # File menu items
         newi = gtk.ImageMenuItem(gtk.STOCK_NEW, agr)
         newi.connect("activate", self.new_file)
         key, mod = gtk.accelerator_parse("<Control>N")
         newi.add_accelerator("activate", agr, key, 
             mod, gtk.ACCEL_VISIBLE)
-        filemenu.append(newi)
+        self.append(newi)
+
+        self.manager = gtk.recent_manager_get_default()
+
+        self.recent_menu = gtk.RecentChooserMenu(self.manager)
+
+        self.recentm = gtk.MenuItem('Recent targets')
+        self.recentm.set_submenu(self.recent_menu)
+        self.recent_menu.connect('item-activated', self.recent_kb)
+
+        self.append(self.recentm)
 
         smenu = gtk.Menu()
 
@@ -64,28 +66,10 @@ class MenuBar(gtk.MenuBar):
             savei.connect("activate", self._save, save[2])
             smenu.append(savei)
 
-        filemenu.append(savem)
+        self.append(savem)
 
         sep = gtk.SeparatorMenuItem()
-        filemenu.append(sep)
-
-        exit = gtk.ImageMenuItem(gtk.STOCK_QUIT, agr)
-        key, mod = gtk.accelerator_parse("<Control>Q")
-        exit.add_accelerator("activate", agr, key, 
-            mod, gtk.ACCEL_VISIBLE)
-
-        exit.connect("activate", self.main.quit)
-        
-        filemenu.append(exit)
-
-        self.append(filem)
-
-        # Edit Menu
-        editmenu = gtk.Menu()
-        editm = gtk.MenuItem("_Edit")
-        editm.set_submenu(editmenu)
-
-        self.append(editm)
+        self.append(sep)
 
         tmenu = gtk.Menu()
 
@@ -99,54 +83,54 @@ class MenuBar(gtk.MenuBar):
             themei.connect("activate", self._on_theme_change)
             tmenu.append(themei)
 
-        editmenu.append(themem)
+        self.append(themem)
 
         # View Menu
-        viewmenu = gtk.Menu()
-        viewm = gtk.MenuItem("_View")
-        viewm.set_submenu(viewmenu)
-
-        self.append(viewm)
-
         self.vmenu = gtk.Menu()
 
         tabsm = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
         tabsm.get_children()[0].set_label('Show tabs')
         tabsm.set_submenu(self.vmenu)
 
-        viewmenu.append(tabsm)
+        self.append(tabsm)
+
+        sep = gtk.SeparatorMenuItem()
+        self.append(sep)
 
         # Help Menu
-        helpmenu = gtk.Menu()
-        helpm = gtk.MenuItem("_Help")
-        helpm.set_submenu(helpmenu)
-       
         cheati = gtk.ImageMenuItem(gtk.STOCK_JUSTIFY_FILL, agr)
         cheati.get_children()[0].set_label('Cheat sheet')
         cheati.connect("activate", self.create_cheatsheet_dialog)
         key, mod = gtk.accelerator_parse("F1")
         cheati.add_accelerator("activate", agr, key,
             mod, gtk.ACCEL_VISIBLE)
-        helpmenu.append(cheati)
-
-        sep = gtk.SeparatorMenuItem()
-        helpmenu.append(sep)
+        self.append(cheati)
 
         helpi = gtk.ImageMenuItem(gtk.STOCK_HELP, agr)
         helpi.connect("activate", self.show_wiki)
         key, mod = gtk.accelerator_parse("<Control>H")
         helpi.add_accelerator("activate", agr, key, 
             mod, gtk.ACCEL_VISIBLE)
-        helpmenu.append(helpi)
+        self.append(helpi)
 
         aboutm = gtk.ImageMenuItem(gtk.STOCK_ABOUT, agr)
         aboutm.connect("activate", self.create_about_dialog)
         key, mod = gtk.accelerator_parse("<Control>A")
         aboutm.add_accelerator("activate", agr, key, 
             mod, gtk.ACCEL_VISIBLE)
-        helpmenu.append(aboutm)
+        self.append(aboutm)
 
-        self.append(helpm)
+        sep = gtk.SeparatorMenuItem()
+        self.append(sep)
+
+        exit = gtk.ImageMenuItem(gtk.STOCK_QUIT, agr)
+        key, mod = gtk.accelerator_parse("<Control>Q")
+        exit.add_accelerator("activate", agr, key, 
+            mod, gtk.ACCEL_VISIBLE)
+
+        exit.connect("activate", self.main.quit)
+        
+        self.append(exit)
 
     #
     # Functions

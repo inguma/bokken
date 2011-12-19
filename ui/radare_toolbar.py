@@ -32,6 +32,9 @@ import ui.sections_dialog as sections_dialog
 import ui.calc_dialog as calc_dialog
 import ui.throbber as throbber
 
+import main_button_menu as main_button_menu
+import ui.main_button as main_button
+
 class TopButtons(gtk.HBox):
     '''Top Buttons'''
 
@@ -50,19 +53,16 @@ class TopButtons(gtk.HBox):
         self.main_tb = gtk.Toolbar()
         self.main_tb.set_style(gtk.TOOLBAR_ICONS)
 
-        # New file button
-        self.new_tb = gtk.MenuToolButton(gtk.STOCK_NEW)
-        self.new_tb.set_label('New')
-        self.new_tb.set_tooltip_text('Open new file')
-        self.new_tb.connect("clicked", self.new_file)
-        self.main_tb.insert(self.new_tb, 0)
+        # Main Button
+        self.menu = main_button_menu.MenuBar(self.main)
 
-        # Recent files menu
-        self.manager = gtk.recent_manager_get_default()
-        self.recent_menu = gtk.RecentChooserMenu(self.manager)
-        self.new_tb.set_menu(self.recent_menu)
-        self.new_tb.set_arrow_tooltip_text('Recent opened files')
-        self.recent_menu.connect('item-activated', self.recent_kb)
+        self.menu_button = main_button.MainMenuButton("Bokken", self.menu)
+        self.menu_button.set_border_width(0)
+
+        menu_toolitem = gtk.ToolItem()
+
+        menu_toolitem.add(self.menu_button)
+        self.main_tb.insert(menu_toolitem, 0)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()

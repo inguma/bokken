@@ -40,7 +40,6 @@ print "  GTK version:", ".".join(str(x) for x in gtk.gtk_version)
 print "  PyGTK version:", ".".join(str(x) for x in gtk.pygtk_version)
 print
 
-import ui.menu_bar as menu_bar
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
@@ -75,7 +74,7 @@ class MainApp:
             sys.exit(1)
 
         # Launch file selection dialog
-        dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target)
+        dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target, True)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             sys.exit(1)
@@ -127,11 +126,6 @@ class MainApp:
         # Create VBox to contain top buttons and other VBox
         self.supervb = gtk.VBox(False, 1)
 
-        # Menu bar
-        self.mbar = menu_bar.MenuBar(self)
-
-        self.supervb.pack_start(self.mbar, False, False, 1)
-
         # Create top buttons and add to VBox
         if self.backend == 'pyew':
             import ui.pyew_toolbar as toolbar
@@ -148,7 +142,7 @@ class MainApp:
         # Initialize and add TextViews
         self.tviews = textviews.TextViews(self.uicore, self)
         # Create toolbar show/hide tabs menu
-        self.mbar.create_view_menu()
+        self.topbuttons.menu.create_view_menu()
 
         # Initialize and add Statusbar
         self.sbar = statusbar.Statusbar(self.uicore, self.tviews)
@@ -363,7 +357,7 @@ class MainApp:
             ui.core_functions.repaint()
 
         # Clean UI
-        self.mbar.delete_view_menu()
+        self.topbuttons.menu.delete_view_menu()
         self.tviews.left_buttons.remove_all()
         self.tviews.right_notebook.remove_tabs()
         self.tviews.left_treeview.remove_columns()
@@ -371,7 +365,7 @@ class MainApp:
 
         # Add new content
         self.tviews.right_notebook.create_tabs()
-        self.mbar.create_view_menu()
+        self.topbuttons.menu.create_view_menu()
         self.show_file_data()
 
         self.uicore.core.progress_bar = None
@@ -385,8 +379,9 @@ class MainApp:
         self.sbar.show_all()
         self.tviews.right_notebook.show_all()
 
-        if not self.uicore.do_anal:
-            self.topbuttons.diff_tb.set_sensitive(False)
+        if self.backend == 'radare':
+            if not self.uicore.do_anal:
+                self.topbuttons.diff_tb.set_sensitive(False)
 
         self.window.show()
         dialog.destroy()
