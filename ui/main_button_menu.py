@@ -175,6 +175,11 @@ class MenuBar(gtk.Menu):
     def show_wiki(self, widget):
         webbrowser.open_new_tab('http://inguma.eu/projects/bokken/wiki')
 
+    def _finish_dasm(self):
+        # Used to update tab names after dasm analysis finishes
+        self.delete_view_menu()
+        self.create_view_menu()
+
     # New File related methods
     #
     def new_file(self, widget, file=''):

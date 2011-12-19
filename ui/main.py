@@ -303,6 +303,7 @@ class MainApp:
             self.tviews.update_graph(self, link_name)
             self.tviews.search(self, link_name)
             self.tviews.right_notebook.finish_dasm()
+            self.topbuttons.menu._finish_dasm()
         elif 'pyew' in self.uicore.backend:
             if self.uicore.core.format in ['PE', 'ELF']:
                 if self.uicore.core.ep:
