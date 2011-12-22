@@ -1,3 +1,14 @@
+bokken (1.5-5) unstable; urgency=low
+
+  * Added more stuff to 101_system_install: Now that pyew installs in
+    /usr/share/pyshared/pyew, add that directory to the system path to make
+    sure that we are compatible with a system-wide pyew and a local one.
+  * debian/control:
+    - Added python to Build-Depends to have dh_python2 (closes: #652780).
+    - Specified pyew version to 2.0 or higher.
+
+ -- David Martínez Moreno <ender@debian.org>  Tue, 20 Dec 2011 19:54:25 -0800
+
 bokken (1.5-4) unstable; urgency=low
 
   * debian/control: Added dependency on graphviz.

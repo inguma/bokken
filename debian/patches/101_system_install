@@ -1,6 +1,6 @@
 Description: Make Bokken available for wide system use.
  This allows the repo to be run locally but makes Bokken only able to run
- inside a normal system directory.
+ inside a normal system directory.  Also fixes use of Pyew.
 Author: David Martínez Moreno <ender@debian.org>
 Forwarded: not-needed
 Last-Update: <2011-12-01>
@@ -16,3 +16,15 @@ Last-Update: <2011-12-01>
  
  if [ "$PYTHON_VER" -eq 3 ];then
      # The python executable points to Python 3.
+--- bokken-1.5.orig/ui/core.py
++++ bokken-1.5/ui/core.py
+@@ -23,6 +23,9 @@ import sqlite3
+ import cookielib
+ import urllib2
+ 
++# We add this directory as Debian is really distributing pyew inside one.
++sys.path.append('/usr/share/pyshared/pyew')
++
+ import ui.html_parser as html_parser
+ from hashlib import md5, sha1, sha256
+ from config import DATABASE_PATH
