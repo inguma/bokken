@@ -6,8 +6,9 @@ bokken (1.5-5) unstable; urgency=low
   * debian/control:
     - Added python to Build-Depends to have dh_python2 (closes: #652780).
     - Specified pyew version to 2.0 or higher.
+    - Depends on pyew and radare2 instead of Recommends.
 
- -- David Martínez Moreno <ender@debian.org>  Tue, 20 Dec 2011 19:54:25 -0800
+ -- David Martínez Moreno <ender@debian.org>  Sun, 25 Dec 2011 09:12:42 -0800
 
 bokken (1.5-4) unstable; urgency=low
 
