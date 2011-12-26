@@ -556,7 +556,7 @@ class Core():
         self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
 
     def get_headers_cookies(self):
-        self.update_progress_bar("Extracting headres and cookies", 0.4)
+        self.update_progress_bar("Extracting headers and cookies", 0.4)
         urlopen = urllib2.urlopen
         cj = cookielib.LWPCookieJar()
         Request = urllib2.Request
