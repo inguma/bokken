@@ -408,9 +408,9 @@ class CheatsheetDialog(gtk.Dialog):
 
     def popup_stack(self, widget):
         dialog = gtk.Dialog('The stack', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE))
-        dialog.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        dialog.set_icon_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken.svg')
         stack_img = gtk.Image()
-        stack_img.set_from_file('ui/data/stack.png')
+        stack_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'stack.png')
         dialog.vbox.pack_start(self.create_h1_label("The stack"), False, False, 2)
         dialog.vbox.pack_start(stack_img, True, True, 2)
         dialog.show_all()
@@ -419,9 +419,9 @@ class CheatsheetDialog(gtk.Dialog):
 
     def popup_registers(self, widget):
         dialog = gtk.Dialog('16­bit and 8­bit registers', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE))
-        dialog.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        dialog.set_icon_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken.svg')
         reg_img = gtk.Image()
-        reg_img.set_from_file('ui/data/registers.png')
+        reg_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'registers.png')
         reg_label = gtk.Label("The four primary general purpose registers (EAX, EBX, ECX and EDX)\nhave 16 and 8 bit overlapping aliases.")
         reg_label.set_alignment(0.1, 0.1)
         reg_label.set_padding (0, 3)
