@@ -28,7 +28,10 @@ class MyHTMLParser(HTMLParser):
         self.forms = []
         self.title = ''
 
-        self.feed(html)
+        try:
+            self.feed(html)
+        except:
+            pass
 
     def handle_starttag(self, tag, attrs):
 #        if tag.lower() in ['form', 'input']:
