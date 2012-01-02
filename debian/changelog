@@ -1,3 +1,15 @@
+bokken (1.6-1) unstable; urgency=low
+
+  * New release.  Main changes are:
+     - Fixed vulnerability for symlink attack in /tmp (Debian bug #651931).
+     - Replaced top menu bar with a button.  This will also ease integration
+       of Bokken in Inguma.
+     - Fixed some usability bugs, crashes and obvious problems found when
+       running Bokken as a Debian package.
+  * debian/patches/02_tmp_symlink_vulnerability: Dropped, already included.
+
+ -- David Martínez Moreno <ender@debian.org>  Mon, 02 Jan 2012 14:49:54 +0100
+
 bokken (1.5-5) unstable; urgency=low
 
   * Added more stuff to 101_system_install: Now that pyew installs in
