@@ -1,17 +1,17 @@
 #       main_button.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -40,7 +40,7 @@ class MainMenuButton (gtk.ToggleButton):
         hbox1 = gtk.HBox()
         hbox2 = gtk.HBox()
         icon = gtk.Image()
-        icon.set_from_file('ui' + os.sep + 'data' + os.sep + 'bokken-small.svg')
+        icon.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken-small.svg')
         hbox1.pack_start(icon, True, True, 3)
         label = gtk.Label(text)
         hbox1.pack_start(label, True, True, 3)
