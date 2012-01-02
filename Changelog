@@ -1,3 +1,13 @@
+Release 1.6 (04-01-2012)
+
+ * Fixed vulnerability for symlink attack in /tmp (Debian bug #651931).
+ * Replaced top menu bar with a button.  This will also ease integration of
+   Bokken in Inguma.
+ * Fixed some usability bugs that we found in the previous release.
+ * Fixed some crashes.
+ * Made Bokken more stable when running in a system-wide installation like a
+   standard Debian package.
+
 Release 1.5 (07-12-2011)
 
  * Full support for Radare2.  Now the opening dialog allows one to choosei
