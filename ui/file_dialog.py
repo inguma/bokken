@@ -1,17 +1,17 @@
 ##      file_dialog.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -58,7 +58,7 @@ class FileDialog(gtk.Dialog):
         self.logo.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
         # Logo label
         self.logo_text = gtk.Label()
-        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.5</b></span>')
+        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.6</b></span>')
 
         # Common label
         self.label = gtk.Label('Select a target or enter the path manually.')

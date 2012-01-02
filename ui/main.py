@@ -1,17 +1,17 @@
 #       main.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -45,7 +45,7 @@ import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
 
 MAINTITLE = "Bokken, a GUI for pyew and radare2!"
-VERSION = "1.5"
+VERSION = "1.6"
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -112,7 +112,7 @@ class MainApp:
         self.window.set_focus = True
         self.window.connect("delete_event", self.quit)
         self.window.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
-        gtk.settings_get_default().set_long_property("gtk-button-images", True, "main") 
+        gtk.settings_get_default().set_long_property("gtk-button-images", True, "main")
 
         # Title
         self.window.set_title(MAINTITLE)
@@ -281,13 +281,13 @@ class MainApp:
                 return True
 
         # Once finished the load, let's fill the UI
-        print "DEBUG: DASM finished, reading from queue!"
-        print "Process state", self.dasm_process.is_alive()
+        #print "DEBUG: DASM finished, reading from queue!"
+        #print "Process state", self.dasm_process.is_alive()
         # We read from the queue the disassembly.
         if 'radare' in self.uicore.backend and self.uicore.do_anal:
             self.uicore.text_dasm, self.uicore.sections_lines = self.dasm_queue.get()
-        print "DEBUG: Got a disassembly of", len(self.uicore.text_dasm), "bytes."
-        print "DEBUG: Section lines created", self.uicore.sections_lines
+        #print "DEBUG: Got a disassembly of", len(self.uicore.text_dasm), "bytes."
+        #print "DEBUG: Section lines created", self.uicore.sections_lines
 
         if self.uicore.text_dasm:
             self.tviews.update_dasm(self.uicore.text_dasm)
