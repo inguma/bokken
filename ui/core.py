@@ -25,9 +25,15 @@ import urllib2
 
 import ui.html_parser as html_parser
 from hashlib import md5, sha1, sha256
-from config import DATABASE_PATH
+try:
+    from config import DATABASE_PATH
+except ImportError:
+    from pyew.config import DATABASE_PATH
 
-from pyew_core import CPyew
+try:
+    from pyew_core import CPyew
+except ImportError:
+    from pyew.pyew_core import CPyew
 
 class Core():
 

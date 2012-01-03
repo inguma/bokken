@@ -35,7 +35,10 @@ class HexdumpView(gtk.HBox):
 
         self.uicore = core
         if self.uicore.backend == 'pyew':
-            from pydistorm import Decode, Decode16Bits, Decode32Bits, Decode64Bits
+            try:
+                from pydistorm import Decode, Decode16Bits, Decode32Bits, Decode64Bits
+            except ImportError:
+                from pyew.pydistorm import Decode, Decode16Bits, Decode32Bits, Decode64Bits
             self.Decode = Decode
             if self.uicore.core.type == 16:
                 self.decode = Decode16Bits
