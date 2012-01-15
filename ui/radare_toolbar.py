@@ -1,17 +1,17 @@
 #       radare_toolbar.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -164,18 +164,11 @@ class TopButtons(gtk.HBox):
         self.sep.set_draw(False)
         self.main_tb.insert(self.sep, 13)
 
-        # Exit button
-        self.exit_tb = gtk.ToolButton(gtk.STOCK_QUIT)
-        self.exit_tb.set_label('Quit')
-        self.exit_tb.connect("clicked", self.main.quit)
-        self.exit_tb.set_tooltip_text('Have a nice day ;-)')
-        self.main_tb.insert(self.exit_tb, 14)
-
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 15)
+        self.main_tb.insert(self.throbber_tb, 14)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 

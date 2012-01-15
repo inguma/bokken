@@ -1,4 +1,4 @@
-Release 1.6 (04-01-2012)
+Release 1.6 (16-01-2012)
 
  * Fixed vulnerability for symlink attack in /tmp (Debian bug #651931).
  * Replaced top menu bar with a button.  This will also ease integration of
