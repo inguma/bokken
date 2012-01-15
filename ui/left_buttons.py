@@ -1,17 +1,17 @@
 #       left_buttons.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -55,6 +55,7 @@ class LeftButtons(gtk.VBox):
         i = gtk.Image()
         i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
         self.hide_tb.set_image(i)
+        self.hide_tb.set_tooltip_text('Toggle visibility of the top toolbar')
         handler = self.hide_tb.connect('toggled', self._hide_tb_toggled)
         self.hide_tb.handler = handler
 
@@ -65,6 +66,7 @@ class LeftButtons(gtk.VBox):
             a = gtk.VBox(False, 1)
             fcntb = gtk.ToggleButton()
             fcntb.set_active(True)
+            fcntb.set_tooltip_text('List of function entrypoints in the binary')
             handler = fcntb.connect('toggled', self._on_toggle)
             fcntb.handler = handler
             l = gtk.Label('Functions')
@@ -72,9 +74,10 @@ class LeftButtons(gtk.VBox):
             a.pack_start(l, False, False, 1)
             a.pack_start(self.fcn_pix, False, False, 1)
             fcntb.add(a)
-    
+
             # Sections
             sectb = gtk.ToggleButton()
+            sectb.set_tooltip_text('List of sections in the binary')
             handler = sectb.connect('toggled', self._on_toggle)
             sectb.handler = handler
             a = gtk.VBox(False, 1)
@@ -83,13 +86,14 @@ class LeftButtons(gtk.VBox):
             a.pack_start(l, False, False, 1)
             a.pack_start(self.bb_pix, False, False, 1)
             sectb.add(a)
-    
+
             self.pack_start(fcntb, False, False, 0)
             self.pack_start(sectb, False, False, 0)
 
             if option == 'full_bin':
                 # Imports
                 imptb = gtk.ToggleButton()
+                imptb.set_tooltip_text('List of imported symbols')
                 handler = imptb.connect('toggled', self._on_toggle)
                 imptb.handler = handler
                 a = gtk.VBox(False, 1)
@@ -98,9 +102,10 @@ class LeftButtons(gtk.VBox):
                 a.pack_start(l, False, False, 1)
                 a.pack_start(self.imp_pix, False, False, 1)
                 imptb.add(a)
-        
+
                 # Exports
                 exptb = gtk.ToggleButton()
+                exptb.set_tooltip_text('List of exported symbols')
                 handler = exptb.connect('toggled', self._on_toggle)
                 exptb.handler = handler
                 a = gtk.VBox(False, 1)
@@ -109,7 +114,7 @@ class LeftButtons(gtk.VBox):
                 a.pack_start(l, False, False, 1)
                 a.pack_start(self.exp_pix, False, False, 1)
                 exptb.add(a)
-        
+
                 self.pack_start(imptb, False, False, 0)
                 self.pack_start(exptb, False, False, 0)
         elif option == 'pdf':
@@ -122,7 +127,7 @@ class LeftButtons(gtk.VBox):
             a.pack_start(l, False, False, 1)
             a.pack_start(self.exp_pix, False, False, 1)
             pdftb.add(a)
-        
+
             self.pack_start(pdftb, False, False, 0)
         elif option == 'url':
             # URL
@@ -136,7 +141,7 @@ class LeftButtons(gtk.VBox):
             a.pack_start(l, False, False, 1)
             a.pack_start(self.fcn_pix, False, False, 1)
             lnktb.add(a)
-        
+
             hdrtb = gtk.ToggleButton()
             handler = hdrtb.connect('toggled', self._on_toggle)
             hdrtb.handler = handler
@@ -146,7 +151,7 @@ class LeftButtons(gtk.VBox):
             a.pack_start(l, False, False, 1)
             a.pack_start(self.exp_pix, False, False, 1)
             hdrtb.add(a)
-        
+
             ccktb = gtk.ToggleButton()
             handler = ccktb.connect('toggled', self._on_toggle)
             ccktb.handler = handler
@@ -156,7 +161,7 @@ class LeftButtons(gtk.VBox):
             a.pack_start(l, False, False, 1)
             a.pack_start(self.imp_pix, False, False, 1)
             ccktb.add(a)
-        
+
             self.pack_start(lnktb, False, False, 0)
             self.pack_start(hdrtb, False, False, 0)
             self.pack_start(ccktb, False, False, 0)
