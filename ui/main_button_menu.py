@@ -1,17 +1,17 @@
 #       main_button_menu.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -35,13 +35,17 @@ class MenuBar(gtk.Menu):
         agr = gtk.AccelGroup()
         self.main.window.add_accel_group(agr)
 
+        actiongroup = gtk.ActionGroup('MainButton')
+
         # File menu items
-        newi = gtk.ImageMenuItem(gtk.STOCK_NEW, agr)
-        newi.connect("activate", self.new_file)
-        key, mod = gtk.accelerator_parse("<Control>N")
-        newi.add_accelerator("activate", agr, key, 
-            mod, gtk.ACCEL_VISIBLE)
-        self.append(newi)
+        newmenu = gtk.Action('New', None, None, gtk.STOCK_NEW)
+        newmenu.connect("activate", self.new_file)
+
+        actiongroup.add_action_with_accel(newmenu, '<Control>N')
+        newmenu.set_accel_group(agr)
+        newmenu.connect_accelerator()
+        newmenuitem = newmenu.create_menu_item()
+        self.append(newmenuitem)
 
         self.manager = gtk.recent_manager_get_default()
 
@@ -97,40 +101,49 @@ class MenuBar(gtk.Menu):
         sep = gtk.SeparatorMenuItem()
         self.append(sep)
 
-        # Help Menu
-        cheati = gtk.ImageMenuItem(gtk.STOCK_JUSTIFY_FILL, agr)
-        cheati.get_children()[0].set_label('Cheat sheet')
-        cheati.connect("activate", self.create_cheatsheet_dialog)
-        key, mod = gtk.accelerator_parse("F1")
-        cheati.add_accelerator("activate", agr, key,
-            mod, gtk.ACCEL_VISIBLE)
-        self.append(cheati)
+        # Cheatsheet.
+        cheat = gtk.Action('Cheat sheet', 'Cheat sheet', None, gtk.STOCK_JUSTIFY_FILL)
+        cheat.connect("activate", self.create_cheatsheet_dialog)
 
-        helpi = gtk.ImageMenuItem(gtk.STOCK_HELP, agr)
-        helpi.connect("activate", self.show_wiki)
-        key, mod = gtk.accelerator_parse("<Control>H")
-        helpi.add_accelerator("activate", agr, key, 
-            mod, gtk.ACCEL_VISIBLE)
-        self.append(helpi)
+        actiongroup.add_action_with_accel(cheat, 'F1')
+        cheat.set_accel_group(agr)
+        cheat.connect_accelerator()
+        cheatitem = cheat.create_menu_item()
+        self.append(cheatitem)
 
-        aboutm = gtk.ImageMenuItem(gtk.STOCK_ABOUT, agr)
-        aboutm.connect("activate", self.create_about_dialog)
-        key, mod = gtk.accelerator_parse("<Control>A")
-        aboutm.add_accelerator("activate", agr, key, 
-            mod, gtk.ACCEL_VISIBLE)
-        self.append(aboutm)
+        # Help menu.
+        helpmenu = gtk.Action('Help', None, None, gtk.STOCK_HELP)
+        helpmenu.connect("activate", self.show_wiki)
+
+        actiongroup.add_action_with_accel(helpmenu, '<Control>H')
+        helpmenu.set_accel_group(agr)
+        helpmenu.connect_accelerator()
+        helpmenuitem = helpmenu.create_menu_item()
+        self.append(helpmenuitem)
+
+        # About.
+        about = gtk.Action('About', None, None, gtk.STOCK_ABOUT)
+        about.connect("activate", self.create_about_dialog)
+
+        actiongroup.add_action_with_accel(about, '<Control>A')
+        about.set_accel_group(agr)
+        about.connect_accelerator()
+        aboutitem = about.create_menu_item()
+        self.append(aboutitem)
 
         sep = gtk.SeparatorMenuItem()
         self.append(sep)
 
-        exit = gtk.ImageMenuItem(gtk.STOCK_QUIT, agr)
-        key, mod = gtk.accelerator_parse("<Control>Q")
-        exit.add_accelerator("activate", agr, key, 
-            mod, gtk.ACCEL_VISIBLE)
+        # Quit.
+        exit = gtk.Action('Quit', None, None, gtk.STOCK_QUIT)
+        exit.connect('activate', self.main.quit)
 
-        exit.connect("activate", self.main.quit)
-        
-        self.append(exit)
+        actiongroup.add_action_with_accel(exit, '<Control>Q')
+        exit.set_accel_group(agr)
+        exit.connect_accelerator()
+        exititem = exit.create_menu_item()
+
+        self.append(exititem)
 
     #
     # Functions
