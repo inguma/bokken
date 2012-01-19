@@ -370,7 +370,10 @@ class Core():
         #if not self.dot:
         #print "[*] Get callgraph"
         self.update_progress_bar("Loading callgraph", 0.4)
-        file = tempfile.NamedTemporaryFile()
+
+        # We have to call it with False because otherwise the UAC in Win7 won't allow us to access the
+        # temporary file from two different processes.  So we will need to remove the file after closing it.
+        file = tempfile.NamedTemporaryFile(delete=False)
 
         if self.graph_layout == 'flow':
             cmd = 'ag '
@@ -391,9 +394,11 @@ class Core():
             #self.core.cmd_str('aga > ' + file.name)
         else:
             self.core.cmd0(cmd + addr + ' > ' + file.name)
+        file.close()
         f = open(file.name, 'r')
         self.dot = f.read()
         f.close()
+        os.unlink(file.name)
         return self.dot
 
     def get_file_info(self):
