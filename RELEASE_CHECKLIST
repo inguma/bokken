@@ -33,6 +33,9 @@ hg archive -X debian -X install-scripts -X glob:RELE* -X glob:.hg* -r 1.5 ../bok
 and upload them with the Debian and Windows packages to Redmine as bokken-1.5.tar.gz (and so on) and
   under PROPER Version (1.5 in this case).
 
+* Upload the Debian package to the right place in inguma.eu (/var/www/deb/pool/main/b/bokken) and run 'update_deb_repo'
+  to update the Packages files and the rest of the Debian repository.
+
 * Publish the blog post once you have the download links, with special attention to the published date (it will
   reflect when you started to write, possibly days ago).
 
@@ -52,10 +55,7 @@ and upload them with the Debian and Windows packages to Redmine as bokken-1.5.ta
     your changes or see other releases.  You have 600 characters (as of 07-12-2011) for the changelog.
 
 * Go to Redmine, to the Versions tab under Settings (http://inguma.eu/projects/bokken/settings/versions) and
-  open a new release (say 2.0) with a release date.
-
-* Go to the Roadmap settings (http://inguma.eu/projects/bokken/settings/versions), open a new release (say 2.0),
-  and add to new one the proposed schedule.
+  open a new release (say 2.0) with a proposed release date.
 
 * Go to the Roadmap page (http://inguma.eu/projects/bokken/roadmap) and move all the open bugs (if any!)
   in the already-released version to the next one.  You can do it in bulk from the UI.  Click on "X open bugs",
