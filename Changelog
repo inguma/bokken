@@ -1,10 +1,10 @@
-Release 1.6 (16-01-2012)
+Release 1.6 (23-01-2012)
 
  * Fixed vulnerability for symlink attack in /tmp (Debian bug #651931).
  * Replaced top menu bar with a button.  This will also ease integration of
    Bokken in Inguma.
  * Fixed some usability bugs that we found in the previous release.
- * Fixed some crashes.
+ * Fixed some crashes both in Linux and Windows 7.
  * Made Bokken more stable when running in a system-wide installation like a
    standard Debian package.
 
