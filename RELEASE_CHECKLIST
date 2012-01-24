@@ -25,11 +25,12 @@ Things to do in order to release Bokken
 hg tag -m "Tagged 1.5 release." 1.5
 hg push
 
-* Make a tar.gz with the following command:
+* Make a tar.gz and zip archive with the following commands:
 
 hg archive -X debian -X install-scripts -X glob:RELE* -X glob:.hg* -r 1.5 ../bokken-1.5.tar.gz
+hg archive -X debian -X install-scripts -X glob:RELE* -X glob:.hg* -r 1.5 ../bokken-1.5.zip
 
-and upload it with the Debian and Windows packages to Redmine as bokken-1.5.tar.gz (and so on) and
+and upload them with the Debian and Windows packages to Redmine as bokken-1.5.tar.gz (and so on) and
   under PROPER Version (1.5 in this case).
 
 * Publish the blog post once you have the download links, with special attention to the published date (it will
