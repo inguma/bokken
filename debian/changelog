@@ -4,11 +4,12 @@ bokken (1.6-1) unstable; urgency=low
      - Fixed vulnerability for symlink attack in /tmp (Debian bug #651931).
      - Replaced top menu bar with a button.  This will also ease integration
        of Bokken in Inguma.
-     - Fixed some usability bugs, crashes and obvious problems found when
-       running Bokken as a Debian package.
+     - Fixed some usability bugs, and crashes in Linux and Windows, and some
+       other obvious problems found when running Bokken as a Debian package.
   * debian/patches/02_tmp_symlink_vulnerability: Dropped, already included.
+  * debian/control: Removed bogus ${shlibs:Depends} variable.
 
- -- David Martínez Moreno <ender@debian.org>  Mon, 02 Jan 2012 14:49:54 +0100
+ -- David Martínez Moreno <ender@debian.org>  Mon, 23 Jan 2012 22:15:43 -0800
 
 bokken (1.5-5) unstable; urgency=low
 

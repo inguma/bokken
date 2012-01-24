@@ -5,8 +5,8 @@ Author: David Martínez Moreno <ender@debian.org>
 Forwarded: not-needed
 Last-Update: <2011-12-01>
 
---- bokken-1.5.orig/bokken
-+++ bokken-1.5/bokken
+--- a/bokken
++++ b/bokken
 @@ -2,7 +2,7 @@
  
  PYTHON_EXECUTABLE="python"
@@ -16,9 +16,9 @@ Last-Update: <2011-12-01>
  
  if [ "$PYTHON_VER" -eq 3 ];then
      # The python executable points to Python 3.
---- bokken-1.5.orig/ui/core.py
-+++ bokken-1.5/ui/core.py
-@@ -23,6 +23,9 @@ import sqlite3
+--- a/ui/core.py
++++ b/ui/core.py
+@@ -23,6 +23,9 @@
  import cookielib
  import urllib2
  
@@ -27,4 +27,4 @@ Last-Update: <2011-12-01>
 +
  import ui.html_parser as html_parser
  from hashlib import md5, sha1, sha256
- from config import DATABASE_PATH
+ try:
