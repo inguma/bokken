@@ -407,5 +407,5 @@ class MainApp:
             self.dasm_process.terminate()
         return True
 
-def main(target, backend, web):
+def main(target, backend):
     MainApp(target, backend)

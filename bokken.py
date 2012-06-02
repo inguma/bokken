@@ -1,8 +1,9 @@
 #!/usr/bin/python
-
+# -*- coding: utf-8 -*-
 #       bokken.py
 #
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
+#       Copyright 2012 David Martínez Moreno <ender@debian.org>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -19,32 +20,52 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import argparse
-import sys, os
+import lib.bokken_globals as glob
 
-# Go with GTK, but first check the DISPLAY environment variable
-if sys.platform != "win32":
-    display = os.getenv("DISPLAY").strip()
-    if not display:
-        print "The DISPLAY environment variable is not set! You can not use any graphical program without it..."
-        sys.exit(1)
+def bokken():
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-r', '--radare', action='store_true',
-                    help='Use by default the radare2 core')
-parser.add_argument('-p', '--pyew', action='store_true',
-                    help='Use by default the pyew core')
-parser.add_argument('-w', '--web', action='store_true',
-                    help='Start up the web server on port 4546')
-args = parser.parse_args()
+    import argparse
+    import sys, os
 
-if args.radare and args.pyew:
-    args.radare = False
-    args.pyew = False
+    # Go with GTK, but first check the DISPLAY environment variable
+    if sys.platform != "win32":
+        display = os.getenv("DISPLAY").strip()
+        if not display:
+            print "The DISPLAY environment variable is not set! You can not use any graphical program without it..."
+            sys.exit(1)
 
-import ui.main as main
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file_to_load', nargs='?',
+                        help='File to load')
+    parser.add_argument('-r', '--radare', action='store_true',
+                        help='Select the radare2 core')
+    parser.add_argument('-p', '--pyew', action='store_true',
+                        help='Select the pyew core')
+    parser.add_argument('-w', '--web', action='store_true',
+                        help='Start up the web server on port 4546')
+    args = parser.parse_args()
 
-main.main('',
-          'radare' if args.radare else ('pyew' if args.pyew else ''),
-          'web' if args.web else '')
+    if args.radare and args.pyew:
+        args.radare = False
+        args.pyew = False
 
+    if args.web:
+        glob.http_server = True
+
+    import ui.main as main
+
+    main.main(args.file_to_load,
+              'radare' if args.radare else ('pyew' if args.pyew else ''),
+              )
+
+if __name__ == "__main__":
+    try:
+        bokken()
+    except Exception as e:
+        # We have to stop the HTTP server just in case.
+        if glob.http_server:
+            glob.http.terminate()
+
+        if not e == SystemExit:
+            import traceback
+            traceback.print_exc()
