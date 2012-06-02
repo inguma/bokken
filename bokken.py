@@ -63,7 +63,7 @@ if __name__ == "__main__":
         bokken()
     except Exception as e:
         # We have to stop the HTTP server just in case.
-        if glob.http_server:
+        if glob.http_server and glob.http:
             glob.http.terminate()
 
         if not e == SystemExit:

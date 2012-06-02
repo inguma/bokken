@@ -20,6 +20,7 @@
 import os, sys
 import platform
 import gobject
+import lib.bokken_globals as glob
 
 # Add plugins directory to the path
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
@@ -56,6 +57,12 @@ class MainApp:
 
     def __init__(self, target, backend):
 
+        import time
+
+        # Allow only the main thread to touch the GUI (gtk) part, while letting
+        # other threads do background work.
+        gobject.threads_init()
+
         self.dependency_check = dependency_check
 
         self.target = target
@@ -90,6 +97,9 @@ class MainApp:
             import ui.radare_core as radare_core
             self.uicore = radare_core.Core(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va, dialog.asm_byt, dialog.progress_bar)
         self.uicore.backend = self.backend
+
+        # Create a global object under glob.
+        glob.core = self.uicore
 
         # Check if target name is an URL, pyew stores it as 'raw'
         self.uicore.is_url(self.target)
@@ -169,6 +179,18 @@ class MainApp:
         if self.uicore.backend == 'radare':
             if not self.uicore.do_anal:
                 self.topbuttons.diff_tb.set_sensitive(False)
+
+        # Start up the HTTP server.
+        if glob.http_server:
+            import lib.http as httpd
+            http = httpd.BokkenHttpServer()
+            print("\nBringing up HTTP server.")
+            # We start the thread.
+            http.start()
+            time.sleep(0.2)
+            # We put the http structure in glob to have it accessible in the
+            # global __main__ handler.
+            glob.http = http
 
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
@@ -327,6 +349,7 @@ class MainApp:
         self.tviews.set_sensitive(True)
 
     def load_new_file(self, dialog, target):
+
         self.window.hide()
         self.disable_all()
         self.target = target
@@ -409,3 +432,5 @@ class MainApp:
 
 def main(target, backend):
     MainApp(target, backend)
+    if glob.http_server and hasattr(glob,'http'):
+        glob.http.terminate()
