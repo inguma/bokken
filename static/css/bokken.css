@@ -1,0 +1,8 @@
+#asmdump .content,
+#fileexports .content,
+#fileimports .content,
+#filesections .content,
+#filefunctions .content {
+    font-family: 'Courier New', 'Courier', 'monospace';
+    font-size: 0.7em;
+}

@@ -29,23 +29,6 @@ import threading
 import lib.web as web
 import lib.bokken_globals as glob
 
-def html_skeleton(header='', body=''):
-    """Defines a basic HTML skeleton for returned HTML."""
-
-    skeleton="""
-    <html>
-    <head><title>Bokken """ + glob.version
-    if header:
-        skeleton += ' -' + header
-    skeleton += """
-    </title></head>
-    <body>""" + body + """
-    </body>
-    </html>
-    """
-    return skeleton
-
-
 class BokkenHttpServer(threading.Thread):
 
     def __init__(self, port=4546):
@@ -56,8 +39,12 @@ class BokkenHttpServer(threading.Thread):
         urls = (
                 '/', 'Index',
                 '/favicon.ico', 'Favicon',
-                '/bokken/file(|/)', 'FileDump',
-                #'/bokken/kb/get(|/)', 'RestKB',
+                '/bokken/file/dump', 'FileDump',
+                '/bokken/file/exports', 'FileExports',
+                '/bokken/file/functions', 'FileFunctions',
+                '/bokken/file/imports', 'FileImports',
+                '/bokken/file/name', 'FileName',
+                '/bokken/file/sections', 'FileSections',
                )
 
         self.http = web.application(urls, globals())
@@ -71,7 +58,31 @@ class Index:
     """Main index, path seems to be optional in GET."""
 
     def GET(self, path=''):
-        return html_skeleton(body='Bokken')
+
+        index_page = '''
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bokken ''' + glob.version + ''', a GUI for pyew and radare.
+  </title>
+  <link rel="stylesheet" href="/static/css/bokken.css" type="text/css" media="screen" />
+</head>
+<body>
+    <div id="bokken">
+        <div id="brand_header"><h2><img src="/static/img/bokken.svg">Bokken ''' + glob.version + '''</h2></div>
+        <div id="filename">Filename: <span class="content"></span></div>
+        <div id="asmdump">Assembler dump: <pre class="content"></pre></div>
+        <div id="fileexports">Exports: <pre class="content"></pre></div>
+        <div id="fileimports">Imports: <pre class="content"></pre></div>
+        <div id="filesections">Sections: <pre class="content"></pre></div>
+        <div id="filefunctions">Functions: <pre class="content"></pre></div>
+    </div>
+    <script src="/static/js/jquery-1.7.2.min.js"></script>
+    <script src="/static/js/bokken.js"></script>
+</body>
+</html>'''
+
+        return index_page
 
 class Favicon:
     """Returns the favicon."""
@@ -79,12 +90,52 @@ class Favicon:
     def GET(self, path=''):
         import os
 
-        return open(os.path.dirname(__file__) + os.sep + '..' +
-                    os.sep + 'ui' + os.sep + 'data' + os.sep +
-                    'bokken-small.svg').read()
+        web.header('Content-type', 'image/vnd.microsoft.icon')
+        return open(os.sep.join([
+            os.path.dirname(__file__), '..', 'ui', 'data', 'icons', 'bokken.ico'
+            ])).read()
 
 class FileDump:
-    """"""
+    """Assembler dump of the .text sections."""
 
     def GET(self, path=''):
-        return glob.core.text_dasm
+
+        # See Redmine issue #120.
+        if glob.core.backend == 'radare':
+            return glob.core.get_text_dasm()[0].replace("\n", "<br/>")
+        else:
+            return glob.core.get_text_dasm().replace("\n", "<br/>")
+
+class FileExports:
+    """Exports in the file."""
+
+    def GET(self, path=''):
+        return glob.core.get_exports()
+
+class FileFunctions:
+    """File functions."""
+
+    def GET(self, path=''):
+        return glob.core.get_functions()
+
+class FileImports:
+    """Imports in the file."""
+
+    def GET(self, path=''):
+        # Redmine issue #121.
+        if glob.core.backend == 'radare':
+            # FIXME: Test that the file is ELF before running this, or fix the API.
+            glob.core.get_elf_imports()
+        return glob.core.get_imports()
+
+class FileName:
+    """Retrieve file name."""
+
+    def GET(self, path=''):
+        return glob.core.filename
+
+class FileSections:
+    """Retrieve file sections."""
+
+    def GET(self, path=''):
+        return glob.core.get_sections()
