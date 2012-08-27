@@ -6,3 +6,10 @@
     font-family: 'Courier New', 'Courier', 'monospace';
     font-size: 0.7em;
 }
+
+#brand_header img {
+    height: 50px;
+    width: 50px;
+    padding: 0px 5px 0px 0px;
+    vertical-align: -20%;
+}

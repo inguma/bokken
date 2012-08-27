@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    // Create textarea for ASM dump.
     var bokken = $('#bokken');
 
     $.get('/bokken/file/name', '', function(data){

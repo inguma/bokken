@@ -419,6 +419,7 @@ class MainApp:
         '''
         msg = ("Do you really want to quit?")
         dlg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
+        dlg.set_default_response(gtk.RESPONSE_YES)
         opt = dlg.run()
         dlg.destroy()
 
