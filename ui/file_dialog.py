@@ -22,6 +22,8 @@ import os
 import gtk
 import gobject
 
+import lib.bokken_globals as glob
+
 class FileDialog(gtk.Dialog):
     '''Window popup to select file'''
 
@@ -37,7 +39,7 @@ class FileDialog(gtk.Dialog):
         self.timer_id = None
 
         # Set dialog resizeable and auto-shrink
-        self.set_policy(False, False, True)
+        self.set_resizable(False)
         self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
 
         # the cancel button
@@ -58,7 +60,7 @@ class FileDialog(gtk.Dialog):
         self.logo.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
         # Logo label
         self.logo_text = gtk.Label()
-        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken 1.6</b></span>')
+        self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken '+glob.version+'</b></span>')
 
         # Common label
         self.label = gtk.Label('Select a target or enter the path manually.')
@@ -280,7 +282,9 @@ class FileDialog(gtk.Dialog):
         colormap = widget.get_colormap()
         bg_ok = colormap.alloc_color("white")
         bg_not_valid = colormap.alloc_color("red")
-        if 'http' in text:
+        if len(text)==0:
+	    widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+        elif 'http' in text:
             if core == 'Radare':
                 widget.modify_base(gtk.STATE_NORMAL, bg_not_valid)
             else:

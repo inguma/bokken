@@ -19,10 +19,16 @@
 
 import sys
 
-OKGREEN = '\033[92m'
-WARNING = '\033[93m'
-FAIL = '\033[91m'
-ENDC = '\033[0m'
+if sys.platform != "win32":
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+else:
+    OKGREEN = ''
+    WARNING = ''
+    FAIL = ''
+    ENDC = ''
 
 def check_all():
     python_version()
