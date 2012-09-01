@@ -42,9 +42,11 @@ class FileDialog(gtk.Dialog):
         self.set_resizable(False)
         self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
 
-        # the cancel button
+        # The Ok Button.
         self.butt_ok = self.action_area.get_children()[0]
         self.butt_ok.connect("clicked", self.fast_start)
+        self.butt_ok.set_sensitive(False)
+        # The Cancel button.
         self.butt_cancel = self.action_area.get_children()[1]
         #self.butt_cancel.connect("clicked", self.cancel)
 
@@ -283,16 +285,21 @@ class FileDialog(gtk.Dialog):
         bg_ok = colormap.alloc_color("white")
         bg_not_valid = colormap.alloc_color("red")
         if len(text)==0:
-	    widget.modify_base(gtk.STATE_NORMAL, bg_ok)
-        elif 'http' in text:
+            widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+            self.butt_ok.set_sensitive(False)
+        elif 'http://' in text:
             if core == 'Radare':
                 widget.modify_base(gtk.STATE_NORMAL, bg_not_valid)
+                self.butt_ok.set_sensitive(False)
             else:
                 widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+                self.butt_ok.set_sensitive(True)
         elif not os.path.isfile(text):
             widget.modify_base(gtk.STATE_NORMAL, bg_not_valid)
+            self.butt_ok.set_sensitive(False)
         else:
             widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+            self.butt_ok.set_sensitive(True)
 
     def _on_change(self, widget):
         active = widget.get_active_text()
