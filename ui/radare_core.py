@@ -72,6 +72,7 @@ class Core():
         self.core.format = ''
 
         self.backend = 'radare'
+        self.file_loaded = False
 
     def clean_fullvars(self):
         self.fulldasm = ''
@@ -109,6 +110,7 @@ class Core():
         self.core.format = ''
 
         self.backend = 'radare'
+        self.file_loaded = False
 
     def load_file(self, file):
         #print "[*] Loading file"
@@ -116,7 +118,11 @@ class Core():
         self.file = file
         # Init core
         # Returns True/False (check)
-        self.core.file_open(file, 0, 0)
+        open_result = self.core.file_open(file, 0, 0)
+        if open_result is None:
+            self.file_loaded = False
+            return
+        self.file_loaded = True
         self.core.bin_load(None)
         #self.core.config.set("asm.bytes", "false")
         self.core.cmd0("e scr.interactive=false")
@@ -233,7 +239,7 @@ class Core():
         return hexdump
 
     def get_full_hexdump(self):
-        if self.fullhex == '':
+        if self.fullhex == '' and self.size != '0x0':
             #print "[*] Get full hexdump"
             self.update_progress_bar("Getting full hexdump", 0.5)
             self.core.cmd0('e io.va=0')

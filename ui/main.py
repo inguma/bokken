@@ -19,7 +19,6 @@
 
 import os, sys
 import platform
-import gobject
 import lib.bokken_globals as glob
 
 # Add plugins directory to the path
@@ -32,6 +31,7 @@ dependency_check.check_all()
 
 # Now that I know that I have them, import them!
 import gtk
+import gobject
 
 # This is just general info, to help people knowing their system
 print "Starting bokken, running on:"
@@ -46,7 +46,6 @@ import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
 
 MAINTITLE = "Bokken, a GUI for pyew and radare2!"
-VERSION = "1.6"
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -111,6 +110,15 @@ class MainApp:
                 sys.exit(1)
 
             self.load_file(self.target)
+            if not self.uicore.file_loaded:
+                error_msg = "Error opening file " + self.target
+                md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
+                md.set_markup("<big><b>File open error!</b></big>")
+                md.format_secondary_markup(error_msg)
+                md.run()
+                md.destroy()
+                print error_msg
+                sys.exit(1)
 
             import ui.core_functions
             ui.core_functions.repaint()
@@ -202,6 +210,8 @@ class MainApp:
 
         #print "Loading file: %s..." % (target)
         self.uicore.load_file(target)
+        if not self.uicore.file_loaded:
+            return
         if self.uicore.core.format in ['PE', 'Elf', 'ELF', 'Program']:
             self.uicore.get_sections()
         #print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
@@ -273,7 +283,7 @@ class MainApp:
 
         # Update statusbar with file info
         info = self.uicore.get_file_info()
-        self.sbar.add_text(info, VERSION)
+        self.sbar.add_text(info, glob.version)
         self.sbar.hide_all()
         self.sbar._statusbar.show_all()
 

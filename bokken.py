@@ -24,7 +24,6 @@ import lib.bokken_globals as glob
 
 def bokken():
 
-    import argparse
     import sys, os
 
     # Go with GTK, but first check the DISPLAY environment variable
@@ -33,6 +32,12 @@ def bokken():
         if not display:
             print "The DISPLAY environment variable is not set! You can not use any graphical program without it..."
             sys.exit(1)
+            
+    try:
+        import argparse
+    except ImportError:
+        print 'No argparse module found. Install it or use Python 2.7 or later'
+        sys.exit(1)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('file_to_load', nargs='?',
