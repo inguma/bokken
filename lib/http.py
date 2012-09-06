@@ -69,8 +69,8 @@ class Index:
 </head>
 <body>
     <div id="bokken">
-        <div id="brand_header"><h2><img src="/static/img/bokken.svg">Bokken ''' + glob.version + '''</h2></div>
-        <div id="filename">Filename: <span class="content"></span></div>
+    <div id="brand_header"><h2><img src="/static/img/bokken.svg">Bokken ''' + glob.version + '''</h2></div>
+    <div id="filename">Filename: <span class="content"></span></div>
         <div id="asmdump">Assembler dump: <pre class="content"></pre></div>
         <div id="fileexports">Exports: <pre class="content"></pre></div>
         <div id="fileimports">Imports: <pre class="content"></pre></div>
