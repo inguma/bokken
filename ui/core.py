@@ -69,6 +69,7 @@ class Core():
         self.cmd = ''
         self.last_cmd = ''
         self.corename = 'pyew'
+        self.file_loaded = False
 
         self.core = CPyew()
         if os.getenv("PYEW_DEBUG"):
@@ -133,7 +134,12 @@ class Core():
         # Set default file format to raw
         self.core.format = 'raw'
 
-        self.core.loadFile(file, "rb")
+        try:
+            self.core.loadFile(file, "rb")
+        except:
+            self.file_loaded = False
+            return
+        self.file_loaded = True
 
         # Add global object's references for easier usage
         self.pe = self.core.pe
