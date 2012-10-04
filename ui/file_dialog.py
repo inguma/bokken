@@ -127,7 +127,7 @@ class FileDialog(gtk.Dialog):
         self.manager = gtk.recent_manager_get_default()
         items = self.manager.get_items()
         for element in items[:10]:
-            self.model.append( [element.get_display_name()])
+            self.model.append([element.get_uri_display()])
         # Select file button
         icon = gtk.Image()
         icon.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
