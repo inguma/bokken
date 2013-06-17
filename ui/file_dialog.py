@@ -234,7 +234,7 @@ class FileDialog(gtk.Dialog):
         ui.core_functions.repaint()
 
         self.file = self.input_entry.get_child().get_text()
-        if not re.match('[a-z]+://', self.file):
+        if not re.match('^[a-z]+://', self.file):
             # It's a local file.
             self.manager.add_item('file://' + self.file)
         self.get_backend()
