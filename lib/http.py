@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Bokken Disssambler Framework
+Bokken Disassembler Framework
 Copyright (c) 2011-2012 David Martínez Moreno <ender@debian.org>
 
 I am providing code in this repository to you under an open source license.
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 """
 
-""" This library has HTTP functions used in the web UI server. """
+""" This library has HTTP functions used in the web UI server, Mune. """
 
 import threading
 import lib.web as web

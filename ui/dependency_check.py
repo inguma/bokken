@@ -116,7 +116,7 @@ def psyco_dependency_check():
         print OKGREEN + "\tOK" + ENDC
     except ImportError:
         print FAIL + "\tD'oh!" + ENDC
-        msg = 'No psyco module found. It\'s recomended to use it to improve performance\n'
+        msg = 'No psyco module found. It\'s recommended to use it to improve performance\n'
         print msg
 
 def gtkui_dependency_check():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Bokken Disssambler Framework
+Bokken Disassembler Framework
 Copyright (C) 2011-2012 David Martínez Moreno <ender@debian.org>
 
 I am providing code in this repository to you under an open source license.
