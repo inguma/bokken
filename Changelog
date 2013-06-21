@@ -1,5 +1,7 @@
-Release 1.7 (xx-xx-2012)
- * Added new experimental web server (Mune) based on webpy.
+Release 1.7 (xx-xx-2013)
+ * Added new experimental web server (Mune) based on webpy with command-line
+   flag --web.  It's very incomplete but the the idea is to keep making it
+   a first-class citizen in subsequent releases.
 
 Release 1.6 (23-01-2012)
 
@@ -13,7 +15,7 @@ Release 1.6 (23-01-2012)
 
 Release 1.5 (07-12-2011)
 
- * Full support for Radare2.  Now the opening dialog allows one to choosei
+ * Full support for Radare2.  Now the opening dialog allows one to choose
    the engine.
  * Now you can open Java, mach0 and more ELF variants.  The rest of formats
    supported by radare2 are untested.

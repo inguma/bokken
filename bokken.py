@@ -32,7 +32,7 @@ def bokken():
         if not display:
             print "The DISPLAY environment variable is not set! You can not use any graphical program without it..."
             sys.exit(1)
-            
+
     try:
         import argparse
     except ImportError:
@@ -47,7 +47,9 @@ def bokken():
     parser.add_argument('-p', '--pyew', action='store_true',
                         help='Select the pyew core')
     parser.add_argument('-w', '--web', action='store_true',
-                        help='Start up the web server on port 4546')
+                        help='Start up Mune, the internal web server.')
+    parser.add_argument('-l', '--port', nargs='?', default=4546,
+                        help='Port for the web server (default: 4546)')
     args = parser.parse_args()
 
     if args.radare and args.pyew:
@@ -56,6 +58,7 @@ def bokken():
 
     if args.web:
         glob.http_server = True
+        glob.http_server_port = int(args.port)
 
     import ui.main as main
 

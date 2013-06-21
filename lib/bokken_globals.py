@@ -26,4 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """Global configuration object for Bokken."""
 
 version = '1.7-dev'
+http = None
 http_server = False
+http_server_port = 4546

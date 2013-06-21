@@ -79,6 +79,18 @@ class MainApp:
             md.destroy()
             sys.exit(1)
 
+        # Start up the HTTP server.
+        if glob.http_server:
+            import lib.http as httpd
+            http = httpd.BokkenHttpServer(glob.http_server_port)
+            print("\nBringing up HTTP server on port %d." % glob.http_server_port)
+            # We start the thread.
+            http.start()
+            time.sleep(0.2)
+            # We put the http structure in glob to have it accessible in the
+            # global __main__ handler.
+            glob.http = http
+
         # Launch file selection dialog
         dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target, True)
         resp = dialog.run()
@@ -188,18 +200,6 @@ class MainApp:
         if self.uicore.backend == 'radare':
             if not self.uicore.do_anal:
                 self.topbuttons.diff_tb.set_sensitive(False)
-
-        # Start up the HTTP server.
-        if glob.http_server:
-            import lib.http as httpd
-            http = httpd.BokkenHttpServer()
-            print("\nBringing up HTTP server.")
-            # We start the thread.
-            http.start()
-            time.sleep(0.2)
-            # We put the http structure in glob to have it accessible in the
-            # global __main__ handler.
-            glob.http = http
 
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
