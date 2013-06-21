@@ -37,11 +37,10 @@ except ImportError:
 
 class Core():
 
-    def __init__(self, case, deep_anal, progress_bar=None):
+    def __init__(self, dialog):
 
-        self.low_case = case
-        self.deep_anal = deep_anal
-        self.progress_bar = progress_bar
+        self.core = CPyew()
+        self.set_options(dialog)
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -71,7 +70,6 @@ class Core():
         self.corename = 'pyew'
         self.file_loaded = False
 
-        self.core = CPyew()
         if os.getenv("PYEW_DEBUG"):
             self.core.debug=True
         else:
@@ -81,11 +79,7 @@ class Core():
 
         self.core.offset = 0
         self.core.previousoffset = []
-        if self.deep_anal:
-            self.core.deepcodeanalysis = True
 
-        if self.low_case:
-           self.core.case = 'low'
         self.core.physical = False
         self.core.virtual = True
 
@@ -116,18 +110,25 @@ class Core():
         self.cmd = ''
         self.last_cmd = ''
 
-    def set_options(self, low_case, deep_anal, progress_bar):
-        if deep_anal:
+    def set_options(self, dialog):
+        """Method to load all the options from a client."""
+        """TODO: I know that I'm passing a UI component, but until the progress
+        bar goes away and I just pass a dialog.options structure with just the
+        data, there's no real point into splitting them up."""
+
+        self.low_case = dialog.opt_case
+        self.deep_anal = dialog.opt_deep_anal
+        self.progress_bar = dialog.progress_bar
+
+        if self.deep_anal:
             self.core.deepcodeanalysis = True
         else:
             self.core.deepcodeanalysis = False
 
-        if low_case:
+        if self.low_case:
             self.core.case = 'low'
         else:
             self.core.case = 'high'
-
-        self.progress_bar = progress_bar
 
     def load_file(self, file):
         self.update_progress_bar("Loading file", 0.1)

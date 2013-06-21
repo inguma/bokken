@@ -254,14 +254,14 @@ class FileDialog(gtk.Dialog):
     def get_options(self):
         active = self.core_combo.get_active_text()
         if active == 'Pyew':
-            self.deep = self.deep_anal.get_active()
-            self.case = self.case_dasm.get_active()
+            self.opt_deep_anal = self.deep_anal.get_active()
+            self.opt_case = self.case_dasm.get_active()
         if active == 'Radare':
-            self.analyze_bin = self.anal_bin.get_active()
-            self.radare_lower = self.radare_dasm.get_active()
-            self.use_va = self.io_va.get_active()
-            self.asm_syn = self.asm_syntax.get_active()
-            self.asm_byt = self.asm_bytes.get_active()
+            self.opt_analyze_bin = self.anal_bin.get_active()
+            self.opt_case = self.radare_dasm.get_active()
+            self.opt_use_va = self.io_va.get_active()
+            self.opt_asm_syntax = self.asm_syntax.get_active()
+            self.opt_asm_bytes = self.asm_bytes.get_active()
 
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title="Select target",action=gtk.FILE_CHOOSER_ACTION_OPEN,

@@ -70,7 +70,7 @@ class MainApp:
         # Variable to hold the Process object in case we choose to disassemble a binary.
         self.dasm_process = False
 
-        # Check if we have, at least, one core; else: exit
+        # Check if we have, at least, one available core; otherwise exit.
         if not dependency_check.HAS_PYEW and not dependency_check.HAS_RADARE:
             md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
             md.set_markup("<big><b>No backend engines found!</b></big>")
@@ -90,12 +90,13 @@ class MainApp:
 
         # Load selected core
         if self.backend == 'pyew':
-            import ui.pyew_core as pyew_core
-            self.uicore = pyew_core.Core(dialog.case, dialog.deep, dialog.progress_bar)
+            import ui.pyew_core as core
         elif self.backend == 'radare':
-            import ui.radare_core as radare_core
-            self.uicore = radare_core.Core(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va, dialog.asm_byt, dialog.progress_bar)
-        self.uicore.backend = self.backend
+            import ui.radare_core as core
+        else:
+            print 'Unknown backend: %s' % self.backend
+            sys.exit(1)
+        self.uicore = core.Core(dialog)
 
         # Create a global object under glob.
         glob.core = self.uicore
@@ -376,10 +377,7 @@ class MainApp:
             self.backend = dialog.backend
 
             # Set user selected options
-            if self.backend == 'pyew':
-                self.uicore.set_options(dialog.case, dialog.deep, dialog.progress_bar)
-            elif self.backend == 'radare':
-                self.uicore.set_options(dialog.radare_lower, dialog.analyze_bin, dialog.asm_syn ,dialog.use_va, dialog.asm_byt, dialog.progress_bar)
+            self.uicore.set_options(dialog)
 
             self.uicore.backend = self.backend
 

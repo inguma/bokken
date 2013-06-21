@@ -27,14 +27,14 @@ from r2.r_bin import *
 
 class Core():
 
-    def __init__(self, lower_case, do_anal, asm_syn, use_va, asm_bytes, progress_bar=None):
+    def __init__(self, dialog):
 
-        self.do_anal = do_anal
-        self.lower_case = lower_case
-        self.use_va = use_va
-        self.asm_syn = asm_syn
-        self.asm_bytes = asm_bytes
-        self.progress_bar = progress_bar
+        self.core = RCore()
+        self.cons = RCons()
+        self.assembler = self.core.assembler
+        self.core.format = ''
+
+        self.set_options(dialog)
 
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
@@ -65,11 +65,6 @@ class Core():
         self.cmd = ''
         self.last_cmd = ''
         self.corename = 'radare'
-
-        self.core = RCore()
-        self.cons = RCons()
-        self.assembler = self.core.assembler
-        self.core.format = ''
 
         self.backend = 'radare'
         self.file_loaded = False
@@ -136,7 +131,7 @@ class Core():
             self.core.cmd0("e io.va=0")
         else:
             self.core.cmd0("e io.va=1")
-        if self.asm_syn:
+        if self.asm_syntax:
             self.core.cmd0("e asm.syntax=att")
         else:
             self.core.cmd0("e asm.syntax=intel")
@@ -173,13 +168,18 @@ class Core():
         # Check if file name is an URL
         self.is_url(file)
 
-    def set_options(self, lower_case, do_anal, asm_syn, use_va, asm_bytes, progress_bar):
-        self.do_anal = do_anal
-        self.lower_case = lower_case
-        self.use_va = use_va
-        self.asm_syn = asm_syn
-        self.asm_bytes = asm_bytes
-        self.progress_bar = progress_bar
+    def set_options(self, dialog):
+        """Method to load all the options from a client."""
+        """TODO: I know that I'm passing a UI component, but until the progress
+        bar goes away and I just pass a dialog.options structure with just the
+        data, there's no real point into splitting them up."""
+
+        self.lower_case = dialog.opt_case
+        self.do_anal = dialog.opt_analyze_bin
+        self.asm_syntax = dialog.opt_asm_syntax
+        self.use_va = dialog.opt_use_va
+        self.asm_bytes = dialog.opt_asm_bytes
+        self.progress_bar = dialog.progress_bar
 
     def restore_va(self):
         if self.use_va:
