@@ -50,6 +50,8 @@ def bokken():
                         help='Start up Mune, the internal web server.')
     parser.add_argument('-l', '--port', nargs='?', default=4546,
                         help='Port for the web server (default: 4546)')
+    parser.add_argument('-b', '--bind_address', nargs='?', default='0.0.0.0',
+                        help='Local IP address to bind the web server to (default: all)')
     args = parser.parse_args()
 
     if args.radare and args.pyew:
@@ -59,6 +61,7 @@ def bokken():
     if args.web:
         glob.http_server = True
         glob.http_server_port = int(args.port)
+        glob.http_server_bind_address = args.bind_address
 
     import ui.main as main
 

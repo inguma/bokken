@@ -51,7 +51,7 @@ FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 ENDC = '\033[0m'
 
-class MainApp:
+class BokkenGTKClient:
     '''Main GTK application'''
 
     def __init__(self, target, backend):
@@ -82,11 +82,17 @@ class MainApp:
         # Start up the HTTP server.
         if glob.http_server:
             import lib.http as httpd
-            http = httpd.BokkenHttpServer(glob.http_server_port)
-            print("\nBringing up HTTP server on port %d." % glob.http_server_port)
+            http = httpd.BokkenHttpServer(glob.http_server_bind_address,
+                   glob.http_server_port)
+            print("\nBringing up HTTP server on %s:%d." %
+                   (glob.http_server_bind_address, glob.http_server_port))
             # We start the thread.
             http.start()
             time.sleep(0.2)
+            if not http.is_alive():
+                print('Unable to bind to %s:%d.' %
+                        (glob.http_server_bind_address, glob.http_server_port))
+                return None
             # We put the http structure in glob to have it accessible in the
             # global __main__ handler.
             glob.http = http
@@ -95,7 +101,7 @@ class MainApp:
         dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target, True)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
-            sys.exit(1)
+            return None
         # Get dialog selected file, backend and options
         self.target = dialog.file
         self.backend = dialog.backend
@@ -440,6 +446,6 @@ class MainApp:
         return True
 
 def main(target, backend):
-    MainApp(target, backend)
-    if glob.http_server and hasattr(glob,'http'):
+    BokkenGTKClient(target, backend)
+    if glob.http:
         glob.http.terminate()

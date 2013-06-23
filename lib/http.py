@@ -31,9 +31,10 @@ import lib.bokken_globals as glob
 
 class BokkenHttpServer(threading.Thread):
 
-    def __init__(self, port=4546):
+    def __init__(self, bind_address='0.0.0.0', port=4546):
         threading.Thread.__init__(self)
         self.port = port
+        self.bind_address = bind_address
 
     def run(self):
         urls = (
@@ -48,7 +49,7 @@ class BokkenHttpServer(threading.Thread):
                )
 
         self.http = web.application(urls, globals())
-        web.httpserver.runsimple(self.http.wsgifunc(), self.http, ('0.0.0.0', self.port))
+        web.httpserver.runsimple(self.http.wsgifunc(), self.http, (self.bind_address, self.port))
 
     def terminate(self):
         print('Shutting down HTTP server on port %d.' % self.port)
@@ -63,7 +64,7 @@ class Index:
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bokken ''' + glob.version + ''', a GUI for pyew and radare.
+  <title>Bokken ''' + glob.version + ''', a GUI for pyew, radare and more!
   </title>
   <link rel="stylesheet" href="/static/css/bokken.css" type="text/css" media="screen" />
 </head>

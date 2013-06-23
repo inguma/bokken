@@ -48,7 +48,7 @@ class FileDialog(gtk.Dialog):
         self.butt_ok.set_sensitive(False)
         # The Cancel button.
         self.butt_cancel = self.action_area.get_children()[1]
-        #self.butt_cancel.connect("clicked", self.cancel)
+        self.butt_cancel.connect("clicked", self.cancel)
 
         # Window position
         self.set_position(gtk.WIN_POS_CENTER)
@@ -207,8 +207,6 @@ class FileDialog(gtk.Dialog):
             self.radare_label.set_visible(False)
 
     def cancel(self, widget):
-        import sys
-        sys.exit(1)
         self.destroy()
 
     def get_file(self, widget):
