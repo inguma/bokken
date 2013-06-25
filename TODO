@@ -1,0 +1,3 @@
+Convert the *_core classes into inherited classes from a generic Core.
+Remove all the UI code from the core classes.
+Split up the functionality of core into a Core and Corpus class (engine and data).
