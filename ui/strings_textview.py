@@ -116,7 +116,7 @@ class StringsTextView(gtk.VBox, Searchable):
         text = self.buffer.get_text(siter, eiter)
 
         # Get clicked word
-        word_seps = [' ', ',', "\t", "\n", '(', ')']
+        word_seps = (' ', ',', "\t", "\n", '(', ')', ':')
 
         # Get end word offset
         temp_offset = offset

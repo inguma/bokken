@@ -100,7 +100,7 @@ class RightTextView(gtk.VBox, Searchable):
         # Create the search widget
         Searchable.__init__(self, self.view, small=True)
 
-        # Used for code navidation on _search function
+        # Used for code navigation on _search function
         self.match_start = None
         self.match_end = None
         self.search_string = ''
@@ -342,7 +342,7 @@ class RightTextView(gtk.VBox, Searchable):
         self.dograph = False
         self.search_string = ''
         if search_string:
-            # If is an address, search lines begining by this address
+            # If it's an address, search lines beginning with it.
             if '[' in search_string:
                 search_string = search_string.strip('[').strip(']')
             if '0x' in search_string[0:2]:
