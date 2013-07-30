@@ -16,31 +16,30 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+
 import platform
-
 import gtk
-
 import ui.graph as graph
 
 class RightNotebook(gtk.Notebook):
     '''Right Notebook elements'''
 
-    def __init__(self, tviews, scrolled_window, strings_textview, repr_textview, interactive_scrolled, bindiff, html_elements, info_elements, uicore, main):
+    def __init__(self, tviews):
         super(RightNotebook,self).__init__()
 
         self.last_fcn = ''
 
         self.tviews = tviews
-        self.scrolled_window = scrolled_window
-        self.strings_textview = strings_textview
-        self.repr_textview = repr_textview
-        self.interactive_scrolled = interactive_scrolled
+        self.scrolled_window = self.tviews.right_textview
+        self.strings_textview = self.tviews.strings_textview
+        self.repr_textview = self.tviews.repr_textview
+        self.interactive_scrolled = self.tviews.interactive_textview
         self.hexdump_view = self.tviews.hexdump_view
-        self.bindiff = bindiff
-        self.html_elements = html_elements
-        self.info_elements = info_elements
-        self.uicore = uicore
-        self.main = main
+        self.bindiff = self.tviews.bindiff
+        self.html_elements = self.tviews.html_widget
+        self.info_elements = self.tviews.info_widget
+        self.uicore = self.tviews.uicore
+        self.main = self.tviews.main
 
         self.xdot_box = graph.MyDotWidget(self.uicore, self.main)
         self.xdot_widget = self.xdot_box.dot_widget
@@ -154,7 +153,7 @@ class RightNotebook(gtk.Notebook):
         if self.uicore.backend == 'radare':
             self.append_page(self.bindiff)
             tab = self.create_tab('Bindiff', self.bindiff, 'REFRESH')
-    
+
             self.set_tab_label_packing(self.bindiff, False, False, gtk.PACK_START)
             self.set_tab_label(self.bindiff, tab)
             self.show_all()
@@ -170,7 +169,7 @@ class RightNotebook(gtk.Notebook):
         if self.uicore.core.format == 'URL':
             self.append_page(self.html_elements)
             tab = self.create_tab('Elements', self.html_elements, 'INFO')
-    
+
             self.set_tab_label_packing(self.html_elements, False, False, gtk.PACK_START)
             self.set_tab_label(self.html_elements, tab)
             self.html_elements.html_tree.create_html_tree()
@@ -180,15 +179,15 @@ class RightNotebook(gtk.Notebook):
     def add_info_elements_tab(self):
         #################################################
         # File info elements TAB
-        if self.uicore.backend == 'radare':
-            self.uicore.get_full_file_info()
-            self.append_page(self.info_elements)
-            tab = self.create_tab('File info', self.info_elements, 'INFO')
+        # Only on radare for now.
+        self.uicore.get_full_file_info()
+        self.append_page(self.info_elements)
+        tab = self.create_tab('File info', self.info_elements, 'INFO')
 
-            self.set_tab_label_packing(self.info_elements, False, False, gtk.PACK_START)
-            self.set_tab_label(self.info_elements, tab)
-            self.info_elements.info_tree.create_info_tree()
-            self.show_all()
+        self.set_tab_label_packing(self.info_elements, False, False, gtk.PACK_START)
+        self.set_tab_label(self.info_elements, tab)
+        self.info_elements.info_tree.create_info_tree()
+        self.show_all()
 
 #    def hide_tabs(self):
 #        self.set_show_tabs(False)

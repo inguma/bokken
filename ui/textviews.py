@@ -154,9 +154,7 @@ class TextViews(gtk.HBox):
         #################################################################
         # Right NoteBook
         #################################################################
-        self.right_notebook = rightnotebook.RightNotebook(self, self.right_textview, \
-                              self.strings_textview, self.repr_textview, self.interactive_textview, \
-                              self.bindiff, self.html_widget, self.info_widget, self.uicore, self.main)
+        self.right_notebook = rightnotebook.RightNotebook(self)
 
         # Add notebook to the paned
         self.left_paned.pack2(self.right_notebook, True, True)
