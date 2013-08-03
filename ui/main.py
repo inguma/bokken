@@ -148,7 +148,7 @@ class BokkenGTKClient:
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_focus = True
         self.window.connect("delete_event", self.quit)
-        self.window.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(self.window)
         gtk.settings_get_default().set_long_property("gtk-button-images", True, "main")
 
         # Title

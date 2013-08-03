@@ -21,6 +21,7 @@
 
 import os
 import gtk
+import ui.gtk2.common
 
 class CheatsheetDialog(gtk.Dialog):
     '''Window to popup cheatsheet output'''
@@ -140,7 +141,7 @@ class CheatsheetDialog(gtk.Dialog):
         # Positions
         self.resize(600, 700)
         self.set_position(gtk.WIN_POS_CENTER)
-        self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(self)
         self.pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'block.png')
 
         # Font
@@ -408,7 +409,7 @@ class CheatsheetDialog(gtk.Dialog):
 
     def popup_stack(self, widget):
         dialog = gtk.Dialog('The stack', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE))
-        dialog.set_icon_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(dialog)
         stack_img = gtk.Image()
         stack_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'stack.png')
         dialog.vbox.pack_start(self.create_h1_label("The stack"), False, False, 2)
@@ -419,7 +420,7 @@ class CheatsheetDialog(gtk.Dialog):
 
     def popup_registers(self, widget):
         dialog = gtk.Dialog('16­bit and 8­bit registers', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE))
-        dialog.set_icon_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(dialog)
         reg_img = gtk.Image()
         reg_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'registers.png')
         reg_label = gtk.Label("The four primary general purpose registers (EAX, EBX, ECX and EDX)\nhave 16 and 8 bit overlapping aliases.")
@@ -436,6 +437,6 @@ class CheatsheetDialog(gtk.Dialog):
             gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, 
             gtk.BUTTONS_CLOSE, "")
         md.set_markup('The data for this cheat sheet\nhas been borrowed from:\n\n<a href="http://www.rnicrosoft.net">http://www.rnicrosoft.net</a>\n\nThe original cheat sheet can be\ndownloaded from <a href="http://www.rnicrosoft.net/docs/X86_Win32_Reverse_Engineering_Cheat_Sheet.pdf">here</a>')
-        md.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(md)
         md.run()
         md.destroy()

@@ -17,8 +17,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
+import ui.gtk2.common
 
 class CalcDialog(gtk.Dialog):
     '''Window popup to select files'''
@@ -30,7 +30,7 @@ class CalcDialog(gtk.Dialog):
 
         # Set dialog resizeable and auto-shrink
         self.set_policy(False, False, True)
-        self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(self)
 
         self.examples = "Examples:\n0x100\n0x100 + 20\n01001\n01001 + 0x10\n0x10 + 20 * 0101"
 

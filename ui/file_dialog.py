@@ -21,6 +21,7 @@ import os
 
 import gtk
 import gobject
+import ui.gtk2.common
 
 import lib.bokken_globals as glob
 
@@ -40,7 +41,7 @@ class FileDialog(gtk.Dialog):
 
         # Set dialog resizeable and auto-shrink
         self.set_resizable(False)
-        self.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(self)
 
         # The Ok Button.
         self.butt_ok = self.action_area.get_children()[0]

@@ -21,6 +21,7 @@
 import os
 import gtk
 import lib.bokken_globals as glob
+import ui.gtk2.common
 
 class AboutDialog():
     '''About dialog'''
@@ -29,7 +30,7 @@ class AboutDialog():
 
         about = gtk.AboutDialog()
         about.set_program_name("Bokken")
-        about.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        ui.gtk2.common.set_bokken_icon(about)
         about.set_version(glob.version)
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
         about.set_comments("A GUI for pyew and radare2!")

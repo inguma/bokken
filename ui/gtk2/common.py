@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """This library provides general functions for the GTK2 UI."""
 
 import gtk
+import os
 
 def repaint():
     '''Easy function to clean up the event queue and force a repaint.'''
@@ -33,3 +34,11 @@ def repaint():
     # I've been unable to find any other way to repaint the interface. :-(
     while gtk.events_pending():
         gtk.main_iteration_do()
+
+def set_bokken_icon(obj):
+    '''Set the Bokken icon in a generic GTK object.  If the method
+    set_icon_from_file() doesn't exist in the object, it will print a
+    stacktrace.'''
+    sep = os.sep
+    obj.set_icon_from_file(os.path.dirname(__file__) + sep + '..' + sep + 'data'
+        + sep + 'bokken.svg')

@@ -20,6 +20,7 @@
 import os
 
 import gtk
+import ui.gtk2.common
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -47,7 +48,6 @@ class TopButtons(gtk.HBox):
         self.toolbox = self
         self.dependency_check = self.main.dependency_check
 
-        self.img_path = os.path.dirname(__file__) + os.sep + 'data' + os.sep
         self.options_dict = {'String':' ', 'String no case':'i ', 'Hexadecimal':'x ', 'Regexp':'e '}
 
         self.main_tb = gtk.Toolbar()
@@ -218,7 +218,7 @@ class TopButtons(gtk.HBox):
         if magic:
             md = gtk.MessageDialog(None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, 
                 gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
-            md.set_icon_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+            ui.gtk2.common.set_bokken_icon(md)
             md.set_markup("<b>Detected file magic:</b>\n\n" + magic)
             md.run()
             md.destroy()
