@@ -17,8 +17,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
+from lib.common import datafile_path
 
 class XrefsMenu(gtk.MenuBar):
     '''Xrefs Menu'''
@@ -30,7 +30,7 @@ class XrefsMenu(gtk.MenuBar):
         self.main = main
 
         self.fcn_img = gtk.Image()
-        self.fcn_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'function.png')
+        self.fcn_img.set_from_file(datafile_path('function.png'))
 
     def create_menu(self, fcn, refs, xrefs, pack=True):
         # Function Menu

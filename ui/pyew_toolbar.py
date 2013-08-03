@@ -17,10 +17,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
-
 import gtk, gobject
 import threading
+from lib.common import datafile_path
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -45,7 +44,6 @@ class TopButtons(gtk.HBox):
         self.toolbox = self
         self.dependency_check = self.main.dependency_check
 
-        self.img_path = os.path.dirname(__file__) + os.sep + 'data' + os.sep
         self.options_dict = {'Hexadecimal':'x', 'String':'s', 'String no case':'i', 'Regexp':'r', 'Unicode':'u', 'Unicode no case':'U'}
 
         self.main_tb = gtk.Toolbar()
@@ -79,7 +77,7 @@ class TopButtons(gtk.HBox):
         # URL related buttons
 
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path + 'response-headers.png')
+        pixbuf = gtk.gdk.pixbuf_new_from_file(datafile_path('response-headers.png'))
         scaled_buf = pixbuf.scale_simple(24,24,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         self.urls = gtk.MenuToolButton(i, 'URL')
@@ -88,7 +86,7 @@ class TopButtons(gtk.HBox):
         self.urls_menu = gtk.Menu()
 
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path + 'response-headers.png')
+        pixbuf = gtk.gdk.pixbuf_new_from_file(datafile_path('response-headers.png'))
         scaled_buf = pixbuf.scale_simple(16,16,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         item = gtk.ImageMenuItem('Search for URL')
@@ -97,7 +95,7 @@ class TopButtons(gtk.HBox):
         self.urls_menu.append(item)
 
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path + 'response-body.png')
+        pixbuf = gtk.gdk.pixbuf_new_from_file(datafile_path('response-body.png'))
         scaled_buf = pixbuf.scale_simple(16,16,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         item = gtk.ImageMenuItem('Check URL')
@@ -106,7 +104,7 @@ class TopButtons(gtk.HBox):
         self.urls_menu.append(item)
 
         i = gtk.Image()
-        pixbuf = gtk.gdk.pixbuf_new_from_file(self.img_path + 'request-body.png')
+        pixbuf = gtk.gdk.pixbuf_new_from_file(datafile_path('request-body.png'))
         scaled_buf = pixbuf.scale_simple(16,16,gtk.gdk.INTERP_BILINEAR)
         i.set_from_pixbuf(scaled_buf)
         item = gtk.ImageMenuItem('Check bad URL')
@@ -183,10 +181,10 @@ class TopButtons(gtk.HBox):
         self.search_combo.add_attribute(rendererText, 'text', 1)
 
         options = {
-            'String':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_16.png'),
-            'String no case':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_no_case_16.png'),
-            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_hexadecimal_16.png'),
-            'Regexp':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_regexp_16.png')
+            'String':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_16.png')),
+            'String no case':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_no_case_16.png')),
+            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_hexadecimal_16.png')),
+            'Regexp':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_regexp_16.png'))
         }
 
         for option in options.keys():

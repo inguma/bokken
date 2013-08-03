@@ -22,6 +22,7 @@ import os
 import gtk
 import gobject
 import ui.gtk2.common
+from lib.common import datafile_path
 
 import lib.bokken_globals as glob
 
@@ -60,7 +61,7 @@ class FileDialog(gtk.Dialog):
 
         # Logo
         self.logo = gtk.Image()
-        self.logo.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'bokken.svg')
+        self.logo.set_from_file(datafile_path('bokken.svg'))
         # Logo label
         self.logo_text = gtk.Label()
         self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken '+glob.version+'</b></span>')

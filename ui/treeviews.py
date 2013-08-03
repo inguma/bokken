@@ -17,8 +17,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
+from lib.common import datafile_path
 
 class TreeViews(gtk.TreeView):
     '''Main TextView elements'''
@@ -39,8 +39,8 @@ class TreeViews(gtk.TreeView):
     
         rendererText = gtk.CellRendererText()
         rendererPix = gtk.CellRendererPixbuf()
-        self.fcn_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'function.png')
-        self.bb_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'block.png')
+        self.fcn_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('function.png'))
+        self.bb_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('block.png'))
         column = gtk.TreeViewColumn("Function")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
@@ -54,7 +54,7 @@ class TreeViews(gtk.TreeView):
 
     def create_sections_columns(self):
     
-        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'data-sec.png')
+        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('data-sec.png'))
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Section")
@@ -85,7 +85,7 @@ class TreeViews(gtk.TreeView):
 
     def create_exports_columns(self):
 
-        self.exp_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'export.png')
+        self.exp_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('export.png'))
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Offset")
@@ -222,10 +222,10 @@ class TreeViews(gtk.TreeView):
 
         self.treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str)
 
-        self.remote_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'function.png')
-        self.local_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'block.png')
-        self.exp_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'export.png')
-        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'data-sec.png')
+        self.remote_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('function.png'))
+        self.local_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('block.png'))
+        self.exp_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('export.png'))
+        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('data-sec.png'))
 
         # Iterate links and add to the tree
         it = self.treestore.append(None, [self.remote_pix, 'Remote links'])
@@ -248,7 +248,7 @@ class TreeViews(gtk.TreeView):
 
         self.treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str)
 
-        self.imp_pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'import.png')
+        self.imp_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('import.png'))
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
         imports.pack_start(rendererPix, False)

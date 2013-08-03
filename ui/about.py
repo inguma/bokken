@@ -18,10 +18,10 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
 import lib.bokken_globals as glob
 import ui.gtk2.common
+from lib.common import datafile_path
 
 class AboutDialog():
     '''About dialog'''
@@ -37,6 +37,6 @@ class AboutDialog():
         about.set_website("http://bokken.inguma.eu")
         about.set_authors(["Hugo Teso <hteso@inguma.eu>", "David Martínez <ender@inguma.eu>"])
         about.set_artists(["Ana Muniesa <ana.muniesa@gmail.com>", "Huahe <juanje@gmail.com> twitter: @huahe", "Marcos Gómez <renx67@gmail.com>"])
-        about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken.svg'))
+        about.set_logo(gtk.gdk.pixbuf_new_from_file(datafile_path('bokken.svg')))
 
         return about

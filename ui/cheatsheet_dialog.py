@@ -19,9 +19,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk
 import ui.gtk2.common
+from lib.common import datafile_path
 
 class CheatsheetDialog(gtk.Dialog):
     '''Window to popup cheatsheet output'''
@@ -142,7 +142,7 @@ class CheatsheetDialog(gtk.Dialog):
         self.resize(600, 700)
         self.set_position(gtk.WIN_POS_CENTER)
         ui.gtk2.common.set_bokken_icon(self)
-        self.pix = gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'block.png')
+        self.pix = gtk.gdk.pixbuf_new_from_file(datafile_path('block.png'))
 
         # Font
         font_desc = pango.FontDescription("FreeSans 9")
@@ -411,7 +411,7 @@ class CheatsheetDialog(gtk.Dialog):
         dialog = gtk.Dialog('The stack', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE))
         ui.gtk2.common.set_bokken_icon(dialog)
         stack_img = gtk.Image()
-        stack_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'stack.png')
+        stack_img.set_from_file(datafile_path('stack.png'))
         dialog.vbox.pack_start(self.create_h1_label("The stack"), False, False, 2)
         dialog.vbox.pack_start(stack_img, True, True, 2)
         dialog.show_all()
@@ -422,7 +422,7 @@ class CheatsheetDialog(gtk.Dialog):
         dialog = gtk.Dialog('16­bit and 8­bit registers', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE))
         ui.gtk2.common.set_bokken_icon(dialog)
         reg_img = gtk.Image()
-        reg_img.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'registers.png')
+        reg_img.set_from_file(datafile_path('registers.png'))
         reg_label = gtk.Label("The four primary general purpose registers (EAX, EBX, ECX and EDX)\nhave 16 and 8 bit overlapping aliases.")
         reg_label.set_alignment(0.1, 0.1)
         reg_label.set_padding (0, 3)

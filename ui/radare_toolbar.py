@@ -17,10 +17,10 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 
 import gtk
 import ui.gtk2.common
+from lib.common import datafile_path
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -88,7 +88,7 @@ class TopButtons(gtk.HBox):
 
         # Calculator button
         self.image = gtk.Image()
-        self.image.set_from_file(os.path.dirname(__file__)+os.sep+'data'+os.sep+'calc.png')
+        self.image.set_from_file(datafile_path('calc.png'))
         self.calc_tb = gtk.ToolButton()
         self.calc_tb.set_icon_widget(self.image)
         self.calc_tb.set_tooltip_text('Show calculator')
@@ -118,10 +118,10 @@ class TopButtons(gtk.HBox):
         self.search_combo.add_attribute(rendererText, 'text', 1)
 
         options = {
-            'String':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_16.png'),
-            'String no case':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_string_no_case_16.png'),
-            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_hexadecimal_16.png'),
-            'Regexp':gtk.gdk.pixbuf_new_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'icon_regexp_16.png')
+            'String':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_16.png')),
+            'String no case':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_no_case_16.png')),
+            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_hexadecimal_16.png')),
+            'Regexp':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_regexp_16.png'))
         }
 
         for option in options.keys():

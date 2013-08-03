@@ -17,8 +17,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
 import gtk, pango
+from lib.common import datafile_path
 
 class MainMenuButton (gtk.ToggleButton):
     """Launches the popup menu when clicked.
@@ -40,7 +40,7 @@ class MainMenuButton (gtk.ToggleButton):
         hbox1 = gtk.HBox()
         hbox2 = gtk.HBox()
         icon = gtk.Image()
-        icon.set_from_file(os.path.dirname(__file__) + os.sep + 'data' + os.sep + 'bokken-small.svg')
+        icon.set_from_file(datafile_path('bokken-small.svg'))
         hbox1.pack_start(icon, True, True, 3)
         label = gtk.Label(text)
         hbox1.pack_start(label, True, True, 3)
