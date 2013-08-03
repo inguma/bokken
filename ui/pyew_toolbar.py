@@ -324,15 +324,15 @@ class TopButtons(gtk.HBox):
             active = self.search_combo.get_active()
             option = model[active][1]
 
-            results = self.uicore.dosearch(data, self.options_dict[option])
+            results = self.uicore.string_search(data, self.options_dict[option])
 
             self.create_search_dialog()
             enditer = self.search_dialog.output_buffer.get_end_iter()
 
-            FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
             for element in results:
-                hit = ("HIT [0x%08x]: %s\n" % (element.keys()[0], element.values()[0].translate(FILTER)))
-                self.search_dialog.output_buffer.insert(enditer, hit)
+                self.search_dialog.output_buffer.insert(enditer, '%s: %s\n' % (element[0], element[1]))
+            if not results:
+                self.search_dialog.output_buffer.insert(enditer, ('No hits!'))
 
     def show_urls(self, widget):
         urls = self.uicore.get_urls()

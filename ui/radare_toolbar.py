@@ -278,13 +278,15 @@ class TopButtons(gtk.HBox):
             active = self.search_combo.get_active()
             option = model[active][1]
     
-            results = self.uicore.search(data, self.options_dict[option])
+            results = self.uicore.string_search(data, self.options_dict[option])
     
             self.create_search_dialog()
             enditer = self.search_dialog.output_buffer.get_end_iter()
     
             for element in results:
-                self.search_dialog.output_buffer.insert(enditer, element)
+                self.search_dialog.output_buffer.insert(enditer, '%s: %s\n' % (element[0], element[1]))
+            if not results:
+                self.search_dialog.output_buffer.insert(enditer, ('No hits!'))
 
     def create_assemble_dialog(self):
 

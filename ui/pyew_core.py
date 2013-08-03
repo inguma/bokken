@@ -532,10 +532,20 @@ class Core():
         packers = packer.search_packer(self.core)
         return packers
 
-    def dosearch(self, data, type):
+    def string_search(self, text, type):
+        '''Searches an arbitrary string text in the analyzed content.'''
         # search types: s, u, r, o, i, x
 
-        results = self.core.dosearch(self.core.f, type, data, offset=self.core.offset, cols=64, doprint=False)
+        hits = self.core.dosearch(self.core.f, type, text, offset=self.core.offset, cols=64, doprint=False)
+        # The format of 'hits' is *very* weird: a list of dictionaries, one
+        # per match, with the address in decimal as key and the entire text in
+        # that address as value.  Let's change the decimal to hex, and the dicts
+        # to tuples.
+        results = []
+        # To avoid binary crap, we'll print any non-printable character as a dot.
+        FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
+        for element in hits:
+            results.append(('0x%08x' % element.keys()[0], '%s' % element.values()[0].translate(FILTER)))
         return results
 
     def search_http_src(self):

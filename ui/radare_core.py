@@ -510,42 +510,28 @@ class Core():
 
         return data
 
-    def search(self, text, type):
+    def string_search(self, text, type):
+        '''Searches an arbitrary string text in the analyzed content.'''
         self.core.cmd0('e io.va=0')
         self.core.cmd0('s 0')
-        print "Searching %s with format %s" % (text, type)
-        hits = self.core.cmd_str('/' + type + text)
+        results = {}
+
+        hits = self.core.cmd_str('/' + type + text).rstrip().split('\n')
+        # The first line is 'fs hits', so discard it.
+        hits = hits[1:]
+        # The output is:
+        # f hit4_0 1 0x0000023a
+        # f hit4_1 1 0x00000243
+        # ...
+        # We get just the last word from every line.
+        # What we do is to make every element a list.  Theoretically it should
+        # be (address, address_text) but radare returns just the first one, so
+        # for the time being we put an empty string as the second element.
+        results = map(lambda x: (x.split(' ')[-1], ''), hits)
+
         #self.core.cmd0('e io.va=1')
         self.restore_va()
-        return hits
-
-    def search_http_src(self):
-        srcs = self.core.dosearch(self.core.f, 's', 'src="', offset=self.core.offset, cols=100, doprint=False)
-        hrefs = self.core.dosearch(self.core.f, 's', 'href="', offset=self.core.offset, cols=100, doprint=False)
-        results = srcs + hrefs
-        for element in results:
-            link = element.values()[0].split('"')[1]
-            if link.startswith('http://') or link.startswith('https://') and link != '':
-                self.parsed_links['remotes'].append(link)
-            else:
-                if link != '':
-                   self.parsed_links['locals'].append(link)
-
-    # Parse http resources to create graph
-    def parse_http_locals(self):
-        for element in self.parsed_links['locals']:
-            element = element.strip(' ').split('/')
-            if len(element) > 1:
-                try:
-                    root = next(s for s in element if s)
-                    root_index = element.index(root)
-                    self.links_struct.append( {root:element[root_index + 1:]} )
-                except:
-                    pass
-            elif len(element) == 1:
-                self.links_struct.append( {element[0]:['']} )
-        import ui.generate_dot as gendot
-        self.http_dot = gendot.generate_dot(self.links_struct, self.core.filename)
+        return results
 
     def update_progress_bar(self, text, percent):
         """ Easy function to clean up the event queue and force a repaint. """
