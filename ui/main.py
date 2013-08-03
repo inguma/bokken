@@ -41,6 +41,7 @@ print "  GTK version:", ".".join(str(x) for x in gtk.gtk_version)
 print "  PyGTK version:", ".".join(str(x) for x in gtk.pygtk_version)
 print
 
+import ui.gtk2.common
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
@@ -139,8 +140,7 @@ class BokkenGTKClient:
                 print error_msg
                 sys.exit(1)
 
-            import ui.core_functions
-            ui.core_functions.repaint()
+            ui.gtk2.common.repaint()
 
         else:
             self.empty_gui = True
@@ -391,8 +391,7 @@ class BokkenGTKClient:
 
             self.load_file(self.target)
 
-            import ui.core_functions
-            ui.core_functions.repaint()
+            ui.gtk2.common.repaint()
 
         # Clean UI
         self.topbuttons.menu.delete_view_menu()

@@ -535,10 +535,10 @@ class Core():
 
     def update_progress_bar(self, text, percent):
         """ Easy function to clean up the event queue and force a repaint. """
-        import ui.core_functions
+        import ui.gtk2.common
 
         if not self.progress_bar:
             return
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
-        ui.core_functions.repaint()
+        ui.gtk2.common.repaint()

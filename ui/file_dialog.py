@@ -211,7 +211,7 @@ class FileDialog(gtk.Dialog):
 
     def get_file(self, widget):
         import re
-        import ui.core_functions
+        import ui.gtk2.common
 
         # Disable all the interface and Ok button.
         self.core_hbox.set_sensitive(False)
@@ -229,7 +229,7 @@ class FileDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.progress_box, False, False, 2)
         self.progress_box.show_all()
 
-        ui.core_functions.repaint()
+        ui.gtk2.common.repaint()
 
         self.file = self.input_entry.get_child().get_text()
         if not re.match('^[a-z]+://', self.file):
