@@ -18,16 +18,16 @@
 #       MA 02110-1301, USA.
 
 import gtk
-import ui.gtk2.common
+from lib.common import datafile_path
 
 class Throbber(gtk.ToolButton):
     '''Creates the throbber widget'''
     def __init__(self):
         self.img_static = gtk.Image()
-        self.img_static.set_from_file(ui.gtk2.common.datafile_path('throbber_static.gif'))
+        self.img_static.set_from_file(datafile_path('throbber_static.gif'))
         self.img_static.show()
         self.img_animat = gtk.Image()
-        self.img_animat.set_from_file(ui.gtk2.common.datafile_path('throbber_animat.gif'))
+        self.img_animat.set_from_file(datafile_path('throbber_animat.gif'))
         self.img_animat.show()
 
         super(Throbber,self).__init__(self.img_static, "")

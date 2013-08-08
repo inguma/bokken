@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """This library provides general functions for the GTK2 UI."""
 
 import gtk
-import os
+import lib.common
 
 def repaint():
     '''Easy function to clean up the event queue and force a repaint.'''
@@ -39,6 +39,4 @@ def set_bokken_icon(obj):
     '''Set the Bokken icon in a generic GTK object.  If the method
     set_icon_from_file() doesn't exist in the object, it will print a
     stacktrace.'''
-    sep = os.sep
-    obj.set_icon_from_file(os.path.dirname(__file__) + sep + '..' + sep + 'data'
-        + sep + 'bokken.svg')
+    obj.set_icon_from_file(lib.common.datafile_path('bokken.svg'))
