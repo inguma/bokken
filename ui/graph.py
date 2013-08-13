@@ -106,10 +106,13 @@ class MyDotWidget(gtk.HBox):
 
     def popup_menu(self, tree, event):
         if event.button == 1:
-            #(path, column) = tree.get_cursor()
-            (path, column, x, y) = tree.get_path_at_pos(int(event.x), int(event.y))
-            # Is it over a plugin name ?
-            # Ge the information about the click
-            if path is not None and len(path) == 2 and self.nodes:
+            coordinates = tree.get_path_at_pos(int(event.x), int(event.y))
+            # Get the information about the click.
+            # coordinates is None if the click is outside the rows but inside
+            # the widget.
+            if not coordinates:
+                return False
+            (path, column, x, y) = coordinates
+            if len(path) == 2 and self.nodes:
                 node = self.treestore[path][0]
-                self.dot_widget.animate_to( int(self.nodes[node][0]), int(self.nodes[node][1]) )
+                self.dot_widget.animate_to(int(self.nodes[node][0]), int(self.nodes[node][1]))

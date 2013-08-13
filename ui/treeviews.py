@@ -296,12 +296,18 @@ class TreeViews(gtk.TreeView):
         if event.button == 3:
             # It's a right click!
             _time = event.time
-            (path, column, x, y) = tv.get_path_at_pos(int(event.x), int(event.y))
-            # Is it over a plugin name ?
-            # Get the information about the click
-            if path is not None and len(path) == 1:
+            coordinates = tv.get_path_at_pos(int(event.x), int(event.y))
+            # coordinates is None if the click is outside the rows but inside
+            # the widget.
+            if not coordinates:
+                return False
+
+            (path, column, x, y) = coordinates
+            # Is it over a plugin name?
+            # Get the information about the click.
+            if len(path) == 1:
                 link_name = self.store[path][1]
-            elif path is not None and len(path) == 2:
+            else:
                 link_name = self.treestore[path][1]
 
             # Detect if search string is from URL or PE/ELF
@@ -355,15 +361,21 @@ class TreeViews(gtk.TreeView):
         #elif event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
         elif event.button == 1:
             # It's a double-click!
-            (path, column, x, y) = tv.get_path_at_pos(int(event.x), int(event.y))
-            # Is it over a plugin name ?
-            # Get the information about the click
-            if path is not None and len(path) == 1:
+            coordinates = tv.get_path_at_pos(int(event.x), int(event.y))
+            # coordinates is None if the click is outside the rows but inside
+            # the widget.
+            if not coordinates:
+                return False
+
+            (path, column, x, y) = coordinates
+            # Is it over a plugin name?
+            # Get the information about the click.
+            if len(path) == 1:
                 link_name = self.store[path][1]
                 # Special for exports
                 if '0x' in link_name:
                     link_name = self.store[path][2]
-            elif path is not None and len(path) == 2:
+            else:
                 link_name = self.treestore[path][1]
 
             # Detect if search string is from URL or PE/ELF
