@@ -209,6 +209,11 @@ class TopButtons(gtk.HBox):
         self.search_entry.connect('focus-in-event', self._clean, 'in')
         self.search_entry.connect('focus-out-event', self._clean, 'out')
         self.search_entry_tb.add(self.search_entry)
+        # We use the AccelGroup object from the main window.
+        self.my_accel = gtk.accel_groups_from_object(self.main.window)[0]
+        key, mod = gtk.accelerator_parse('<Control>F')
+        self.search_entry.set_tooltip_text('Control-F to search')
+        self.search_entry.add_accelerator('grab-focus', self.my_accel, key, mod, gtk.ACCEL_MASK)
         self.main_tb.insert(self.search_entry_tb, 16)
 
         # Separator
