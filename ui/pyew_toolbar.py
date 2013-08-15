@@ -58,21 +58,21 @@ class TopButtons(gtk.HBox):
         menu_toolitem = gtk.ToolItem()
 
         menu_toolitem.add(self.menu_button)
-        self.main_tb.insert(menu_toolitem, 0)
+        self.main_tb.insert(menu_toolitem, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 1)
+        self.main_tb.insert(self.sep, -1)
 
         # PDF Streams search
         self.streams_tb = gtk.ToolButton(gtk.STOCK_INDEX)
         self.streams_tb.set_tooltip_text('Find PDF streams')
         self.streams_tb.connect("clicked", self.search_pdfstreams)
         self.streams_tb.set_sensitive(False)
-        self.main_tb.insert(self.streams_tb, 2)
+        self.main_tb.insert(self.streams_tb, -1)
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 3)
+        self.main_tb.insert(self.sep, -1)
 
         # URL related buttons
 
@@ -116,127 +116,82 @@ class TopButtons(gtk.HBox):
 
         self.urls.set_menu(self.urls_menu)
         self.urls_menu.show_all()
-        self.main_tb.insert(self.urls, 4)
+        self.main_tb.insert(self.urls, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 5)
+        self.main_tb.insert(self.sep, -1)
 
-        # Visualizatin buttons
+        # Visualization buttons
         self.visbin_tb = gtk.ToolButton(gtk.STOCK_ZOOM_FIT)
         self.visbin_tb.connect("clicked", self.execute, 'binvi')
         self.visbin_tb.set_tooltip_text('Visualize binary')
         self.visbin_tb.set_sensitive(False)
-        self.main_tb.insert(self.visbin_tb, 6)
+        self.main_tb.insert(self.visbin_tb, -1)
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 7)
+        self.main_tb.insert(self.sep, -1)
 
         # Binary analysis buttons
         self.vtotal_tb = gtk.ToolButton(gtk.STOCK_CONNECT)
         self.vtotal_tb.connect("clicked", self.send_to_virustotal)
         self.vtotal_tb.set_tooltip_text('Send to VirusTotal')
         self.vtotal_tb.set_sensitive(False)
-        self.main_tb.insert(self.vtotal_tb, 8)
+        self.main_tb.insert(self.vtotal_tb, -1)
 
         self.threat_tb = gtk.ToolButton(gtk.STOCK_JUMP_TO)
         self.threat_tb.connect("clicked", self.execute, 'threat')
         self.threat_tb.set_tooltip_text('Search in Threat Expert')
         self.threat_tb.set_sensitive(False)
-        self.main_tb.insert(self.threat_tb, 9)
+        self.main_tb.insert(self.threat_tb, -1)
 
         self.shellcode_tb = gtk.ToolButton(gtk.STOCK_FIND)
         self.shellcode_tb.connect("clicked", self.search_shellcode)
         self.shellcode_tb.set_tooltip_text('Search for Shellcode')
         self.shellcode_tb.set_sensitive(False)
-        self.main_tb.insert(self.shellcode_tb, 10)
+        self.main_tb.insert(self.shellcode_tb, -1)
 
         # not yet working properly
         self.antivm_tb = gtk.ToolButton(gtk.STOCK_FIND_AND_REPLACE)
         self.antivm_tb.connect("clicked", self.search_antivm)
         self.antivm_tb.set_tooltip_text('Search for antivm tricks')
         self.antivm_tb.set_sensitive(False)
-        self.main_tb.insert(self.antivm_tb, 11)
+        self.main_tb.insert(self.antivm_tb, -1)
 
         self.packed_tb = gtk.ToolButton(gtk.STOCK_CONVERT)
         self.packed_tb.connect("clicked", self.check_packer)
         self.packed_tb.set_tooltip_text('Check if the PE file is packed')
         self.packed_tb.set_sensitive(False)
-        self.main_tb.insert(self.packed_tb, 12)
+        self.main_tb.insert(self.packed_tb, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 13)
+        self.main_tb.insert(self.sep, -1)
 
-        # Search components
-        self.search_combo_tb = gtk.ToolItem()
-        self.search_combo_align = gtk.Alignment(yalign=0.5)
-        store = gtk.ListStore(gtk.gdk.Pixbuf, str)
-        self.search_combo = gtk.ComboBox(store)
-        rendererText = gtk.CellRendererText()
-        rendererPix = gtk.CellRendererPixbuf()
-        self.search_combo.pack_start(rendererPix, False)
-        self.search_combo.pack_start(rendererText, True)
-        self.search_combo.add_attribute(rendererPix, 'pixbuf', 0)
-        self.search_combo.add_attribute(rendererText, 'text', 1)
-
-        options = {
-            'String':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_16.png')),
-            'String no case':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_no_case_16.png')),
-            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_hexadecimal_16.png')),
-            'Regexp':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_regexp_16.png'))
-        }
-
-        for option in options.keys():
-            store.append([options[option], option])
-        self.search_combo.set_active(0)
-        self.search_combo_align.add(self.search_combo)
-        self.search_combo_tb.add(self.search_combo_align)
-        self.main_tb.insert(self.search_combo_tb, 14)
+        import ui.search_widget
+        ui.search_widget.create(self)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 15)
-
-        self.search_entry_tb = gtk.ToolItem()
-        self.search_entry = gtk.Entry(100)
-        self.search_entry.set_text('Text to search')
-        self.search_entry.set_icon_from_stock(1, gtk.STOCK_FIND)
-        self.search_entry.set_icon_tooltip_text(1, 'Search')
-        self.search_entry.connect("activate", self.search)
-        self.search_entry.connect("icon-press", self.search)
-        self.search_entry.connect('focus-in-event', self._clean, 'in')
-        self.search_entry.connect('focus-out-event', self._clean, 'out')
-        self.search_entry_tb.add(self.search_entry)
-        # We use the AccelGroup object from the main window.
-        self.my_accel = gtk.accel_groups_from_object(self.main.window)[0]
-        key, mod = gtk.accelerator_parse('<Control>F')
-        self.search_entry.set_tooltip_text('Control-F to search')
-        self.search_entry.add_accelerator('grab-focus', self.my_accel, key, mod, gtk.ACCEL_MASK)
-        self.main_tb.insert(self.search_entry_tb, 16)
-
-        # Separator
-        self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 17)
+        self.main_tb.insert(self.sep, -1)
 
         # Cheatsheet button
         self.cheatsheet_tb = gtk.ToolButton(gtk.STOCK_JUSTIFY_FILL)
         self.cheatsheet_tb.set_tooltip_text('Show assembler reference sheet')
         self.cheatsheet_tb.connect("clicked", self.create_cheatsheet_dialog)
-        self.main_tb.insert(self.cheatsheet_tb, 18)
+        self.main_tb.insert(self.cheatsheet_tb, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 19)
+        self.main_tb.insert(self.sep, -1)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 20)
+        self.main_tb.insert(self.throbber_tb, -1)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 

@@ -62,29 +62,29 @@ class TopButtons(gtk.HBox):
         menu_toolitem = gtk.ToolItem()
 
         menu_toolitem.add(self.menu_button)
-        self.main_tb.insert(menu_toolitem, 0)
+        self.main_tb.insert(menu_toolitem, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 1)
+        self.main_tb.insert(self.sep, -1)
 
         # Assembler button
         self.asm_tb = gtk.ToolButton(gtk.STOCK_EXECUTE)
         self.asm_tb.set_tooltip_text('Open assembler dialog')
         self.asm_tb.connect("clicked", self._assembler)
-        self.main_tb.insert(self.asm_tb, 2)
+        self.main_tb.insert(self.asm_tb, -1)
 
         # Bindiff button
         self.diff_tb = gtk.ToolButton(gtk.STOCK_REFRESH)
         self.diff_tb.set_tooltip_text('Do binary diffing')
         self.diff_tb.connect("clicked", self._do_diff)
-        self.main_tb.insert(self.diff_tb, 3)
+        self.main_tb.insert(self.diff_tb, -1)
 
         # Section bars button
         self.sections_tb = gtk.ToolButton(gtk.STOCK_SORT_ASCENDING)
         self.sections_tb.set_tooltip_text('Extended sections information')
         self.sections_tb.connect("clicked", self._do_sections)
-        self.main_tb.insert(self.sections_tb, 4)
+        self.main_tb.insert(self.sections_tb, -1)
 
         # Calculator button
         self.image = gtk.Image()
@@ -93,17 +93,17 @@ class TopButtons(gtk.HBox):
         self.calc_tb.set_icon_widget(self.image)
         self.calc_tb.set_tooltip_text('Show calculator')
         self.calc_tb.connect("clicked", self._do_calc)
-        self.main_tb.insert(self.calc_tb, 5)
+        self.main_tb.insert(self.calc_tb, -1)
 
         # File magic button
         self.magic_tb = gtk.ToolButton(gtk.STOCK_INFO)
         self.magic_tb.set_tooltip_text('Show file magic')
         self.magic_tb.connect("clicked", self._do_file_magic)
-        self.main_tb.insert(self.magic_tb, 6)
+        self.main_tb.insert(self.magic_tb, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 7)
+        self.main_tb.insert(self.sep, -1)
 
         # Search components
         self.search_combo_tb = gtk.ToolItem()
@@ -129,51 +129,37 @@ class TopButtons(gtk.HBox):
         self.search_combo.set_active(0)
         self.search_combo_align.add(self.search_combo)
         self.search_combo_tb.add(self.search_combo_align)
-        self.main_tb.insert(self.search_combo_tb, 8)
+        self.main_tb.insert(self.search_combo_tb, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 9)
+        self.main_tb.insert(self.sep, -1)
 
-        self.search_entry_tb = gtk.ToolItem()
-        self.search_entry = gtk.Entry(100)
-        self.search_entry.set_text('Text to search')
-        self.search_entry.set_icon_from_stock(1, gtk.STOCK_FIND)
-        self.search_entry.set_icon_tooltip_text(1, 'Search')
-        self.search_entry.connect("activate", self.search)
-        self.search_entry.connect("icon-press", self.search)
-        self.search_entry.connect('focus-in-event', self._clean, 'in')
-        self.search_entry.connect('focus-out-event', self._clean, 'out')
-        self.search_entry_tb.add(self.search_entry)
-        # We use the AccelGroup object from the main window.
-        self.my_accel = gtk.accel_groups_from_object(self.main.window)[0]
-        key, mod = gtk.accelerator_parse('<Control>F')
-        self.search_entry.set_tooltip_text('Control-F to search')
-        self.search_entry.add_accelerator('grab-focus', self.my_accel, key, mod, gtk.ACCEL_MASK)
-        self.main_tb.insert(self.search_entry_tb, 10)
+        import ui.search_widget
+        ui.search_widget.create(self)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
-        self.main_tb.insert(self.sep, 11)
+        self.main_tb.insert(self.sep, -1)
 
         # Cheatsheet button
         self.cheatsheet_tb = gtk.ToolButton(gtk.STOCK_JUSTIFY_FILL)
         self.cheatsheet_tb.set_tooltip_text('Show assembler reference sheet')
         self.cheatsheet_tb.connect("clicked", self.create_cheatsheet_dialog)
-        self.main_tb.insert(self.cheatsheet_tb, 12)
+        self.main_tb.insert(self.cheatsheet_tb, -1)
 
         # Separator
         self.sep = gtk.SeparatorToolItem()
         self.sep.set_expand(True)
         self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, 13)
+        self.main_tb.insert(self.sep, -1)
 
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
         self.throbber_tb.add(self.throbber)
-        self.main_tb.insert(self.throbber_tb, 14)
+        self.main_tb.insert(self.throbber_tb, -1)
 
         self.toolbox.pack_start(self.main_tb, True, True)
 
