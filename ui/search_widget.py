@@ -74,8 +74,8 @@ def create(toolbar):
     toolbar.search_entry.connect('focus-out-event', toolbar._clean, 'out')
     toolbar.search_entry_tb.add(toolbar.search_entry)
     # We use the AccelGroup object from the main window.
-    toolbar.my_accel = gtk.accel_groups_from_object(toolbar.main.window)[0]
+    my_accel = gtk.accel_groups_from_object(toolbar.main.window)[0]
     key, mod = gtk.accelerator_parse('<Control>F')
     toolbar.search_entry.set_tooltip_text('Control-F to search')
-    toolbar.search_entry.add_accelerator('grab-focus', toolbar.my_accel, key, mod, gtk.ACCEL_MASK)
+    toolbar.search_entry.add_accelerator('grab-focus', my_accel, key, mod, gtk.ACCEL_MASK)
     toolbar.main_tb.insert(toolbar.search_entry_tb, -1)
