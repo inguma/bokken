@@ -16,8 +16,8 @@ Last-Update: <2011-12-01>
  
  if [ "$PYTHON_VER" -eq 3 ];then
      # The python executable points to Python 3.
---- a/ui/core.py
-+++ b/ui/core.py
+--- a/ui/pyew_core.py
++++ b/ui/pyew_core.py
 @@ -23,6 +23,9 @@
  import cookielib
  import urllib2
