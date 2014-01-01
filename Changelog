@@ -1,7 +1,10 @@
-Release 1.7 (xx-xx-2013)
+Release 1.7 (xx-xx-2014)
+ * General refactoring of functions and classes to make them more abstract and
+   generic.
  * Added new experimental web server (Mune) based on webpy with command-line
-   flag --web.  It's very incomplete but the the idea is to keep making it
-   a first-class citizen in subsequent releases.
+   flag --web.  It's very incomplete but the idea is to keep making it a
+   first-class citizen in subsequent releases.
+ * Revamped all the search dialogs, and moved them to a new tab.
 
 Release 1.6 (23-01-2012)
 
