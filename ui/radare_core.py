@@ -118,7 +118,7 @@ class Core():
             self.file_loaded = False
             return
         self.file_loaded = True
-        self.core.bin_load(None)
+        self.core.bin_load(None, 0)
         #self.core.config.set("asm.bytes", "false")
         self.core.cmd0("e scr.interactive=false")
         self.core.cmd0('e asm.lines=false')
