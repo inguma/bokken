@@ -542,3 +542,6 @@ class Core():
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
         ui.gtk2.common.repaint()
+
+    def get_version(self):
+        return R2_VERSION

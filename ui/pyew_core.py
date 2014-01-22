@@ -704,3 +704,7 @@ class Core():
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
         ui.gtk2.common.repaint()
+
+    def get_version(self):
+        from pyew.pyew import HUMAN_VERSION
+        return HUMAN_VERSION

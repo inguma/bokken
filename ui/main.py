@@ -46,7 +46,7 @@ import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
 
-MAINTITLE = "Bokken, a GUI for pyew and radare2!"
+MAINTITLE = "Bokken "
 
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -152,7 +152,7 @@ class BokkenGTKClient:
         gtk.settings_get_default().set_long_property("gtk-button-images", True, "main")
 
         # Title
-        self.window.set_title(MAINTITLE)
+        self.window.set_title(MAINTITLE + glob.version + " - " + self.target)
 
         # Positions
         self.window.resize(800, 600)
