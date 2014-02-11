@@ -105,37 +105,6 @@ class TopButtons(gtk.HBox):
         self.sep = gtk.SeparatorToolItem()
         self.main_tb.insert(self.sep, -1)
 
-        # Search components
-        self.search_combo_tb = gtk.ToolItem()
-        self.search_combo_align = gtk.Alignment(yalign=0.5)
-        store = gtk.ListStore(gtk.gdk.Pixbuf, str)
-        self.search_combo = gtk.ComboBox(store)
-        rendererText = gtk.CellRendererText()
-        rendererPix = gtk.CellRendererPixbuf()
-        self.search_combo.pack_start(rendererPix, False)
-        self.search_combo.pack_start(rendererText, True)
-        self.search_combo.add_attribute(rendererPix, 'pixbuf', 0)
-        self.search_combo.add_attribute(rendererText, 'text', 1)
-
-        options = {
-            'String':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_16.png')),
-            'String no case':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_string_no_case_16.png')),
-            'Hexadecimal':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_hexadecimal_16.png')),
-            'Regexp':gtk.gdk.pixbuf_new_from_file(datafile_path('icon_regexp_16.png'))
-        }
-
-        for option in options.keys():
-            store.append([options[option], option])
-        self.search_combo.set_active(0)
-        self.search_combo_align.add(self.search_combo)
-        self.search_combo_tb.add(self.search_combo_align)
-        self.main_tb.insert(self.search_combo_tb, -1)
-
-        # Separator
-        self.sep = gtk.SeparatorToolItem()
-        self.sep.set_draw(False)
-        self.main_tb.insert(self.sep, -1)
-
         import ui.search_widget
         ui.search_widget.create(self)
 
