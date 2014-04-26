@@ -225,8 +225,8 @@ class Core():
             self.update_progress_bar("Getting functions", 0.8)
             #self.core.cmd0('aa')
             #self.core.cmd0('fs functions')
-            if self.bin.get_sym(0):
-                self.allfuncs.append('entry0')
+            #if self.bin.get_sym(0):
+            #    self.allfuncs.append('entry0')
             if self.bin.get_sym(1):
                 self.allfuncs.append('sym._init')
             if self.bin.get_sym(2):

@@ -323,7 +323,7 @@ class TextViews(gtk.HBox):
                     self.left_treeview.create_tree( self.uicore.get_imports() )
             else:
                 self.left_treeview.create_tree( self.uicore.get_imports() )
-        elif mode == 'Exports':
+        elif mode == 'Symbols':
             self.left_treeview.create_exports_columns()
             for export in self.uicore.get_exports():
                 if len(export) < 5:

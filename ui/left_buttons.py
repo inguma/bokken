@@ -102,13 +102,13 @@ class LeftButtons(gtk.VBox):
                 a.pack_start(self.imp_pix, False, False, 1)
                 imptb.add(a)
 
-                # Exports
+                # Symbols
                 exptb = gtk.ToggleButton()
                 exptb.set_tooltip_text('List of exported symbols')
                 handler = exptb.connect('toggled', self._on_toggle)
                 exptb.handler = handler
                 a = gtk.VBox(False, 1)
-                l = gtk.Label('Exports')
+                l = gtk.Label('Symbols')
                 l.set_angle(90)
                 a.pack_start(l, False, False, 1)
                 a.pack_start(self.exp_pix, False, False, 1)
