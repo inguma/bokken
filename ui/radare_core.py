@@ -224,7 +224,7 @@ class Core():
             #print "[*] Get functions"
             self.update_progress_bar("Getting functions", 0.8)
             #self.core.cmd0('aa')
-            self.core.cmd0('fs functions')
+            #self.core.cmd0('fs functions')
             if self.bin.get_sym(0):
                 self.allfuncs.append('entry0')
             if self.bin.get_sym(1):
@@ -233,7 +233,7 @@ class Core():
                 self.allfuncs.append('main')
             if self.bin.get_sym(3):
                 self.allfuncs.append('sym._fini')
-            for fcn in self.core.cmd_str('f').split('\n'):
+            for fcn in self.core.cmd_str('afl').split('\n'):
                 if fcn:
                     #print ' 0x%08x' % fcn.addr, fcn.name
                     fcn = fcn.split(' ')[-1]
