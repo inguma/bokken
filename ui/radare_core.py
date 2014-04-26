@@ -113,12 +113,17 @@ class Core():
         self.file = file
         # Init core
         # Returns True/False (check)
+        #print "[*] Open file"
         open_result = self.core.file_open(file, 0, 0)
+        #print open_result
         if open_result is None:
             self.file_loaded = False
             return
         self.file_loaded = True
+        #print self.file_loaded
+        #print "[*] Bin load"
         self.core.bin_load(None, 0)
+        #print "[*] Set config options"
         #self.core.config.set("asm.bytes", "false")
         self.core.cmd0("e scr.interactive=false")
         self.core.cmd0('e asm.lines=false')
@@ -143,8 +148,12 @@ class Core():
             self.core.cmd0("aa")
 
         self.bin = self.core.bin
+        #print self.bin
+        #print "[*] Get bin info"
         self.info = self.bin.get_info()
+        #print "[*] Got bin info"
         if not self.info:
+            #print "[*] No bin info"
             list = self.core.cmd_str('i').split('\n')
             for line in list:
                 if line:
@@ -154,6 +163,7 @@ class Core():
                     elif line[0] == 'uri':
                         self.info_file = line[1]
 
+        #print "[*] Get base addr"
         self.baddr = self.bin.get_baddr()
         self.size = hex(self.core.file.size)
         self.core.cmd0('e search.flags=false')
@@ -341,9 +351,9 @@ class Core():
                 if not 'Imports' in self.allimports.keys():
                     self.allimports['Imports'] = []
                 if not self.use_va:
-                    self.allimports['Imports'].append( [hex(self.baddr+imp.rva), imp.name] )
+                    self.allimports['Imports'].append( [str(imp.ordinal), imp.name] )
                 else:
-                    self.allimports['Imports'].append( [hex(imp.rva), imp.name] )
+                    self.allimports['Imports'].append( [str(imp.ordinal), imp.name] )
         return self.allimports
 
     def get_imports(self):
@@ -351,15 +361,15 @@ class Core():
             print "[*] Get imports"
             for imp in self.bin.get_imports():
                 if '__' in imp.name:
-                    dll, imp_name = imp.name.split('__')
+                    dll, imp_name = imp.name.split('__', 1)
                 else:
-                    dll, imp_name = imp.name.split('_')
+                    dll, imp_name = imp.name.split('_', 1)
                 if not dll in self.allimports.keys():
                     self.allimports[dll] = []
                 if not self.use_va:
-                    self.allimports[dll].append( [hex(self.baddr+imp.rva), imp_name] )
+                    self.allimports[dll].append( [str(imp.ordinal), imp_name] )
                 else:
-                    self.allimports[dll].append( [hex(imp.rva), imp.name] )
+                    self.allimports[dll].append( [str(imp.ordinal), imp.name] )
         return self.allimports
 
     def get_exports(self):
