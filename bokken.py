@@ -52,6 +52,8 @@ def bokken():
                         help='Port for the web server (default: 4546)')
     parser.add_argument('-b', '--bind_address', nargs='?', default='0.0.0.0',
                         help='Local IP address to bind the web server to (default: all)')
+    parser.add_argument('-q', '--qt', action='store_true',
+                        help='Use the new and experimental QT interface instead of the GTK one.')
     args = parser.parse_args()
 
     if args.radare and args.pyew:
@@ -63,7 +65,10 @@ def bokken():
         glob.http_server_port = int(args.port)
         glob.http_server_bind_address = args.bind_address
 
-    import ui.main as main
+    if args.qt:
+        import ui.qt.main as main
+    else:
+        import ui.main as main
 
     main.main(args.file_to_load,
               'radare' if args.radare else ('pyew' if args.pyew else ''),
