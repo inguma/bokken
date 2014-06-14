@@ -21,10 +21,6 @@ import gtk, gobject
 import threading
 from lib.common import datafile_path
 
-FAIL = '\033[91m'
-OKGREEN = '\033[92m'
-ENDC = '\033[0m'
-
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
 import ui.throbber as throbber

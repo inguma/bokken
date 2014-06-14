@@ -20,6 +20,7 @@
 import os, sys
 import platform
 import lib.bokken_globals as glob
+import lib.common as common
 
 # Add plugins directory to the path
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
@@ -48,10 +49,6 @@ import ui.file_dialog as file_dialog
 
 MAINTITLE = "Bokken "
 
-FAIL = '\033[91m'
-OKGREEN = '\033[92m'
-ENDC = '\033[0m'
-
 class BokkenGTKClient:
     '''Main GTK application'''
 
@@ -75,7 +72,12 @@ class BokkenGTKClient:
         if not dependency_check.HAS_PYEW and not dependency_check.HAS_RADARE:
             md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
             md.set_markup("<big><b>No backend engines found!</b></big>")
-            md.format_secondary_markup("Install either pyew or radare to run bokken:\n\n<b>Pyew:</b>\t\t<a href=\"http://code.google.com/p/pyew/\">http://code.google.com/p/pyew/</a>\n<b>Radare:</b>\t<a href=\"http://radare.org/\">http://radare.org</a>")
+            md.format_secondary_markup((
+                    'Install either pyew or radare to run bokken:\n\n'
+                    '<b>Pyew:</b>\t\t<a href="http://code.google.com/p/pyew/">'
+                    'http://code.google.com/p/pyew/</a>\n'
+                    '<b>Radare:</b>\t<a href="http://radare.org/">'
+                    'http://radare.org</a>'))
             md.run()
             md.destroy()
             sys.exit(1)
@@ -126,7 +128,8 @@ class BokkenGTKClient:
         if self.target:
             # Just open the target if path is correct or an url
             if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
-                print "Incorrect file argument:", FAIL, self.target, ENDC
+                print(common.console_color('Incorrect file argument: %s' %
+                        self.target, 'red'))
                 sys.exit(1)
 
             self.load_file(self.target)
@@ -221,7 +224,6 @@ class BokkenGTKClient:
             return
         if self.uicore.core.format in ['PE', 'Elf', 'ELF', 'Program']:
             self.uicore.get_sections()
-        #print 'File successfully loaded' + OKGREEN + "\tOK" + ENDC
 
     def show_empty_gui(self):
         self.topbuttons.throbber.running('start')
@@ -376,7 +378,8 @@ class BokkenGTKClient:
         if self.target:
             # Just open the target if path is correct or an url
             if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
-                print "Incorrect file argument:", FAIL, self.target, ENDC
+                print(common.console_color('Incorrect file argument: ' %
+                        self.target, 'red'))
                 #sys.exit(1)
 
             # Get dialog selected file, backend and options

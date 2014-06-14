@@ -1,17 +1,17 @@
 #       interactive_buttons.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -20,12 +20,8 @@
 
 import gtk
 
-FAIL = '\033[91m'
-OKGREEN = '\033[92m'
-ENDC = '\033[0m'
-
 class InteractiveButtons(gtk.HBox):
-    '''Interactive Buttons'''
+    '''Interactive buttons'''
 
     def __init__(self, uicore, buffer):
         super(InteractiveButtons,self).__init__(False, 1)
@@ -202,15 +198,15 @@ class InteractiveButtons(gtk.HBox):
             pos = self.seek_entry.get_text()
         else:
             pos = action
-    
+
         if self.uicore.backend == 'pyew':
             if pos.lower() in ["ep", "entrypoint"]:
                 if self.uicore.core.ep:
                     pos = self.uicore.core.ep
-    
+
             elif pos.isdigit() and int(pos) < len(self.uicore.core.calls)+1 and int(pos) > 0:
                 pos = self.uicore.core.calls[int(pos)-1]
-    
+
             elif pos in self.uicore.core.names.values():
                 for x in self.uicore.core.names:
                     if self.uicore.core.names[x] == pos:
@@ -227,7 +223,7 @@ class InteractiveButtons(gtk.HBox):
             else:
                 pos = int(pos)
             self.uicore.seek(pos)
-    
+
         elif self.uicore.backend == 'radare':
             self.uicore.seek(pos)
 
@@ -263,7 +259,7 @@ class InteractiveButtons(gtk.HBox):
 #
 class SemiStockButton(gtk.Button):
     '''Takes the image from the stock, but the label which is passed.
-    
+
     @param text: the text that will be used for the label
     @param image: the stock widget from where extract the image
     @param tooltip: the tooltip for the button
@@ -278,10 +274,10 @@ class SemiStockButton(gtk.Button):
         self.label.set_text(text)
         if tooltip is not None:
             self.set_tooltip_text(tooltip)
-            
+
     def changeInternals(self, newtext, newimage, tooltip=None):
         '''Changes the image and label of the widget.
-    
+
         @param newtext: the text that will be used for the label
         @param newimage: the stock widget from where extract the image
         @param tooltip: the tooltip for the button

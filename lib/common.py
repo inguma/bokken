@@ -32,3 +32,20 @@ datadir = os.path.dirname(__file__) + os.sep + '..' + os.sep + 'ui' + os.sep + \
 def datafile_path(filename):
     '''Returns the full path for a file in the ui/data/ directory.'''
     return datadir + filename
+
+def console_color(string='', color='white'):
+    '''This function returns a properly ANSI-escaped string for display into a
+    terminal with color capabilities.'''
+    import sys
+
+    ansi_code = {
+            'green': '\033[92m',
+            'yellow': '\033[93m',
+            'red': '\033[91m',
+            'white': '\033[0m',
+    }
+    if sys.platform == "win32":
+        # No color for you today!
+        ansi_code = map(lambda x:'', ansi_code)
+
+    return('%s%s%s' % (ansi_code[color], string, ansi_code['white']))
