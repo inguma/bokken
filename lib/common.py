@@ -25,13 +25,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 """ This library provides generic functions. """
 
-import os
-datadir = os.path.dirname(__file__) + os.sep + '..' + os.sep + 'ui' + os.sep + \
-        'data' + os.sep
+import os.path
 
-def datafile_path(filename):
-    '''Returns the full path for a file in the ui/data/ directory.'''
-    return datadir + filename
+def minimum_version(ver1, ver2):
+    '''Function to compare e.g. 0.9.1 < 0.9.3.
+    Returns True if ver1 >= ver2, otherwise False.
+    This doesn't work with non-integer versions for now.'''
+
+    def canonicalize(ver):
+        try:
+            return tuple(map(int, (ver.split("."))))
+        except ValueError:
+            '''The version number contains letters, so we return all 0s.'''
+            return tuple(map(lambda x: 0, ver.split('.')))
+
+    return canonicalize(ver1) >= canonicalize(ver2)
 
 def console_color(string='', color='white'):
     '''This function returns a properly ANSI-escaped string for display into a
@@ -49,3 +57,9 @@ def console_color(string='', color='white'):
         ansi_code = map(lambda x:'', ansi_code)
 
     return('%s%s%s' % (ansi_code[color], string, ansi_code['white']))
+
+def datafile_path(filename):
+    '''Returns the full path for a file in the ui/data/ directory.'''
+    datadir = '%s/../ui/data/' % os.path.dirname(__file__)
+
+    return os.path.normpath(datadir + filename)

@@ -19,6 +19,7 @@
 
 import gtk, gobject
 import threading
+import lib.bokken_globals as glob
 from lib.common import datafile_path
 
 # We need it for the "New" button
@@ -38,7 +39,6 @@ class TopButtons(gtk.HBox):
 
         self.uicore = core
         self.toolbox = self
-        self.dependency_check = self.main.dependency_check
 
         self.options_dict = {'Hexadecimal':'x', 'String':'s', 'String no case':'i', 'Regexp':'r', 'Unicode':'u', 'Unicode no case':'U'}
 
@@ -226,7 +226,7 @@ class TopButtons(gtk.HBox):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, False, 'pyew', file)
+        dialog = file_dialog.FileDialog(glob.has_pyew, False, 'pyew', file)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             dialog.destroy()

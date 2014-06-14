@@ -20,6 +20,7 @@
 
 import gtk
 import ui.gtk2.common
+import lib.bokken_globals as glob
 from lib.common import datafile_path
 
 # We need it for the "New" button
@@ -42,7 +43,6 @@ class TopButtons(gtk.HBox):
 
         self.uicore = core
         self.toolbox = self
-        self.dependency_check = self.main.dependency_check
 
         self.options_dict = {'String':' ', 'String no case':'i ', 'Hexadecimal':'x ', 'Regexp':'e '}
 
@@ -207,7 +207,7 @@ class TopButtons(gtk.HBox):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(False, self.dependency_check.HAS_RADARE, 'radare', file)
+        dialog = file_dialog.FileDialog(False, glob.has_radare, 'radare', file)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             dialog.destroy()

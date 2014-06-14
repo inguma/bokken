@@ -60,37 +60,57 @@ def pyew_dependency_check():
     print('Checking:')
     print('\tPyew availability... ', end='')
 
-    global HAS_PYEW
     try:
-        import pyew
+        import pyew.pyew
         print(common.console_color('\tOK', 'green'))
-        HAS_PYEW = True
+        glob.has_pyew = True
     except:
         print(common.console_color("\tD'oh!", 'red'))
-        print('You need pyew in order to use pyew backend in binaries and '
+        print('You need pyew in order to use the pyew backend in binaries and '
                 'PDFs. Download it from its web:\n'
                 '    - http://code.google.com/p/pyew/\n')
-        HAS_PYEW = False
+        return
+
+    if not common.minimum_version(glob.min_pyew_version, pyew.pyew.HUMAN_VERSION):
+        print(common.console_color("\tD'oh!", 'red'))
+        print(common.console_color(('Your version of pyew (%s) is not supported! '
+                'It must be equal or greater than %s.' %
+                (pyew.pyew.HUMAN_VERSION, glob.min_pyew_version)), 'red'))
+        print('Everything from here may break at any time.  If you feel that '
+                'this check is wrong, please file a bug at '
+                'http://bokken.inguma.eu')
 
 def radare_dependency_check():
     '''We need to verify the presence of radare2'''
 
+    '''FIXME: I don't think this is the right way of doing it as we are
+    duplicating code here and ui/radare_core.py.  We should just try to init
+    an r2 core and then run get_version().'''
+
     print('\tRadare availability...', end='')
 
-    global HAS_RADARE
     try:
-        import r2
+        import r2.r_core
         print(common.console_color('\tOK', 'green'))
-        HAS_RADARE = True
+        glob.has_radare = True
     except:
         print(common.console_color("\tD'oh!", 'red'))
         print('You need radare and radare2 Python bindings to use the r2 '
                 'backend. Download them from its web:\n'
                 '    - http://www.radare.org\n')
-        HAS_RADARE = False
+        return
+
+    if not common.minimum_version(glob.min_radare_version, r2.r_core.R2_VERSION):
+        print(common.console_color("\tD'oh!", 'red'))
+        print(common.console_color(('Your version of r2 (%s) is not supported! '
+                'It must be equal or greater than %s.' %
+                (r2.r_core.R2_VERSION, glob.min_radare_version)), 'red'))
+        print('Everything from here may break at any time.  If you feel that '
+                'this check is wrong, please file a bug at '
+                'http://bokken.inguma.eu')
 
 def cores():
-    if not HAS_PYEW and not HAS_RADARE:
+    if not glob.has_pyew and not glob.has_radare:
         print('You need at least one dissasembler core, either pyew or radare:\n'
                 '    - http://code.google.com/p/pyew/\n'
                 '    - http://www.radare.org')

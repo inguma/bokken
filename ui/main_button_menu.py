@@ -19,6 +19,7 @@
 
 import gtk
 import webbrowser
+import lib.bokken_globals as glob
 
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
@@ -30,7 +31,6 @@ class MenuBar(gtk.Menu):
         super(MenuBar,self).__init__()
         self.main = main
         self.uicore = self.main.uicore
-        self.dependency_check = self.main.dependency_check
 
         agr = gtk.AccelGroup()
         self.main.window.add_accel_group(agr)
@@ -196,7 +196,7 @@ class MenuBar(gtk.Menu):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(self.dependency_check.HAS_PYEW, self.dependency_check.HAS_RADARE, self.uicore.backend, file)
+        dialog = file_dialog.FileDialog(glob.has_pyew, glob.has_radare, self.uicore.backend, file)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             dialog.destroy()

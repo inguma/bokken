@@ -60,8 +60,6 @@ class BokkenGTKClient:
         # other threads do background work.
         gobject.threads_init()
 
-        self.dependency_check = dependency_check
-
         self.target = target
         self.backend = backend
         self.empty_gui = False
@@ -69,7 +67,7 @@ class BokkenGTKClient:
         self.dasm_process = False
 
         # Check if we have, at least, one available core; otherwise exit.
-        if not dependency_check.HAS_PYEW and not dependency_check.HAS_RADARE:
+        if not glob.has_pyew and not glob.has_radare:
             md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
             md.set_markup("<big><b>No backend engines found!</b></big>")
             md.format_secondary_markup((
@@ -101,7 +99,7 @@ class BokkenGTKClient:
             glob.http = http
 
         # Launch file selection dialog
-        dialog = file_dialog.FileDialog(dependency_check.HAS_PYEW, dependency_check.HAS_RADARE, self.backend, self.target, True)
+        dialog = file_dialog.FileDialog(glob.has_pyew, glob.has_radare, self.backend, self.target, True)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             return None
