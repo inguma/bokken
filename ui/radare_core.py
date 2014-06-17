@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 import os
+import re
 import tempfile
 
 from r2.r_core import *
@@ -303,6 +304,9 @@ class Core():
                 print "\t* Let's get the dasm for %s..." % section[0],
                 #self.update_progress_bar("Reading assembler for section %s..." % section[0], percent)
                 dasm = self.send_cmd_str('pD')
+                # In radare 0.9.6 even with clean output sometimes you get an
+                # ANSI code.
+                dasm = re.sub('\x1b\[[0-9;]+m', '', dasm)
                 self.sections_lines.append( len(dasm.split('\n')) )
                 self.send_cmd('b 512')
                 print " OK!"
