@@ -1,17 +1,19 @@
 #       treeviews.py
-#       
+# -*- coding: utf-8 -*-
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#       Copyright 2014 David Martínez Moreno <ender@debian.org>
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -34,9 +36,10 @@ class TreeViews(gtk.TreeView):
 
         # Connect right click popup search menu
         self.popup_handler = self.connect('button-press-event', self.popup_menu)
+        self.popup_handler = self.connect('row-activated', self.popup_menu)
 
     def create_functions_columns(self):
-    
+
         rendererText = gtk.CellRendererText()
         rendererPix = gtk.CellRendererPixbuf()
         self.fcn_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('function.png'))
@@ -53,7 +56,7 @@ class TreeViews(gtk.TreeView):
         self.set_model(self.store)
 
     def create_sections_columns(self):
-    
+
         self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('data-sec.png'))
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
@@ -65,7 +68,7 @@ class TreeViews(gtk.TreeView):
         column.set_attributes(rendererPix, pixbuf=0)
         column.set_sort_column_id(0)
         self.append_column(column)
-    
+
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Virtual Address", rendererText, text=2)
         self.store.set_sort_column_id(2,gtk.SORT_ASCENDING)
@@ -97,7 +100,7 @@ class TreeViews(gtk.TreeView):
         self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
         column.set_sort_column_id(1)
         self.append_column(column)
-    
+
         rendererText = gtk.CellRendererText()
         column = gtk.TreeViewColumn("Name", rendererText, text=2)
         column.set_sort_column_id(2)
@@ -272,19 +275,47 @@ class TreeViews(gtk.TreeView):
         if self.dograph:
             self.textviews.update_graph(widget, link_name)
 
-    def popup_menu(self, tv, event):
-        '''Shows a menu when you right click on a plugin.
+    def popup_menu(self, tv, event, row=None):
+        '''Controls the behavior of the treeviews on the left:
 
-        @param tv: the treeview.
-        @parameter event: The GTK event 
+        Left-click or Enter/Space: Goes to the corresponding graph/address/etc.
+        Right-click: Shows a menu.
+
+        @param tv: The treeview.
+        @parameter event: The GTK event (gtk.gdk.Event) in case this is a mouse
+            click.  Otherwise it's the activated row index in format (n,).
+        @parameter row: A gtk.TreeViewColumn object in case it's a keypress,
+            otherwise None.
+
+        The function works by abstracting the event type and then defining
+        primary_action (True if left-click or Enter on a row, False if
+        double_click).
         '''
 
         self.dograph = False
 
-        # I do this to return fast (and to avoid leaking memory in 'e io.va' for now).
-        #if (event.button != 3) and not (event.button ==1 and event.type == gtk.gdk._2BUTTON_PRESS):
-        if (event.button != 3) and (event.button !=1):
-            return False
+        # Let's get the row clicked whether it was by mouse or keyboard.
+        if row:
+            # Keyboard.
+            path = event
+            primary_action = True
+        else:
+            # Mouse.
+            # I do this to return fast (and to avoid leaking memory in 'e io.va' for now).
+            if (event.button != 1) and (event.button !=3):
+                return False
+            elif event.button == 1:
+                # Left-click.
+                primary_action = True
+            else:
+                primary_action = False
+
+            coordinates = tv.get_path_at_pos(int(event.x), int(event.y))
+            # coordinates is None if the click is outside the rows but inside
+            # the widget.
+            if not coordinates:
+                return False
+            (path, column, x, y) = coordinates
 
         # FIXME: We should do this on the uicore, possibly in every operation.
         if self.uicore.backend == 'radare':
@@ -293,16 +324,57 @@ class TreeViews(gtk.TreeView):
             else:
                 self.uicore.core.cmd0('e io.va=1')
 
-        if event.button == 3:
+        # Main loop, deciding whether to take an action or display a pop-up.
+        if primary_action:
+            # It's a left click or Enter on a row.
+            # Is it over a plugin name?
+            # Get the information about the row.
+            if len(path) == 1:
+                link_name = self.store[path][1]
+                # Special for exports
+                if '0x' in link_name:
+                    link_name = self.store[path][2]
+            else:
+                link_name = self.treestore[path][1]
+
+            # Detect if search string is from URL or PE/ELF
+            link_name = link_name.split("\t")
+            # Elf/PE (function)
+            if len( link_name ) == 1:
+                if self.uicore.backend == 'pyew':
+                    if '0x' in link_name[0]:
+                        rva = int(link_name[0], 16) - self.uicore.core.pe.OPTIONAL_HEADER.ImageBase
+                        link_name = hex( self.uicore.core.pe.get_offset_from_rva(rva) )
+                    else:
+                        link_name = 'FUNCTION ' + link_name[0]
+                elif self.uicore.backend == 'radare':
+                    if '0x' in link_name[0]:
+                        link_name = link_name[0]
+                    else:
+                        # Just get graph for functions
+                        if not 'loc.' in link_name[0] and link_name[0][0] != '.':
+                            self.dograph = True
+                        # Adjust section name to search inside r2 flags
+                        if link_name[0][0] == '.':
+                            link_name[0] = 'section.' + link_name[0]
+                        link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
+            # Elf/PE (import/export)
+            elif len( link_name ) == 2 and link_name[1] != '':
+                link_name =  "0x%08x" % int(link_name[0], 16)
+
+            # URL
+            else:
+                link_name = link_name[0]
+
+            if self.uicore.backend == 'radare':
+                self.search_and_graph(self, link_name)
+            else:
+                self.textviews.search(self, link_name)
+            self.dograph = False
+
+        else:
             # It's a right click!
             _time = event.time
-            coordinates = tv.get_path_at_pos(int(event.x), int(event.y))
-            # coordinates is None if the click is outside the rows but inside
-            # the widget.
-            if not coordinates:
-                return False
-
-            (path, column, x, y) = coordinates
             # Is it over a plugin name?
             # Get the information about the click.
             if len(path) == 1:
@@ -357,58 +429,3 @@ class TreeViews(gtk.TreeView):
             gm.show_all()
 
             gm.popup( None, None, None, event.button, _time)
-
-        #elif event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
-        elif event.button == 1:
-            # It's a double-click!
-            coordinates = tv.get_path_at_pos(int(event.x), int(event.y))
-            # coordinates is None if the click is outside the rows but inside
-            # the widget.
-            if not coordinates:
-                return False
-
-            (path, column, x, y) = coordinates
-            # Is it over a plugin name?
-            # Get the information about the click.
-            if len(path) == 1:
-                link_name = self.store[path][1]
-                # Special for exports
-                if '0x' in link_name:
-                    link_name = self.store[path][2]
-            else:
-                link_name = self.treestore[path][1]
-
-            # Detect if search string is from URL or PE/ELF
-            link_name = link_name.split("\t")
-            # Elf/PE (function)
-            if len( link_name ) == 1:
-                if self.uicore.backend == 'pyew':
-                    if '0x' in link_name[0]:
-                        rva = int(link_name[0], 16) - self.uicore.core.pe.OPTIONAL_HEADER.ImageBase
-                        link_name = hex( self.uicore.core.pe.get_offset_from_rva(rva) )
-                    else:
-                        link_name = 'FUNCTION ' + link_name[0]
-                elif self.uicore.backend == 'radare':
-                    if '0x' in link_name[0]:
-                        link_name = link_name[0]
-                    else:
-                        # Just get graph for functions
-                        if not 'loc.' in link_name[0] and link_name[0][0] != '.':
-                            self.dograph = True
-                        # Adjust section name to search inside r2 flags
-                        if link_name[0][0] == '.':
-                            link_name[0] = 'section.' + link_name[0]
-                        link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
-            # Elf/PE (import/export)
-            elif len( link_name ) == 2 and link_name[1] != '':
-                link_name =  "0x%08x" % int(link_name[0], 16)
-
-            # URL
-            else:
-                link_name = link_name[0]
-
-            if self.uicore.backend == 'radare':
-                self.search_and_graph(self, link_name)
-            else:
-                self.textviews.search(self, link_name)
-            self.dograph = False
