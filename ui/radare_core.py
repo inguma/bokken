@@ -357,7 +357,7 @@ class Core():
             #print "[*] Get sections"
             self.update_progress_bar("Getting sections", 0.15)
             for section in self.bin.get_sections():
-                self.allsections.append( [section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)] )
+                self.allsections.append( [section.name, hex(self.baddr+section.vaddr), hex(section.size), hex(section.paddr)] )
                 if section.srwx & 1 == 1:
                     self.execsections.append([section.name, section.size])
                     self.sections_size.append(section.size)
@@ -400,9 +400,9 @@ class Core():
             print "[*] Get exports"
             for sym in self.bin.get_symbols():
                 if not self.use_va:
-                    self.allexports.append( [hex(self.baddr+sym.rva), "sym." + sym.name, '', ''] )
+                    self.allexports.append( [hex(self.baddr+sym.vaddr), "sym." + sym.name, '', ''] )
                 else:
-                    self.allexports.append( [hex(sym.rva), "sym." + sym.name, '', ''] )
+                    self.allexports.append( [hex(sym.vaddr), "sym." + sym.name, '', ''] )
         return self.allexports
 
     def get_callgraph(self, addr=''):

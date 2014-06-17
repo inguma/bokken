@@ -58,7 +58,9 @@ class XrefsMenu(gtk.MenuBar):
 
             for ref in refs:
                 addr = self.uicore.core.num.get(ref)
+                print addr
                 fcn = self.uicore.core.anal.get_fcn_at(addr)
+                print fcn
                 if fcn.name:
                     if not fcn.name in tmp_refs:
                         tmp_refs.append(fcn.name)
