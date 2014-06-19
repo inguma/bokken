@@ -76,6 +76,7 @@ class Core():
             self.core.debug = False
 
         self.backend = 'pyew'
+        self.version = pyew.pyew.HUMAN_VERSION
 
         self.core.offset = 0
         self.core.previousoffset = []
@@ -651,26 +652,26 @@ class Core():
             asha256 = sha256(buf).hexdigest()
             name = self.core.filename
             format = self.core.format
-            
+
             cur = db.cursor()
             sql = """ insert into samples (md5, sha1, sha256, filename, type)
                                    values (?, ?, ?, ?, ?)"""
             cur.execute(sql, (amd5, asha1, asha256, name, format))
             rid = cur.lastrowid
-            
+
             sql = """ insert into function_stats (sample_id, addr, nodes, edges, cc)
                                           values (?, ?, ?, ?, ?) """
             for f in self.core.function_stats:
                 addr = "0x%08x" % f
                 nodes, edges, cc = self.core.function_stats[f]
                 cur.execute(sql, (rid, addr, nodes, edges, cc))
-            
+
             sql = """ insert into antidebugs (sample_id, addr, mnemonic) values (?, ?, ?) """
             for antidbg in self.core.antidebug:
                 addr, mnem = antidbg
                 addr = "0x%08x" % addr
                 cur.execute(sql, (rid, addr, mnem))
-            
+
             db.commit()
         except:
             print sys.exc_info()[1]
@@ -681,12 +682,12 @@ class Core():
             sql = """create table samples (id integer not null primary key,
                                            md5, sha1, sha256, filename, type)"""
             db.execute(sql)
-            
+
             sql = """create table function_stats (
                             id integer not null primary key,
                             sample_id, addr, nodes, edges, cc)"""
             db.execute(sql)
-            
+
             sql = """create table antidebugs (
                             id integer not null primary key,
                             sample_id, addr, mnemonic
@@ -704,7 +705,3 @@ class Core():
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
         ui.gtk2.common.repaint()
-
-    def get_version(self):
-        from pyew.pyew import HUMAN_VERSION
-        return HUMAN_VERSION

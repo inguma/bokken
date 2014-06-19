@@ -81,7 +81,7 @@ class Statusbar(gtk.Statusbar):
             _icon = gtk.image_new_from_file(datafile_path('bokken-small.svg'))
             self.pack_start(_icon, False, False, 1)
             label = gtk.Label()
-            label.set_markup('<b>Bokken ' + version + '</b> (' + self.uicore.backend.capitalize() + ' ' + self.uicore.get_version() + ')')
+            label.set_markup('<b>Bokken ' + version + '</b> (' + self.uicore.backend.capitalize() + ' ' + self.uicore.version + ')')
             label.set_padding(3, 3)
             self.pack_end(label, False)
 

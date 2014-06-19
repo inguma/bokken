@@ -17,6 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import lib.common as common
 import os
 import re
 import tempfile
@@ -67,6 +68,7 @@ class Core():
         self.corename = 'radare'
 
         self.backend = 'radare'
+        self.version = R2_VERSION
         self.file_loaded = False
 
     def send_cmd(self, string):
@@ -307,7 +309,7 @@ class Core():
                 # In radare 0.9.6 even with clean output sometimes you get an
                 # ANSI code.
                 dasm = re.sub('\x1b\[[0-9;]+m', '', dasm)
-                self.sections_lines.append( len(dasm.split('\n')) )
+                self.sections_lines.append(len(dasm.split('\n')))
                 self.send_cmd('b 512')
                 print " OK!"
                 self.text_dasm += dasm
@@ -357,7 +359,10 @@ class Core():
             #print "[*] Get sections"
             self.update_progress_bar("Getting sections", 0.15)
             for section in self.bin.get_sections():
-                self.allsections.append( [section.name, hex(self.baddr+section.vaddr), hex(section.size), hex(section.paddr)] )
+                if common.version_ge(self.version, '0.9.8'):
+                    self.allsections.append([section.name, hex(self.baddr+section.vaddr), hex(section.size), hex(section.paddr)])
+                else:
+                    self.allsections.append([section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)])
                 if section.srwx & 1 == 1:
                     self.execsections.append([section.name, section.size])
                     self.sections_size.append(section.size)
@@ -374,9 +379,9 @@ class Core():
                 if not 'Imports' in self.allimports.keys():
                     self.allimports['Imports'] = []
                 if not self.use_va:
-                    self.allimports['Imports'].append( [str(imp.ordinal), imp.name] )
+                    self.allimports['Imports'].append([str(imp.ordinal), imp.name])
                 else:
-                    self.allimports['Imports'].append( [str(imp.ordinal), imp.name] )
+                    self.allimports['Imports'].append([str(imp.ordinal), imp.name])
         return self.allimports
 
     def get_imports(self):
@@ -390,9 +395,9 @@ class Core():
                 if not dll in self.allimports.keys():
                     self.allimports[dll] = []
                 if not self.use_va:
-                    self.allimports[dll].append( [str(imp.ordinal), imp_name] )
+                    self.allimports[dll].append([str(imp.ordinal), imp_name])
                 else:
-                    self.allimports[dll].append( [str(imp.ordinal), imp.name] )
+                    self.allimports[dll].append([str(imp.ordinal), imp.name])
         return self.allimports
 
     def get_exports(self):
@@ -400,9 +405,15 @@ class Core():
             print "[*] Get exports"
             for sym in self.bin.get_symbols():
                 if not self.use_va:
-                    self.allexports.append( [hex(self.baddr+sym.vaddr), "sym." + sym.name, '', ''] )
+                    if common.version_ge(self.version, '0.9.8'):
+                        self.allexports.append([hex(self.baddr+sym.vaddr), "sym." + sym.name, '', ''])
+                    else:
+                        self.allexports.append([hex(self.baddr+sym.rva), "sym." + sym.name, '', ''])
                 else:
-                    self.allexports.append( [hex(sym.vaddr), "sym." + sym.name, '', ''] )
+                    if common.version_ge(self.version, '0.9.8'):
+                        self.allexports.append([hex(sym.vaddr), "sym." + sym.name, '', ''])
+                    else:
+                        self.allexports.append([hex(sym.rva), "sym." + sym.name, '', ''])
         return self.allexports
 
     def get_callgraph(self, addr=''):
@@ -575,6 +586,3 @@ class Core():
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
         ui.gtk2.common.repaint()
-
-    def get_version(self):
-        return R2_VERSION

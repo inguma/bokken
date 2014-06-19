@@ -71,7 +71,7 @@ def pyew_dependency_check():
                 '    - http://code.google.com/p/pyew/\n')
         return
 
-    if not common.minimum_version(glob.min_pyew_version, pyew.pyew.HUMAN_VERSION):
+    if common.version_gt(glob.min_pyew_version, pyew.pyew.HUMAN_VERSION):
         print(common.console_color("\tD'oh!", 'red'))
         print(common.console_color(('Your version of pyew (%s) is not supported! '
                 'It must be equal or greater than %s.' %
@@ -85,7 +85,7 @@ def radare_dependency_check():
 
     '''FIXME: I don't think this is the right way of doing it as we are
     duplicating code here and ui/radare_core.py.  We should just try to init
-    an r2 core and then run get_version().'''
+    an r2 core and then get uicore.version.'''
 
     print('\tRadare availability...', end='')
 
@@ -100,7 +100,7 @@ def radare_dependency_check():
                 '    - http://www.radare.org\n')
         return
 
-    if not common.minimum_version(glob.min_radare_version, r2.r_core.R2_VERSION):
+    if common.version_gt(glob.min_radare_version, r2.r_core.R2_VERSION):
         print(common.console_color("\tD'oh!", 'red'))
         print(common.console_color(('Your version of r2 (%s) is not supported! '
                 'It must be equal or greater than %s.' %

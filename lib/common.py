@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Bokken Disassembler Framework
-Copyright (c) 2013 David Martínez Moreno <ender@debian.org>
+Copyright (c) 2013-2014 David Martínez Moreno <ender@debian.org>
 
 I am providing code in this repository to you under an open source license.
 Because this is a personal repository, the license you receive to my code
@@ -27,19 +27,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 import os.path
 
-def minimum_version(ver1, ver2):
-    '''Function to compare e.g. 0.9.1 < 0.9.3.
-    Returns True if ver1 >= ver2, otherwise False.
+def version_conversion(func):
+
+    def inner(ver1, ver2):
+        '''Decorator for converting versions strings (passed as arguments) to
+        tuples.'''
+        '''FIXME: For now it doesn't work with non-integer versions
+        (i.e. 0.9.8-rc2).'''
+
+        version_tuple = []
+
+        for ver in (ver1, ver2):
+            try:
+                version_tuple.append(tuple(map(int, (ver.split(".")))))
+            except ValueError:
+                '''The version number contains letters, so we return all 0s.'''
+                version_tuple.append(tuple(map(lambda x: 0, ver.split('.'))))
+
+        return func(version_tuple[0], version_tuple[1])
+
+    return inner
+
+@version_conversion
+def version_ge(ver1, ver2):
+    '''Function to compare e.g. 0.9.1 >= 0.9.3.
+    Returns True if ver1 >= ver2, otherwise False.'''
+
+    return ver1 >= ver2
+
+@version_conversion
+def version_le(ver1, ver2):
+    '''Function to compare e.g. 0.9.1 <= 0.9.3.
+    Returns True if ver1 <= ver2, otherwise False.'''
+
+    return ver1 <= ver2
+
+@version_conversion
+def version_gt(ver1, ver2):
+    '''Function to compare e.g. 0.9.1 > 0.9.3.
+    Returns True if ver1 > ver2, otherwise False.
     This doesn't work with non-integer versions for now.'''
 
-    def canonicalize(ver):
-        try:
-            return tuple(map(int, (ver.split("."))))
-        except ValueError:
-            '''The version number contains letters, so we return all 0s.'''
-            return tuple(map(lambda x: 0, ver.split('.')))
+    return ver1 > ver2
 
-    return canonicalize(ver1) >= canonicalize(ver2)
+@version_conversion
+def version_lt(ver1, ver2):
+    '''Function to compare e.g. 0.9.1 < 0.9.3.
+    Returns True if ver1 < ver2, otherwise False.
+    This doesn't work with non-integer versions for now.'''
+
+    return ver1 < ver2
 
 def console_color(string='', color='white'):
     '''This function returns a properly ANSI-escaped string for display into a
