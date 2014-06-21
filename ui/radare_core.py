@@ -130,7 +130,6 @@ class Core():
         self.file_loaded = False
 
     def load_file(self, file):
-        #print "[*] Loading file"
         self.update_progress_bar("Loading file", 0.1)
         self.file = file
         # Init core
@@ -168,6 +167,8 @@ class Core():
             self.send_cmd("e asm.bytes=true")
         if self.do_anal:
             self.send_cmd("aa")
+        if self.start_addr:
+            self.send_cmd('af @ %s' % self.start_addr)
 
         self.bin = self.core.bin
         #print self.bin
@@ -185,7 +186,6 @@ class Core():
                     elif line[0] == 'uri':
                         self.info_file = line[1]
 
-        #print "[*] Get base addr"
         self.baddr = self.bin.get_baddr()
         self.size = hex(self.core.file.size)
         self.send_cmd('e search.flags=false')
@@ -211,6 +211,7 @@ class Core():
         self.asm_syntax = dialog.opt_asm_syntax
         self.use_va = dialog.opt_use_va
         self.asm_bytes = dialog.opt_asm_bytes
+        self.start_addr = dialog.opt_start_addr
         self.progress_bar = dialog.progress_bar
 
     def restore_va(self):
@@ -220,7 +221,6 @@ class Core():
             self.send_cmd("e io.va=1")
 
     def is_url(self, file):
-        #print "[*] Checking if is URL"
         self.filename = file
         if self.filename.lower().startswith("http://") or \
            self.filename.lower().startswith("https://") or \
@@ -229,7 +229,6 @@ class Core():
 
     def get_strings(self):
         if not self.allstrings:
-            #print "[*] Get strings"
             self.update_progress_bar("Getting strings", 0.6)
             if self.use_va:
                 self.send_cmd('e io.va=0')
@@ -243,7 +242,6 @@ class Core():
 
     def get_functions(self):
         if not self.allfuncs:
-            #print "[*] Get functions"
             self.update_progress_bar("Getting functions", 0.8)
             #self.send_cmd('aa')
             #self.send_cmd('fs functions')
@@ -263,7 +261,6 @@ class Core():
         return self.allfuncs
 
     def get_hexdump(self):
-        #print "[*] Get hexdump"
         self.update_progress_bar("Getting hexdump", 0.75)
         #self.send_cmd('e io.va=0')
         hexdump = self.send_cmd_str('px')
@@ -272,7 +269,6 @@ class Core():
 
     def get_full_hexdump(self):
         if self.fullhex == '' and self.size != '0x0':
-            #print "[*] Get full hexdump"
             self.update_progress_bar("Getting full hexdump", 0.5)
             self.send_cmd('e io.va=0')
             self.send_cmd('s 0')
@@ -285,7 +281,6 @@ class Core():
         return self.fullhex
 
     def get_dasm(self):
-        #print "[*] Get dasm"
         self.update_progress_bar("Getting dasm",0.25)
         dasm = self.send_cmd_str('pd')
         return dasm
@@ -295,7 +290,6 @@ class Core():
         step = 0.01
 
         if not self.text_dasm:
-            print "[*] Get text dasm"
             #self.update_progress_bar("Getting text dasm",base_percent)
             percent = base_percent
             for section in self.execsections:
@@ -303,7 +297,7 @@ class Core():
                 dasm = ''
                 self.send_cmd('s section.' + section[0])
                 self.send_cmd('b ' + str(section[1]))
-                print "\t* Let's get the dasm for %s..." % section[0],
+                #print "\t* Let's get the dasm for %s..." % section[0],
                 #self.update_progress_bar("Reading assembler for section %s..." % section[0], percent)
                 dasm = self.send_cmd_str('pD')
                 # In radare 0.9.6 even with clean output sometimes you get an
@@ -311,7 +305,7 @@ class Core():
                 dasm = re.sub('\x1b\[[0-9;]+m', '', dasm)
                 self.sections_lines.append(len(dasm.split('\n')))
                 self.send_cmd('b 512')
-                print " OK!"
+                #print " OK!"
                 self.text_dasm += dasm
                 if percent == base_percent + step * 10:
                     percent -= step
@@ -342,7 +336,6 @@ class Core():
 
     def get_repr(self):
         if not self.fullstr:
-            #print "[*] Get string repr"
             self.update_progress_bar("Getting string representation", 0.65)
             self.send_cmd('e io.va=0')
             self.send_cmd('s 0')
@@ -356,7 +349,6 @@ class Core():
 
     def get_sections(self):
         if self.allsections == [] and self.core.format != 'Hexdump':
-            #print "[*] Get sections"
             self.update_progress_bar("Getting sections", 0.15)
             for section in self.bin.get_sections():
                 if common.version_ge(self.version, '0.9.8'):
@@ -417,8 +409,6 @@ class Core():
         return self.allexports
 
     def get_callgraph(self, addr=''):
-        #if not self.dot:
-        #print "[*] Get callgraph"
         self.update_progress_bar("Loading callgraph", 0.4)
 
         # We have to call it with False because otherwise the UAC in Win7 won't allow us to access the
@@ -452,7 +442,6 @@ class Core():
         return self.dot
 
     def get_file_info(self):
-        #print "[*] Get file info"
         self.update_progress_bar("Getting additional file info", 0.9)
 
         if self.info:
@@ -463,7 +452,6 @@ class Core():
         return self.fileinfo
 
     def get_full_file_info(self):
-        #print "[*] Get file structure"
         self.update_progress_bar("Loading full file structure", 0.2)
         if not self.full_fileinfo:
             # get binary info

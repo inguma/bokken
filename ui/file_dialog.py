@@ -168,17 +168,29 @@ class FileDialog(gtk.Dialog):
         # Radare options
         self.anal_bin = gtk.CheckButton(label='Analyze program')
         self.anal_bin.set_active(True)
+        self.anal_bin.connect("toggled", self._no_anal)
         self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
         self.radare_dasm.set_active(True)
         self.io_va = gtk.CheckButton(label='Don\'t use VA')
         self.asm_syntax = gtk.CheckButton(label='Use AT&T syntax')
         self.asm_bytes = gtk.CheckButton(label='Don\'t show asm bytes')
-        self.anal_bin.connect("toggled", self._no_anal)
+        self.start_addr = gtk.CheckButton(label='Start address:')
+        self.start_addr.connect("toggled", self._start_addr_ctl)
+        self.start_addr_label = gtk.Label()
+        self.start_addr_label.set_markup('<b>0x</b>')
+        self.start_addr_label.set_padding(0, 2)
+        self.start_addr_address = gtk.Entry()
+        self.start_addr_address.set_sensitive(False)
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
         self.radare_box.pack_start(self.io_va, False, False, 2)
         self.radare_box.pack_start(self.asm_syntax, False, False, 2)
         self.radare_box.pack_start(self.asm_bytes, False, False, 2)
+        self.start_addr_hbox = gtk.HBox(False, 0)
+        self.start_addr_hbox.pack_start(self.start_addr, True, True, 2)
+        self.start_addr_hbox.pack_start(self.start_addr_label, False, False, 2)
+        self.start_addr_hbox.pack_start(self.start_addr_address, False, False, 2)
+        self.radare_box.pack_start(self.start_addr_hbox, False, False, 2)
 
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.logo, False, False, 0)
@@ -262,6 +274,7 @@ class FileDialog(gtk.Dialog):
             self.opt_use_va = self.io_va.get_active()
             self.opt_asm_syntax = self.asm_syntax.get_active()
             self.opt_asm_bytes = self.asm_bytes.get_active()
+            self.opt_start_addr = self.start_addr_address.get_text()
 
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title="Select target",action=gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -316,14 +329,22 @@ class FileDialog(gtk.Dialog):
 
         self._validate(self.input_entry.get_child())
 
+    def _start_addr_ctl(self, widget):
+        if widget.get_active():
+            self.start_addr_address.set_sensitive(True)
+        else:
+            self.start_addr_address.set_sensitive(False)
+
     def _no_anal(self, widget):
         if widget.get_active():
             self.radare_dasm.set_sensitive(True)
             self.io_va.set_sensitive(True)
             self.asm_syntax.set_sensitive(True)
             self.asm_bytes.set_sensitive(True)
+            self.start_addr.set_sensitive(True)
         else:
             self.radare_dasm.set_sensitive(False)
             self.io_va.set_sensitive(False)
             self.asm_syntax.set_sensitive(False)
             self.asm_bytes.set_sensitive(False)
+            self.start_addr.set_sensitive(False)
