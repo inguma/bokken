@@ -38,6 +38,13 @@ def version_conversion(func):
         version_tuple = []
 
         for ver in (ver1, ver2):
+            # Horrible version mangling.  I know that it's awful but I don't
+            # want to do proper version handling now.
+            # Let's remove '.git' in case it's a git version.
+            ver = ver.replace('.git', '')
+            # If we get something like 0.9.8-rc1, let's treat this as 0.9.8.1
+            # just for now.
+            ver = ver.replace('-rc', '.')
             try:
                 version_tuple.append(tuple(map(int, (ver.split(".")))))
             except ValueError:
