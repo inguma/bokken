@@ -181,6 +181,7 @@ class FileDialog(gtk.Dialog):
         self.start_addr_label.set_padding(0, 2)
         self.start_addr_address = gtk.Entry()
         self.start_addr_address.set_sensitive(False)
+        self.bits_16 = gtk.CheckButton(label='16-bit analysisi (only x86)')
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
         self.radare_box.pack_start(self.io_va, False, False, 2)
@@ -191,6 +192,7 @@ class FileDialog(gtk.Dialog):
         self.start_addr_hbox.pack_start(self.start_addr_label, False, False, 2)
         self.start_addr_hbox.pack_start(self.start_addr_address, False, False, 2)
         self.radare_box.pack_start(self.start_addr_hbox, False, False, 2)
+        self.radare_box.pack_start(self.bits_16, False, False, 2)
 
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.logo, False, False, 0)
@@ -265,9 +267,6 @@ class FileDialog(gtk.Dialog):
 
     def get_options(self):
         active = self.core_combo.get_active_text()
-        if active == 'Pyew':
-            self.opt_deep_anal = self.deep_anal.get_active()
-            self.opt_case = self.case_dasm.get_active()
         if active == 'Radare':
             self.opt_analyze_bin = self.anal_bin.get_active()
             self.opt_case = self.radare_dasm.get_active()
@@ -275,6 +274,10 @@ class FileDialog(gtk.Dialog):
             self.opt_asm_syntax = self.asm_syntax.get_active()
             self.opt_asm_bytes = self.asm_bytes.get_active()
             self.opt_start_addr = self.start_addr_address.get_text()
+            self.opt_bits_16 = self.bits_16.get_active()
+        elif active == 'Pyew':
+            self.opt_deep_anal = self.deep_anal.get_active()
+            self.opt_case = self.case_dasm.get_active()
 
     def select_file(self, widget):
         chooser = gtk.FileChooserDialog(title="Select target",action=gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -342,9 +345,11 @@ class FileDialog(gtk.Dialog):
             self.asm_syntax.set_sensitive(True)
             self.asm_bytes.set_sensitive(True)
             self.start_addr.set_sensitive(True)
+            self.bits_16.set_sensitive(True)
         else:
             self.radare_dasm.set_sensitive(False)
             self.io_va.set_sensitive(False)
             self.asm_syntax.set_sensitive(False)
             self.asm_bytes.set_sensitive(False)
             self.start_addr.set_sensitive(False)
+            self.bits_16.set_sensitive(False)

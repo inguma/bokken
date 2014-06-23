@@ -169,6 +169,9 @@ class Core():
             self.send_cmd("aa")
         if self.start_addr:
             self.send_cmd('af @ %s' % self.start_addr)
+        if self.bits_16:
+            self.send_cmd('e asm.arch=x86')
+            self.send_cmd('e asm.bits=16')
 
         self.bin = self.core.bin
         #print self.bin
@@ -212,6 +215,7 @@ class Core():
         self.use_va = dialog.opt_use_va
         self.asm_bytes = dialog.opt_asm_bytes
         self.start_addr = dialog.opt_start_addr
+        self.bits_16 = dialog.opt_bits_16
         self.progress_bar = dialog.progress_bar
 
     def restore_va(self):
@@ -330,10 +334,6 @@ class Core():
         queue.put(self.get_fulldasm())
         event.set()
 
-    def test_alive(self):
-        print "Child alive."
-        return False
-
     def get_repr(self):
         if not self.fullstr:
             self.update_progress_bar("Getting string representation", 0.65)
@@ -366,7 +366,7 @@ class Core():
 
     def get_elf_imports(self):
         if not self.allimports:
-            print "[*] Get ELF imports"
+            #print "[*] Get ELF imports"
             for imp in self.bin.get_imports():
                 if not 'Imports' in self.allimports.keys():
                     self.allimports['Imports'] = []
@@ -378,7 +378,7 @@ class Core():
 
     def get_imports(self):
         if not self.allimports:
-            print "[*] Get imports"
+            #print "[*] Get imports"
             for imp in self.bin.get_imports():
                 if '__' in imp.name:
                     dll, imp_name = imp.name.split('__', 1)
@@ -394,7 +394,7 @@ class Core():
 
     def get_exports(self):
         if not self.allexports:
-            print "[*] Get exports"
+            #print "[*] Get exports"
             for sym in self.bin.get_symbols():
                 if not self.use_va:
                     if common.version_ge(self.version, '0.9.8'):
