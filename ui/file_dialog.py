@@ -181,7 +181,7 @@ class FileDialog(gtk.Dialog):
         self.start_addr_label.set_padding(0, 2)
         self.start_addr_address = gtk.Entry()
         self.start_addr_address.set_sensitive(False)
-        self.bits_16 = gtk.CheckButton(label='16-bit analysisi (only x86)')
+        self.bits_16 = gtk.CheckButton(label='16-bit analysis (only x86)')
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
         self.radare_box.pack_start(self.io_va, False, False, 2)

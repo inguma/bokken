@@ -1,17 +1,17 @@
-#       mydot_widgetmydot_widgetmydot_widget.py
-#       
+#       ui/mydot_widget.py
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -45,6 +45,10 @@ class MyDotWidget(xdot.DotWidget):
                 addr = self.uicore.core.num.get(address)
                 fcn = self.uicore.core.anal.get_fcn_at(addr)
 
+                if not fcn:
+                    # We got a null function...no idea why, but it's bad and will break
+                    # subsequent logic, so exit the function.
+                    return False
                 for ref in fcn.get_refs():
                     if not "0x%08x" % ref.addr in refs:
                         refs.append("0x%08x" % ref.addr)
