@@ -101,7 +101,8 @@ class HexdumpView(gtk.HBox):
 
         self.offset_view = gtksourceview2.View(self.offset_buffer)
         self.hex_view = gtksourceview2.View(self.hex_buffer)
-        self.hex_view.connect("button-release-event", self.get_selected_text)
+        self.hex_view.connect("button-release-event", self.hex_view_button_release)
+        self.hex_view.connect("populate-popup", self.hex_view_populate_popup)
         self.ascii_view = gtksourceview2.View(self.ascii_buffer)
         self.asm_view = gtksourceview2.View(self.asm_buffer)
 
@@ -243,11 +244,35 @@ class HexdumpView(gtk.HBox):
         hex_adj.set_value(value)
         hex_adj.changed()
 
-    def get_selected_text(self, widget, event):
-        start, end = self.hex_buffer.get_selection_bounds()
+    def hex_view_populate_popup(self, textview, popup):
+        disassemble_item = gtk.MenuItem('Disassemble')
+        disassemble_item.connect('activate', self.disassemble_item_activate)
+        separator = gtk.SeparatorMenuItem()
+        popup.prepend(separator)
+        popup.prepend(disassemble_item)
+        separator.show()
+        disassemble_item.show()
+
+    def hex_view_button_release(self, widget, event):
+        self.set_asm_text(self.get_selected_text())
+
+    def disassemble_item_activate(self, widget):
+        self.set_asm_text(self.get_selected_text())
+
+    def get_selected_text(self):
+        try:
+            start, end = self.hex_buffer.get_selection_bounds()
+        except ValueError:
+            # Empty selection
+            return None
         hex = self.hex_buffer.get_text(start, end, include_hidden_chars=True)
         tmp_hex = hex.replace(' ', '')
         tmp_hex = tmp_hex.replace('\n', '')
+        return hex
+
+    def set_asm_text(self, hex):
+        if hex is None:
+            return
         if self.uicore.backend == 'radare':
             dasm = self.uicore.core.assembler.mdisassemble_hexstr(hex)
             if dasm:
