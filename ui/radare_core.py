@@ -132,20 +132,12 @@ class Core():
     def load_file(self, file):
         self.update_progress_bar("Loading file", 0.1)
         self.file = file
-        # Init core
-        # Returns True/False (check)
-        #print "[*] Open file"
         open_result = self.core.file_open(file, 0, 0)
-        #print open_result
         if open_result is None:
             self.file_loaded = False
             return
         self.file_loaded = True
-        #print self.file_loaded
-        #print "[*] Bin load"
         self.core.bin_load(None, 0)
-        #print "[*] Set config options"
-        #self.core.config.set("asm.bytes", "false")
         self.send_cmd("e scr.interactive=false")
         self.send_cmd('e asm.lines=false')
         self.send_cmd('e scr.color=0')
@@ -174,12 +166,8 @@ class Core():
             self.send_cmd('e asm.bits=16')
 
         self.bin = self.core.bin
-        #print self.bin
-        #print "[*] Get bin info"
         self.info = self.bin.get_info()
-        #print "[*] Got bin info"
         if not self.info:
-            #print "[*] No bin info"
             list = self.send_cmd_str('i').split('\n')
             for line in list:
                 if line:
@@ -439,7 +427,7 @@ class Core():
         self.dot = f.read()
         f.close()
         os.unlink(file.name)
-        return self.dot
+        return re.sub('style=filled ', 'style=rounded ', self.dot)
 
     def get_file_info(self):
         self.update_progress_bar("Getting additional file info", 0.9)
