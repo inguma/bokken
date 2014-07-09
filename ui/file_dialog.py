@@ -336,20 +336,18 @@ class FileDialog(gtk.Dialog):
         if widget.get_active():
             self.start_addr_address.set_sensitive(True)
         else:
+            self.start_addr_address.set_text('')
             self.start_addr_address.set_sensitive(False)
 
     def _no_anal(self, widget):
         if widget.get_active():
-            self.radare_dasm.set_sensitive(True)
             self.io_va.set_sensitive(True)
-            self.asm_syntax.set_sensitive(True)
             self.asm_bytes.set_sensitive(True)
             self.start_addr.set_sensitive(True)
-            self.bits_16.set_sensitive(True)
         else:
-            self.radare_dasm.set_sensitive(False)
+            self.io_va.set_active(False)
             self.io_va.set_sensitive(False)
-            self.asm_syntax.set_sensitive(False)
+            self.asm_bytes.set_active(False)
             self.asm_bytes.set_sensitive(False)
+            self.start_addr.set_active(False)
             self.start_addr.set_sensitive(False)
-            self.bits_16.set_sensitive(False)

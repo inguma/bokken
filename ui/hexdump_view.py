@@ -276,11 +276,17 @@ class HexdumpView(gtk.HBox):
         if self.uicore.backend == 'radare':
             dasm = self.uicore.core.assembler.mdisassemble_hexstr(hex)
             if dasm:
-                self.asm_buffer.set_text(hex + '\n\n' + dasm.buf_asm)
+                asm = dasm.buf_asm
+                if not self.uicore.lower_case:
+                    asm = asm.upper().replace('0X', '0x')
+                self.asm_buffer.set_text(hex + '\n\n' + asm)
         elif self.uicore.backend == 'pyew':
             dasm = ''
             for i in self.Decode(0, tmp_hex, self.decode):
                 mn = "%s " % i.mnemonic
                 op = "%s" % i.operands
-                dasm += mn.lower() + op.lower() + '\n'
+                if self.uicore.lower_case:
+                    dasm += mn.lower() + op.lower() + '\n'
+                else:
+                    dasm += mn + op + '\n'
             self.asm_buffer.set_text(hex + '\n\n' + dasm)
