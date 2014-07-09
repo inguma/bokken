@@ -161,9 +161,10 @@ class Core():
             self.send_cmd("aa")
         if self.start_addr:
             self.send_cmd('af @ %s' % self.start_addr)
-        if self.bits_16:
-            self.send_cmd('e asm.arch=x86')
-            self.send_cmd('e asm.bits=16')
+        if self.arch:
+            self.send_cmd('e asm.arch=%s' % self.arch)
+        if self.bits:
+            self.send_cmd('e asm.bits=%s' % self.bits)
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
@@ -203,7 +204,8 @@ class Core():
         self.use_va = dialog.opt_use_va
         self.asm_bytes = dialog.opt_asm_bytes
         self.start_addr = dialog.opt_start_addr
-        self.bits_16 = dialog.opt_bits_16
+        self.arch = dialog.opt_arch
+        self.bits = dialog.opt_bits
         self.progress_bar = dialog.progress_bar
 
     def restore_va(self):
@@ -562,3 +564,18 @@ class Core():
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
         ui.gtk2.common.repaint()
+
+    @staticmethod
+    def get_plugins():
+        core = RCore()
+        try:
+            return core.assembler.get_plugins()
+        except AttributeError:
+            from collections import namedtuple
+            Plugin = namedtuple('Plugin',['name', 'arch', 'bits', 'desc'])
+            return [Plugin('arm',  'arm',  0x70, 'Capstone ARM disassembler'),
+                    Plugin('java', 'java', 0x20, 'Java bytecode'),
+                    Plugin('mips', 'mips', 0x70, 'Capstone MIPS disassembler'),
+                    Plugin('ppc',  'ppc',  0x60, 'PowerPC'),
+                    Plugin('sparc','sparc',0x60, 'Scalable Processor Architecture'),
+                    Plugin('x86',  'x86',  0x70, 'udis86 x86-16,32,64')]

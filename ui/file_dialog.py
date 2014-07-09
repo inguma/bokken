@@ -89,10 +89,14 @@ class FileDialog(gtk.Dialog):
         self.core_label.set_alignment(0, 0.5)
         self.core_combo = gtk.combo_box_new_text()
 
+        self.plugins = []
+
         if self.has_pyew:
             self.core_combo.append_text('Pyew')
         if self.has_radare:
             self.core_combo.append_text('Radare')
+            from ui.radare_core import Core as UICore
+            self.plugins = UICore.get_plugins()
 
         if not self.core:
             self.core_combo.set_active(0)
@@ -178,10 +182,20 @@ class FileDialog(gtk.Dialog):
         self.start_addr.connect("toggled", self._start_addr_ctl)
         self.start_addr_label = gtk.Label()
         self.start_addr_label.set_markup('<b>0x</b>')
-        self.start_addr_label.set_padding(0, 2)
+        self.start_addr_label.set_padding(0, 5)
         self.start_addr_address = gtk.Entry()
         self.start_addr_address.set_sensitive(False)
-        self.bits_16 = gtk.CheckButton(label='16-bit analysis (only x86)')
+        self.bits_label = gtk.Label('Bits:')
+        self.bits = gtk.combo_box_new_text()
+        self.bits.set_size_request(70, -1)
+        self.arch_label = gtk.Label('Architecture:')
+        self.arch = gtk.combo_box_new_text()
+        self.arch.connect("changed", self._arch_changed)
+        self.arch.append_text('Auto')
+        for plugin in self.plugins:
+            self.arch.append_text('%s (%s) - %s' % (plugin.name, plugin.arch, plugin.desc))
+        self.arch.set_active(0)
+
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
         self.radare_box.pack_start(self.io_va, False, False, 2)
@@ -192,7 +206,14 @@ class FileDialog(gtk.Dialog):
         self.start_addr_hbox.pack_start(self.start_addr_label, False, False, 2)
         self.start_addr_hbox.pack_start(self.start_addr_address, False, False, 2)
         self.radare_box.pack_start(self.start_addr_hbox, False, False, 2)
-        self.radare_box.pack_start(self.bits_16, False, False, 2)
+        self.arch_hbox = gtk.HBox(False, 0)
+        self.arch_hbox.pack_start(self.arch_label, False, False, 2)
+        self.arch_hbox.pack_start(self.arch, True, True, 2)
+        self.radare_box.pack_start(self.arch_hbox, False, False, 2)
+        self.bits_hbox = gtk.HBox(False, 0)
+        self.bits_hbox.pack_start(self.bits_label, False, False, 2)
+        self.bits_hbox.pack_start(self.bits, False, False, 2)
+        self.radare_box.pack_start(self.bits_hbox, False, False, 2)
 
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.logo, False, False, 0)
@@ -274,7 +295,14 @@ class FileDialog(gtk.Dialog):
             self.opt_asm_syntax = self.asm_syntax.get_active()
             self.opt_asm_bytes = self.asm_bytes.get_active()
             self.opt_start_addr = self.start_addr_address.get_text()
-            self.opt_bits_16 = self.bits_16.get_active()
+            self.opt_arch = None
+            self.opt_bits = None
+            if self.arch.get_active_text() is not None:
+                index = self._find_active_index(self.arch)
+                if index >= 0:
+                    self.opt_arch = self.plugins[index].name
+            if self.bits.get_active_text() is not None and self.bits.get_active_text() != 'Auto':
+                self.opt_bits = self.bits.get_active_text()
         elif active == 'Pyew':
             self.opt_deep_anal = self.deep_anal.get_active()
             self.opt_case = self.case_dasm.get_active()
@@ -287,6 +315,12 @@ class FileDialog(gtk.Dialog):
             self.file_name = chooser.get_filename()
             self.input_entry.get_child().set_text(self.file_name)
         chooser.destroy()
+
+    def _find_active_index(self, combobox):
+        index = combobox.get_active()
+        if combobox.get_model()[0][0] == 'Auto':
+            index -= 1
+        return index
 
     def _validate_cb(self, widget):
         if self.timer_id:
@@ -351,3 +385,21 @@ class FileDialog(gtk.Dialog):
             self.asm_bytes.set_sensitive(False)
             self.start_addr.set_active(False)
             self.start_addr.set_sensitive(False)
+            self._start_addr_ctl(self.start_addr)
+
+    def _arch_changed(self, combobox):
+        if combobox.get_active_text() != 'Auto':
+            plugin_bits = self.plugins[self._find_active_index(combobox)].bits
+            self.bits.set_sensitive(True)
+            self.bits.get_model().clear()
+            count = 0
+            for bit in [8, 16, 32, 64]:
+                if plugin_bits & bit == bit:
+                    self.bits.append_text(str(bit))
+                    count += 1
+            if count >= 2:
+                self.bits.prepend_text('Auto')
+            self.bits.set_active(0)
+        else:
+            self.bits.get_model().clear()
+            self.bits.set_sensitive(False)
