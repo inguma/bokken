@@ -202,7 +202,7 @@ class FileDialog(gtk.Dialog):
         self.radare_box.pack_start(self.asm_syntax, False, False, 2)
         self.radare_box.pack_start(self.asm_bytes, False, False, 2)
         self.start_addr_hbox = gtk.HBox(False, 0)
-        self.start_addr_hbox.pack_start(self.start_addr, True, True, 2)
+        self.start_addr_hbox.pack_start(self.start_addr, False, False, 0)
         self.start_addr_hbox.pack_start(self.start_addr_label, False, False, 2)
         self.start_addr_hbox.pack_start(self.start_addr_address, False, False, 2)
         self.radare_box.pack_start(self.start_addr_hbox, False, False, 2)
@@ -323,9 +323,7 @@ class FileDialog(gtk.Dialog):
         return index
 
     def _validate_cb(self, widget):
-        if self.timer_id:
-            # We destroy the last event source and create another one.
-            gobject.source_remove(self.timer_id)
+        # We create a timeout object to avoid fast lookups on disk when typing.
         self.timer_id = gobject.timeout_add(500, self._validate, widget.get_child())
 
     def _validate(self, widget):

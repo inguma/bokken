@@ -32,8 +32,8 @@ def version_conversion(func):
     def inner(ver1, ver2):
         '''Decorator for converting versions strings (passed as arguments) to
         tuples.'''
-        '''FIXME: For now it doesn't work with non-integer versions
-        (i.e. 0.9.8-rc2).'''
+        '''FIXME: For now it considers a.b.c-rc3 as (a, b, c, 3) to be able to
+        match radare2's RC versions (e.g. 0.9.8-rc3).'''
 
         version_tuple = []
 
@@ -42,7 +42,7 @@ def version_conversion(func):
             # want to do proper version handling now.
             # Let's remove '.git' in case it's a git version.
             ver = ver.replace('.git', '')
-            # If we get something like 0.9.8-rc1, let's treat this as 0.9.8.1
+            # If we get something like 0.9.8-rc1, let's treat it as 0.9.8.1
             # just for now.
             ver = ver.replace('-rc', '.')
             try:
@@ -72,16 +72,14 @@ def version_le(ver1, ver2):
 @version_conversion
 def version_gt(ver1, ver2):
     '''Function to compare e.g. 0.9.1 > 0.9.3.
-    Returns True if ver1 > ver2, otherwise False.
-    This doesn't work with non-integer versions for now.'''
+    Returns True if ver1 > ver2, otherwise False.'''
 
     return ver1 > ver2
 
 @version_conversion
 def version_lt(ver1, ver2):
     '''Function to compare e.g. 0.9.1 < 0.9.3.
-    Returns True if ver1 < ver2, otherwise False.
-    This doesn't work with non-integer versions for now.'''
+    Returns True if ver1 < ver2, otherwise False.'''
 
     return ver1 < ver2
 
