@@ -179,7 +179,7 @@ class Core():
                         self.info_file = line[1]
 
         self.baddr = self.bin.get_baddr()
-        self.size = hex(self.core.file.size)
+        self.size = hex(self.core.io.size())
         self.send_cmd('e search.flags=false')
         if self.do_anal:
             self.core.format = 'Program'
@@ -449,7 +449,7 @@ class Core():
             if file_info:
                 self.full_fileinfo['bin'] = []
                 for line in file_info.split('\n'):
-                    line = line.split('=')
+                    line = line.split('\t')
                     self.full_fileinfo['bin'].append(line)
             # Get imports
             imports = self.send_cmd_str('ii')
@@ -457,14 +457,15 @@ class Core():
                 self.full_fileinfo['imports'] = []
                 for line in imports.split('\n'):
                     line = line.split(' ')
-                    self.full_fileinfo['imports'].append(line)
+                    if len(line) == 5:
+                        self.full_fileinfo['imports'].append(line)
             # Get entry points
-            entryp = self.send_cmd_str('ie')
+            entryp = self.send_cmd_str('iej')
             if entryp:
                 self.full_fileinfo['eps'] = []
                 for line in entryp.split('\n'):
-                    line = line.split(' ')
-                    self.full_fileinfo['eps'].append(line)
+                    line = line.strip('[').strip(']')
+                    self.full_fileinfo['eps'].append(['Entry0', hex(int(line))])
             # Get symbols
             symbols = self.send_cmd_str('is')
             if symbols:

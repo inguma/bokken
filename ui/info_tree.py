@@ -1,17 +1,17 @@
 #       info_tree.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -108,8 +108,8 @@ class InfoTree(gtk.TreeView):
 
         if full_info.has_key('imports'):
             for imp in full_info['imports']:
-                if len(imp) == 7:
-                    self.treestore.append(imp_it, [imp[0], imp[1], imp[2], imp[3], imp[4], imp[5], imp[6], ''])
+                if len(imp) == 5:
+                    self.treestore.append(imp_it, [imp[0], imp[1], imp[2], imp[3], imp[4], '', '', ''])
 
         if full_info.has_key('sections'):
             for sec in full_info['sections']:
@@ -118,13 +118,13 @@ class InfoTree(gtk.TreeView):
 
         if full_info.has_key('strings'):
             for string in full_info['strings']:
-                if len(string) == 6:
-                    self.treestore.append(str_it, [string[0], string[1], string[2], string[3], string[4], string[5], '', ''])
+                if len(string) == 8:
+                    self.treestore.append(str_it, [string[0], string[1], string[2], string[3], string[4], string[5], string[6], string[7]])
 
         if full_info.has_key('eps'):
             for ep in full_info['eps']:
-                if len(ep) == 3:
-                    self.treestore.append(entry_it, [ep[0], ep[1], ep[2], '', '', '', '', ''])
+                if len(ep) == 2:
+                    self.treestore.append(entry_it, [ep[0], ep[1], '', '', '', '', '', ''])
 
         # Add column to tree
         self.append_column(infos)
