@@ -429,7 +429,9 @@ class Core():
         self.dot = f.read()
         f.close()
         os.unlink(file.name)
-        return re.sub('style=filled ', 'style=rounded ', self.dot)
+        self.dot = self.dot.replace('graph [bgcolor=white];', 'graph [color=white, bgcolor="invis"];')
+        self.dot = self.dot.replace('fontsize="8"', 'fontsize="14"')
+        return re.sub('style=filled ', 'style="rounded,filled" fillcolor="white" ', self.dot)
 
     def get_file_info(self):
         self.update_progress_bar("Getting additional file info", 0.9)

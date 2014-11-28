@@ -43,7 +43,7 @@ class MyDotWidget(xdot.DotWidget):
             if url is not None:
                 address = url.url.split('/')[0]
                 addr = self.uicore.core.num.get(address)
-                fcn = self.uicore.core.anal.get_fcn_at(addr)
+                fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
 
                 if not fcn:
                     # We got a null function...no idea why, but it's bad and will break

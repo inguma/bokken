@@ -67,7 +67,7 @@ class Pen:
     def highlighted(self):
         pen = self.copy()
         pen.color = (1, 0, 0, 1)
-        pen.fillcolor = (1, .8, .8, 1)
+        #pen.fillcolor = (1, .8, .8, 1)
         return pen
 
 
@@ -172,7 +172,9 @@ class TextShape(Shape):
 
         cr.save()
         cr.scale(f, f)
-        cr.set_source_rgba(*self.select_pen(highlight).color)
+        # Always pass False to avoid text highlight
+        cr.set_source_rgba(*self.select_pen(False).color)
+        #cr.set_source_rgba(*self.select_pen(highlight).color)
         cr.show_layout(layout)
         cr.restore()
 
@@ -1469,7 +1471,9 @@ class ZoomAreaAction(DragAction):
         self.dot_widget.queue_draw()
 
 
-class DotWidget(gtk.DrawingArea):
+# Slate
+#class DotWidget(gtk.DrawingArea):
+class DotWidget(gtk.Layout):
     """PyGTK widget that draws dot graphs."""
 
     __gsignals__ = {
@@ -1480,7 +1484,12 @@ class DotWidget(gtk.DrawingArea):
     filter = 'dot'
 
     def __init__(self):
-        gtk.DrawingArea.__init__(self)
+        #gtk.DrawingArea.__init__(self)
+        gtk.Layout.__init__(self)
+
+        # Meow
+        self.todraw_term = False
+        self.todraw_file = True
 
         self.graph = Graph()
         self.openfilename = None
@@ -1588,7 +1597,8 @@ class DotWidget(gtk.DrawingArea):
         return True
 
     def do_expose_event(self, event):
-        cr = self.window.cairo_create()
+        window = self.get_bin_window()
+        cr = window.cairo_create()
 
         # set a clip region for the expose event
         cr.rectangle(
@@ -1597,7 +1607,23 @@ class DotWidget(gtk.DrawingArea):
         )
         cr.clip()
 
-        cr.set_source_rgba(1.0, 1.0, 1.0, 1.0)
+        # meow
+        # Draw canvas background color
+        #cr.set_source_rgba(0.0, 0.0, 0.0, 0.850)
+        w = self.allocation.width
+        h = self.allocation.height
+
+        lg3 = cairo.LinearGradient(0, 0, 0, h)
+        # Dark
+#        lg3.add_color_stop_rgba(0.1, 0.1, 0.1, 0.1, 1.0)
+#        lg3.add_color_stop_rgba(0.6, 0.05, 0.05, 0.05, 1.0)
+#        lg3.add_color_stop_rgba(0.9, 0, 0, 0, 1.0)
+
+        # Blue
+        lg3.add_color_stop_rgba(0.5, 1.0, 1.0, 1.0, 1.0)
+        lg3.add_color_stop_rgba(0.99, 0.8, 0.8, 1.0, 1.0)
+        cr.set_source(lg3)
+
         cr.paint()
 
         cr.save()

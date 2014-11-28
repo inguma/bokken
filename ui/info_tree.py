@@ -129,6 +129,7 @@ class InfoTree(gtk.TreeView):
         # Add column to tree
         self.append_column(infos)
         self.set_model(self.treestore)
-        self.expand_all()
+        #self.expand_all()
+        self.collapse_all()
 
         self.show_all()
