@@ -150,6 +150,9 @@ class Core():
         else:
             self.send_cmd("e io.va=1")
         if self.asm_syntax:
+            # TODO: fix until r2 fixes ATT with capstone
+            # once this happens, remove next line
+            self.send_cmd("e asm.arch=x86.udis")
             self.send_cmd("e asm.syntax=att")
         else:
             self.send_cmd("e asm.syntax=intel")
