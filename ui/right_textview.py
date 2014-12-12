@@ -1,17 +1,17 @@
 #       right_textview.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -27,7 +27,9 @@ import ui.comments_dialog as comments_dialog
 import ui.xrefs_menu as xrefs_menu
 
 from ui.searchable import Searchable
+from ui.highword import HighWord
 from ui.opcodes import *
+from lib.highword_helper import *
 
 class RightTextView(gtk.VBox, Searchable):
     '''Right TextView elements'''
@@ -63,18 +65,18 @@ class RightTextView(gtk.VBox, Searchable):
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
         self.buffer = gtksourceview2.Buffer()
-        self.buffer.create_tag("green-background", background="green", foreground="black")
         self.buffer.set_data('languages-manager', lm)
         self.view = gtksourceview2.View(self.buffer)
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
+        self.view.connect("move-cursor", self._cursor_moved)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
         self.view.set_highlight_current_line(True)
         # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
         self.view.set_wrap_mode(gtk.WRAP_NONE)
-        
+
         # setup view
         font_desc = pango.FontDescription('monospace 9')
         if font_desc:
@@ -100,12 +102,21 @@ class RightTextView(gtk.VBox, Searchable):
         # Create the search widget
         Searchable.__init__(self, self.view, small=True)
 
+        self.high_word = HighWord(self.view)
+
         # Used for code navigation on _search function
         self.match_start = None
         self.match_end = None
         self.search_string = ''
 
         self.view.connect("populate-popup", self._populate_comments_menu)
+
+    def _cursor_moved(self, widget, step_size, count, extend_selection):
+        cursor = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        start = find_word_bound(cursor, -1, self.buffer)
+        end = find_word_bound(cursor, +1, self.buffer)
+        word = self.buffer.get_text(start, end, False)
+        self.high_word._find(word)
 
     def do_seek(self, widget, direction):
         if self.seek_index <= 1 and direction == 'b':
@@ -119,15 +130,11 @@ class RightTextView(gtk.VBox, Searchable):
                 self.seek_index += 1
             #print "Nuevo indice %d" % self.seek_index
 
-            # Remove previous marks if exist
-            for mark in self.marks:
-                self.buffer.remove_tag_by_name('green-background', mark[0], mark[1])
             self.marks = []
 
             #print "Me muevo al indice %d de %d" % (self.seek_index-1, self.seek_index)
             mark = self.buffer.create_mark(None, self.seeks[self.seek_index-1][0], False)
             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
-            self.buffer.apply_tag_by_name('green-background', self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1])
             self.marks.append([self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1]])
 
     def setup_sections_bar(self):
@@ -216,18 +223,18 @@ class RightTextView(gtk.VBox, Searchable):
                 # Add Xrefs menu
                 refs = []
                 xrefs = []
-    
+
                 xmenu = xrefs_menu.XrefsMenu(self.uicore, self.main)
                 addr = self.uicore.core.num.get(addr)
                 fcn = self.uicore.core.anal.get_fcn_at(addr)
-    
+
                 for ref in fcn.get_refs():
                     if not "0x%08x" % ref.addr in refs:
                         refs.append("0x%08x" % ref.addr)
                 for xref in fcn.get_xrefs():
                     if not "0x%08x" % xref.addr in xrefs:
                         xrefs.append("0x%08x" % xref.addr)
-    
+
                 refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
                 sep = gtk.SeparatorMenuItem()
                 menu.prepend(sep)
@@ -302,6 +309,7 @@ class RightTextView(gtk.VBox, Searchable):
             soffset = temp_offset
 
         self._search(text[soffset:eoffset])
+        self.high_word._find(text[soffset:eoffset])
 
     def create_seek_buttons(self):
         self.hbox = gtk.HBox(False, 1)
@@ -385,12 +393,7 @@ class RightTextView(gtk.VBox, Searchable):
                         break
 
                 if res:
-                    # Remove previous marks if exist
-                    for mark in self.marks:
-                        self.buffer.remove_tag_by_name('green-background', mark[0], mark[1])
                     self.marks = []
-                    if self.match_start != None and self.match_end != None:
-                        self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
 
                     for iter in res:
                         self.match_start, self.match_end = iter
@@ -400,7 +403,6 @@ class RightTextView(gtk.VBox, Searchable):
                             mark = self.buffer.create_mark(None, self.match_start, False)
                             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                             self.last_search_iter = self.match_end
-                            self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
                             self.marks.append([self.match_start, self.match_end])
 
                     # Update seeks
@@ -409,9 +411,9 @@ class RightTextView(gtk.VBox, Searchable):
                         self.seek_index += 1
                         if len(self.seeks) != self.seek_index:
                             self.seeks = self.seeks[:self.seek_index]
-    
+
                 else:
-                    self.search_string = None      
+                    self.search_string = None
                     self.last_search_iter = None
                 if self.uicore.backend == 'radare' and self.dograph:
                     self.textviews.update_graph(self, self.search_string)

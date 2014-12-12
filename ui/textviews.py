@@ -406,16 +406,12 @@ class TextViews(gtk.HBox):
                 res = start.forward_search(self.search_lower_string, gtk.TEXT_SEARCH_TEXT_ONLY)
 
             if res:
-                # Remove previous marks if exist
-                if self.match_start != None and self.match_end != None:
-                    self.buffer.remove_tag_by_name('green-background', self.match_start, self.match_end)
                 self.match_start, self.match_end = res
                 self.buffer.place_cursor(self.match_start)
                 #self.view.scroll_to_iter(self.match_start, 0, False, 0, 0)
                 mark = self.buffer.create_mark(None, self.match_start, False)
                 self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
                 self.last_search_iter = self.match_end
-                self.buffer.apply_tag_by_name('green-background', self.match_start, self.match_end)
                 self.right_textview.marks.append([self.match_start, self.match_end])
 
                 self.right_textview.seek_index += 1
