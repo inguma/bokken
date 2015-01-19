@@ -1,0 +1,63 @@
+How to push
+===========
+
+Bokken is pushed to three places:
+
+- https://inguma.eu/projects/bokken/repository
+- https://github.com/inguma/bokken
+- https://bitbucket.org/inguma/bokken/src
+
+Currently there's no automation behind these three trees and the pusher is responsible to update them.
+
+The best way of controlling this for now is:
+
+- Install hg-git.
+- Add to .hg/hgrc:
+
+    [paths]
+    default = ssh://nexo.inguma.eu//repos/bokken
+    git = git+ssh://git@github.com/inguma/bokken.git
+    bb = ssh://hg@bitbucket.org/inguma/bokken
+
+- When you push a change, do in a row:
+
+`$ hg push (for inguma.eu)`
+
+`$ hg push git (for GitHub)`
+
+`$ hg push bb (for BitBucket)`
+
+- When you need to get a pull request from GitHub:
+
+`$ hg pull git://github.com/ThisContributor/bokken.git`
+
+then merge and push normally as above.
+
+
+Problems
+========
+
+Inconsistencies in the git import phase
+---------------------------------------
+
+You may find the following error if you e.g. previously rolled back
+changes acquired by git:
+
+    $ hg pull git://github.com/ThisContributor/bokken.git
+    pulling from git://github.com/ThisContributor/bokken.git
+    no changes found
+    abort: unknown revision '0f27313fff9539905dbac04f078afad8f78b0dee'!
+
+If this is the case, clean the git revision map with git-cleanup:
+
+    $ hg git-cleanup
+    git commit map cleaned
+
+and then the normal procedure:
+
+    $ hg pull git://github.com/ThisContributor/bokken.git
+    pulling from git://github.com/ThisContributor/bokken.git
+    importing git objects into hg
+    lib/blah.py
+    lib/bleh.py
+    (run 'hg heads' to see heads, 'hg merge' to merge)
