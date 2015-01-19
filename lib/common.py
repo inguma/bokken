@@ -42,6 +42,7 @@ def version_conversion(func):
             # want to do proper version handling now.
             # Let's remove '.git' in case it's a git version.
             ver = ver.replace('.git', '')
+            ver = ver.replace('-git', '')
             # If we get something like 0.9.8-rc1, let's treat it as 0.9.8.1
             # just for now.
             ver = ver.replace('-rc', '.')
