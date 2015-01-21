@@ -1,0 +1,986 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Author: Callum Lowcay <callum@callumscode.com>
+ Copyright (C) 2008-2010 Callum Lowcay
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+
+-->
+<!--
+    Mostly copied and pasted from c.lang
+-->
+<language id="arm-asm" _name="ARM ASM" version="2.0" _section="Others">
+    <metadata>
+      <property name="mimetypes">text/x-armasm</property><!--Just a guess-->
+      <property name="globs">*.asm</property>
+      <property name="line-comment-start">;</property>
+    </metadata>
+
+    <styles>
+        <style id="comment"           _name="Comment"             map-to="def:comment"/>
+        <style id="error"             _name="Error"               map-to="def:error"/>
+        <style id="string"            _name="String"              map-to="def:string"/>
+        <style id="preprocessor"      _name="Preprocessor"        map-to="def:preprocessor"/>
+        <style id="opcode"            _name="Opcode"              map-to="def:keyword"/>
+        <style id="register"          _name="Register"            map-to="def:identifier"/>
+        <style id="type"              _name="Data Type"           map-to="def:type"/>
+        <style id="escaped-character" _name="Escaped Character"   map-to="def:special-char"/>
+        <style id="floating-point"    _name="Floating point number" map-to="def:floating-point"/>
+        <style id="decimal"           _name="Decimal number"      map-to="def:decimal"/>
+        <style id="octal"             _name="Octal number"        map-to="def:base-n-integer"/>
+        <style id="hexadecimal"       _name="Hexadecimal number"  map-to="def:base-n-integer"/>
+        <style id="binary"            _name="Binary number"       map-to="def:base-n-integer"/>
+        <style id="ir-direction"      _name="Instruction Register(IR) Direction" map-to="def:underlined"/>
+    </styles>
+    
+    <default-regex-options case-sensitive="false"/>
+
+    <definitions>
+        <define-regex id="escaped-character" extended="true">
+            \\(      # leading backslash
+            [\\\"\'] # escaped character
+            )
+        </define-regex>
+
+        <context id="arm-asm">
+            <include>
+                <!-- Comments -->
+                <context id="comment" style-ref="comment" end-at-line-end="true">
+                    <start>;</start>
+                    <include>
+                      <context ref="def:in-line-comment"/>
+                    </include>
+                </context>
+
+                <context id="string" style-ref="string" end-at-line-end="true">
+                    <start>"</start>
+                    <end>"</end>
+                    <include>
+                        <context id="escaped-characterw" style-ref="escaped-character">
+                            <match>\%{escaped-character}</match>
+                        </context>
+                    </include>
+                </context>
+                <context id="string2" style-ref="string" end-at-line-end="true">
+                    <start>'</start>
+                    <end>'</end>
+                    <include>
+                        <context id="escaped-characters" style-ref="escaped-character">
+                            <match>\%{escaped-character}</match>
+                        </context>
+                    </include>
+                </context>
+
+
+                <context id="float" style-ref="floating-point">
+                    <match extended="true">
+                        (?&lt;![\w\.])
+                        ((\.[0-9]+ | [0-9]+\.[0-9]*) ([Ee][+-]?[0-9]*)? |
+                        ([0-9]+[Ee][+-]?[0-9]*))
+                        (?![\w\.])
+                    </match>
+                </context>
+
+                <!-- 
+                Context for underlining address to jump to in branch/jump instructions.
+                The regular expression has a first part that matches the opcode (instruction), a second one
+                that gets (if any) the type of opcode, and a third one that matches the next word as the address to link.
+                -->
+                <context id="ir-direction">
+                   <match extended="true">
+                    (?&lt;![\w\.])
+                                (?P&lt;opcode&gt;((J|CMOV|SET)N?(AE|BE|PE|PO|LE|GE|O|B|C|Z|E|A|S|P|L|G))|(FCMOVN?(BE|B|E|U))|CALL) ## Regex que captura el opcode
+                    (\s+(?P&lt;matched_type&gt;(DWORD|BYTE)\s+)?) ## Regex matching blanks and the dword/byte if it exists.
+                    (?P&lt;address&gt;\S+) ## Regex matching the next word to underline it.
+                    (?![\w\.])
+                   </match>
+                   <include>
+                    <!--context sub-pattern="0" style-ref="comment"/-->
+                    <context sub-pattern="opcode" style-ref="opcode"/>
+                    <context sub-pattern="matched_type" style-ref="type"/>
+                    <context sub-pattern="address" style-ref="ir-direction"/>
+                    <context sub-pattern="address" style-ref="comment"/>
+                    <context sub-pattern="hex" style-ref="hexadecimal"/>
+                   </include>
+                </context>
+
+                <context id="hexadecimal" style-ref="hexadecimal">
+                    <match extended="true">
+                        (?&lt;![\w\.])
+                        ((0[xX][a-fA-F0-9]+)|([0-9][a-fA-F0-9]*h)|(\$[0-9][a-fA-F0-9]+))
+                        (?![\w\.])
+                    </match>
+                </context>
+
+                <context id="octal" style-ref="octal">
+                    <match extended="true">
+                        (?&lt;![\w\.])
+                        [0-7]+[QOqo]
+                        (?![\w\.])
+                    </match>
+                </context>
+
+                <context id="decimal" style-ref="decimal">
+                    <match extended="true">
+                        (?&lt;![\w\.])
+                        [0-9]+
+                        (?![\w\.])
+                    </match>
+                </context>
+
+                <context id="binary" style-ref="binary">
+                    <match extended="true">
+                        (?&lt;![\w\.])
+                        [01]+[Bb]
+                        (?![\w\.])
+                    </match>
+                </context>
+
+                <!-- Opcodes -->
+                <context id="opcodes_simple" style-ref="opcode">
+
+<keyword>MOV</keyword><keyword>MOVEQ</keyword><keyword>MOVNE</keyword><keyword>MOVCS</keyword><keyword>MOVHS</keyword><keyword>MOVCC</keyword><keyword>MOVLO</keyword>
+<keyword>MOVMI</keyword><keyword>MOVPL</keyword><keyword>MOVVS</keyword><keyword>MOVVC</keyword><keyword>MOVHI</keyword><keyword>MOVLS</keyword>
+<keyword>MOVGE</keyword><keyword>MOVLT</keyword><keyword>MOVGT</keyword><keyword>MOVLE</keyword><keyword>MOVAL</keyword>
+<keyword>MOVS</keyword><keyword>MOVEQS</keyword><keyword>MOVNES</keyword><keyword>MOVCSS</keyword><keyword>MOVHSS</keyword><keyword>MOVCCS</keyword><keyword>MOVLOS</keyword>
+<keyword>MOVMIS</keyword><keyword>MOVPLS</keyword><keyword>MOVVSS</keyword><keyword>MOVVCS</keyword><keyword>MOVHIS</keyword><keyword>MOVLSS</keyword>
+<keyword>MOVGES</keyword><keyword>MOVLTS</keyword><keyword>MOVGTS</keyword><keyword>MOVLES</keyword><keyword>MOVALS</keyword><keyword>MOVW</keyword><keyword>MOVT</keyword>
+
+<keyword>MVN</keyword><keyword>MVNEQ</keyword><keyword>MVNNE</keyword><keyword>MVNCS</keyword><keyword>MVNHS</keyword><keyword>MVNCC</keyword><keyword>MVNLO</keyword>
+<keyword>MVNMI</keyword><keyword>MVNPL</keyword><keyword>MVNVS</keyword><keyword>MVNVC</keyword><keyword>MVNHI</keyword><keyword>MVNLS</keyword>
+<keyword>MVNGE</keyword><keyword>MVNLT</keyword><keyword>MVNGT</keyword><keyword>MVNLE</keyword><keyword>MVNAL</keyword>
+<keyword>MVNS</keyword><keyword>MVNEQS</keyword><keyword>MVNNES</keyword><keyword>MVNCSS</keyword><keyword>MVNHSS</keyword><keyword>MVNCCS</keyword><keyword>MVNLOS</keyword>
+<keyword>MVNMIS</keyword><keyword>MVNPLS</keyword><keyword>MVNVSS</keyword><keyword>MVNVCS</keyword><keyword>MVNHIS</keyword><keyword>MVNLSS</keyword>
+<keyword>MVNGES</keyword><keyword>MVNLTS</keyword><keyword>MVNGTS</keyword><keyword>MVNLES</keyword><keyword>MVNALS</keyword>
+
+<keyword>MRS</keyword><keyword>MRSEQ</keyword><keyword>MRSNE</keyword><keyword>MRSCS</keyword><keyword>MRSHS</keyword><keyword>MRSCC</keyword><keyword>MRSLO</keyword>
+<keyword>MRSMI</keyword><keyword>MRSPL</keyword><keyword>MRSVS</keyword><keyword>MRSVC</keyword><keyword>MRSHI</keyword><keyword>MRSLS</keyword>
+<keyword>MRSGE</keyword><keyword>MRSLT</keyword><keyword>MRSGT</keyword><keyword>MRSLE</keyword><keyword>MRSAL</keyword>
+
+<keyword>MSR</keyword><keyword>MSREQ</keyword><keyword>MSRNE</keyword><keyword>MSRCS</keyword><keyword>MSRHS</keyword><keyword>MSRCC</keyword><keyword>MSRLO</keyword>
+<keyword>MSRMI</keyword><keyword>MSRPL</keyword><keyword>MSRVS</keyword><keyword>MSRVC</keyword><keyword>MSRHI</keyword><keyword>MSRLS</keyword>
+<keyword>MSRGE</keyword><keyword>MSRLT</keyword><keyword>MSRGT</keyword><keyword>MSRLE</keyword><keyword>MSRAL</keyword>
+
+<keyword>MRA</keyword><keyword>MRAEQ</keyword><keyword>MRANE</keyword><keyword>MRACS</keyword><keyword>MRAHS</keyword><keyword>MRACC</keyword><keyword>MRALO</keyword>
+<keyword>MRAMI</keyword><keyword>MRAPL</keyword><keyword>MRAVS</keyword><keyword>MRAVC</keyword><keyword>MRAHI</keyword><keyword>MRALS</keyword>
+<keyword>MRAGE</keyword><keyword>MRALT</keyword><keyword>MRAGT</keyword><keyword>MRALE</keyword><keyword>MRAAL</keyword>
+
+<keyword>MAR</keyword><keyword>MAREQ</keyword><keyword>MARNE</keyword><keyword>MARCS</keyword><keyword>MARHS</keyword><keyword>MARCC</keyword><keyword>MARLO</keyword>
+<keyword>MARMI</keyword><keyword>MARPL</keyword><keyword>MARVS</keyword><keyword>MARVC</keyword><keyword>MARHI</keyword><keyword>MARLS</keyword>
+<keyword>MARGE</keyword><keyword>MARLT</keyword><keyword>MARGT</keyword><keyword>MARLE</keyword><keyword>MARAL</keyword>
+
+<keyword>ADD</keyword><keyword>ADDEQ</keyword><keyword>ADDNE</keyword><keyword>ADDCS</keyword><keyword>ADDHS</keyword><keyword>ADDCC</keyword><keyword>ADDLO</keyword>
+<keyword>ADDMI</keyword><keyword>ADDPL</keyword><keyword>ADDVS</keyword><keyword>ADDVC</keyword><keyword>ADDHI</keyword><keyword>ADDLS</keyword>
+<keyword>ADDGE</keyword><keyword>ADDLT</keyword><keyword>ADDGT</keyword><keyword>ADDLE</keyword><keyword>ADDAL</keyword>
+<keyword>ADDS</keyword><keyword>ADDEQS</keyword><keyword>ADDNES</keyword><keyword>ADDCSS</keyword><keyword>ADDHSS</keyword><keyword>ADDCCS</keyword><keyword>ADDLOS</keyword>
+<keyword>ADDMIS</keyword><keyword>ADDPLS</keyword><keyword>ADDVSS</keyword><keyword>ADDVCS</keyword><keyword>ADDHIS</keyword><keyword>ADDLSS</keyword>
+<keyword>ADDGES</keyword><keyword>ADDLTS</keyword><keyword>ADDGTS</keyword><keyword>ADDLES</keyword><keyword>ADDALS</keyword>
+
+<keyword>ADC</keyword><keyword>ADCEQ</keyword><keyword>ADCNE</keyword><keyword>ADCCS</keyword><keyword>ADCHS</keyword><keyword>ADCCC</keyword><keyword>ADCLO</keyword>
+<keyword>ADCMI</keyword><keyword>ADCPL</keyword><keyword>ADCVS</keyword><keyword>ADCVC</keyword><keyword>ADCHI</keyword><keyword>ADCLS</keyword>
+<keyword>ADCGE</keyword><keyword>ADCLT</keyword><keyword>ADCGT</keyword><keyword>ADCLE</keyword><keyword>ADCAL</keyword>
+<keyword>ADCS</keyword><keyword>ADCEQS</keyword><keyword>ADCNES</keyword><keyword>ADCCSS</keyword><keyword>ADCHSS</keyword><keyword>ADCCCS</keyword><keyword>ADCLOS</keyword>
+<keyword>ADCMIS</keyword><keyword>ADCPLS</keyword><keyword>ADCVSS</keyword><keyword>ADCVCS</keyword><keyword>ADCHIS</keyword><keyword>ADCLSS</keyword>
+<keyword>ADCGES</keyword><keyword>ADCLTS</keyword><keyword>ADCGTS</keyword><keyword>ADCLES</keyword><keyword>ADCALS</keyword>
+
+<keyword>QADD</keyword><keyword>QADDEQ</keyword><keyword>QADDNE</keyword><keyword>QADDCS</keyword><keyword>QADDHS</keyword><keyword>QADDCC</keyword><keyword>QADDLO</keyword>
+<keyword>QADDMI</keyword><keyword>QADDPL</keyword><keyword>QADDVS</keyword><keyword>QADDVC</keyword><keyword>QADDHI</keyword><keyword>QADDLS</keyword>
+<keyword>QADDGE</keyword><keyword>QADDLT</keyword><keyword>QADDGT</keyword><keyword>QADDLE</keyword><keyword>QADDAL</keyword>
+
+<keyword>QDADD</keyword><keyword>QDADDEQ</keyword><keyword>QDADDNE</keyword><keyword>QDADDCS</keyword><keyword>QDADDHS</keyword><keyword>QDADDCC</keyword>
+<keyword>QDADDLO</keyword><keyword>QDADDMI</keyword><keyword>QDADDPL</keyword><keyword>QDADDVS</keyword><keyword>QDADDVC</keyword><keyword>QDADDHI</keyword>
+<keyword>QDADDLS</keyword><keyword>QDADDGE</keyword><keyword>QDADDLT</keyword><keyword>QDADDGT</keyword><keyword>QDADDLE</keyword><keyword>QDADDAL</keyword>
+
+<keyword>SUB</keyword><keyword>SUBEQ</keyword><keyword>SUBNE</keyword><keyword>SUBCS</keyword><keyword>SUBHS</keyword><keyword>SUBCC</keyword><keyword>SUBLO</keyword>
+<keyword>SUBMI</keyword><keyword>SUBPL</keyword><keyword>SUBVS</keyword><keyword>SUBVC</keyword><keyword>SUBHI</keyword><keyword>SUBLS</keyword>
+<keyword>SUBGE</keyword><keyword>SUBLT</keyword><keyword>SUBGT</keyword><keyword>SUBLE</keyword><keyword>SUBAL</keyword>
+<keyword>SUBS</keyword><keyword>SUBEQS</keyword><keyword>SUBNES</keyword><keyword>SUBCSS</keyword><keyword>SUBHSS</keyword><keyword>SUBCCS</keyword><keyword>SUBLOS</keyword>
+<keyword>SUBMIS</keyword><keyword>SUBPLS</keyword><keyword>SUBVSS</keyword><keyword>SUBVCS</keyword><keyword>SUBHIS</keyword><keyword>SUBLSS</keyword>
+<keyword>SUBGES</keyword><keyword>SUBLTS</keyword><keyword>SUBGTS</keyword><keyword>SUBLES</keyword><keyword>SUBALS</keyword>
+
+<keyword>SBC</keyword><keyword>SBCEQ</keyword><keyword>SBCNE</keyword><keyword>SBCCS</keyword><keyword>SBCHS</keyword><keyword>SBCCC</keyword><keyword>SBCLO</keyword>
+<keyword>SBCMI</keyword><keyword>SBCPL</keyword><keyword>SBCVS</keyword><keyword>SBCVC</keyword><keyword>SBCHI</keyword><keyword>SBCLS</keyword>
+<keyword>SBCGE</keyword><keyword>SBCLT</keyword><keyword>SBCGT</keyword><keyword>SBCLE</keyword><keyword>SBCAL</keyword>
+<keyword>SBCS</keyword><keyword>SBCEQS</keyword><keyword>SBCNES</keyword><keyword>SBCCSS</keyword><keyword>SBCHSS</keyword><keyword>SBCCCS</keyword><keyword>SBCLOS</keyword>
+<keyword>SBCMIS</keyword><keyword>SBCPLS</keyword><keyword>SBCVSS</keyword><keyword>SBCVCS</keyword><keyword>SBCHIS</keyword><keyword>SBCLSS</keyword>
+<keyword>SBCGES</keyword><keyword>SBCLTS</keyword><keyword>SBCGTS</keyword><keyword>SBCLES</keyword><keyword>SBCALS</keyword>
+
+<keyword>RSB</keyword><keyword>RSBEQ</keyword><keyword>RSBNE</keyword><keyword>RSBCS</keyword><keyword>RSBHS</keyword><keyword>RSBCC</keyword><keyword>RSBLO</keyword>
+<keyword>RSBMI</keyword><keyword>RSBPL</keyword><keyword>RSBVS</keyword><keyword>RSBVC</keyword><keyword>RSBHI</keyword><keyword>RSBLS</keyword>
+<keyword>RSBGE</keyword><keyword>RSBLT</keyword><keyword>RSBGT</keyword><keyword>RSBLE</keyword><keyword>RSBAL</keyword>
+<keyword>RSBS</keyword><keyword>RSBEQS</keyword><keyword>RSBNES</keyword><keyword>RSBCSS</keyword><keyword>RSBHSS</keyword><keyword>RSBCCS</keyword><keyword>RSBLOS</keyword>
+<keyword>RSBMIS</keyword><keyword>RSBPLS</keyword><keyword>RSBVSS</keyword><keyword>RSBVCS</keyword><keyword>RSBHIS</keyword><keyword>RSBLSS</keyword>
+<keyword>RSBGES</keyword><keyword>RSBLTS</keyword><keyword>RSBGTS</keyword><keyword>RSBLES</keyword><keyword>RSBALS</keyword>
+
+<keyword>RSC</keyword><keyword>RSCEQ</keyword><keyword>RSCNE</keyword><keyword>RSCCS</keyword><keyword>RSCHS</keyword><keyword>RSCCC</keyword><keyword>RSCLO</keyword>
+<keyword>RSCMI</keyword><keyword>RSCPL</keyword><keyword>RSCVS</keyword><keyword>RSCVC</keyword><keyword>RSCHI</keyword><keyword>RSCLS</keyword>
+<keyword>RSCGE</keyword><keyword>RSCLT</keyword><keyword>RSCGT</keyword><keyword>RSCLE</keyword><keyword>RSCAL</keyword>
+<keyword>RSCS</keyword><keyword>RSCEQS</keyword><keyword>RSCNES</keyword><keyword>RSCCSS</keyword><keyword>RSCHSS</keyword><keyword>RSCCCS</keyword><keyword>RSCLOS</keyword>
+<keyword>RSCMIS</keyword><keyword>RSCPLS</keyword><keyword>RSCVSS</keyword><keyword>RSCVCS</keyword><keyword>RSCHIS</keyword><keyword>RSCLSS</keyword>
+<keyword>RSCGES</keyword><keyword>RSCLTS</keyword><keyword>RSCGTS</keyword><keyword>RSCLES</keyword><keyword>RSCALS</keyword>
+
+<keyword>QSUB</keyword><keyword>QSUBEQ</keyword><keyword>QSUBNE</keyword><keyword>QSUBCS</keyword><keyword>QSUBHS</keyword><keyword>QSUBCC</keyword><keyword>QSUBLO</keyword>
+<keyword>QSUBMI</keyword><keyword>QSUBPL</keyword><keyword>QSUBVS</keyword><keyword>QSUBVC</keyword><keyword>QSUBHI</keyword><keyword>QSUBLS</keyword>
+<keyword>QSUBGE</keyword><keyword>QSUBLT</keyword><keyword>QSUBGT</keyword><keyword>QSUBLE</keyword><keyword>QSUBAL</keyword>
+
+<keyword>QDSUB</keyword><keyword>QDSUBEQ</keyword><keyword>QDSUBNE</keyword><keyword>QDSUBCS</keyword><keyword>QDSUBHS</keyword><keyword>QDSUBCC</keyword>
+<keyword>QDSUBLO</keyword><keyword>QDSUBMI</keyword><keyword>QDSUBPL</keyword><keyword>QDSUBVS</keyword><keyword>QDSUBVC</keyword><keyword>QDSUBHI</keyword>
+<keyword>QDSUBLS</keyword><keyword>QDSUBGE</keyword><keyword>QDSUBLT</keyword><keyword>QDSUBGT</keyword><keyword>QDSUBLE</keyword><keyword>QDSUBAL</keyword>
+
+<keyword>MUL</keyword><keyword>MULEQ</keyword><keyword>MULNE</keyword><keyword>MULCS</keyword><keyword>MULHS</keyword><keyword>MULCC</keyword><keyword>MULLO</keyword>
+<keyword>MULMI</keyword><keyword>MULPL</keyword><keyword>MULVS</keyword><keyword>MULVC</keyword><keyword>MULHI</keyword><keyword>MULLS</keyword>
+<keyword>MULGE</keyword><keyword>MULLT</keyword><keyword>MULGT</keyword><keyword>MULLE</keyword><keyword>MULAL</keyword>
+<keyword>MULS</keyword><keyword>MULEQS</keyword><keyword>MULNES</keyword><keyword>MULCSS</keyword><keyword>MULHSS</keyword><keyword>MULCCS</keyword><keyword>MULLOS</keyword>
+<keyword>MULMIS</keyword><keyword>MULPLS</keyword><keyword>MULVSS</keyword><keyword>MULVCS</keyword><keyword>MULHIS</keyword><keyword>MULLSS</keyword>
+<keyword>MULGES</keyword><keyword>MULLTS</keyword><keyword>MULGTS</keyword><keyword>MULLES</keyword><keyword>MULALS</keyword>
+
+<keyword>MLA</keyword><keyword>MLAEQ</keyword><keyword>MLANE</keyword><keyword>MLACS</keyword><keyword>MLAHS</keyword><keyword>MLACC</keyword><keyword>MLALO</keyword>
+<keyword>MLAMI</keyword><keyword>MLAPL</keyword><keyword>MLAVS</keyword><keyword>MLAVC</keyword><keyword>MLAHI</keyword><keyword>MLALS</keyword>
+<keyword>MLAGE</keyword><keyword>MLALT</keyword><keyword>MLAGT</keyword><keyword>MLALE</keyword><keyword>MLAAL</keyword>
+<keyword>MLAS</keyword><keyword>MLAEQS</keyword><keyword>MLANES</keyword><keyword>MLACSS</keyword><keyword>MLAHSS</keyword><keyword>MLACCS</keyword><keyword>MLALOS</keyword>
+<keyword>MLAMIS</keyword><keyword>MLAPLS</keyword><keyword>MLAVSS</keyword><keyword>MLAVCS</keyword><keyword>MLAHIS</keyword><keyword>MLALSS</keyword>
+<keyword>MLAGES</keyword><keyword>MLALTS</keyword><keyword>MLAGTS</keyword><keyword>MLALES</keyword><keyword>MLAALS</keyword>
+
+<keyword>UMULL</keyword><keyword>UMULLEQ</keyword><keyword>UMULLNE</keyword><keyword>UMULLCS</keyword><keyword>UMULLHS</keyword><keyword>UMULLCC</keyword>
+<keyword>UMULLLO</keyword><keyword>UMULLMI</keyword><keyword>UMULLPL</keyword><keyword>UMULLVS</keyword><keyword>UMULLVC</keyword><keyword>UMULLHI</keyword>
+<keyword>UMULLLS</keyword><keyword>UMULLGE</keyword><keyword>UMULLLT</keyword><keyword>UMULLGT</keyword><keyword>UMULLLE</keyword><keyword>UMULLAL</keyword>
+<keyword>UMULLS</keyword><keyword>UMULLEQS</keyword><keyword>UMULLNES</keyword><keyword>UMULLCSS</keyword><keyword>UMULLHSS</keyword>
+<keyword>UMULLCCS</keyword><keyword>UMULLLOS</keyword><keyword>UMULLMIS</keyword><keyword>UMULLPLS</keyword><keyword>UMULLVSS</keyword>
+<keyword>UMULLVCS</keyword><keyword>UMULLHIS</keyword><keyword>UMULLLSS</keyword><keyword>UMULLGES</keyword><keyword>UMULLLTS</keyword>
+<keyword>UMULLGTS</keyword><keyword>UMULLLES</keyword><keyword>UMULLALS</keyword>
+
+<keyword>UMLAL</keyword><keyword>UMLALEQ</keyword><keyword>UMLALNE</keyword><keyword>UMLALCS</keyword><keyword>UMLALHS</keyword><keyword>UMLALCC</keyword>
+<keyword>UMLALLO</keyword><keyword>UMLALMI</keyword><keyword>UMLALPL</keyword><keyword>UMLALVS</keyword><keyword>UMLALVC</keyword><keyword>UMLALHI</keyword>
+<keyword>UMLALLS</keyword><keyword>UMLALGE</keyword><keyword>UMLALLT</keyword><keyword>UMLALGT</keyword><keyword>UMLALLE</keyword><keyword>UMLALAL</keyword>
+<keyword>UMLALS</keyword><keyword>UMLALEQS</keyword><keyword>UMLALNES</keyword><keyword>UMLALCSS</keyword><keyword>UMLALHSS</keyword>
+<keyword>UMLALCCS</keyword><keyword>UMLALLOS</keyword><keyword>UMLALMIS</keyword><keyword>UMLALPLS</keyword><keyword>UMLALVSS</keyword>
+<keyword>UMLALVCS</keyword><keyword>UMLALHIS</keyword><keyword>UMLALLSS</keyword><keyword>UMLALGES</keyword><keyword>UMLALLTS</keyword>
+<keyword>UMLALGTS</keyword><keyword>UMLALLES</keyword><keyword>UMLALALS</keyword>
+
+<keyword>SMULL</keyword><keyword>SMULLEQ</keyword><keyword>SMULLNE</keyword><keyword>SMULLCS</keyword><keyword>SMULLHS</keyword><keyword>SMULLCC</keyword>
+<keyword>SMULLLO</keyword><keyword>SMULLMI</keyword><keyword>SMULLPL</keyword><keyword>SMULLVS</keyword><keyword>SMULLVC</keyword><keyword>SMULLHI</keyword>
+<keyword>SMULLLS</keyword><keyword>SMULLGE</keyword><keyword>SMULLLT</keyword><keyword>SMULLGT</keyword><keyword>SMULLLE</keyword><keyword>SMULLAL</keyword>
+<keyword>SMULLS</keyword><keyword>SMULLEQS</keyword><keyword>SMULLNES</keyword><keyword>SMULLCSS</keyword><keyword>SMULLHSS</keyword>
+<keyword>SMULLCCS</keyword><keyword>SMULLLOS</keyword><keyword>SMULLMIS</keyword><keyword>SMULLPLS</keyword><keyword>SMULLVSS</keyword>
+<keyword>SMULLVCS</keyword><keyword>SMULLHIS</keyword><keyword>SMULLLSS</keyword><keyword>SMULLGES</keyword><keyword>SMULLLTS</keyword>
+<keyword>SMULLGTS</keyword><keyword>SMULLLES</keyword><keyword>SMULLALS</keyword>
+
+<keyword>SMLAL</keyword><keyword>SMLALEQ</keyword><keyword>SMLALNE</keyword><keyword>SMLALCS</keyword><keyword>SMLALHS</keyword><keyword>SMLALCC</keyword>
+<keyword>SMLALLO</keyword><keyword>SMLALMI</keyword><keyword>SMLALPL</keyword><keyword>SMLALVS</keyword><keyword>SMLALVC</keyword><keyword>SMLALHI</keyword>
+<keyword>SMLALLS</keyword><keyword>SMLALGE</keyword><keyword>SMLALLT</keyword><keyword>SMLALGT</keyword><keyword>SMLALLE</keyword><keyword>SMLALAL</keyword>
+<keyword>SMLALS</keyword><keyword>SMLALEQS</keyword><keyword>SMLALNES</keyword><keyword>SMLALCSS</keyword><keyword>SMLALHSS</keyword>
+<keyword>SMLALCCS</keyword><keyword>SMLALLOS</keyword><keyword>SMLALMIS</keyword><keyword>SMLALPLS</keyword><keyword>SMLALVSS</keyword>
+<keyword>SMLALVCS</keyword><keyword>SMLALHIS</keyword><keyword>SMLALLSS</keyword><keyword>SMLALGES</keyword><keyword>SMLALLTS</keyword>
+<keyword>SMLALGTS</keyword><keyword>SMLALLES</keyword><keyword>SMLALALS</keyword>
+
+<keyword>SMULxy</keyword><keyword>SMULxyEQ</keyword><keyword>SMULxyNE</keyword><keyword>SMULxyCS</keyword><keyword>SMULxyHS</keyword>
+<keyword>SMULxyCC</keyword><keyword>SMULxyLO</keyword><keyword>SMULxyMI</keyword><keyword>SMULxyPL</keyword><keyword>SMULxyVS</keyword>
+<keyword>SMULxyVC</keyword><keyword>SMULxyHI</keyword><keyword>SMULxyLS</keyword><keyword>SMULxyGE</keyword><keyword>SMULxyLT</keyword>
+<keyword>SMULxyGT</keyword><keyword>SMULxyLE</keyword><keyword>SMULxyAL</keyword>
+
+<keyword>SMULWy</keyword><keyword>SMULWyEQ</keyword><keyword>SMULWyNE</keyword><keyword>SMULWyCS</keyword><keyword>SMULWyHS</keyword>
+<keyword>SMULWyCC</keyword><keyword>SMULWyLO</keyword><keyword>SMULWyMI</keyword><keyword>SMULWyPL</keyword><keyword>SMULWyVS</keyword>
+<keyword>SMULWyVC</keyword><keyword>SMULWyHI</keyword><keyword>SMULWyLS</keyword><keyword>SMULWyGE</keyword><keyword>SMULWyLT</keyword>
+<keyword>SMULWyGT</keyword><keyword>SMULWyLE</keyword><keyword>SMULWyAL</keyword>
+
+<keyword>SMLAxy</keyword><keyword>SMLAxyEQ</keyword><keyword>SMLAxyNE</keyword><keyword>SMLAxyCS</keyword><keyword>SMLAxyHS</keyword>
+<keyword>SMLAxyCC</keyword><keyword>SMLAxyLO</keyword><keyword>SMLAxyMI</keyword><keyword>SMLAxyPL</keyword><keyword>SMLAxyVS</keyword>
+<keyword>SMLAxyVC</keyword><keyword>SMLAxyHI</keyword><keyword>SMLAxyLS</keyword><keyword>SMLAxyGE</keyword><keyword>SMLAxyLT</keyword>
+<keyword>SMLAxyGT</keyword><keyword>SMLAxyLE</keyword><keyword>SMLAxyAL</keyword>
+
+<keyword>SMLAWy</keyword><keyword>SMLAWyEQ</keyword><keyword>SMLAWyNE</keyword><keyword>SMLAWyCS</keyword><keyword>SMLAWyHS</keyword>
+<keyword>SMLAWyCC</keyword><keyword>SMLAWyLO</keyword><keyword>SMLAWyMI</keyword><keyword>SMLAWyPL</keyword><keyword>SMLAWyVS</keyword>
+<keyword>SMLAWyVC</keyword><keyword>SMLAWyHI</keyword><keyword>SMLAWyLS</keyword><keyword>SMLAWyGE</keyword><keyword>SMLAWyLT</keyword>
+<keyword>SMLAWyGT</keyword><keyword>SMLAWyLE</keyword><keyword>SMLAWyAL</keyword>
+
+<keyword>SMLALxy</keyword><keyword>SMLALxyEQ</keyword><keyword>SMLALxyNE</keyword><keyword>SMLALxyCS</keyword><keyword>SMLALxyHS</keyword>
+<keyword>SMLALxyCC</keyword><keyword>SMLALxyLO</keyword><keyword>SMLALxyMI</keyword><keyword>SMLALxyPL</keyword>
+<keyword>SMLALxyVS</keyword><keyword>SMLALxyVC</keyword><keyword>SMLALxyHI</keyword><keyword>SMLALxyLS</keyword>
+<keyword>SMLALxyGE</keyword><keyword>SMLALxyLT</keyword><keyword>SMLALxyGT</keyword><keyword>SMLALxyLE</keyword>
+<keyword>SMLALxyAL</keyword>
+
+<keyword>MIA</keyword><keyword>MIAEQ</keyword><keyword>MIANE</keyword><keyword>MIACS</keyword><keyword>MIAHS</keyword><keyword>MIACC</keyword><keyword>MIALO</keyword>
+<keyword>MIAMI</keyword><keyword>MIAPL</keyword><keyword>MIAVS</keyword><keyword>MIAVC</keyword><keyword>MIAHI</keyword><keyword>MIALS</keyword>
+<keyword>MIAGE</keyword><keyword>MIALT</keyword><keyword>MIAGT</keyword><keyword>MIALE</keyword><keyword>MIAAL</keyword>
+
+<keyword>MIAPH</keyword><keyword>MIAPHEQ</keyword><keyword>MIAPHNE</keyword><keyword>MIAPHCS</keyword><keyword>MIAPHHS</keyword><keyword>MIAPHCC</keyword>
+<keyword>MIAPHLO</keyword><keyword>MIAPHMI</keyword><keyword>MIAPHPL</keyword><keyword>MIAPHVS</keyword><keyword>MIAPHVC</keyword><keyword>MIAPHHI</keyword>
+<keyword>MIAPHLS</keyword><keyword>MIAPHGE</keyword><keyword>MIAPHLT</keyword><keyword>MIAPHGT</keyword><keyword>MIAPHLE</keyword><keyword>MIAPHAL</keyword>
+
+<keyword>MIAxy</keyword><keyword>MIAxyEQ</keyword><keyword>MIAxyNE</keyword><keyword>MIAxyCS</keyword><keyword>MIAxyHS</keyword><keyword>MIAxyCC</keyword>
+<keyword>MIAxyLO</keyword><keyword>MIAxyMI</keyword><keyword>MIAxyPL</keyword><keyword>MIAxyVS</keyword><keyword>MIAxyVC</keyword><keyword>MIAxyHI</keyword>
+<keyword>MIAxyLS</keyword><keyword>MIAxyGE</keyword><keyword>MIAxyLT</keyword><keyword>MIAxyGT</keyword><keyword>MIAxyLE</keyword><keyword>MIAxyAL</keyword>
+
+<keyword>CLZ</keyword><keyword>CLZEQ</keyword><keyword>CLZNE</keyword><keyword>CLZCS</keyword><keyword>CLZHS</keyword><keyword>CLZCC</keyword><keyword>CLZLO</keyword>
+<keyword>CLZMI</keyword><keyword>CLZPL</keyword><keyword>CLZVS</keyword><keyword>CLZVC</keyword><keyword>CLZHI</keyword><keyword>CLZLS</keyword>
+<keyword>CLZGE</keyword><keyword>CLZLT</keyword><keyword>CLZGT</keyword><keyword>CLZLE</keyword><keyword>CLZAL</keyword>
+
+<keyword>TST</keyword><keyword>TSTEQ</keyword><keyword>TSTNE</keyword><keyword>TSTCS</keyword><keyword>TSTHS</keyword><keyword>TSTCC</keyword><keyword>TSTLO</keyword>
+<keyword>TSTMI</keyword><keyword>TSTPL</keyword><keyword>TSTVS</keyword><keyword>TSTVC</keyword><keyword>TSTHI</keyword><keyword>TSTLS</keyword>
+<keyword>TSTGE</keyword><keyword>TSTLT</keyword><keyword>TSTGT</keyword><keyword>TSTLE</keyword><keyword>TSTAL</keyword>
+
+<keyword>TEQ</keyword><keyword>TEQEQ</keyword><keyword>TEQNE</keyword><keyword>TEQCS</keyword><keyword>TEQHS</keyword><keyword>TEQCC</keyword><keyword>TEQLO</keyword>
+<keyword>TEQMI</keyword><keyword>TEQPL</keyword><keyword>TEQVS</keyword><keyword>TEQVC</keyword><keyword>TEQHI</keyword><keyword>TEQLS</keyword>
+<keyword>TEQGE</keyword><keyword>TEQLT</keyword><keyword>TEQGT</keyword><keyword>TEQLE</keyword><keyword>TEQAL</keyword>
+
+<keyword>AND</keyword><keyword>ANDEQ</keyword><keyword>ANDNE</keyword><keyword>ANDCS</keyword><keyword>ANDHS</keyword><keyword>ANDCC</keyword><keyword>ANDLO</keyword>
+<keyword>ANDMI</keyword><keyword>ANDPL</keyword><keyword>ANDVS</keyword><keyword>ANDVC</keyword><keyword>ANDHI</keyword><keyword>ANDLS</keyword>
+<keyword>ANDGE</keyword><keyword>ANDLT</keyword><keyword>ANDGT</keyword><keyword>ANDLE</keyword><keyword>ANDAL</keyword>
+<keyword>ANDS</keyword><keyword>ANDEQS</keyword><keyword>ANDNES</keyword><keyword>ANDCSS</keyword><keyword>ANDHSS</keyword><keyword>ANDCCS</keyword><keyword>ANDLOS</keyword>
+<keyword>ANDMIS</keyword><keyword>ANDPLS</keyword><keyword>ANDVSS</keyword><keyword>ANDVCS</keyword><keyword>ANDHIS</keyword><keyword>ANDLSS</keyword>
+<keyword>ANDGES</keyword><keyword>ANDLTS</keyword><keyword>ANDGTS</keyword><keyword>ANDLES</keyword><keyword>ANDALS</keyword>
+
+<keyword>EOR</keyword><keyword>EOREQ</keyword><keyword>EORNE</keyword><keyword>EORCS</keyword><keyword>EORHS</keyword><keyword>EORCC</keyword><keyword>EORLO</keyword>
+<keyword>EORMI</keyword><keyword>EORPL</keyword><keyword>EORVS</keyword><keyword>EORVC</keyword><keyword>EORHI</keyword><keyword>EORLS</keyword>
+<keyword>EORGE</keyword><keyword>EORLT</keyword><keyword>EORGT</keyword><keyword>EORLE</keyword><keyword>EORAL</keyword>
+<keyword>EORS</keyword><keyword>EOREQS</keyword><keyword>EORNES</keyword><keyword>EORCSS</keyword><keyword>EORHSS</keyword><keyword>EORCCS</keyword><keyword>EORLOS</keyword>
+<keyword>EORMIS</keyword><keyword>EORPLS</keyword><keyword>EORVSS</keyword><keyword>EORVCS</keyword><keyword>EORHIS</keyword><keyword>EORLSS</keyword>
+<keyword>EORGES</keyword><keyword>EORLTS</keyword><keyword>EORGTS</keyword><keyword>EORLES</keyword><keyword>EORALS</keyword>
+
+<keyword>ORR</keyword><keyword>ORREQ</keyword><keyword>ORRNE</keyword><keyword>ORRCS</keyword><keyword>ORRHS</keyword><keyword>ORRCC</keyword><keyword>ORRLO</keyword>
+<keyword>ORRMI</keyword><keyword>ORRPL</keyword><keyword>ORRVS</keyword><keyword>ORRVC</keyword><keyword>ORRHI</keyword><keyword>ORRLS</keyword>
+<keyword>ORRGE</keyword><keyword>ORRLT</keyword><keyword>ORRGT</keyword><keyword>ORRLE</keyword><keyword>ORRAL</keyword>
+<keyword>ORRS</keyword><keyword>ORREQS</keyword><keyword>ORRNES</keyword><keyword>ORRCSS</keyword><keyword>ORRHSS</keyword><keyword>ORRCCS</keyword><keyword>ORRLOS</keyword>
+<keyword>ORRMIS</keyword><keyword>ORRPLS</keyword><keyword>ORRVSS</keyword><keyword>ORRVCS</keyword><keyword>ORRHIS</keyword><keyword>ORRLSS</keyword>
+<keyword>ORRGES</keyword><keyword>ORRLTS</keyword><keyword>ORRGTS</keyword><keyword>ORRLES</keyword><keyword>ORRALS</keyword>
+
+<keyword>BIC</keyword><keyword>BICEQ</keyword><keyword>BICNE</keyword><keyword>BICCS</keyword><keyword>BICHS</keyword><keyword>BICCC</keyword><keyword>BICLO</keyword>
+<keyword>BICMI</keyword><keyword>BICPL</keyword><keyword>BICVS</keyword><keyword>BICVC</keyword><keyword>BICHI</keyword><keyword>BICLS</keyword>
+<keyword>BICGE</keyword><keyword>BICLT</keyword><keyword>BICGT</keyword><keyword>BICLE</keyword><keyword>BICAL</keyword>
+<keyword>BICS</keyword><keyword>BICEQS</keyword><keyword>BICNES</keyword><keyword>BICCSS</keyword><keyword>BICHSS</keyword><keyword>BICCCS</keyword><keyword>BICLOS</keyword>
+<keyword>BICMIS</keyword><keyword>BICPLS</keyword><keyword>BICVSS</keyword><keyword>BICVCS</keyword><keyword>BICHIS</keyword><keyword>BICLSS</keyword>
+<keyword>BICGES</keyword><keyword>BICLTS</keyword><keyword>BICGTS</keyword><keyword>BICLES</keyword><keyword>BICALS</keyword>
+
+<keyword>CMP</keyword><keyword>CMPEQ</keyword><keyword>CMPNE</keyword><keyword>CMPCS</keyword><keyword>CMPHS</keyword><keyword>CMPCC</keyword><keyword>CMPLO</keyword>
+<keyword>CMPMI</keyword><keyword>CMPPL</keyword><keyword>CMPVS</keyword><keyword>CMPVC</keyword><keyword>CMPHI</keyword><keyword>CMPLS</keyword>
+<keyword>CMPGE</keyword><keyword>CMPLT</keyword><keyword>CMPGT</keyword><keyword>CMPLE</keyword><keyword>CMPAL</keyword>
+
+<keyword>CMN</keyword><keyword>CMNEQ</keyword><keyword>CMNNE</keyword><keyword>CMNCS</keyword><keyword>CMNHS</keyword><keyword>CMNCC</keyword><keyword>CMNLO</keyword>
+<keyword>CMNMI</keyword><keyword>CMNPL</keyword><keyword>CMNVS</keyword><keyword>CMNVC</keyword><keyword>CMNHI</keyword><keyword>CMNLS</keyword>
+<keyword>CMNGE</keyword><keyword>CMNLT</keyword><keyword>CMNGT</keyword><keyword>CMNLE</keyword><keyword>CMNAL</keyword>
+<keyword>CBZ</keyword>
+
+<keyword>NOP</keyword>
+
+<keyword>B</keyword><keyword>BEQ</keyword><keyword>BNE</keyword><keyword>BCS</keyword><keyword>BHS</keyword><keyword>BCC</keyword><keyword>BLO</keyword>
+<keyword>BMI</keyword><keyword>BPL</keyword><keyword>BVS</keyword><keyword>BVC</keyword><keyword>BHI</keyword><keyword>BLS</keyword>
+<keyword>BGE</keyword><keyword>BLT</keyword><keyword>BGT</keyword><keyword>BLE</keyword><keyword>BAL</keyword>
+
+<keyword>BL</keyword><keyword>BLEQ</keyword><keyword>BLNE</keyword><keyword>BLCS</keyword><keyword>BLHS</keyword><keyword>BLCC</keyword><keyword>BLLO</keyword>
+<keyword>BLMI</keyword><keyword>BLPL</keyword><keyword>BLVS</keyword><keyword>BLVC</keyword><keyword>BLHI</keyword><keyword>BLLS</keyword>
+<keyword>BLGE</keyword><keyword>BLLT</keyword><keyword>BLGT</keyword><keyword>BLLE</keyword><keyword>BLAL</keyword>
+
+<keyword>BX</keyword><keyword>BXEQ</keyword><keyword>BXNE</keyword><keyword>BXCS</keyword><keyword>BXHS</keyword><keyword>BXCC</keyword><keyword>BXLO</keyword>
+<keyword>BXMI</keyword><keyword>BXPL</keyword><keyword>BXVS</keyword><keyword>BXVC</keyword><keyword>BXHI</keyword><keyword>BXLS</keyword>
+<keyword>BXGE</keyword><keyword>BXLT</keyword><keyword>BXGT</keyword><keyword>BXLE</keyword><keyword>BXAL</keyword>
+
+<keyword>BLX</keyword><keyword>BLXEQ</keyword><keyword>BLXNE</keyword><keyword>BLXCS</keyword><keyword>BLXHS</keyword><keyword>BLXCC</keyword><keyword>BLXLO</keyword>
+<keyword>BLXMI</keyword><keyword>BLXPL</keyword><keyword>BLXVS</keyword><keyword>BLXVC</keyword><keyword>BLXHI</keyword><keyword>BLXLS</keyword>
+<keyword>BLXGE</keyword><keyword>BLXLT</keyword><keyword>BLXGT</keyword><keyword>BLXLE</keyword><keyword>BLXAL</keyword>
+
+<keyword>LDR</keyword><keyword>LDREQ</keyword><keyword>LDRNE</keyword><keyword>LDRCS</keyword><keyword>LDRHS</keyword><keyword>LDRCC</keyword><keyword>LDRLO</keyword>
+<keyword>LDRMI</keyword><keyword>LDRPL</keyword><keyword>LDRVS</keyword><keyword>LDRVC</keyword><keyword>LDRHI</keyword><keyword>LDRLS</keyword>
+<keyword>LDRGE</keyword><keyword>LDRLT</keyword><keyword>LDRGT</keyword><keyword>LDRLE</keyword><keyword>LDRAL</keyword>
+<keyword>LDRT</keyword><keyword>LDREQT</keyword><keyword>LDRNET</keyword><keyword>LDRCST</keyword><keyword>LDRHST</keyword><keyword>LDRCCT</keyword><keyword>LDRLOT</keyword>
+<keyword>LDRMIT</keyword><keyword>LDRPLT</keyword><keyword>LDRVST</keyword><keyword>LDRVCT</keyword><keyword>LDRHIT</keyword><keyword>LDRLST</keyword>
+<keyword>LDRGET</keyword><keyword>LDRLTT</keyword><keyword>LDRGTT</keyword><keyword>LDRLET</keyword><keyword>LDRALT</keyword>
+<keyword>LDRB</keyword><keyword>LDREQB</keyword><keyword>LDRNEB</keyword><keyword>LDRCSB</keyword><keyword>LDRHSB</keyword><keyword>LDRCCB</keyword><keyword>LDRLOB</keyword>
+<keyword>LDRMIB</keyword><keyword>LDRPLB</keyword><keyword>LDRVSB</keyword><keyword>LDRVCB</keyword><keyword>LDRHIB</keyword><keyword>LDRLSB</keyword>
+<keyword>LDRGEB</keyword><keyword>LDRLTB</keyword><keyword>LDRGTB</keyword><keyword>LDRLEB</keyword><keyword>LDRALB</keyword>
+<keyword>LDRBT</keyword><keyword>LDREQBT</keyword><keyword>LDRNEBT</keyword><keyword>LDRCSBT</keyword><keyword>LDRHSBT</keyword><keyword>LDRCCBT</keyword>
+<keyword>LDRLOBT</keyword><keyword>LDRMIBT</keyword><keyword>LDRPLBT</keyword><keyword>LDRVSBT</keyword><keyword>LDRVCBT</keyword><keyword>LDRHIBT</keyword>
+<keyword>LDRLSBT</keyword><keyword>LDRGEBT</keyword><keyword>LDRLTBT</keyword><keyword>LDRGTBT</keyword><keyword>LDRLEBT</keyword><keyword>LDRALBT</keyword>
+<keyword>LDRSB</keyword><keyword>LDREQSB</keyword><keyword>LDRNESB</keyword><keyword>LDRCSSB</keyword><keyword>LDRHSSB</keyword><keyword>LDRCCSB</keyword>
+<keyword>LDRLOSB</keyword><keyword>LDRMISB</keyword><keyword>LDRPLSB</keyword><keyword>LDRVSSB</keyword><keyword>LDRVCSB</keyword><keyword>LDRHISB</keyword>
+<keyword>LDRLSSB</keyword><keyword>LDRGESB</keyword><keyword>LDRLTSB</keyword><keyword>LDRGTSB</keyword><keyword>LDRLESB</keyword><keyword>LDRALSB</keyword>
+<keyword>LDRH</keyword><keyword>LDREQH</keyword><keyword>LDRNEH</keyword><keyword>LDRCSH</keyword><keyword>LDRHSH</keyword><keyword>LDRCCH</keyword><keyword>LDRLOH</keyword>
+<keyword>LDRMIH</keyword><keyword>LDRPLH</keyword><keyword>LDRVSH</keyword><keyword>LDRVCH</keyword><keyword>LDRHIH</keyword><keyword>LDRLSH</keyword>
+<keyword>LDRGEH</keyword><keyword>LDRLTH</keyword><keyword>LDRGTH</keyword><keyword>LDRLEH</keyword><keyword>LDRALH</keyword>
+<keyword>LDRSH</keyword><keyword>LDREQSH</keyword><keyword>LDRNESH</keyword><keyword>LDRCSSH</keyword><keyword>LDRHSSH</keyword><keyword>LDRCCSH</keyword>
+<keyword>LDRLOSH</keyword><keyword>LDRMISH</keyword><keyword>LDRPLSH</keyword><keyword>LDRVSSH</keyword><keyword>LDRVCSH</keyword><keyword>LDRHISH</keyword>
+<keyword>LDRLSSH</keyword><keyword>LDRGESH</keyword><keyword>LDRLTSH</keyword><keyword>LDRGTSH</keyword><keyword>LDRLESH</keyword><keyword>LDRALSH</keyword>
+<keyword>LDRD</keyword><keyword>LDREQD</keyword><keyword>LDRNED</keyword><keyword>LDRCSD</keyword><keyword>LDRHSD</keyword><keyword>LDRCCD</keyword><keyword>LDRLOD</keyword>
+<keyword>LDRMID</keyword><keyword>LDRPLD</keyword><keyword>LDRVSD</keyword><keyword>LDRVCD</keyword><keyword>LDRHID</keyword><keyword>LDRLSD</keyword>
+<keyword>LDRGED</keyword><keyword>LDRLTD</keyword><keyword>LDRGTD</keyword><keyword>LDRLED</keyword><keyword>LDRALD</keyword>
+<keyword>LDRDEQ</keyword><keyword>LDRBEQ</keyword>
+
+<keyword>LDMIA</keyword><keyword>LDMEQIA</keyword><keyword>LDMNEIA</keyword><keyword>LDMCSIA</keyword><keyword>LDMHSIA</keyword><keyword>LDMCCIA</keyword>
+<keyword>LDMLOIA</keyword><keyword>LDMMIIA</keyword><keyword>LDMPLIA</keyword><keyword>LDMVSIA</keyword><keyword>LDMVCIA</keyword><keyword>LDMHIIA</keyword>
+<keyword>LDMLSIA</keyword><keyword>LDMGEIA</keyword><keyword>LDMLTIA</keyword><keyword>LDMGTIA</keyword><keyword>LDMLEIA</keyword><keyword>LDMALIA</keyword>
+<keyword>LDMIB</keyword><keyword>LDMEQIB</keyword><keyword>LDMNEIB</keyword><keyword>LDMCSIB</keyword><keyword>LDMHSIB</keyword><keyword>LDMCCIB</keyword>
+<keyword>LDMLOIB</keyword><keyword>LDMMIIB</keyword><keyword>LDMPLIB</keyword><keyword>LDMVSIB</keyword><keyword>LDMVCIB</keyword><keyword>LDMHIIB</keyword>
+<keyword>LDMLSIB</keyword><keyword>LDMGEIB</keyword><keyword>LDMLTIB</keyword><keyword>LDMGTIB</keyword><keyword>LDMLEIB</keyword><keyword>LDMALIB</keyword>
+<keyword>LDMDA</keyword><keyword>LDMEQDA</keyword><keyword>LDMNEDA</keyword><keyword>LDMCSDA</keyword><keyword>LDMHSDA</keyword><keyword>LDMCCDA</keyword>
+<keyword>LDMLODA</keyword><keyword>LDMMIDA</keyword><keyword>LDMPLDA</keyword><keyword>LDMVSDA</keyword><keyword>LDMVCDA</keyword><keyword>LDMHIDA</keyword>
+<keyword>LDMLSDA</keyword><keyword>LDMGEDA</keyword><keyword>LDMLTDA</keyword><keyword>LDMGTDA</keyword><keyword>LDMLEDA</keyword><keyword>LDMALDA</keyword>
+<keyword>LDMDB</keyword><keyword>LDMEQDB</keyword><keyword>LDMNEDB</keyword><keyword>LDMCSDB</keyword><keyword>LDMHSDB</keyword><keyword>LDMCCDB</keyword>
+<keyword>LDMLODB</keyword><keyword>LDMMIDB</keyword><keyword>LDMPLDB</keyword><keyword>LDMVSDB</keyword><keyword>LDMVCDB</keyword><keyword>LDMHIDB</keyword>
+<keyword>LDMLSDB</keyword><keyword>LDMGEDB</keyword><keyword>LDMLTDB</keyword><keyword>LDMGTDB</keyword><keyword>LDMLEDB</keyword><keyword>LDMALDB</keyword>
+<keyword>LDMFD</keyword><keyword>LDMEQFD</keyword><keyword>LDMNEFD</keyword><keyword>LDMCSFD</keyword><keyword>LDMHSFD</keyword><keyword>LDMCCFD</keyword>
+<keyword>LDMLOFD</keyword><keyword>LDMMIFD</keyword><keyword>LDMPLFD</keyword><keyword>LDMVSFD</keyword><keyword>LDMVCFD</keyword><keyword>LDMHIFD</keyword>
+<keyword>LDMLSFD</keyword><keyword>LDMGEFD</keyword><keyword>LDMLTFD</keyword><keyword>LDMGTFD</keyword><keyword>LDMLEFD</keyword><keyword>LDMALFD</keyword>
+<keyword>LDMED</keyword><keyword>LDMEQED</keyword><keyword>LDMNEED</keyword><keyword>LDMCSED</keyword><keyword>LDMHSED</keyword><keyword>LDMCCED</keyword>
+<keyword>LDMLOED</keyword><keyword>LDMMIED</keyword><keyword>LDMPLED</keyword><keyword>LDMVSED</keyword><keyword>LDMVCED</keyword><keyword>LDMHIED</keyword>
+<keyword>LDMLSED</keyword><keyword>LDMGEED</keyword><keyword>LDMLTED</keyword><keyword>LDMGTED</keyword><keyword>LDMLEED</keyword><keyword>LDMALED</keyword>
+<keyword>LDMFA</keyword><keyword>LDMEQFA</keyword><keyword>LDMNEFA</keyword><keyword>LDMCSFA</keyword><keyword>LDMHSFA</keyword><keyword>LDMCCFA</keyword>
+<keyword>LDMLOFA</keyword><keyword>LDMMIFA</keyword><keyword>LDMPLFA</keyword><keyword>LDMVSFA</keyword><keyword>LDMVCFA</keyword><keyword>LDMHIFA</keyword>
+<keyword>LDMLSFA</keyword><keyword>LDMGEFA</keyword><keyword>LDMLTFA</keyword><keyword>LDMGTFA</keyword><keyword>LDMLEFA</keyword><keyword>LDMALFA</keyword>
+<keyword>LDMEA</keyword><keyword>LDMEQEA</keyword><keyword>LDMNEEA</keyword><keyword>LDMCSEA</keyword><keyword>LDMHSEA</keyword><keyword>LDMCCEA</keyword>
+<keyword>LDMLOEA</keyword><keyword>LDMMIEA</keyword><keyword>LDMPLEA</keyword><keyword>LDMVSEA</keyword><keyword>LDMVCEA</keyword><keyword>LDMHIEA</keyword>
+<keyword>LDMLSEA</keyword><keyword>LDMGEEA</keyword><keyword>LDMLTEA</keyword><keyword>LDMGTEA</keyword><keyword>LDMLEEA</keyword><keyword>LDMALEA</keyword>
+<keyword>LDM</keyword>
+
+<keyword>PLD</keyword>
+
+<keyword>STR</keyword><keyword>STREQ</keyword><keyword>STRNE</keyword><keyword>STRCS</keyword><keyword>STRHS</keyword><keyword>STRCC</keyword><keyword>STRLO</keyword><keyword>STRHEQ</keyword>
+<keyword>STRMI</keyword><keyword>STRPL</keyword><keyword>STRVS</keyword><keyword>STRVC</keyword><keyword>STRHI</keyword><keyword>STRLS</keyword>
+<keyword>STRGE</keyword><keyword>STRLT</keyword><keyword>STRGT</keyword><keyword>STRLE</keyword><keyword>STRAL</keyword>
+<keyword>STRT</keyword><keyword>STREQT</keyword><keyword>STRNET</keyword><keyword>STRCST</keyword><keyword>STRHST</keyword><keyword>STRCCT</keyword><keyword>STRLOT</keyword>
+<keyword>STRMIT</keyword><keyword>STRPLT</keyword><keyword>STRVST</keyword><keyword>STRVCT</keyword><keyword>STRHIT</keyword><keyword>STRLST</keyword>
+<keyword>STRGET</keyword><keyword>STRLTT</keyword><keyword>STRGTT</keyword><keyword>STRLET</keyword><keyword>STRALT</keyword>
+<keyword>STRB</keyword><keyword>STREQB</keyword><keyword>STRNEB</keyword><keyword>STRCSB</keyword><keyword>STRHSB</keyword><keyword>STRCCB</keyword><keyword>STRLOB</keyword>
+<keyword>STRMIB</keyword><keyword>STRPLB</keyword><keyword>STRVSB</keyword><keyword>STRVCB</keyword><keyword>STRHIB</keyword><keyword>STRLSB</keyword>
+<keyword>STRGEB</keyword><keyword>STRLTB</keyword><keyword>STRGTB</keyword><keyword>STRLEB</keyword><keyword>STRALB</keyword>
+<keyword>STRBT</keyword><keyword>STREQBT</keyword><keyword>STRNEBT</keyword><keyword>STRCSBT</keyword><keyword>STRHSBT</keyword><keyword>STRCCBT</keyword>
+<keyword>STRLOBT</keyword><keyword>STRMIBT</keyword><keyword>STRPLBT</keyword><keyword>STRVSBT</keyword><keyword>STRVCBT</keyword><keyword>STRHIBT</keyword>
+<keyword>STRLSBT</keyword><keyword>STRGEBT</keyword><keyword>STRLTBT</keyword><keyword>STRGTBT</keyword><keyword>STRLEBT</keyword><keyword>STRALBT</keyword>
+<keyword>STRH</keyword><keyword>STREQH</keyword><keyword>STRNEH</keyword><keyword>STRCSH</keyword><keyword>STRHSH</keyword><keyword>STRCCH</keyword><keyword>STRLOH</keyword>
+<keyword>STRMIH</keyword><keyword>STRPLH</keyword><keyword>STRVSH</keyword><keyword>STRVCH</keyword><keyword>STRHIH</keyword><keyword>STRLSH</keyword>
+<keyword>STRGEH</keyword><keyword>STRLTH</keyword><keyword>STRGTH</keyword><keyword>STRLEH</keyword><keyword>STRALH</keyword>
+<keyword>STRD</keyword><keyword>STREQD</keyword><keyword>STRNED</keyword><keyword>STRCSD</keyword><keyword>STRHSD</keyword><keyword>STRCCD</keyword><keyword>STRLOD</keyword>
+<keyword>STRMID</keyword><keyword>STRPLD</keyword><keyword>STRVSD</keyword><keyword>STRVCD</keyword><keyword>STRHID</keyword><keyword>STRLSD</keyword>
+<keyword>STRGED</keyword><keyword>STRLTD</keyword><keyword>STRGTD</keyword><keyword>STRLED</keyword><keyword>STRALD</keyword>
+<keyword>STRBEQ</keyword><keyword>STRDEQ</keyword>
+
+<keyword>STMIA</keyword><keyword>STMEQIA</keyword><keyword>STMNEIA</keyword><keyword>STMCSIA</keyword><keyword>STMHSIA</keyword><keyword>STMCCIA</keyword>
+<keyword>STMLOIA</keyword><keyword>STMMIIA</keyword><keyword>STMPLIA</keyword><keyword>STMVSIA</keyword><keyword>STMVCIA</keyword><keyword>STMHIIA</keyword>
+<keyword>STMLSIA</keyword><keyword>STMGEIA</keyword><keyword>STMLTIA</keyword><keyword>STMGTIA</keyword><keyword>STMLEIA</keyword><keyword>STMALIA</keyword>
+<keyword>STMIB</keyword><keyword>STMEQIB</keyword><keyword>STMNEIB</keyword><keyword>STMCSIB</keyword><keyword>STMHSIB</keyword><keyword>STMCCIB</keyword>
+<keyword>STMLOIB</keyword><keyword>STMMIIB</keyword><keyword>STMPLIB</keyword><keyword>STMVSIB</keyword><keyword>STMVCIB</keyword><keyword>STMHIIB</keyword>
+<keyword>STMLSIB</keyword><keyword>STMGEIB</keyword><keyword>STMLTIB</keyword><keyword>STMGTIB</keyword><keyword>STMLEIB</keyword><keyword>STMALIB</keyword>
+<keyword>STMDA</keyword><keyword>STMEQDA</keyword><keyword>STMNEDA</keyword><keyword>STMCSDA</keyword><keyword>STMHSDA</keyword><keyword>STMCCDA</keyword>
+<keyword>STMLODA</keyword><keyword>STMMIDA</keyword><keyword>STMPLDA</keyword><keyword>STMVSDA</keyword><keyword>STMVCDA</keyword><keyword>STMHIDA</keyword>
+<keyword>STMLSDA</keyword><keyword>STMGEDA</keyword><keyword>STMLTDA</keyword><keyword>STMGTDA</keyword><keyword>STMLEDA</keyword><keyword>STMALDA</keyword>
+<keyword>STMDB</keyword><keyword>STMEQDB</keyword><keyword>STMNEDB</keyword><keyword>STMCSDB</keyword><keyword>STMHSDB</keyword><keyword>STMCCDB</keyword>
+<keyword>STMLODB</keyword><keyword>STMMIDB</keyword><keyword>STMPLDB</keyword><keyword>STMVSDB</keyword><keyword>STMVCDB</keyword><keyword>STMHIDB</keyword>
+<keyword>STMLSDB</keyword><keyword>STMGEDB</keyword><keyword>STMLTDB</keyword><keyword>STMGTDB</keyword><keyword>STMLEDB</keyword><keyword>STMALDB</keyword>
+<keyword>STMFD</keyword><keyword>STMEQFD</keyword><keyword>STMNEFD</keyword><keyword>STMCSFD</keyword><keyword>STMHSFD</keyword><keyword>STMCCFD</keyword>
+<keyword>STMLOFD</keyword><keyword>STMMIFD</keyword><keyword>STMPLFD</keyword><keyword>STMVSFD</keyword><keyword>STMVCFD</keyword><keyword>STMHIFD</keyword>
+<keyword>STMLSFD</keyword><keyword>STMGEFD</keyword><keyword>STMLTFD</keyword><keyword>STMGTFD</keyword><keyword>STMLEFD</keyword><keyword>STMALFD</keyword>
+<keyword>STMED</keyword><keyword>STMEQED</keyword><keyword>STMNEED</keyword><keyword>STMCSED</keyword><keyword>STMHSED</keyword><keyword>STMCCED</keyword>
+<keyword>STMLOED</keyword><keyword>STMMIED</keyword><keyword>STMPLED</keyword><keyword>STMVSED</keyword><keyword>STMVCED</keyword><keyword>STMHIED</keyword>
+<keyword>STMLSED</keyword><keyword>STMGEED</keyword><keyword>STMLTED</keyword><keyword>STMGTED</keyword><keyword>STMLEED</keyword><keyword>STMALED</keyword>
+<keyword>STMFA</keyword><keyword>STMEQFA</keyword><keyword>STMNEFA</keyword><keyword>STMCSFA</keyword><keyword>STMHSFA</keyword><keyword>STMCCFA</keyword>
+<keyword>STMLOFA</keyword><keyword>STMMIFA</keyword><keyword>STMPLFA</keyword><keyword>STMVSFA</keyword><keyword>STMVCFA</keyword><keyword>STMHIFA</keyword>
+<keyword>STMLSFA</keyword><keyword>STMGEFA</keyword><keyword>STMLTFA</keyword><keyword>STMGTFA</keyword><keyword>STMLEFA</keyword><keyword>STMALFA</keyword>
+<keyword>STMEA</keyword><keyword>STMEQEA</keyword><keyword>STMNEEA</keyword><keyword>STMCSEA</keyword><keyword>STMHSEA</keyword><keyword>STMCCEA</keyword>
+<keyword>STMLOEA</keyword><keyword>STMMIEA</keyword><keyword>STMPLEA</keyword><keyword>STMVSEA</keyword><keyword>STMVCEA</keyword><keyword>STMHIEA</keyword>
+<keyword>STMLSEA</keyword><keyword>STMGEEA</keyword><keyword>STMLTEA</keyword><keyword>STMGTEA</keyword><keyword>STMLEEA</keyword><keyword>STMALEA</keyword>
+
+<keyword>SWP</keyword><keyword>SWPEQ</keyword><keyword>SWPNE</keyword><keyword>SWPCS</keyword><keyword>SWPHS</keyword><keyword>SWPCC</keyword><keyword>SWPLO</keyword>
+<keyword>SWPMI</keyword><keyword>SWPPL</keyword><keyword>SWPVS</keyword><keyword>SWPVC</keyword><keyword>SWPHI</keyword><keyword>SWPLS</keyword>
+<keyword>SWPGE</keyword><keyword>SWPLT</keyword><keyword>SWPGT</keyword><keyword>SWPLE</keyword><keyword>SWPAL</keyword>
+
+<keyword>SWPB</keyword><keyword>SWPEQB</keyword><keyword>SWPNEB</keyword><keyword>SWPCSB</keyword><keyword>SWPHSB</keyword><keyword>SWPCCB</keyword><keyword>SWPLOB</keyword><keyword></keyword>
+<keyword>SWPMIB</keyword><keyword>SWPPLB</keyword><keyword>SWPVSB</keyword><keyword>SWPVCB</keyword><keyword>SWPHIB</keyword><keyword>SWPLSB</keyword><keyword></keyword>
+<keyword>SWPGEB</keyword><keyword>SWPLTB</keyword><keyword>SWPGTB</keyword><keyword>SWPLEB</keyword><keyword>SWPALB</keyword><keyword></keyword>
+
+<keyword>CDP</keyword><keyword>CDPEQ</keyword><keyword>CDPNE</keyword><keyword>CDPCS</keyword><keyword>CDPHS</keyword><keyword>CDPCC</keyword><keyword>CDPLO</keyword>
+<keyword>CDPMI</keyword><keyword>CDPPL</keyword><keyword>CDPVS</keyword><keyword>CDPVC</keyword><keyword>CDPHI</keyword><keyword>CDPLS</keyword>
+<keyword>CDPGE</keyword><keyword>CDPLT</keyword><keyword>CDPGT</keyword><keyword>CDPLE</keyword><keyword>CDPAL</keyword>
+
+<keyword>CDP2</keyword><keyword>CDP2EQ</keyword><keyword>CDP2NE</keyword><keyword>CDP2CS</keyword><keyword>CDP2HS</keyword><keyword>CDP2CC</keyword><keyword>CDP2LO</keyword>
+<keyword>CDP2MI</keyword><keyword>CDP2PL</keyword><keyword>CDP2VS</keyword><keyword>CDP2VC</keyword><keyword>CDP2HI</keyword><keyword>CDP2LS</keyword>
+<keyword>CDP2GE</keyword><keyword>CDP2LT</keyword><keyword>CDP2GT</keyword><keyword>CDP2LE</keyword><keyword>CDP2AL</keyword>
+
+<keyword>MRC</keyword><keyword>MRCEQ</keyword><keyword>MRCNE</keyword><keyword>MRCCS</keyword><keyword>MRCHS</keyword><keyword>MRCCC</keyword><keyword>MRCLO</keyword>
+<keyword>MRCMI</keyword><keyword>MRCPL</keyword><keyword>MRCVS</keyword><keyword>MRCVC</keyword><keyword>MRCHI</keyword><keyword>MRCLS</keyword>
+<keyword>MRCGE</keyword><keyword>MRCLT</keyword><keyword>MRCGT</keyword><keyword>MRCLE</keyword><keyword>MRCAL</keyword>
+
+<keyword>MRC2</keyword><keyword>MRC2EQ</keyword><keyword>MRC2NE</keyword><keyword>MRC2CS</keyword><keyword>MRC2HS</keyword><keyword>MRC2CC</keyword><keyword>MRC2LO</keyword>
+<keyword>MRC2MI</keyword><keyword>MRC2PL</keyword><keyword>MRC2VS</keyword><keyword>MRC2VC</keyword><keyword>MRC2HI</keyword><keyword>MRC2LS</keyword>
+<keyword>MRC2GE</keyword><keyword>MRC2LT</keyword><keyword>MRC2GT</keyword><keyword>MRC2LE</keyword><keyword>MRC2AL</keyword>
+
+<keyword>MRRC</keyword><keyword>MRRCEQ</keyword><keyword>MRRCNE</keyword><keyword>MRRCCS</keyword><keyword>MRRCHS</keyword><keyword>MRRCCC</keyword><keyword>MRRCLO</keyword>
+<keyword>MRRCMI</keyword><keyword>MRRCPL</keyword><keyword>MRRCVS</keyword><keyword>MRRCVC</keyword><keyword>MRRCHI</keyword><keyword>MRRCLS</keyword>
+<keyword>MRRCGE</keyword><keyword>MRRCLT</keyword><keyword>MRRCGT</keyword><keyword>MRRCLE</keyword><keyword>MRRCAL</keyword>
+
+<keyword>MCR</keyword><keyword>MCREQ</keyword><keyword>MCRNE</keyword><keyword>MCRCS</keyword><keyword>MCRHS</keyword><keyword>MCRCC</keyword><keyword>MCRLO</keyword>
+<keyword>MCRMI</keyword><keyword>MCRPL</keyword><keyword>MCRVS</keyword><keyword>MCRVC</keyword><keyword>MCRHI</keyword><keyword>MCRLS</keyword>
+<keyword>MCRGE</keyword><keyword>MCRLT</keyword><keyword>MCRGT</keyword><keyword>MCRLE</keyword><keyword>MCRAL</keyword>
+
+<keyword>MCR2</keyword><keyword>MCR2EQ</keyword><keyword>MCR2NE</keyword><keyword>MCR2CS</keyword><keyword>MCR2HS</keyword><keyword>MCR2CC</keyword><keyword>MCR2LO</keyword>
+<keyword>MCR2MI</keyword><keyword>MCR2PL</keyword><keyword>MCR2VS</keyword><keyword>MCR2VC</keyword><keyword>MCR2HI</keyword><keyword>MCR2LS</keyword>
+<keyword>MCR2GE</keyword><keyword>MCR2LT</keyword><keyword>MCR2GT</keyword><keyword>MCR2LE</keyword><keyword>MCR2AL</keyword>
+
+<keyword>MCRR</keyword><keyword>MCRREQ</keyword><keyword>MCRRNE</keyword><keyword>MCRRCS</keyword><keyword>MCRRHS</keyword><keyword>MCRRCC</keyword><keyword>MCRRLO</keyword>
+<keyword>MCRRMI</keyword><keyword>MCRRPL</keyword><keyword>MCRRVS</keyword><keyword>MCRRVC</keyword><keyword>MCRRHI</keyword><keyword>MCRRLS</keyword>
+<keyword>MCRRGE</keyword><keyword>MCRRLT</keyword><keyword>MCRRGT</keyword><keyword>MCRRLE</keyword><keyword>MCRRAL</keyword>
+
+<keyword>LDC</keyword><keyword>LDCEQ</keyword><keyword>LDCNE</keyword><keyword>LDCCS</keyword><keyword>LDCHS</keyword><keyword>LDCCC</keyword><keyword>LDCLO</keyword>
+<keyword>LDCMI</keyword><keyword>LDCPL</keyword><keyword>LDCVS</keyword><keyword>LDCVC</keyword><keyword>LDCHI</keyword><keyword>LDCLS</keyword>
+<keyword>LDCGE</keyword><keyword>LDCLT</keyword><keyword>LDCGT</keyword><keyword>LDCLE</keyword><keyword>LDCAL</keyword>
+
+<keyword>LDC2</keyword><keyword>LDC2EQ</keyword><keyword>LDC2NE</keyword><keyword>LDC2CS</keyword><keyword>LDC2HS</keyword><keyword>LDC2CC</keyword><keyword>LDC2LO</keyword>
+<keyword>LDC2MI</keyword><keyword>LDC2PL</keyword><keyword>LDC2VS</keyword><keyword>LDC2VC</keyword><keyword>LDC2HI</keyword><keyword>LDC2LS</keyword>
+<keyword>LDC2GE</keyword><keyword>LDC2LT</keyword><keyword>LDC2GT</keyword><keyword>LDC2LE</keyword><keyword>LDC2AL</keyword>
+
+<keyword>STC</keyword><keyword>STCEQ</keyword><keyword>STCNE</keyword><keyword>STCCS</keyword><keyword>STCHS</keyword><keyword>STCCC</keyword><keyword>STCLO</keyword>
+<keyword>STCMI</keyword><keyword>STCPL</keyword><keyword>STCVS</keyword><keyword>STCVC</keyword><keyword>STCHI</keyword><keyword>STCLS</keyword>
+<keyword>STCGE</keyword><keyword>STCLT</keyword><keyword>STCGT</keyword><keyword>STCLE</keyword><keyword>STCAL</keyword>
+
+<keyword>STC2</keyword><keyword>STC2EQ</keyword><keyword>STC2NE</keyword><keyword>STC2CS</keyword><keyword>STC2HS</keyword><keyword>STC2CC</keyword><keyword>STC2LO</keyword>
+<keyword>STC2MI</keyword><keyword>STC2PL</keyword><keyword>STC2VS</keyword><keyword>STC2VC</keyword><keyword>STC2HI</keyword><keyword>STC2LS</keyword>
+<keyword>STC2GE</keyword><keyword>STC2LT</keyword><keyword>STC2GT</keyword><keyword>STC2LE</keyword><keyword>STC2AL</keyword>
+
+<keyword>SWI</keyword><keyword>SWIEQ</keyword><keyword>SWINE</keyword><keyword>SWICS</keyword><keyword>SWIHS</keyword><keyword>SWICC</keyword><keyword>SWILO</keyword>
+<keyword>SWIMI</keyword><keyword>SWIPL</keyword><keyword>SWIVS</keyword><keyword>SWIVC</keyword><keyword>SWIHI</keyword><keyword>SWILS</keyword>
+<keyword>SWIGE</keyword><keyword>SWILT</keyword><keyword>SWIGT</keyword><keyword>SWILE</keyword><keyword>SWIAL</keyword>
+
+<keyword>SVC</keyword><keyword>SVCEQ</keyword><keyword>SVCNE</keyword><keyword>SVCCS</keyword><keyword>SVCHS</keyword><keyword>SVCCC</keyword><keyword>SVCLO</keyword>
+<keyword>SVCMI</keyword><keyword>SVCPL</keyword><keyword>SVCVS</keyword><keyword>SVCVC</keyword><keyword>SVCHI</keyword><keyword>SVCLS</keyword>
+<keyword>SVCGE</keyword><keyword>SVCLT</keyword><keyword>SVCGT</keyword><keyword>SVCLE</keyword><keyword>SVCAL</keyword>
+
+<keyword>BKPT</keyword>
+
+<keyword>NEG</keyword><keyword>LSL</keyword><keyword>LSR</keyword><keyword>ASR</keyword><keyword>ROR</keyword><keyword>RRX</keyword><keyword>PUSH</keyword><keyword>PUSHNE</keyword><keyword>PUSHEQ</keyword><keyword>POP</keyword>
+<keyword>POPNE</keyword><keyword>POPEQ</keyword>
+<keyword>ASRS</keyword><keyword>ASLS</keyword><keyword>LSLS</keyword><keyword>LSRS</keyword><keyword>UXTB</keyword><keyword>TRAP</keyword>
+
+<keyword>FMULS</keyword><keyword>FMULSEQ</keyword><keyword>FMULSNE</keyword><keyword>FMULSCS</keyword><keyword>FMULSHS</keyword><keyword>FMULSCC</keyword>
+<keyword>FMULSLO</keyword><keyword>FMULSMI</keyword><keyword>FMULSPL</keyword><keyword>FMULSVS</keyword><keyword>FMULSVC</keyword><keyword>FMULSHI</keyword>
+<keyword>FMULSLS</keyword><keyword>FMULSGE</keyword><keyword>FMULSLT</keyword><keyword>FMULSGT</keyword><keyword>FMULSLE</keyword><keyword>FMULSAL</keyword>
+<keyword>FMULD</keyword><keyword>FMULDEQ</keyword><keyword>FMULDNE</keyword><keyword>FMULDCS</keyword><keyword>FMULDHS</keyword><keyword>FMULDCC</keyword>
+<keyword>FMULDLO</keyword><keyword>FMULDMI</keyword><keyword>FMULDPL</keyword><keyword>FMULDVS</keyword><keyword>FMULDVC</keyword><keyword>FMULDHI</keyword>
+<keyword>FMULDLS</keyword><keyword>FMULDGE</keyword><keyword>FMULDLT</keyword><keyword>FMULDGT</keyword><keyword>FMULDLE</keyword><keyword>FMULDAL</keyword>
+
+<keyword>FNMULS</keyword><keyword>FNMULSEQ</keyword><keyword>FNMULSNE</keyword><keyword>FNMULSCS</keyword><keyword>FNMULSHS</keyword>
+<keyword>FNMULSCC</keyword><keyword>FNMULSLO</keyword><keyword>FNMULSMI</keyword><keyword>FNMULSPL</keyword><keyword>FNMULSVS</keyword>
+<keyword>FNMULSVC</keyword><keyword>FNMULSHI</keyword><keyword>FNMULSLS</keyword><keyword>FNMULSGE</keyword><keyword>FNMULSLT</keyword>
+<keyword>FNMULSGT</keyword><keyword>FNMULSLE</keyword><keyword>FNMULSAL</keyword><keyword>FNMULD</keyword><keyword>FNMULDEQ</keyword>
+<keyword>FNMULDNE</keyword><keyword>FNMULDCS</keyword><keyword>FNMULDHS</keyword><keyword>FNMULDCC</keyword><keyword>FNMULDLO</keyword>
+<keyword>FNMULDMI</keyword><keyword>FNMULDPL</keyword><keyword>FNMULDVS</keyword><keyword>FNMULDVC</keyword><keyword>FNMULDHI</keyword>
+<keyword>FNMULDLS</keyword><keyword>FNMULDGE</keyword><keyword>FNMULDLT</keyword><keyword>FNMULDGT</keyword><keyword>FNMULDLE</keyword>
+<keyword>FNMULDAL</keyword>
+
+<keyword>FMACS</keyword><keyword>FMACSEQ</keyword><keyword>FMACSNE</keyword><keyword>FMACSCS</keyword><keyword>FMACSHS</keyword><keyword>FMACSCC</keyword>
+<keyword>FMACSLO</keyword><keyword>FMACSMI</keyword><keyword>FMACSPL</keyword><keyword>FMACSVS</keyword><keyword>FMACSVC</keyword><keyword>FMACSHI</keyword>
+<keyword>FMACSLS</keyword><keyword>FMACSGE</keyword><keyword>FMACSLT</keyword><keyword>FMACSGT</keyword><keyword>FMACSLE</keyword><keyword>FMACSAL</keyword>
+<keyword>FMACD</keyword><keyword>FMACDEQ</keyword><keyword>FMACDNE</keyword><keyword>FMACDCS</keyword><keyword>FMACDHS</keyword><keyword>FMACDCC</keyword>
+<keyword>FMACDLO</keyword><keyword>FMACDMI</keyword><keyword>FMACDPL</keyword><keyword>FMACDVS</keyword><keyword>FMACDVC</keyword><keyword>FMACDHI</keyword>
+<keyword>FMACDLS</keyword><keyword>FMACDGE</keyword><keyword>FMACDLT</keyword><keyword>FMACDGT</keyword><keyword>FMACDLE</keyword><keyword>FMACDAL</keyword>
+
+<keyword>FNMACS</keyword><keyword>FNMACSEQ</keyword><keyword>FNMACSNE</keyword><keyword>FNMACSCS</keyword><keyword>FNMACSHS</keyword>
+<keyword>FNMACSCC</keyword><keyword>FNMACSLO</keyword><keyword>FNMACSMI</keyword><keyword>FNMACSPL</keyword><keyword>FNMACSVS</keyword>
+<keyword>FNMACSVC</keyword><keyword>FNMACSHI</keyword><keyword>FNMACSLS</keyword><keyword>FNMACSGE</keyword><keyword>FNMACSLT</keyword>
+<keyword>FNMACSGT</keyword><keyword>FNMACSLE</keyword><keyword>FNMACSAL</keyword><keyword>FNMACD</keyword><keyword>FNMACDEQ</keyword>
+<keyword>FNMACDNE</keyword><keyword>FNMACDCS</keyword><keyword>FNMACDHS</keyword><keyword>FNMACDCC</keyword><keyword>FNMACDLO</keyword>
+<keyword>FNMACDMI</keyword><keyword>FNMACDPL</keyword><keyword>FNMACDVS</keyword><keyword>FNMACDVC</keyword><keyword>FNMACDHI</keyword>
+<keyword>FNMACDLS</keyword><keyword>FNMACDGE</keyword><keyword>FNMACDLT</keyword><keyword>FNMACDGT</keyword><keyword>FNMACDLE</keyword>
+<keyword>FNMACDAL</keyword>
+
+<keyword>FMSCS</keyword><keyword>FMSCSEQ</keyword><keyword>FMSCSNE</keyword><keyword>FMSCSCS</keyword><keyword>FMSCSHS</keyword><keyword>FMSCSCC</keyword>
+<keyword>FMSCSLO</keyword><keyword>FMSCSMI</keyword><keyword>FMSCSPL</keyword><keyword>FMSCSVS</keyword><keyword>FMSCSVC</keyword><keyword>FMSCSHI</keyword>
+<keyword>FMSCSLS</keyword><keyword>FMSCSGE</keyword><keyword>FMSCSLT</keyword><keyword>FMSCSGT</keyword><keyword>FMSCSLE</keyword><keyword>FMSCSAL</keyword>
+<keyword>FMSCD</keyword><keyword>FMSCDEQ</keyword><keyword>FMSCDNE</keyword><keyword>FMSCDCS</keyword><keyword>FMSCDHS</keyword><keyword>FMSCDCC</keyword>
+<keyword>FMSCDLO</keyword><keyword>FMSCDMI</keyword><keyword>FMSCDPL</keyword><keyword>FMSCDVS</keyword><keyword>FMSCDVC</keyword><keyword>FMSCDHI</keyword>
+<keyword>FMSCDLS</keyword><keyword>FMSCDGE</keyword><keyword>FMSCDLT</keyword><keyword>FMSCDGT</keyword><keyword>FMSCDLE</keyword><keyword>FMSCDAL</keyword>
+
+<keyword>FNMSCS</keyword><keyword>FNMSCSEQ</keyword><keyword>FNMSCSNE</keyword><keyword>FNMSCSCS</keyword><keyword>FNMSCSHS</keyword>
+<keyword>FNMSCSCC</keyword><keyword>FNMSCSLO</keyword><keyword>FNMSCSMI</keyword><keyword>FNMSCSPL</keyword><keyword>FNMSCSVS</keyword>
+<keyword>FNMSCSVC</keyword><keyword>FNMSCSHI</keyword><keyword>FNMSCSLS</keyword><keyword>FNMSCSGE</keyword><keyword>FNMSCSLT</keyword>
+<keyword>FNMSCSGT</keyword><keyword>FNMSCSLE</keyword><keyword>FNMSCSAL</keyword><keyword>FNMSCD</keyword><keyword>FNMSCDEQ</keyword>
+<keyword>FNMSCDNE</keyword><keyword>FNMSCDCS</keyword><keyword>FNMSCDHS</keyword><keyword>FNMSCDCC</keyword><keyword>FNMSCDLO</keyword>
+<keyword>FNMSCDMI</keyword><keyword>FNMSCDPL</keyword><keyword>FNMSCDVS</keyword><keyword>FNMSCDVC</keyword><keyword>FNMSCDHI</keyword>
+<keyword>FNMSCDLS</keyword><keyword>FNMSCDGE</keyword><keyword>FNMSCDLT</keyword><keyword>FNMSCDGT</keyword><keyword>FNMSCDLE</keyword>
+<keyword>FNMSCDAL</keyword>
+
+<keyword>FADDS</keyword><keyword>FADDSEQ</keyword><keyword>FADDSNE</keyword><keyword>FADDSCS</keyword><keyword>FADDSHS</keyword><keyword>FADDSCC</keyword>
+<keyword>FADDSLO</keyword><keyword>FADDSMI</keyword><keyword>FADDSPL</keyword><keyword>FADDSVS</keyword><keyword>FADDSVC</keyword><keyword>FADDSHI</keyword>
+<keyword>FADDSLS</keyword><keyword>FADDSGE</keyword><keyword>FADDSLT</keyword><keyword>FADDSGT</keyword><keyword>FADDSLE</keyword><keyword>FADDSAL</keyword>
+<keyword>FADDD</keyword><keyword>FADDDEQ</keyword><keyword>FADDDNE</keyword><keyword>FADDDCS</keyword><keyword>FADDDHS</keyword><keyword>FADDDCC</keyword>
+<keyword>FADDDLO</keyword><keyword>FADDDMI</keyword><keyword>FADDDPL</keyword><keyword>FADDDVS</keyword><keyword>FADDDVC</keyword><keyword>FADDDHI</keyword>
+<keyword>FADDDLS</keyword><keyword>FADDDGE</keyword><keyword>FADDDLT</keyword><keyword>FADDDGT</keyword><keyword>FADDDLE</keyword><keyword>FADDDAL</keyword>
+
+<keyword>FSUBS</keyword><keyword>FSUBSEQ</keyword><keyword>FSUBSNE</keyword><keyword>FSUBSCS</keyword><keyword>FSUBSHS</keyword><keyword>FSUBSCC</keyword>
+<keyword>FSUBSLO</keyword><keyword>FSUBSMI</keyword><keyword>FSUBSPL</keyword><keyword>FSUBSVS</keyword><keyword>FSUBSVC</keyword><keyword>FSUBSHI</keyword>
+<keyword>FSUBSLS</keyword><keyword>FSUBSGE</keyword><keyword>FSUBSLT</keyword><keyword>FSUBSGT</keyword><keyword>FSUBSLE</keyword><keyword>FSUBSAL</keyword>
+<keyword>FSUBD</keyword><keyword>FSUBDEQ</keyword><keyword>FSUBDNE</keyword><keyword>FSUBDCS</keyword><keyword>FSUBDHS</keyword><keyword>FSUBDCC</keyword>
+<keyword>FSUBDLO</keyword><keyword>FSUBDMI</keyword><keyword>FSUBDPL</keyword><keyword>FSUBDVS</keyword><keyword>FSUBDVC</keyword><keyword>FSUBDHI</keyword>
+<keyword>FSUBDLS</keyword><keyword>FSUBDGE</keyword><keyword>FSUBDLT</keyword><keyword>FSUBDGT</keyword><keyword>FSUBDLE</keyword><keyword>FSUBDAL</keyword>
+
+<keyword>FDIVS</keyword><keyword>FDIVSEQ</keyword><keyword>FDIVSNE</keyword><keyword>FDIVSCS</keyword><keyword>FDIVSHS</keyword><keyword>FDIVSCC</keyword>
+<keyword>FDIVSLO</keyword><keyword>FDIVSMI</keyword><keyword>FDIVSPL</keyword><keyword>FDIVSVS</keyword><keyword>FDIVSVC</keyword><keyword>FDIVSHI</keyword>
+<keyword>FDIVSLS</keyword><keyword>FDIVSGE</keyword><keyword>FDIVSLT</keyword><keyword>FDIVSGT</keyword><keyword>FDIVSLE</keyword><keyword>FDIVSAL</keyword>
+<keyword>FDIVD</keyword><keyword>FDIVDEQ</keyword><keyword>FDIVDNE</keyword><keyword>FDIVDCS</keyword><keyword>FDIVDHS</keyword><keyword>FDIVDCC</keyword>
+<keyword>FDIVDLO</keyword><keyword>FDIVDMI</keyword><keyword>FDIVDPL</keyword><keyword>FDIVDVS</keyword><keyword>FDIVDVC</keyword><keyword>FDIVDHI</keyword>
+<keyword>FDIVDLS</keyword><keyword>FDIVDGE</keyword><keyword>FDIVDLT</keyword><keyword>FDIVDGT</keyword><keyword>FDIVDLE</keyword><keyword>FDIVDAL</keyword>
+
+<keyword>FCPYS</keyword><keyword>FCPYSEQ</keyword><keyword>FCPYSNE</keyword><keyword>FCPYSCS</keyword><keyword>FCPYSHS</keyword><keyword>FCPYSCC</keyword>
+<keyword>FCPYSLO</keyword><keyword>FCPYSMI</keyword><keyword>FCPYSPL</keyword><keyword>FCPYSVS</keyword><keyword>FCPYSVC</keyword><keyword>FCPYSHI</keyword>
+<keyword>FCPYSLS</keyword><keyword>FCPYSGE</keyword><keyword>FCPYSLT</keyword><keyword>FCPYSGT</keyword><keyword>FCPYSLE</keyword><keyword>FCPYSAL</keyword>
+<keyword>FCPYD</keyword><keyword>FCPYDEQ</keyword><keyword>FCPYDNE</keyword><keyword>FCPYDCS</keyword><keyword>FCPYDHS</keyword><keyword>FCPYDCC</keyword>
+<keyword>FCPYDLO</keyword><keyword>FCPYDMI</keyword><keyword>FCPYDPL</keyword><keyword>FCPYDVS</keyword><keyword>FCPYDVC</keyword><keyword>FCPYDHI</keyword>
+<keyword>FCPYDLS</keyword><keyword>FCPYDGE</keyword><keyword>FCPYDLT</keyword><keyword>FCPYDGT</keyword><keyword>FCPYDLE</keyword><keyword>FCPYDAL</keyword>
+
+<keyword>FABSS</keyword><keyword>FABSSEQ</keyword><keyword>FABSSNE</keyword><keyword>FABSSCS</keyword><keyword>FABSSHS</keyword><keyword>FABSSCC</keyword>
+<keyword>FABSSLO</keyword><keyword>FABSSMI</keyword><keyword>FABSSPL</keyword><keyword>FABSSVS</keyword><keyword>FABSSVC</keyword><keyword>FABSSHI</keyword>
+<keyword>FABSSLS</keyword><keyword>FABSSGE</keyword><keyword>FABSSLT</keyword><keyword>FABSSGT</keyword><keyword>FABSSLE</keyword><keyword>FABSSAL</keyword>
+<keyword>FABSD</keyword><keyword>FABSDEQ</keyword><keyword>FABSDNE</keyword><keyword>FABSDCS</keyword><keyword>FABSDHS</keyword><keyword>FABSDCC</keyword>
+<keyword>FABSDLO</keyword><keyword>FABSDMI</keyword><keyword>FABSDPL</keyword><keyword>FABSDVS</keyword><keyword>FABSDVC</keyword><keyword>FABSDHI</keyword>
+<keyword>FABSDLS</keyword><keyword>FABSDGE</keyword><keyword>FABSDLT</keyword><keyword>FABSDGT</keyword><keyword>FABSDLE</keyword><keyword>FABSDAL</keyword>
+
+<keyword>FNEGS</keyword><keyword>FNEGSEQ</keyword><keyword>FNEGSNE</keyword><keyword>FNEGSCS</keyword><keyword>FNEGSHS</keyword><keyword>FNEGSCC</keyword>
+<keyword>FNEGSLO</keyword><keyword>FNEGSMI</keyword><keyword>FNEGSPL</keyword><keyword>FNEGSVS</keyword><keyword>FNEGSVC</keyword><keyword>FNEGSHI</keyword>
+<keyword>FNEGSLS</keyword><keyword>FNEGSGE</keyword><keyword>FNEGSLT</keyword><keyword>FNEGSGT</keyword><keyword>FNEGSLE</keyword><keyword>FNEGSAL</keyword>
+<keyword>FNEGD</keyword><keyword>FNEGDEQ</keyword><keyword>FNEGDNE</keyword><keyword>FNEGDCS</keyword><keyword>FNEGDHS</keyword><keyword>FNEGDCC</keyword>
+<keyword>FNEGDLO</keyword><keyword>FNEGDMI</keyword><keyword>FNEGDPL</keyword><keyword>FNEGDVS</keyword><keyword>FNEGDVC</keyword><keyword>FNEGDHI</keyword>
+<keyword>FNEGDLS</keyword><keyword>FNEGDGE</keyword><keyword>FNEGDLT</keyword><keyword>FNEGDGT</keyword><keyword>FNEGDLE</keyword><keyword>FNEGDAL</keyword>
+
+<keyword>FSQRTS</keyword><keyword>FSQRTSEQ</keyword><keyword>FSQRTSNE</keyword><keyword>FSQRTSCS</keyword><keyword>FSQRTSHS</keyword>
+<keyword>FSQRTSCC</keyword><keyword>FSQRTSLO</keyword><keyword>FSQRTSMI</keyword><keyword>FSQRTSPL</keyword><keyword>FSQRTSVS</keyword>
+<keyword>FSQRTSVC</keyword><keyword>FSQRTSHI</keyword><keyword>FSQRTSLS</keyword><keyword>FSQRTSGE</keyword><keyword>FSQRTSLT</keyword>
+<keyword>FSQRTSGT</keyword><keyword>FSQRTSLE</keyword><keyword>FSQRTSAL</keyword><keyword>FSQRTD</keyword><keyword>FSQRTDEQ</keyword>
+<keyword>FSQRTDNE</keyword><keyword>FSQRTDCS</keyword><keyword>FSQRTDHS</keyword><keyword>FSQRTDCC</keyword><keyword>FSQRTDLO</keyword>
+<keyword>FSQRTDMI</keyword><keyword>FSQRTDPL</keyword><keyword>FSQRTDVS</keyword><keyword>FSQRTDVC</keyword><keyword>FSQRTDHI</keyword>
+<keyword>FSQRTDLS</keyword><keyword>FSQRTDGE</keyword><keyword>FSQRTDLT</keyword><keyword>FSQRTDGT</keyword><keyword>FSQRTDLE</keyword>
+<keyword>FSQRTDAL</keyword>
+
+<keyword>FCMPS</keyword><keyword>FCMPSEQ</keyword><keyword>FCMPSNE</keyword><keyword>FCMPSCS</keyword><keyword>FCMPSHS</keyword><keyword>FCMPSCC</keyword>
+<keyword>FCMPSLO</keyword><keyword>FCMPSMI</keyword><keyword>FCMPSPL</keyword><keyword>FCMPSVS</keyword><keyword>FCMPSVC</keyword><keyword>FCMPSHI</keyword>
+<keyword>FCMPSLS</keyword><keyword>FCMPSGE</keyword><keyword>FCMPSLT</keyword><keyword>FCMPSGT</keyword><keyword>FCMPSLE</keyword><keyword>FCMPSAL</keyword>
+<keyword>FCMPD</keyword><keyword>FCMPDEQ</keyword><keyword>FCMPDNE</keyword><keyword>FCMPDCS</keyword><keyword>FCMPDHS</keyword><keyword>FCMPDCC</keyword>
+<keyword>FCMPDLO</keyword><keyword>FCMPDMI</keyword><keyword>FCMPDPL</keyword><keyword>FCMPDVS</keyword><keyword>FCMPDVC</keyword><keyword>FCMPDHI</keyword>
+<keyword>FCMPDLS</keyword><keyword>FCMPDGE</keyword><keyword>FCMPDLT</keyword><keyword>FCMPDGT</keyword><keyword>FCMPDLE</keyword><keyword>FCMPDAL</keyword>
+
+<keyword>FCMPES</keyword><keyword>FCMPESEQ</keyword><keyword>FCMPESNE</keyword><keyword>FCMPESCS</keyword><keyword>FCMPESHS</keyword>
+<keyword>FCMPESCC</keyword><keyword>FCMPESLO</keyword><keyword>FCMPESMI</keyword><keyword>FCMPESPL</keyword><keyword>FCMPESVS</keyword>
+<keyword>FCMPESVC</keyword><keyword>FCMPESHI</keyword><keyword>FCMPESLS</keyword><keyword>FCMPESGE</keyword><keyword>FCMPESLT</keyword>
+<keyword>FCMPESGT</keyword><keyword>FCMPESLE</keyword><keyword>FCMPESAL</keyword><keyword>FCMPED</keyword><keyword>FCMPEDEQ</keyword>
+<keyword>FCMPEDNE</keyword><keyword>FCMPEDCS</keyword><keyword>FCMPEDHS</keyword><keyword>FCMPEDCC</keyword><keyword>FCMPEDLO</keyword>
+<keyword>FCMPEDMI</keyword><keyword>FCMPEDPL</keyword><keyword>FCMPEDVS</keyword><keyword>FCMPEDVC</keyword><keyword>FCMPEDHI</keyword>
+<keyword>FCMPEDLS</keyword><keyword>FCMPEDGE</keyword><keyword>FCMPEDLT</keyword><keyword>FCMPEDGT</keyword><keyword>FCMPEDLE</keyword>
+<keyword>FCMPEDAL</keyword>
+
+<keyword>FCMPZS</keyword><keyword>FCMPZSEQ</keyword><keyword>FCMPZSNE</keyword><keyword>FCMPZSCS</keyword><keyword>FCMPZSHS</keyword>
+<keyword>FCMPZSCC</keyword><keyword>FCMPZSLO</keyword><keyword>FCMPZSMI</keyword><keyword>FCMPZSPL</keyword><keyword>FCMPZSVS</keyword>
+<keyword>FCMPZSVC</keyword><keyword>FCMPZSHI</keyword><keyword>FCMPZSLS</keyword><keyword>FCMPZSGE</keyword><keyword>FCMPZSLT</keyword>
+<keyword>FCMPZSGT</keyword><keyword>FCMPZSLE</keyword><keyword>FCMPZSAL</keyword><keyword>FCMPZD</keyword><keyword>FCMPZDEQ</keyword>
+<keyword>FCMPZDNE</keyword><keyword>FCMPZDCS</keyword><keyword>FCMPZDHS</keyword><keyword>FCMPZDCC</keyword><keyword>FCMPZDLO</keyword>
+<keyword>FCMPZDMI</keyword><keyword>FCMPZDPL</keyword><keyword>FCMPZDVS</keyword><keyword>FCMPZDVC</keyword><keyword>FCMPZDHI</keyword>
+<keyword>FCMPZDLS</keyword><keyword>FCMPZDGE</keyword><keyword>FCMPZDLT</keyword><keyword>FCMPZDGT</keyword><keyword>FCMPZDLE</keyword>
+<keyword>FCMPZDAL</keyword>
+
+<keyword>FCMPEZS</keyword><keyword>FCMPEZSEQ</keyword><keyword>FCMPEZSNE</keyword><keyword>FCMPEZSCS</keyword><keyword>FCMPEZSHS</keyword>
+<keyword>FCMPEZSCC</keyword><keyword>FCMPEZSLO</keyword><keyword>FCMPEZSMI</keyword><keyword>FCMPEZSPL</keyword>
+<keyword>FCMPEZSVS</keyword><keyword>FCMPEZSVC</keyword><keyword>FCMPEZSHI</keyword><keyword>FCMPEZSLS</keyword>
+<keyword>FCMPEZSGE</keyword><keyword>FCMPEZSLT</keyword><keyword>FCMPEZSGT</keyword><keyword>FCMPEZSLE</keyword>
+<keyword>FCMPEZSAL</keyword><keyword>FCMPEZD</keyword><keyword>FCMPEZDEQ</keyword><keyword>FCMPEZDNE</keyword><keyword>FCMPEZDCS</keyword>
+<keyword>FCMPEZDHS</keyword><keyword>FCMPEZDCC</keyword><keyword>FCMPEZDLO</keyword><keyword>FCMPEZDMI</keyword>
+<keyword>FCMPEZDPL</keyword><keyword>FCMPEZDVS</keyword><keyword>FCMPEZDVC</keyword><keyword>FCMPEZDHI</keyword>
+<keyword>FCMPEZDLS</keyword><keyword>FCMPEZDGE</keyword><keyword>FCMPEZDLT</keyword><keyword>FCMPEZDGT</keyword>
+<keyword>FCMPEZDLE</keyword><keyword>FCMPEZDAL</keyword>
+
+<keyword>FCVTDS</keyword><keyword>FCVTDSEQ</keyword><keyword>FCVTDSNE</keyword><keyword>FCVTDSCS</keyword><keyword>FCVTDSHS</keyword>
+<keyword>FCVTDSCC</keyword><keyword>FCVTDSLO</keyword><keyword>FCVTDSMI</keyword><keyword>FCVTDSPL</keyword><keyword>FCVTDSVS</keyword>
+<keyword>FCVTDSVC</keyword><keyword>FCVTDSHI</keyword><keyword>FCVTDSLS</keyword><keyword>FCVTDSGE</keyword><keyword>FCVTDSLT</keyword>
+<keyword>FCVTDSGT</keyword><keyword>FCVTDSLE</keyword><keyword>FCVTDSAL</keyword>
+
+<keyword>FCVTSD</keyword><keyword>FCVTSDEQ</keyword><keyword>FCVTSDNE</keyword><keyword>FCVTSDCS</keyword><keyword>FCVTSDHS</keyword>
+<keyword>FCVTSDCC</keyword><keyword>FCVTSDLO</keyword><keyword>FCVTSDMI</keyword><keyword>FCVTSDPL</keyword><keyword>FCVTSDVS</keyword>
+<keyword>FCVTSDVC</keyword><keyword>FCVTSDHI</keyword><keyword>FCVTSDLS</keyword><keyword>FCVTSDGE</keyword><keyword>FCVTSDLT</keyword>
+<keyword>FCVTSDGT</keyword><keyword>FCVTSDLE</keyword><keyword>FCVTSDAL</keyword>
+
+<keyword>FUITOS</keyword><keyword>FUITOSEQ</keyword><keyword>FUITOSNE</keyword><keyword>FUITOSCS</keyword><keyword>FUITOSHS</keyword>
+<keyword>FUITOSCC</keyword><keyword>FUITOSLO</keyword><keyword>FUITOSMI</keyword><keyword>FUITOSPL</keyword><keyword>FUITOSVS</keyword>
+<keyword>FUITOSVC</keyword><keyword>FUITOSHI</keyword><keyword>FUITOSLS</keyword><keyword>FUITOSGE</keyword><keyword>FUITOSLT</keyword>
+<keyword>FUITOSGT</keyword><keyword>FUITOSLE</keyword><keyword>FUITOSAL</keyword>
+<keyword>FUITOD</keyword><keyword>FUITODEQ</keyword><keyword>FUITODNE</keyword><keyword>FUITODCS</keyword><keyword>FUITODHS</keyword>
+<keyword>FUITODCC</keyword><keyword>FUITODLO</keyword><keyword>FUITODMI</keyword><keyword>FUITODPL</keyword><keyword>FUITODVS</keyword>
+<keyword>FUITODVC</keyword><keyword>FUITODHI</keyword><keyword>FUITODLS</keyword><keyword>FUITODGE</keyword><keyword>FUITODLT</keyword>
+<keyword>FUITODGT</keyword><keyword>FUITODLE</keyword><keyword>FUITODAL</keyword>
+
+<keyword>FSITOS</keyword><keyword>FSITOSEQ</keyword><keyword>FSITOSNE</keyword><keyword>FSITOSCS</keyword><keyword>FSITOSHS</keyword>
+<keyword>FSITOSCC</keyword><keyword>FSITOSLO</keyword><keyword>FSITOSMI</keyword><keyword>FSITOSPL</keyword><keyword>FSITOSVS</keyword>
+<keyword>FSITOSVC</keyword><keyword>FSITOSHI</keyword><keyword>FSITOSLS</keyword><keyword>FSITOSGE</keyword><keyword>FSITOSLT</keyword>
+<keyword>FSITOSGT</keyword><keyword>FSITOSLE</keyword><keyword>FSITOSAL</keyword>
+<keyword>FSITOD</keyword><keyword>FSITODEQ</keyword><keyword>FSITODNE</keyword><keyword>FSITODCS</keyword><keyword>FSITODHS</keyword>
+<keyword>FSITODCC</keyword><keyword>FSITODLO</keyword><keyword>FSITODMI</keyword><keyword>FSITODPL</keyword><keyword>FSITODVS</keyword>
+<keyword>FSITODVC</keyword><keyword>FSITODHI</keyword><keyword>FSITODLS</keyword><keyword>FSITODGE</keyword><keyword>FSITODLT</keyword>
+<keyword>FSITODGT</keyword><keyword>FSITODLE</keyword><keyword>FSITODAL</keyword>
+
+<keyword>FTOUIS</keyword><keyword>FTOUISEQ</keyword><keyword>FTOUISNE</keyword><keyword>FTOUISCS</keyword><keyword>FTOUISHS</keyword>
+<keyword>FTOUISCC</keyword><keyword>FTOUISLO</keyword><keyword>FTOUISMI</keyword><keyword>FTOUISPL</keyword><keyword>FTOUISVS</keyword>
+<keyword>FTOUISVC</keyword><keyword>FTOUISHI</keyword><keyword>FTOUISLS</keyword><keyword>FTOUISGE</keyword><keyword>FTOUISLT</keyword>
+<keyword>FTOUISGT</keyword><keyword>FTOUISLE</keyword><keyword>FTOUISAL</keyword>
+<keyword>FTOUID</keyword><keyword>FTOUIDEQ</keyword><keyword>FTOUIDNE</keyword><keyword>FTOUIDCS</keyword><keyword>FTOUIDHS</keyword>
+<keyword>FTOUIDCC</keyword><keyword>FTOUIDLO</keyword><keyword>FTOUIDMI</keyword><keyword>FTOUIDPL</keyword><keyword>FTOUIDVS</keyword>
+<keyword>FTOUIDVC</keyword><keyword>FTOUIDHI</keyword><keyword>FTOUIDLS</keyword><keyword>FTOUIDGE</keyword><keyword>FTOUIDLT</keyword>
+<keyword>FTOUIDGT</keyword><keyword>FTOUIDLE</keyword><keyword>FTOUIDAL</keyword>
+
+<keyword>FTOUIZS</keyword><keyword>FTOUIZSEQ</keyword><keyword>FTOUIZSNE</keyword><keyword>FTOUIZSCS</keyword><keyword>FTOUIZSHS</keyword>
+<keyword>FTOUIZSCC</keyword><keyword>FTOUIZSLO</keyword><keyword>FTOUIZSMI</keyword><keyword>FTOUIZSPL</keyword>
+<keyword>FTOUIZSVS</keyword><keyword>FTOUIZSVC</keyword><keyword>FTOUIZSHI</keyword><keyword>FTOUIZSLS</keyword>
+<keyword>FTOUIZSGE</keyword><keyword>FTOUIZSLT</keyword><keyword>FTOUIZSGT</keyword><keyword>FTOUIZSLE</keyword>
+<keyword>FTOUIZSAL</keyword>
+<keyword>FTOUIZD</keyword><keyword>FTOUIZDEQ</keyword><keyword>FTOUIZDNE</keyword><keyword>FTOUIZDCS</keyword><keyword>FTOUIZDHS</keyword>
+<keyword>FTOUIZDCC</keyword><keyword>FTOUIZDLO</keyword><keyword>FTOUIZDMI</keyword><keyword>FTOUIZDPL</keyword>
+<keyword>FTOUIZDVS</keyword><keyword>FTOUIZDVC</keyword><keyword>FTOUIZDHI</keyword><keyword>FTOUIZDLS</keyword>
+<keyword>FTOUIZDGE</keyword><keyword>FTOUIZDLT</keyword><keyword>FTOUIZDGT</keyword><keyword>FTOUIZDLE</keyword>
+<keyword>FTOUIZDAL</keyword>
+
+<keyword>FTOSIS</keyword><keyword>FTOSISEQ</keyword><keyword>FTOSISNE</keyword><keyword>FTOSISCS</keyword><keyword>FTOSISHS</keyword>
+<keyword>FTOSISCC</keyword><keyword>FTOSISLO</keyword><keyword>FTOSISMI</keyword><keyword>FTOSISPL</keyword><keyword>FTOSISVS</keyword>
+<keyword>FTOSISVC</keyword><keyword>FTOSISHI</keyword><keyword>FTOSISLS</keyword><keyword>FTOSISGE</keyword><keyword>FTOSISLT</keyword>
+<keyword>FTOSISGT</keyword><keyword>FTOSISLE</keyword><keyword>FTOSISAL</keyword>
+<keyword>FTOSID</keyword><keyword>FTOSIDEQ</keyword><keyword>FTOSIDNE</keyword><keyword>FTOSIDCS</keyword><keyword>FTOSIDHS</keyword>
+<keyword>FTOSIDCC</keyword><keyword>FTOSIDLO</keyword><keyword>FTOSIDMI</keyword><keyword>FTOSIDPL</keyword><keyword>FTOSIDVS</keyword>
+<keyword>FTOSIDVC</keyword><keyword>FTOSIDHI</keyword><keyword>FTOSIDLS</keyword><keyword>FTOSIDGE</keyword><keyword>FTOSIDLT</keyword>
+<keyword>FTOSIDGT</keyword><keyword>FTOSIDLE</keyword><keyword>FTOSIDAL</keyword>
+
+<keyword>FTOSIZS</keyword><keyword>FTOSIZSEQ</keyword><keyword>FTOSIZSNE</keyword><keyword>FTOSIZSCS</keyword><keyword>FTOSIZSHS</keyword>
+<keyword>FTOSIZSCC</keyword><keyword>FTOSIZSLO</keyword><keyword>FTOSIZSMI</keyword><keyword>FTOSIZSPL</keyword>
+<keyword>FTOSIZSVS</keyword><keyword>FTOSIZSVC</keyword><keyword>FTOSIZSHI</keyword><keyword>FTOSIZSLS</keyword>
+<keyword>FTOSIZSGE</keyword><keyword>FTOSIZSLT</keyword><keyword>FTOSIZSGT</keyword><keyword>FTOSIZSLE</keyword>
+<keyword>FTOSIZSAL</keyword>
+<keyword>FTOSIZD</keyword><keyword>FTOSIZDEQ</keyword><keyword>FTOSIZDNE</keyword><keyword>FTOSIZDCS</keyword><keyword>FTOSIZDHS</keyword>
+<keyword>FTOSIZDCC</keyword><keyword>FTOSIZDLO</keyword><keyword>FTOSIZDMI</keyword><keyword>FTOSIZDPL</keyword>
+<keyword>FTOSIZDVS</keyword><keyword>FTOSIZDVC</keyword><keyword>FTOSIZDHI</keyword><keyword>FTOSIZDLS</keyword>
+<keyword>FTOSIZDGE</keyword><keyword>FTOSIZDLT</keyword><keyword>FTOSIZDGT</keyword><keyword>FTOSIZDLE</keyword>
+<keyword>FTOSIZDAL</keyword>
+
+<keyword>FSTS</keyword><keyword>FSTSEQ</keyword><keyword>FSTSNE</keyword><keyword>FSTSCS</keyword><keyword>FSTSHS</keyword><keyword>FSTSCC</keyword><keyword>FSTSLO</keyword>
+<keyword>FSTSMI</keyword><keyword>FSTSPL</keyword><keyword>FSTSVS</keyword><keyword>FSTSVC</keyword><keyword>FSTSHI</keyword><keyword>FSTSLS</keyword>
+<keyword>FSTSGE</keyword><keyword>FSTSLT</keyword><keyword>FSTSGT</keyword><keyword>FSTSLE</keyword><keyword>FSTSAL</keyword>
+<keyword>FSTD</keyword><keyword>FSTDEQ</keyword><keyword>FSTDNE</keyword><keyword>FSTDCS</keyword><keyword>FSTDHS</keyword><keyword>FSTDCC</keyword><keyword>FSTDLO</keyword>
+<keyword>FSTDMI</keyword><keyword>FSTDPL</keyword><keyword>FSTDVS</keyword><keyword>FSTDVC</keyword><keyword>FSTDHI</keyword><keyword>FSTDLS</keyword>
+<keyword>FSTDGE</keyword><keyword>FSTDLT</keyword><keyword>FSTDGT</keyword><keyword>FSTDLE</keyword><keyword>FSTDAL</keyword>
+
+<keyword>FSTMIAS</keyword><keyword>FSTMIASEQ</keyword><keyword>FSTMIASNE</keyword><keyword>FSTMIASCS</keyword><keyword>FSTMIASHS</keyword>
+<keyword>FSTMIASCC</keyword><keyword>FSTMIASLO</keyword><keyword>FSTMIASMI</keyword><keyword>FSTMIASPL</keyword>
+<keyword>FSTMIASVS</keyword><keyword>FSTMIASVC</keyword><keyword>FSTMIASHI</keyword><keyword>FSTMIASLS</keyword>
+<keyword>FSTMIASGE</keyword><keyword>FSTMIASLT</keyword><keyword>FSTMIASGT</keyword><keyword>FSTMIASLE</keyword>
+<keyword>FSTMIASAL</keyword>
+<keyword>FSTMIAD</keyword><keyword>FSTMIADEQ</keyword><keyword>FSTMIADNE</keyword><keyword>FSTMIADCS</keyword><keyword>FSTMIADHS</keyword>
+<keyword>FSTMIADCC</keyword><keyword>FSTMIADLO</keyword><keyword>FSTMIADMI</keyword><keyword>FSTMIADPL</keyword>
+<keyword>FSTMIADVS</keyword><keyword>FSTMIADVC</keyword><keyword>FSTMIADHI</keyword><keyword>FSTMIADLS</keyword>
+<keyword>FSTMIADGE</keyword><keyword>FSTMIADLT</keyword><keyword>FSTMIADGT</keyword><keyword>FSTMIADLE</keyword>
+<keyword>FSTMIADAL</keyword>
+<keyword>FSTMIAX</keyword><keyword>FSTMIAXEQ</keyword><keyword>FSTMIAXNE</keyword><keyword>FSTMIAXCS</keyword><keyword>FSTMIAXHS</keyword>
+<keyword>FSTMIAXCC</keyword><keyword>FSTMIAXLO</keyword><keyword>FSTMIAXMI</keyword><keyword>FSTMIAXPL</keyword>
+<keyword>FSTMIAXVS</keyword><keyword>FSTMIAXVC</keyword><keyword>FSTMIAXHI</keyword><keyword>FSTMIAXLS</keyword>
+<keyword>FSTMIAXGE</keyword><keyword>FSTMIAXLT</keyword><keyword>FSTMIAXGT</keyword><keyword>FSTMIAXLE</keyword>
+<keyword>FSTMIAXAL</keyword>
+
+<keyword>FSTMDBS</keyword><keyword>FSTMDBSEQ</keyword><keyword>FSTMDBSNE</keyword><keyword>FSTMDBSCS</keyword><keyword>FSTMDBSHS</keyword>
+<keyword>FSTMDBSCC</keyword><keyword>FSTMDBSLO</keyword><keyword>FSTMDBSMI</keyword><keyword>FSTMDBSPL</keyword>
+<keyword>FSTMDBSVS</keyword><keyword>FSTMDBSVC</keyword><keyword>FSTMDBSHI</keyword><keyword>FSTMDBSLS</keyword>
+<keyword>FSTMDBSGE</keyword><keyword>FSTMDBSLT</keyword><keyword>FSTMDBSGT</keyword><keyword>FSTMDBSLE</keyword>
+<keyword>FSTMDBSAL</keyword>
+<keyword>FSTMDBD</keyword><keyword>FSTMDBDEQ</keyword><keyword>FSTMDBDNE</keyword><keyword>FSTMDBDCS</keyword><keyword>FSTMDBDHS</keyword>
+<keyword>FSTMDBDCC</keyword><keyword>FSTMDBDLO</keyword><keyword>FSTMDBDMI</keyword><keyword>FSTMDBDPL</keyword>
+<keyword>FSTMDBDVS</keyword><keyword>FSTMDBDVC</keyword><keyword>FSTMDBDHI</keyword><keyword>FSTMDBDLS</keyword>
+<keyword>FSTMDBDGE</keyword><keyword>FSTMDBDLT</keyword><keyword>FSTMDBDGT</keyword><keyword>FSTMDBDLE</keyword>
+<keyword>FSTMDBDAL</keyword>
+<keyword>FSTMDBX</keyword><keyword>FSTMDBXEQ</keyword><keyword>FSTMDBXNE</keyword><keyword>FSTMDBXCS</keyword><keyword>FSTMDBXHS</keyword>
+<keyword>FSTMDBXCC</keyword><keyword>FSTMDBXLO</keyword><keyword>FSTMDBXMI</keyword><keyword>FSTMDBXPL</keyword>
+<keyword>FSTMDBXVS</keyword><keyword>FSTMDBXVC</keyword><keyword>FSTMDBXHI</keyword><keyword>FSTMDBXLS</keyword>
+<keyword>FSTMDBXGE</keyword><keyword>FSTMDBXLT</keyword><keyword>FSTMDBXGT</keyword><keyword>FSTMDBXLE</keyword>
+<keyword>FSTMDBXAL</keyword>
+
+<keyword>FLDS</keyword><keyword>FLDSEQ</keyword><keyword>FLDSNE</keyword><keyword>FLDSCS</keyword><keyword>FLDSHS</keyword><keyword>FLDSCC</keyword><keyword>FLDSLO</keyword>
+<keyword>FLDSMI</keyword><keyword>FLDSPL</keyword><keyword>FLDSVS</keyword><keyword>FLDSVC</keyword><keyword>FLDSHI</keyword><keyword>FLDSLS</keyword>
+<keyword>FLDSGE</keyword><keyword>FLDSLT</keyword><keyword>FLDSGT</keyword><keyword>FLDSLE</keyword><keyword>FLDSAL</keyword>
+<keyword>FLDD</keyword><keyword>FLDDEQ</keyword><keyword>FLDDNE</keyword><keyword>FLDDCS</keyword><keyword>FLDDHS</keyword><keyword>FLDDCC</keyword><keyword>FLDDLO</keyword>
+<keyword>FLDDMI</keyword><keyword>FLDDPL</keyword><keyword>FLDDVS</keyword><keyword>FLDDVC</keyword><keyword>FLDDHI</keyword><keyword>FLDDLS</keyword>
+<keyword>FLDDGE</keyword><keyword>FLDDLT</keyword><keyword>FLDDGT</keyword><keyword>FLDDLE</keyword><keyword>FLDDAL</keyword>
+
+<keyword>FLDMIAS</keyword><keyword>FLDMIASEQ</keyword><keyword>FLDMIASNE</keyword><keyword>FLDMIASCS</keyword><keyword>FLDMIASHS</keyword>
+<keyword>FLDMIASCC</keyword><keyword>FLDMIASLO</keyword><keyword>FLDMIASMI</keyword><keyword>FLDMIASPL</keyword>
+<keyword>FLDMIASVS</keyword><keyword>FLDMIASVC</keyword><keyword>FLDMIASHI</keyword><keyword>FLDMIASLS</keyword>
+<keyword>FLDMIASGE</keyword><keyword>FLDMIASLT</keyword><keyword>FLDMIASGT</keyword><keyword>FLDMIASLE</keyword>
+<keyword>FLDMIASAL</keyword>
+<keyword>FLDMIAD</keyword><keyword>FLDMIADEQ</keyword><keyword>FLDMIADNE</keyword><keyword>FLDMIADCS</keyword><keyword>FLDMIADHS</keyword>
+<keyword>FLDMIADCC</keyword><keyword>FLDMIADLO</keyword><keyword>FLDMIADMI</keyword><keyword>FLDMIADPL</keyword>
+<keyword>FLDMIADVS</keyword><keyword>FLDMIADVC</keyword><keyword>FLDMIADHI</keyword><keyword>FLDMIADLS</keyword>
+<keyword>FLDMIADGE</keyword><keyword>FLDMIADLT</keyword><keyword>FLDMIADGT</keyword><keyword>FLDMIADLE</keyword>
+<keyword>FLDMIADAL</keyword>
+<keyword>FLDMIAX</keyword><keyword>FLDMIAXEQ</keyword><keyword>FLDMIAXNE</keyword><keyword>FLDMIAXCS</keyword><keyword>FLDMIAXHS</keyword>
+<keyword>FLDMIAXCC</keyword><keyword>FLDMIAXLO</keyword><keyword>FLDMIAXMI</keyword><keyword>FLDMIAXPL</keyword>
+<keyword>FLDMIAXVS</keyword><keyword>FLDMIAXVC</keyword><keyword>FLDMIAXHI</keyword><keyword>FLDMIAXLS</keyword>
+<keyword>FLDMIAXGE</keyword><keyword>FLDMIAXLT</keyword><keyword>FLDMIAXGT</keyword><keyword>FLDMIAXLE</keyword>
+<keyword>FLDMIAXAL</keyword>
+
+<keyword>FLDMDBS</keyword><keyword>FLDMDBSEQ</keyword><keyword>FLDMDBSNE</keyword><keyword>FLDMDBSCS</keyword><keyword>FLDMDBSHS</keyword>
+<keyword>FLDMDBSCC</keyword><keyword>FLDMDBSLO</keyword><keyword>FLDMDBSMI</keyword><keyword>FLDMDBSPL</keyword>
+<keyword>FLDMDBSVS</keyword><keyword>FLDMDBSVC</keyword><keyword>FLDMDBSHI</keyword><keyword>FLDMDBSLS</keyword>
+<keyword>FLDMDBSGE</keyword><keyword>FLDMDBSLT</keyword><keyword>FLDMDBSGT</keyword><keyword>FLDMDBSLE</keyword>
+<keyword>FLDMDBSAL</keyword>
+<keyword>FLDMDBD</keyword><keyword>FLDMDBDEQ</keyword><keyword>FLDMDBDNE</keyword><keyword>FLDMDBDCS</keyword><keyword>FLDMDBDHS</keyword>
+<keyword>FLDMDBDCC</keyword><keyword>FLDMDBDLO</keyword><keyword>FLDMDBDMI</keyword><keyword>FLDMDBDPL</keyword>
+<keyword>FLDMDBDVS</keyword><keyword>FLDMDBDVC</keyword><keyword>FLDMDBDHI</keyword><keyword>FLDMDBDLS</keyword>
+<keyword>FLDMDBDGE</keyword><keyword>FLDMDBDLT</keyword><keyword>FLDMDBDGT</keyword><keyword>FLDMDBDLE</keyword>
+
+<keyword>FLDMDBX</keyword><keyword>FLDMDBXEQ</keyword><keyword>FLDMDBXNE</keyword><keyword>FLDMDBXCS</keyword><keyword>FLDMDBXHS</keyword>
+<keyword>FLDMDBXCC</keyword><keyword>FLDMDBXLO</keyword><keyword>FLDMDBXMI</keyword><keyword>FLDMDBXPL</keyword>
+<keyword>FLDMDBXVS</keyword><keyword>FLDMDBXVC</keyword><keyword>FLDMDBXHI</keyword><keyword>FLDMDBXLS</keyword>
+<keyword>FLDMDBXGE</keyword><keyword>FLDMDBXLT</keyword><keyword>FLDMDBXGT</keyword><keyword>FLDMDBXLE</keyword>
+<keyword>FLDMDBXAL</keyword>
+
+<keyword>FMSR</keyword><keyword>FMSREQ</keyword><keyword>FMSRNE</keyword><keyword>FMSRCS</keyword><keyword>FMSRHS</keyword><keyword>FMSRCC</keyword><keyword>FMSRLO</keyword>
+<keyword>FMSRMI</keyword><keyword>FMSRPL</keyword><keyword>FMSRVS</keyword><keyword>FMSRVC</keyword><keyword>FMSRHI</keyword><keyword>FMSRLS</keyword>
+<keyword>FMSRGE</keyword><keyword>FMSRLT</keyword><keyword>FMSRGT</keyword><keyword>FMSRLE</keyword><keyword>FMSRAL</keyword>
+
+<keyword>FMRS</keyword><keyword>FMRSEQ</keyword><keyword>FMRSNE</keyword><keyword>FMRSCS</keyword><keyword>FMRSHS</keyword><keyword>FMRSCC</keyword><keyword>FMRSLO</keyword>
+<keyword>FMRSMI</keyword><keyword>FMRSPL</keyword><keyword>FMRSVS</keyword><keyword>FMRSVC</keyword><keyword>FMRSHI</keyword><keyword>FMRSLS</keyword>
+<keyword>FMRSGE</keyword><keyword>FMRSLT</keyword><keyword>FMRSGT</keyword><keyword>FMRSLE</keyword><keyword>FMRSAL</keyword>
+
+<keyword>FMDLR</keyword><keyword>FMDLREQ</keyword><keyword>FMDLRNE</keyword><keyword>FMDLRCS</keyword><keyword>FMDLRHS</keyword><keyword>FMDLRCC</keyword>
+<keyword>FMDLRLO</keyword><keyword>FMDLRMI</keyword><keyword>FMDLRPL</keyword><keyword>FMDLRVS</keyword><keyword>FMDLRVC</keyword><keyword>FMDLRHI</keyword>
+<keyword>FMDLRLS</keyword><keyword>FMDLRGE</keyword><keyword>FMDLRLT</keyword><keyword>FMDLRGT</keyword><keyword>FMDLRLE</keyword><keyword>FMDLRAL</keyword>
+
+<keyword>FMRDL</keyword><keyword>FMRDLEQ</keyword><keyword>FMRDLNE</keyword><keyword>FMRDLCS</keyword><keyword>FMRDLHS</keyword><keyword>FMRDLCC</keyword>
+<keyword>FMRDLLO</keyword><keyword>FMRDLMI</keyword><keyword>FMRDLPL</keyword><keyword>FMRDLVS</keyword><keyword>FMRDLVC</keyword><keyword>FMRDLHI</keyword>
+<keyword>FMRDLLS</keyword><keyword>FMRDLGE</keyword><keyword>FMRDLLT</keyword><keyword>FMRDLGT</keyword><keyword>FMRDLLE</keyword><keyword>FMRDLAL</keyword>
+
+<keyword>FMDHR</keyword><keyword>FMDHREQ</keyword><keyword>FMDHRNE</keyword><keyword>FMDHRCS</keyword><keyword>FMDHRHS</keyword><keyword>FMDHRCC</keyword>
+<keyword>FMDHRLO</keyword><keyword>FMDHRMI</keyword><keyword>FMDHRPL</keyword><keyword>FMDHRVS</keyword><keyword>FMDHRVC</keyword><keyword>FMDHRHI</keyword>
+<keyword>FMDHRLS</keyword><keyword>FMDHRGE</keyword><keyword>FMDHRLT</keyword><keyword>FMDHRGT</keyword><keyword>FMDHRLE</keyword><keyword>FMDHRAL</keyword>
+
+<keyword>FMRDH</keyword><keyword>FMRDHEQ</keyword><keyword>FMRDHNE</keyword><keyword>FMRDHCS</keyword><keyword>FMRDHHS</keyword><keyword>FMRDHCC</keyword>
+<keyword>FMRDHLO</keyword><keyword>FMRDHMI</keyword><keyword>FMRDHPL</keyword><keyword>FMRDHVS</keyword><keyword>FMRDHVC</keyword><keyword>FMRDHHI</keyword>
+<keyword>FMRDHLS</keyword><keyword>FMRDHGE</keyword><keyword>FMRDHLT</keyword><keyword>FMRDHGT</keyword><keyword>FMRDHLE</keyword><keyword>FMRDHAL</keyword>
+
+<keyword>FMXR</keyword><keyword>FMXREQ</keyword><keyword>FMXRNE</keyword><keyword>FMXRCS</keyword><keyword>FMXRHS</keyword><keyword>FMXRCC</keyword><keyword>FMXRLO</keyword>
+<keyword>FMXRMI</keyword><keyword>FMXRPL</keyword><keyword>FMXRVS</keyword><keyword>FMXRVC</keyword><keyword>FMXRHI</keyword><keyword>FMXRLS</keyword>
+<keyword>FMXRGE</keyword><keyword>FMXRLT</keyword><keyword>FMXRGT</keyword><keyword>FMXRLE</keyword><keyword>FMXRAL</keyword>
+
+<keyword>FMRX</keyword><keyword>FMRXEQ</keyword><keyword>FMRXNE</keyword><keyword>FMRXCS</keyword><keyword>FMRXHS</keyword><keyword>FMRXCC</keyword><keyword>FMRXLO</keyword>
+<keyword>FMRXMI</keyword><keyword>FMRXPL</keyword><keyword>FMRXVS</keyword><keyword>FMRXVC</keyword><keyword>FMRXHI</keyword><keyword>FMRXLS</keyword>
+<keyword>FMRXGE</keyword><keyword>FMRXLT</keyword><keyword>FMRXGT</keyword><keyword>FMRXLE</keyword><keyword>FMRXAL</keyword>
+
+<keyword>FMSTAT</keyword><keyword>FMSTATEQ</keyword><keyword>FMSTATNE</keyword><keyword>FMSTATCS</keyword><keyword>FMSTATHS</keyword>
+<keyword>FMSTATCC</keyword><keyword>FMSTATLO</keyword><keyword>FMSTATMI</keyword><keyword>FMSTATPL</keyword><keyword>FMSTATVS</keyword>
+<keyword>FMSTATVC</keyword><keyword>FMSTATHI</keyword><keyword>FMSTATLS</keyword><keyword>FMSTATGE</keyword><keyword>FMSTATLT</keyword>
+<keyword>FMSTATGT</keyword><keyword>FMSTATLE</keyword><keyword>FMSTATAL</keyword>
+
+<keyword>ADR</keyword><keyword>ADREQ</keyword><keyword>ADRNE</keyword><keyword>ADRCS</keyword><keyword>ADRHS</keyword><keyword>ADRCC</keyword><keyword>ADRLO</keyword>
+<keyword>ADRMI</keyword><keyword>ADRPL</keyword><keyword>ADRVS</keyword><keyword>ADRVC</keyword><keyword>ADRHI</keyword><keyword>ADRLS</keyword>
+<keyword>ADRGE</keyword><keyword>ADRLT</keyword><keyword>ADRGT</keyword><keyword>ADRLE</keyword><keyword>ADRAL</keyword>
+<keyword>ADRL</keyword><keyword>ADREQL</keyword><keyword>ADRNEL</keyword><keyword>ADRCSL</keyword><keyword>ADRHSL</keyword><keyword>ADRCCL</keyword><keyword>ADRLOL</keyword>
+<keyword>ADRMIL</keyword><keyword>ADRPLL</keyword><keyword>ADRVSL</keyword><keyword>ADRVCL</keyword><keyword>ADRHIL</keyword><keyword>ADRLSL</keyword>
+<keyword>ADRGEL</keyword><keyword>ADRLTL</keyword><keyword>ADRGTL</keyword><keyword>ADRLEL</keyword><keyword>ADRALL</keyword>
+
+<keyword>ADDRESS</keyword><keyword>ALIGN</keyword><keyword>AREA</keyword><keyword>ASSERT</keyword><keyword>CN</keyword><keyword>CODE16</keyword><keyword>CODE32</keyword><keyword>CP</keyword>
+<keyword>DATA</keyword><keyword>DCB</keyword><keyword>DCD</keyword><keyword>DCDO</keyword><keyword>DCDU</keyword><keyword>DCFD</keyword><keyword>DCFDU</keyword><keyword>DCFS</keyword><keyword>DCFSU</keyword>
+<keyword>DCI</keyword><keyword>DCQ</keyword><keyword>DCQU</keyword><keyword>DCW</keyword><keyword>DCWU</keyword><keyword>DN</keyword><keyword>ELSE</keyword><keyword>END</keyword><keyword>ENDFUNC</keyword><keyword>ENDIF</keyword>
+<keyword>ENDP</keyword><keyword>ENTRY</keyword><keyword>EQU</keyword><keyword>EXPORT</keyword><keyword>EXPORTAS</keyword><keyword>EXTERN</keyword><keyword>FIELD</keyword><keyword>FN</keyword>
+<keyword>FRAME</keyword><keyword>FUNCTION</keyword><keyword>GBLA</keyword><keyword>GBLL</keyword><keyword>GBLS</keyword><keyword>GET</keyword><keyword>GLOBAL</keyword><keyword>IF</keyword>
+<keyword>IMPORT</keyword><keyword>INCBIN</keyword><keyword>INCLUDE</keyword><keyword>INFO</keyword><keyword>KEEP</keyword><keyword>LCLA</keyword><keyword>LCLL</keyword><keyword>LCLS</keyword>
+<keyword>LTORG</keyword><keyword>MACRO</keyword><keyword>MAP</keyword><keyword>MEND</keyword><keyword>MEXIT</keyword><keyword>NOFP</keyword><keyword>OPT</keyword><keyword>POP</keyword><keyword>PROC</keyword>
+<keyword>PUSH</keyword><keyword>REGISTER</keyword><keyword>REMEMBER</keyword><keyword>REQUIRE</keyword><keyword>RESTORE</keyword><keyword>RLIST</keyword><keyword>RN</keyword>
+<keyword>ROUT</keyword><keyword>SAVE</keyword><keyword>SETA</keyword><keyword>SETL</keyword><keyword>SETS</keyword><keyword>SN</keyword><keyword>SPACE</keyword><keyword>STATE</keyword><keyword>SUBT</keyword>
+<keyword>TTL</keyword><keyword>WEND</keyword><keyword>WHILE</keyword><keyword>ENDM</keyword>
+<keyword>ASSOC</keyword><keyword>CODE</keyword><keyword>COMDEF</keyword><keyword>COMMON</keyword><keyword>NOINIT</keyword><keyword>READONLY</keyword>
+<keyword>READWRITE</keyword><keyword>WEAK</keyword>
+
+
+
+
+                </context>
+                
+                <!--opcodes with condition codes-->
+                <context id="opcodes_other" style-ref="opcode">
+                    <match extended="true">
+                        (?&lt;![\w\.])
+                        ((J|CMOV|SET)N?(AE|BE|PE|PO|LE|GE|O|B|C|Z|E|A|S|P|L|G))|
+                        (FCMOVN?(BE|B|E|U))
+                        (?![\w\.])
+                    </match>
+                </context>
+                
+                
+                <context id="registers" style-ref="register">
+
+<keyword>r0</keyword><keyword>r1</keyword><keyword>r2</keyword><keyword>r3</keyword><keyword>r4</keyword><keyword>r5</keyword><keyword>r6</keyword><keyword>r7</keyword><keyword>r8</keyword><keyword>r9</keyword><keyword>r10</keyword><keyword>r11</keyword><keyword>r12</keyword><keyword>r13</keyword>
+<keyword>r14</keyword><keyword>r15</keyword>
+<keyword>pc</keyword><keyword>lr</keyword><keyword>sp</keyword><keyword>ip</keyword><keyword>sl</keyword><keyword>sb</keyword><keyword>fp</keyword>
+<keyword>a1</keyword><keyword>a2</keyword><keyword>a3</keyword><keyword>a4</keyword><keyword>v1</keyword><keyword>v2</keyword><keyword>v3</keyword><keyword>v4</keyword><keyword>v5</keyword><keyword>v6</keyword><keyword>v7</keyword><keyword>v8</keyword>
+<keyword>cpsr</keyword><keyword>cpsr_c</keyword><keyword>cpsr_x</keyword><keyword>cpsr_s</keyword><keyword>cpsr_f</keyword><keyword>cpsr_cx</keyword>
+<keyword>cpsr_cxs</keyword><keyword>cpsr_xs</keyword><keyword>cpsr_xsf</keyword><keyword>cpsr_sf</keyword><keyword>cpsr_cxsf</keyword>
+<keyword>spsr</keyword><keyword>spsr_c</keyword><keyword>spsr_x</keyword><keyword>spsr_s</keyword><keyword>spsr_f</keyword><keyword>spsr_cx</keyword>
+<keyword>spsr_cxs</keyword><keyword>spsr_xs</keyword><keyword>spsr_xsf</keyword><keyword>spsr_sf</keyword><keyword>spsr_cxsf</keyword>
+<keyword>p0</keyword><keyword>p1</keyword><keyword>p2</keyword><keyword>p3</keyword><keyword>p4</keyword><keyword>p5</keyword><keyword>p6</keyword><keyword>p7</keyword><keyword>p8</keyword><keyword>p9</keyword><keyword>p10</keyword><keyword>p11</keyword><keyword>p12</keyword><keyword>p13</keyword>
+<keyword>p14</keyword><keyword>p15</keyword>
+<keyword>c0</keyword><keyword>c1</keyword><keyword>c2</keyword><keyword>c3</keyword><keyword>c4</keyword><keyword>c5</keyword><keyword>c6</keyword><keyword>c7</keyword><keyword>c8</keyword><keyword>c9</keyword><keyword>c10</keyword><keyword>c11</keyword><keyword>c12</keyword><keyword>c13</keyword>
+<keyword>c14</keyword><keyword>c15</keyword>
+<keyword>f0</keyword><keyword>f1</keyword><keyword>f2</keyword><keyword>f3</keyword><keyword>f4</keyword><keyword>f5</keyword><keyword>f6</keyword><keyword>f7</keyword>
+<keyword>s0</keyword><keyword>s1</keyword><keyword>s2</keyword><keyword>s3</keyword><keyword>s4</keyword><keyword>s5</keyword><keyword>s6</keyword><keyword>s7</keyword><keyword>s8</keyword><keyword>s9</keyword><keyword>s10</keyword><keyword>s11</keyword><keyword>s12</keyword><keyword>s13</keyword>
+<keyword>s14</keyword><keyword>s15</keyword><keyword>s16</keyword><keyword>s17</keyword><keyword>s18</keyword><keyword>s19</keyword><keyword>s20</keyword><keyword>s21</keyword><keyword>s22</keyword><keyword>s23</keyword><keyword>s24</keyword><keyword>s25</keyword>
+<keyword>s26</keyword><keyword>s27</keyword><keyword>s28</keyword><keyword>s29</keyword><keyword>s30</keyword><keyword>s31</keyword>
+<keyword>d0</keyword><keyword>d1</keyword><keyword>d2</keyword><keyword>d3</keyword><keyword>d4</keyword><keyword>d5</keyword><keyword>d6</keyword><keyword>d7</keyword><keyword>d8</keyword><keyword>d9</keyword><keyword>d10</keyword><keyword>d11</keyword><keyword>d12</keyword><keyword>d13</keyword>
+<keyword>d14</keyword><keyword>d15</keyword>
+
+                </context>
+
+                <context id="types" style-ref="type">
+<keyword>byte</keyword><keyword>word</keyword><keyword>dword</keyword><keyword>qword</keyword>
+<keyword>tword</keyword><keyword>oword</keyword>
+<keyword>db</keyword><keyword>dw</keyword><keyword>dd</keyword><keyword>dq</keyword>
+<keyword>dt</keyword><keyword>do</keyword>
+<keyword>resb</keyword><keyword>resw</keyword><keyword>resd</keyword><keyword>resq</keyword>
+<keyword>rest</keyword><keyword>reso</keyword>
+                </context>
+                
+                <context id="preprocessor_predefinded" style-ref="preprocessor">
+<keyword>__float8__</keyword><keyword>__float16__</keyword><keyword>__float32__</keyword>
+<keyword>__float64__</keyword><keyword>__float80m__</keyword><keyword>__float80e__</keyword>
+<keyword>__float128l__</keyword><keyword>__float128h__</keyword>
+<keyword>__Infinity__</keyword><keyword>__QNaN__</keyword><keyword>__NaN__</keyword><keyword>__SNaN__</keyword>
+<keyword>seg</keyword><keyword>wrt</keyword><keyword>strict</keyword><keyword>INCBIN</keyword>
+<keyword>EQU</keyword><keyword>TIMES</keyword><keyword>__ASM_MAJOR__</keyword><keyword>__ASM_MINOR__</keyword>
+<keyword>__ASM_SUBMINOR__</keyword><keyword>__ASM_PATCHLEVEL__</keyword>
+<keyword>__ASM_VERSION_ID__</keyword><keyword>__ASM_VER__</keyword><keyword>__FILE__</keyword>
+<keyword>__LINE__</keyword><keyword>__BITS__</keyword><keyword>STRUC</keyword><keyword>ENDSTRUC</keyword>
+<keyword>ISTRUC</keyword><keyword>AT</keyword><keyword>IEND</keyword><keyword>ALIGN</keyword>
+<keyword>ALIGNB</keyword><keyword>BITS</keyword><keyword>USE16</keyword><keyword>USE32</keyword>
+<keyword>DEFAULT</keyword><keyword>REL</keyword><keyword>ABS</keyword><keyword>SECTION</keyword>
+<keyword>SEGMENT</keyword><keyword>__SECT__</keyword><keyword>ABSOLUTE</keyword>
+<keyword>EXTERN</keyword><keyword>GLOBAL</keyword><keyword>COMMON</keyword><keyword>CPU</keyword>
+<keyword>FLOAT</keyword><keyword>NAZ</keyword><keyword>NODAZ</keyword><keyword>NEAR</keyword>
+<keyword>UP</keyword><keyword>DOWN</keyword><keyword>ZERO</keyword>
+<keyword>__FLOAT_DAZ__</keyword><keyword>__FLOAT_ROUND__</keyword><keyword>__FLOAT__</keyword>
+<keyword>ORG</keyword><keyword>MAP</keyword>
+                </context>
+                <context id="preprocessor_predefinded2" style-ref="preprocessor">
+                    <match extended="true">
+                        ((?&lt;![\w\.])
+%define|%xdefine|%\+|%undef|%assign|%iassign|%strlen|%substr|%(i|end)?macro|
+%(exit|end)?rep|%rotate|%(el)?ifn?(def|macro|ctx|id|idni?|str|num|)|%else|%endif|
+%error|%include|%push|%pop|%repl|%arg|%stacksize|%local|%line|%!\w+
+                        (?![\w\.]))|%\d+
+                    </match>
+                </context>
+
+		
+            </include>
+        </context>
+
+	
+        
+    </definitions>
+</language>

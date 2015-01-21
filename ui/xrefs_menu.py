@@ -58,7 +58,8 @@ class XrefsMenu(gtk.MenuBar):
 
             for ref in refs:
                 addr = self.uicore.core.num.get(ref)
-                fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
+                fcn = self.uicore.core.anal.get_fcn_in(addr, 0)
+                #fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
                 if not fcn:
                     continue
                 if fcn.name:
@@ -81,7 +82,8 @@ class XrefsMenu(gtk.MenuBar):
 
             for xref in xrefs:
                 addr = self.uicore.core.num.get(xref)
-                fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
+                fcn = self.uicore.core.anal.get_fcn_in(addr, 0)
+                #fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
                 if fcn.name:
                     if not fcn.name in tmp_xrefs:
                         tmp_xrefs.append(fcn.name)
@@ -96,7 +98,8 @@ class XrefsMenu(gtk.MenuBar):
     def _get_fcn(self, widget):
         address = widget.get_label()
         addr = self.uicore.core.num.get(address)
-        fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
+        #fcn = self.uicore.core.anal.get_fcn_at(addr, 0)
+        fcn = self.uicore.core.anal.get_fcn_in(addr, 0)
         #if 'fcn' in fcn.name:
         #self.main.tviews.update_graph(widget, address)
         self.main.tviews.search(widget, "0x%08x" % addr)

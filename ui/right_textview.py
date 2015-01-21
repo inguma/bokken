@@ -85,7 +85,10 @@ class RightTextView(gtk.VBox, Searchable):
 
         self.buffer.set_highlight_syntax(True)
         manager = self.buffer.get_data('languages-manager')
-        language = manager.get_language('asm')
+        if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
+            language = manager.get_language('arm-asm')
+        else:
+            language = manager.get_language('asm')
         self.buffer.set_language(language)
 
         self.mgr = gtksourceview2.style_scheme_manager_get_default()
@@ -225,23 +228,24 @@ class RightTextView(gtk.VBox, Searchable):
 
                 xmenu = xrefs_menu.XrefsMenu(self.uicore, self.main)
                 addr = self.uicore.core.num.get(addr)
-                fcn = self.uicore.core.anal.get_fcn_at(addr)
+                fcn = self.uicore.core.anal.get_fcn_in(addr, 0)
 
-                for ref in fcn.get_refs():
-                    if not "0x%08x" % ref.addr in refs:
-                        refs.append("0x%08x" % ref.addr)
-                for xref in fcn.get_xrefs():
-                    if not "0x%08x" % xref.addr in xrefs:
-                        xrefs.append("0x%08x" % xref.addr)
+                if fcn:
+                    for ref in fcn.get_refs():
+                        if not "0x%08x" % ref.addr in refs:
+                            refs.append("0x%08x" % ref.addr)
+                    for xref in fcn.get_xrefs():
+                        if not "0x%08x" % xref.addr in xrefs:
+                            xrefs.append("0x%08x" % xref.addr)
 
-                refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
-                sep = gtk.SeparatorMenuItem()
-                menu.prepend(sep)
-                if hasattr(xmenu, 'xfrommenu'):
-                    menu.prepend(xmenu.xfrommenu)
-                if hasattr(xmenu, 'xtomenu'):
-                    menu.prepend(xmenu.xtomenu)
-                menu.prepend(xmenu.fcnm)
+                    refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
+                    sep = gtk.SeparatorMenuItem()
+                    menu.prepend(sep)
+                    if hasattr(xmenu, 'xfrommenu'):
+                        menu.prepend(xmenu.xfrommenu)
+                    if hasattr(xmenu, 'xtomenu'):
+                        menu.prepend(xmenu.xtomenu)
+                    menu.prepend(xmenu.fcnm)
 
         menu.show_all()
 
