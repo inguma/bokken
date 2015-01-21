@@ -17,6 +17,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+from __future__ import print_function
 import os
 
 import gtk, pango
@@ -69,7 +70,7 @@ class RightTextView(gtk.VBox, Searchable):
         self.view = gtksourceview2.View(self.buffer)
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
-        self.view.connect("move-cursor", self._cursor_moved)
+        self.view.connect("key-release-event", self._cursor_moved)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
@@ -111,7 +112,7 @@ class RightTextView(gtk.VBox, Searchable):
 
         self.view.connect("populate-popup", self._populate_comments_menu)
 
-    def _cursor_moved(self, widget, step_size, count, extend_selection):
+    def _cursor_moved(self, widget, event):
         cursor = self.buffer.get_iter_at_mark(self.buffer.get_insert())
         start = find_word_bound(cursor, -1, self.buffer)
         end = find_word_bound(cursor, +1, self.buffer)
@@ -128,18 +129,16 @@ class RightTextView(gtk.VBox, Searchable):
                 self.seek_index -= 1
             elif direction == 'f':
                 self.seek_index += 1
-            #print "Nuevo indice %d" % self.seek_index
 
             self.marks = []
 
-            #print "Me muevo al indice %d de %d" % (self.seek_index-1, self.seek_index)
             mark = self.buffer.create_mark(None, self.seeks[self.seek_index-1][0], False)
             self.view.scroll_to_mark(mark, 0.0, True, 0, 0.03)
             self.marks.append([self.seeks[self.seek_index-1][0], self.seeks[self.seek_index-1][1]])
 
     def setup_sections_bar(self):
         # Setup sections bar
-        # The check is used to avoid dupplicated bars
+        # The check is used to avoid duplicated bars
         # when loading a new file from inside bokken
         if not hasattr(self,"sec_bar"):
             self.sec_bar = sections_bar.SectionsBar(self.uicore)
@@ -281,10 +280,10 @@ class RightTextView(gtk.VBox, Searchable):
             self._get_clicked_word()
 
     def _get_clicked_word(self):
-        # Get textbuffer coordinates from texview ones
+        # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
-        # Get text iter and offset at coordinates
+        # Get textiter and offset at coordinates
         iter = self.view.get_iter_at_location(x, y)
         offset = iter.get_offset()
         # Get complete buffer text
