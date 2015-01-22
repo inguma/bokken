@@ -1,17 +1,17 @@
 #       sections_dialog.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -23,8 +23,8 @@ import ui.gtk2.common
 class SectionsDialog(gtk.Dialog):
     '''Window to popup sections info'''
 
-    def __init__(self, core):
-        super(SectionsDialog,self).__init__('Extended sections information', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+    def __init__(self, core, parent_window):
+        super(SectionsDialog,self).__init__('Extended sections information', parent_window, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
 
         self.uicore = core
         self.sec_bars = ''
@@ -66,7 +66,7 @@ class SectionsDialog(gtk.Dialog):
         self.store.set_sort_column_id(0, gtk.SORT_ASCENDING)
         column.set_sort_column_id(0)
         self.tv.append_column(column)
-    
+
         # Color Bar
         rendererBar = ColoredBarRenderer()
         column = gtk.TreeViewColumn("Section size", rendererBar, text=1, start=0, end=2, size=5)

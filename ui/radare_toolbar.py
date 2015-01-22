@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 
+from __future__ import print_function
 import gtk
 import ui.gtk2.common
 import lib.bokken_globals as glob
@@ -180,7 +181,8 @@ class TopButtons(gtk.HBox):
             md.destroy()
 
     def _do_sections(self, widget):
-        self.sec_dialog = sections_dialog.SectionsDialog(self.uicore)
+        '''Instantiate a fully modal sections dialog.'''
+        self.sec_dialog = sections_dialog.SectionsDialog(self.uicore, self.main.window)
         return False
 
     def _do_calc(self, widget):
