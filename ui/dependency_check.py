@@ -21,7 +21,7 @@ from __future__ import print_function
 
 import lib.bokken_globals as glob
 import lib.common as common
-import sys
+import os, sys, platform
 
 def check_all():
     python_version()
@@ -31,6 +31,7 @@ def check_all():
     gtkui_dependency_check()
     psyco_dependency_check()
     tidy_dependency_check()
+    graphvix_dependency_check()
 
 def python_version():
     print('\tPython version...', end='')
@@ -160,7 +161,74 @@ def gtkui_dependency_check():
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
-        print('GtkSourceView2 not installed! Install it for your platform:'
+        print('GtkSourceView2 not installed! Install it for your platform:\n'
                 '    - On Debian-based distributions: apt-get install python-gtksourceview2')
         sys.exit(1)
+
+def graphvix_dependency_check():
+    # Check Graphviz
+    print("\tGraphviz binaries...", end="")
+    if os.environ.has_key('PATH'):
+        for path in os.environ['PATH'].split(os.pathsep):
+            progs = __find_executables(path)
+
+            if progs is not None :
+                #print(progs)
+                print(common.console_color('\tOK', 'green'))
+                return
+
+        print(common.console_color("\tD'oh!", 'red'))
+        print('Graphviz not installed! Install it for your platform:\n'
+                '    - On Debian-based distributions: apt-get install graphviz')
+        sys.exit( 1 )
+
+def __find_executables(path):
+    # Code borrowed from pydot
+    # http://code.google.com/p/pydot/
+    # Thanks to Ero Carrera
+
+    """Used by find_graphviz
+
+    path - single directory as a string
+
+    If any of the executables are found, it will return a dictionary
+    containing the program names as keys and their paths as values.
+
+    Otherwise returns None
+    """
+
+    success = False
+    if platform.system() != 'Windows':
+        progs = {'dot': '', 'twopi': '', 'neato': '', 'circo': '', 'fdp': '', 'sfdp': ''}
+    else:
+        progs = {'dot.exe': '', 'twopi.exe': '', 'neato.exe': '', 'circo.exe': '', 'fdp.exe': '', 'sfdp.exe': ''}
+
+    was_quoted = False
+    path = path.strip()
+    if path.startswith('"') and path.endswith('"'):
+        path = path[1:-1]
+        was_quoted =  True
+
+    if os.path.isdir(path):
+
+        for prg in progs.iterkeys():
+
+            #print(prg)
+            if progs[prg]:
+                continue
+
+            if os.path.exists( os.path.join(path, prg) ):
+
+                if was_quoted:
+                    progs[prg] = '"' + os.path.join(path, prg) + '"'
+                else:
+                    progs[prg] = os.path.join(path, prg)
+
+                success = True
+
+    if success:
+        return progs
+
+    else:
+        return None
 
