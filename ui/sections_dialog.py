@@ -56,7 +56,16 @@ class SectionsDialog(gtk.Dialog):
         self.scrolled_window.is_visible = True
 
         # List view
-        self.store = gtk.ListStore(str, str, str, str, str, int)
+        self.store = gtk.ListStore(
+                # For each section in the binary:
+                str, # Start address in hex.
+                str, # r2's ASCII representation of the section.
+                str, # Final address in hex.
+                str, # Section flags.
+                str, # Section name.
+                int, # Total section size in bytes.
+                str, # Initial binary address in hex.
+        )
         self.tv = gtk.TreeView(self.store)
         self.tv.set_rules_hint(True)
 
@@ -69,7 +78,11 @@ class SectionsDialog(gtk.Dialog):
 
         # Color Bar
         rendererBar = ColoredBarRenderer()
-        column = gtk.TreeViewColumn("Section size", rendererBar, text=1, start=0, end=2, size=5)
+        # The way this constructor works is:
+        # __init__(title, renderer, property_X_in_renderer=column_Y_from_liststore, ...)
+        # This means that we are passing column 1 from liststore as 'text', column 0 as 'start'...
+        column = gtk.TreeViewColumn("Section size", rendererBar,
+                text=1, start=0, end=2, total_size=5, begin=6)
         column.set_min_width(300)
         column.set_sort_column_id(1)
         self.tv.append_column(column)
@@ -122,6 +135,11 @@ class SectionsDialog(gtk.Dialog):
                 continue
             line = re.split('^\d+[\* ] ', line)[-1]
             line = line.split(' ')
+            # Radare sometimes decides to return 0x000000 as part of the
+            # addresses and that ruins the calculations, so get rid of it
+            # for now.
+            if int(line[0], 16) == 0:
+                continue
             if len(line) == 3:
                 line.append('')
             sections_info.append(line)
@@ -129,8 +147,11 @@ class SectionsDialog(gtk.Dialog):
         min_address = min([int(x[0], 16) for x in sections_info])
         max_address = max([int(x[2], 16) for x in sections_info])
         size = max_address - min_address
+
         for line in sections_info:
-            line.append(size)
+            # We need to supply the initial address to the renderer to
+            # make proper calculations.
+            line.extend((size, hex(min_address)))
             self.store.append(line)
 
 class ColoredBarRenderer(gtk.GenericCellRenderer):
@@ -155,12 +176,20 @@ class ColoredBarRenderer(gtk.GenericCellRenderer):
                             '',
                             gobject.PARAM_READWRITE
                             ),
-                    'size': (gobject.TYPE_INT,       # type
+                    # Size of the binary calculated as max-min address.
+                    'total_size': (gobject.TYPE_INT, # type
                             'Total size',            # nick name
                             'Total size',            # description
                             0,                       # minimum value
                             100000000,               # maximum value
                             0,                       # default value
+                            gobject.PARAM_READWRITE  # flags
+                            ),
+                    # Address of the initial section.
+                    'begin': (gobject.TYPE_STRING,   # type
+                            'Initial binary address',# nick name
+                            'Initial binary address',# description
+                            '',
                             gobject.PARAM_READWRITE  # flags
                             ),
                     }
@@ -172,6 +201,9 @@ class ColoredBarRenderer(gtk.GenericCellRenderer):
         return (0, 0, 0, 0) # x,y,w,h
 
     def on_render(self, window, widget, background_area, cell_area, expose_area, flags):
+        '''The way we will render the sections will be drawing a yellow rectangle occupying
+        all the area for the column, and then a blue section on top at the proper start
+        and end coordinates'''
         context = window.cairo_create()
         (x, y, w, h) = (cell_area.x, cell_area.y, cell_area.width, cell_area.height)
 
@@ -181,6 +213,7 @@ class ColoredBarRenderer(gtk.GenericCellRenderer):
         context.set_line_width(0.5)
         context.save()
 
+        # Yellow rectangle.
         context.set_source_rgb(*split_color(0xe7c583))
         context.rectangle(x+1, y+1 , w-2, h-2)
         context.fill_preserve()
@@ -189,12 +222,16 @@ class ColoredBarRenderer(gtk.GenericCellRenderer):
         context.clip()
         context.restore()
 
-        begin = int(self.get_property('start'), 16) * (w-2) / self.get_property('size')
-        finish = int(self.get_property('end'), 16) * (w-2) / self.get_property('size')
+        # We convert the absolute offsets to differences in pixels.
+        first_section_addr = int(self.get_property('begin'), 16)
+        binary_size = self.get_property('total_size')
+        initial_px = (int(self.get_property('start'), 16) - first_section_addr) * (w-2) / binary_size
+        final_px = (int(self.get_property('end'), 16) - first_section_addr) * (w-2) / binary_size
 
+        # Blue rectangle.
         context.save()
         context.set_source_rgb(*split_color(0x6b82af))
-        context.rectangle(x+begin+1, y+1, finish - begin, h-2)
+        context.rectangle(x+initial_px+1, y+1, final_px-initial_px, h-2)
         context.fill_preserve()
         context.set_source_rgb(*darken(split_color(0x6b82af)))
         context.stroke_preserve()
