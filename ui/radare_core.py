@@ -140,7 +140,18 @@ class Core():
         self.core.bin_load(None, 0)
         self.send_cmd("e scr.interactive=false")
         self.send_cmd('e asm.lines=false')
+        #self.send_cmd('e asm.lines=true')
         self.send_cmd('e scr.color=0')
+
+        # Improve asm format
+        self.send_cmd('e asm.bytespace=true')
+        self.send_cmd('e asm.cmtright=true')
+        self.send_cmd('e asm.xrefs=false')          # Show xrefs in disassembly
+        self.send_cmd('e asm.cmtflgrefs=false')     # Show comment flags associated to branch referece
+        self.send_cmd('e asm.fcnlines=false')
+        self.send_cmd('e asm.linesright=true')
+        self.send_cmd('e asm.lineswidth=20')
+
         if not self.lower_case:
             self.send_cmd('e asm.ucase=true')
         else:

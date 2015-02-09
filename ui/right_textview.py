@@ -188,7 +188,9 @@ class RightTextView(gtk.VBox, Searchable):
             line_offset = temp_offset
 
         if self.uicore.backend == 'radare':
-           addr = text[soffset:eoffset]
+           # MEOW
+           addr = text[offset:eoffset]
+           #addr = text[soffset:eoffset]
         else:
            addr = text[offset:eoffset]
 
@@ -214,7 +216,7 @@ class RightTextView(gtk.VBox, Searchable):
                 menu.prepend(opcodem)
 
         # Just show the comment menu if the line has offset/va
-        if addr[0:2] == '0x':
+        if addr[0:3] == ' 0x':
             # Add comment menu
             opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
             opc.get_children()[0].set_label('Add comment')
