@@ -18,11 +18,22 @@
 #       MA 02110-1301, USA.
 
 import os
+import re
 import gtk
 import gtk.gdk
 import xdot
 import tempfile
 from r2.r_core import *
+
+# workaround a bug in valabind or swig here..
+try:
+   FcnType_FCN
+except:
+   FcnType_FCN          =   1
+   FcnType_SYM          =   4
+   BlockDiff_NULL       =   0
+   BlockDiff_MATCH      =   'm'
+   BlockDiff_UNMATCH    =   'u'
 
 class DiffView(gtk.VBox):
     ui = '''
@@ -67,6 +78,14 @@ class DiffView(gtk.VBox):
         self.label.set_text(name)
 
     def set_code(self, code, fit):
+        code = code.replace('graph [bgcolor=white];', 'graph [color=white, bgcolor="invis"];')
+        code = code.replace('fontsize="8"', 'fontsize="14"')
+        #code = re.sub('style=filled ', 'style="rounded,filled" fillcolor="white" ', code)
+        code = code.replace('color="yellow"', 'color="yellow" fillcolor="lightyellow" ')
+        code = code.replace('color="red"', 'color="red" fillcolor="lightpink" ')
+        code = code.replace('color="lightgray"', 'color="blue" fillcolor="white" ')
+        code = code.replace('color=lightgray', 'color="blue" fillcolor="white" ')
+        code = re.sub('style=filled ', 'style="rounded,filled" ', code)
         self.xdotwidget.set_dotcode(code)
         if (fit):
             self.xdotwidget.zoom_to_fit()
@@ -184,10 +203,23 @@ class Bindiff():
     
     def set_file(self, file_r, fcn_thr, bb_thr, bytes):
         # Init cores
+        self.c2.cmd0("e scr.interactive=false")
+        self.c2.cmd0('e asm.lines=false')
+        self.c2.cmd0('e scr.color=0')
+
+        # Improve asm format
+        self.c2.cmd0('e asm.bytespace=true')
+        self.c2.cmd0('e asm.cmtright=true')
+        self.c2.cmd0('e asm.xrefs=false')          # Show xrefs in disassembly
+        self.c2.cmd0('e asm.cmtflgrefs=false')     # Show comment flags associated to branch referece
+        self.c2.cmd0('e asm.fcnlines=false')
+        self.c2.cmd0('e asm.linesright=true')
+        self.c2.cmd0('e asm.lineswidth=20')
+
         self.c2.config.set_i("io.va", 1)
         self.c2.config.set_i("anal.split", 1)
         self.c2.file_open(file_r, 0, 0)
-        self.c2.bin_load(None)
+        self.c2.bin_load(None, 0)
         self.c.core.anal.diff_setup_i(bytes, fcn_thr, bb_thr)
         self.c2.anal.diff_setup_i(bytes, fcn_thr, bb_thr)
         # Clear treeview
@@ -197,14 +229,15 @@ class Bindiff():
     
     def diff(self):
         # Diff
-        self.c.core.gdiff(self.c2)
+        self.c.core.gdiff(self.c2, True)
         # Fill treeview
         for fcn in self.c.core.anal.get_fcns():
             if (fcn.type == FcnType_FCN or fcn.type == FcnType_SYM):
                 diffaddr = '0x%08x' % fcn.diff.addr
-                if (fcn.diff.type == BlockDiff_MATCH):
+                difftype = '%c' % fcn.diff.type
+                if (difftype == 'm'): #BlockDiff_MATCH):
                     difftype = "MATCH"
-                elif (fcn.diff.type == BlockDiff_UNMATCH):
+                elif (difftype == BlockDiff_UNMATCH):
                     difftype = "UNMATCH"
                 else:
                     difftype = "NEW"
