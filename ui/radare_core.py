@@ -140,8 +140,8 @@ class Core():
         self.core.bin_load(None, 0)
         self.send_cmd("e scr.interactive=false")
         self.send_cmd('e asm.lines=false')
-        #self.send_cmd('e asm.lines=true')
         self.send_cmd('e scr.color=0')
+        self.send_cmd('e asm.demangle=true')
 
         # Improve asm format
         self.send_cmd('e asm.bytespace=true')
@@ -150,7 +150,6 @@ class Core():
         self.send_cmd('e asm.cmtflgrefs=false')     # Show comment flags associated to branch referece
         self.send_cmd('e asm.fcnlines=false')
         self.send_cmd('e asm.linesright=true')
-        self.send_cmd('e asm.lineswidth=20')
 
         if not self.lower_case:
             self.send_cmd('e asm.ucase=true')
@@ -173,12 +172,21 @@ class Core():
             self.send_cmd("e asm.bytes=true")
         if self.do_anal:
             self.send_cmd("aa")
+            self.send_cmd("af;ac@$S")
         if self.start_addr:
             self.send_cmd('af @ %s' % self.start_addr)
         if self.arch:
             self.send_cmd('e asm.arch=%s' % self.arch)
         if self.bits:
             self.send_cmd('e asm.bits=%s' % self.bits)
+        if self.flow_lines:
+            self.send_cmd('e asm.lines=true')
+            self.send_cmd('e asm.lineswidth=%s' % self.flow_lines_w)
+        if self.pseudo:
+            self.send_cmd('e asm.pseudo=true')
+        if self.stack:
+            self.send_cmd('e asm.stackptr=true')
+        self.send_cmd('e anal.depth=%s' % self.anal_depth)
 
         self.bin = self.core.bin
         self.info = self.bin.get_info()
@@ -220,6 +228,11 @@ class Core():
         self.start_addr = dialog.opt_start_addr
         self.arch = dialog.opt_arch
         self.bits = dialog.opt_bits
+        self.flow_lines = dialog.opt_flow_lines
+        self.flow_lines_w = dialog.opt_flow_lines_w
+        self.pseudo = dialog.opt_pseudo
+        self.stack = dialog.opt_stack
+        self.anal_depth = dialog.opt_anal_depth
         self.progress_bar = dialog.progress_bar
 
     def restore_va(self):

@@ -78,7 +78,7 @@ class FileDialog(gtk.Dialog):
 
         # Radare targets label
         self.radare_label = gtk.Label()
-        self.radare_label.set_markup('Valid inputs are: <b>PE, ELF, mach0 and java/dex classes</b>')
+        self.radare_label.set_markup('Valid inputs are: <b>PE, ELF and mach0</b> files')
         self.radare_label.set_padding(0, 2)
 
         # Horizontal Separator
@@ -150,15 +150,23 @@ class FileDialog(gtk.Dialog):
         self.pyew_box = gtk.VBox(False, 0)
         # Radare option Vertical Box
         self.radare_box = gtk.VBox(False, 0)
+        self.vseparator = gtk.VSeparator()
+        self.radare_box_2 = gtk.VBox(False, 0)
+        self.radare_box_3 = gtk.VBox(False, 0)
         # pack the boxes
         self.options_hbox.pack_start(self.pyew_box, False, False, 0)
-        self.options_hbox.pack_start(self.radare_box, False, False, 0)
+        self.options_hbox.pack_start(self.radare_box, True, True, 0)
+        self.options_hbox.pack_start(self.vseparator, False, False, 5)
+        self.options_hbox.pack_start(self.radare_box_2, True, True, 0)
 
         # HSeparator
         self.hseparator3 = gtk.HSeparator()
         # Analysis options label
         self.anal_label = gtk.Label()
         self.anal_label.set_markup("<b>Analysis options:</b>")
+        # Advanced Analysis options label
+        self.adv_anal_label = gtk.Label()
+        self.adv_anal_label.set_markup("<b>Advanced options:</b>")
 
         # Pyew options
         self.deep_anal = gtk.CheckButton(label='Deep analysis')
@@ -178,23 +186,56 @@ class FileDialog(gtk.Dialog):
         self.io_va = gtk.CheckButton(label='Don\'t use VA')
         self.asm_syntax = gtk.CheckButton(label='Use AT&T syntax')
         self.asm_bytes = gtk.CheckButton(label='Don\'t show asm bytes')
-        self.start_addr = gtk.CheckButton(label='Start address:')
-        self.start_addr.connect("toggled", self._start_addr_ctl)
-        self.start_addr_label = gtk.Label()
-        self.start_addr_label.set_markup('<b>0x</b>')
-        self.start_addr_label.set_padding(0, 5)
-        self.start_addr_address = gtk.Entry()
-        self.start_addr_address.set_sensitive(False)
+
+        # Bottom radare2 options
+        self.hseparator5 = gtk.HSeparator()
         self.bits_label = gtk.Label('Bits:')
         self.bits = gtk.combo_box_new_text()
-        self.bits.set_size_request(70, -1)
+        #self.bits.set_size_request(70, -1)
         self.arch_label = gtk.Label('Architecture:')
         self.arch = gtk.combo_box_new_text()
         self.arch.connect("changed", self._arch_changed)
         self.arch.append_text('Auto')
         for plugin in self.plugins:
-            self.arch.append_text('%s (%s) - %s' % (plugin.name, plugin.arch, plugin.desc))
+            self.arch.append_text('%s (%s)' % (plugin.name, plugin.arch))
+            #self.arch.append_text('%s (%s) - %s' % (plugin.name, plugin.arch, plugin.desc))
         self.arch.set_active(0)
+        self.start_addr = gtk.CheckButton(label='Start address: ')
+        self.start_addr.connect("toggled", self._start_addr_ctl)
+        self.start_addr_label = gtk.Label()
+        self.start_addr_label.set_markup('<b>0x</b>')
+        self.start_addr_label.set_padding(0, 5)
+        self.start_addr_address = gtk.Entry(12)
+        self.start_addr_address.set_width_chars(12)
+        self.start_addr_address.set_sensitive(False)
+
+        # More radare2 options
+        self.stack_check = gtk.CheckButton(label='Show stack pointer')
+        self.pseudo_check = gtk.CheckButton(label='Enable pseudo syntax')
+        self.flow_lines = gtk.CheckButton(label='Show flow lines')
+        self.flow_lines.connect("toggled", self._flow_lines_ctl)
+        self.flow_lines_label = gtk.Label('Columns for flow lines: ')
+        self.flow_lines_entry = gtk.Entry(3)
+        self.flow_lines_entry.set_width_chars(3)
+        self.flow_lines_entry.set_text('20')
+        self.flow_lines_entry.set_sensitive(False)
+
+        self.anal_depth_label = gtk.Label('Max analysis depth: ')
+        self.anal_depth_entry = gtk.Entry(3)
+        self.anal_depth_entry.set_width_chars(3)
+        self.anal_depth_entry.set_text('16')
+        # Pack them
+        self.flow_hbox = gtk.HBox(False)
+        self.depth_hbox = gtk.HBox(False)
+        self.radare_box_2.pack_start(self.pseudo_check, False, False, 2)
+        self.radare_box_2.pack_start(self.stack_check, False, False, 2)
+        self.radare_box_2.pack_start(self.flow_lines, False, False, 2)
+        self.flow_hbox.pack_start(self.flow_lines_label, False, False, 2)
+        self.flow_hbox.pack_start(self.flow_lines_entry, False, False, 2)
+        self.radare_box_2.pack_start(self.flow_hbox, False, False, 2)
+        self.depth_hbox.pack_start(self.anal_depth_label, False, False, 2)
+        self.depth_hbox.pack_start(self.anal_depth_entry, False, False, 2)
+        self.radare_box_2.pack_start(self.depth_hbox, False, False, 2)
 
         self.radare_box.pack_start(self.anal_bin, False, False, 2)
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
@@ -204,16 +245,19 @@ class FileDialog(gtk.Dialog):
         self.start_addr_hbox = gtk.HBox(False, 0)
         self.start_addr_hbox.pack_start(self.start_addr, False, False, 0)
         self.start_addr_hbox.pack_start(self.start_addr_label, False, False, 2)
-        self.start_addr_hbox.pack_start(self.start_addr_address, False, False, 2)
-        self.radare_box.pack_start(self.start_addr_hbox, False, False, 2)
+        self.start_addr_hbox.pack_start(self.start_addr_address, True, True, 2)
+        self.radare_box_3.pack_start(self.hseparator5, False, False, 5)
+        self.radare_box_3.pack_start(self.adv_anal_label, False, False, 5)
+        self.radare_box_3.pack_start(self.start_addr_hbox, False, False, 2)
         self.arch_hbox = gtk.HBox(False, 0)
         self.arch_hbox.pack_start(self.arch_label, False, False, 2)
         self.arch_hbox.pack_start(self.arch, True, True, 2)
-        self.radare_box.pack_start(self.arch_hbox, False, False, 2)
+        self.radare_box_3.pack_start(self.arch_hbox, False, False, 2)
         self.bits_hbox = gtk.HBox(False, 0)
         self.bits_hbox.pack_start(self.bits_label, False, False, 2)
         self.bits_hbox.pack_start(self.bits, False, False, 2)
-        self.radare_box.pack_start(self.bits_hbox, False, False, 2)
+        #self.radare_box_3.pack_start(self.bits_hbox, False, False, 2)
+        self.arch_hbox.pack_start(self.bits_hbox, False, False, 2)
 
         # Pack elements into main_vbox
         self.main_vbox.pack_start(self.logo, False, False, 0)
@@ -228,6 +272,7 @@ class FileDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.hseparator3, False, False, 2)
         self.main_vbox.pack_start(self.anal_label, False, False, 2)
         self.main_vbox.pack_start(self.options_hbox, False, False, 2)
+        self.main_vbox.pack_start(self.radare_box_3, False, False, 2)
 
         self.vbox.pack_start(self.main_vbox)
         self.set_focus(self.input_entry.get_child())
@@ -235,12 +280,14 @@ class FileDialog(gtk.Dialog):
 
         if self.core == 'pyew':
             self.radare_box.set_visible(False)
+            self.radare_box_2.set_visible(False)
             self.radare_label.set_visible(False)
         elif self.core == 'radare':
             self.pyew_box.set_visible(False)
             self.pyew_label.set_visible(False)
         else:
             self.radare_box.set_visible(False)
+            self.radare_box_2.set_visible(False)
             self.radare_label.set_visible(False)
 
     def cancel(self, widget):
@@ -297,6 +344,11 @@ class FileDialog(gtk.Dialog):
             self.opt_start_addr = self.start_addr_address.get_text()
             self.opt_arch = None
             self.opt_bits = None
+            self.opt_pseudo = self.pseudo_check.get_active()
+            self.opt_stack = self.stack_check.get_active()
+            self.opt_flow_lines = self.flow_lines.get_active()
+            self.opt_flow_lines_w = self.flow_lines_entry.get_text()
+            self.opt_anal_depth = self.anal_depth_entry.get_text()
             if self.arch.get_active_text() is not None:
                 index = self._find_active_index(self.arch)
                 if index >= 0:
@@ -354,11 +406,13 @@ class FileDialog(gtk.Dialog):
         if active == 'Pyew':
             self.pyew_box.set_visible(True)
             self.radare_box.set_visible(False)
+            self.radare_box_2.set_visible(False)
             self.pyew_label.set_visible(True)
             self.radare_label.set_visible(False)
         elif active == 'Radare':
             self.pyew_box.set_visible(False)
             self.radare_box.set_visible(True)
+            self.radare_box_2.set_visible(True)
             self.pyew_label.set_visible(False)
             self.radare_label.set_visible(True)
 
@@ -370,6 +424,12 @@ class FileDialog(gtk.Dialog):
         else:
             self.start_addr_address.set_text('')
             self.start_addr_address.set_sensitive(False)
+
+    def _flow_lines_ctl(self, widget):
+        if widget.get_active():
+            self.flow_lines_entry.set_sensitive(True)
+        else:
+            self.flow_lines_entry.set_sensitive(False)
 
     def _no_anal(self, widget):
         if widget.get_active():
@@ -384,6 +444,7 @@ class FileDialog(gtk.Dialog):
             self.start_addr.set_active(False)
             self.start_addr.set_sensitive(False)
             self._start_addr_ctl(self.start_addr)
+            self._flow_lines_ctl(self.flow_lines)
 
     def _arch_changed(self, combobox):
         if combobox.get_active_text() != 'Auto':
