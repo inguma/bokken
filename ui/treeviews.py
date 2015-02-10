@@ -33,6 +33,7 @@ class TreeViews(gtk.TreeView):
         self.textviews = textviews
 
         self.set_rules_hint(True)
+        self.set_has_tooltip(True)
 
         # Connect right click popup search menu
         self.popup_handler = self.connect('button-press-event', self.popup_menu)
@@ -41,6 +42,8 @@ class TreeViews(gtk.TreeView):
     def create_functions_columns(self):
 
         rendererText = gtk.CellRendererText()
+        if self.uicore.backend == 'radare':
+            rendererText.tooltip_handle = self.connect('motion-notify-event', self.fcn_tooltip)
         rendererPix = gtk.CellRendererPixbuf()
         self.fcn_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('function.png'))
         self.bb_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('block.png'))
@@ -274,6 +277,19 @@ class TreeViews(gtk.TreeView):
         self.textviews.search(widget, link_name)
         if self.dograph:
             self.textviews.update_graph(widget, link_name)
+
+    def fcn_tooltip(self, widget, event):
+        x = int(event.x)
+        y = int(event.y)
+        tup = widget.get_path_at_pos(x, y)
+        if "Function" == tup[1].get_title():
+            model = widget.get_model()
+            tree_iter = model.get_iter(tup[0])
+            fcn = model.get_value(tree_iter, 1)
+            value = self.uicore.send_cmd_str('pdi 15 @ ' + fcn)
+            widget.set_tooltip_markup("<span font_family=\"monospace\">" + value.rstrip() + "</span>")
+        else:
+            widget.set_tooltip_markup("")
 
     def popup_menu(self, tv, event, row=None):
         '''Controls the behavior of the treeviews on the left:

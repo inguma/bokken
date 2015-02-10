@@ -296,7 +296,7 @@ class TextViews(gtk.HBox):
             for function in self.uicore.get_functions():
                 if function in ["fcn", "sub"]:
                     self.left_treeview.store.append([self.left_treeview.fcn_pix, function, '', '', ''])
-                elif "loc" in function:
+                elif "sym." in function:
                     self.left_treeview.store.append([self.left_treeview.bb_pix, function, '', '', ''])
                 else:
                     self.left_treeview.store.append([self.left_treeview.fcn_pix, function, '', '', ''])
