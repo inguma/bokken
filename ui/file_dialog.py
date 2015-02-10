@@ -281,6 +281,7 @@ class FileDialog(gtk.Dialog):
         if self.core == 'pyew':
             self.radare_box.set_visible(False)
             self.radare_box_2.set_visible(False)
+            self.radare_box_3.set_visible(False)
             self.radare_label.set_visible(False)
         elif self.core == 'radare':
             self.pyew_box.set_visible(False)
@@ -288,6 +289,7 @@ class FileDialog(gtk.Dialog):
         else:
             self.radare_box.set_visible(False)
             self.radare_box_2.set_visible(False)
+            self.radare_box_3.set_visible(False)
             self.radare_label.set_visible(False)
 
     def cancel(self, widget):
@@ -407,12 +409,14 @@ class FileDialog(gtk.Dialog):
             self.pyew_box.set_visible(True)
             self.radare_box.set_visible(False)
             self.radare_box_2.set_visible(False)
+            self.radare_box_3.set_visible(False)
             self.pyew_label.set_visible(True)
             self.radare_label.set_visible(False)
         elif active == 'Radare':
             self.pyew_box.set_visible(False)
             self.radare_box.set_visible(True)
             self.radare_box_2.set_visible(True)
+            self.radare_box_3.set_visible(True)
             self.pyew_label.set_visible(False)
             self.radare_label.set_visible(True)
 

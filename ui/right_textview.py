@@ -71,6 +71,8 @@ class RightTextView(gtk.VBox, Searchable):
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
         self.view.connect("key-release-event", self._cursor_moved)
+        if self.uicore.backend == 'radare':
+            tooltip_handle = self.view.connect('motion-notify-event', self.call_tooltip)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
@@ -349,6 +351,73 @@ class RightTextView(gtk.VBox, Searchable):
     def goto(self, widget, icon_pos=None, event=None):
         text = self.seek.get_text()
         self._search(text)
+
+    def call_tooltip(self, widget, event):
+        x = int(event.x)
+        y = int(event.y)
+        x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
+        # Get textiter and offset at coordinates
+        iter = self.view.get_iter_at_location(x, y)
+        offset = iter.get_offset()
+        # Get complete buffer text
+        siter, eiter = self.buffer.get_bounds()
+        text = self.buffer.get_text(siter, eiter)
+
+        # Get clicked word
+        word_seps = [' ', ',', "\t", "\n", '(', ')']
+
+        # Get end word offset
+        temp_offset = offset
+        while not text[temp_offset:temp_offset+1] in word_seps:
+            temp_offset += 1
+        else:
+            eoffset = temp_offset
+
+        # Get start word offset
+        temp_offset = offset
+        while not text[temp_offset-1:temp_offset] in word_seps:
+            temp_offset -= 1
+        else:
+            soffset = temp_offset
+
+        search_string = text[soffset:eoffset]
+        self.addr_tip =''
+        if search_string:
+            # If it's an address, search lines beginning with it.
+            if '[' in search_string:
+                search_string = search_string.strip('[').strip(']')
+            if '0x' in search_string[0:2]:
+                integer = int(search_string, 16)
+                hex_addr = "0x%08x" % integer
+                self.addr_tip = hex_addr
+            elif 'loc.' in search_string:
+                self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+            elif any( k in search_string for k in ['fcn.', 'main', 'entry0', '_init', '_fini'] ):
+                self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+                self.dograph = True
+            elif 'imp.' in search_string:
+                self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+            elif 'reloc.' in search_string:
+                self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+            elif 'str.' in search_string:
+                # Not working until we add strings section into dasm
+                #self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+                self.addr_tip = search_string
+            elif 'sub_' in search_string:
+                self.addr_tip = '0x' + search_string[4:]
+            elif '.' in search_string:
+                if '[' in search_string:
+                    search_string = search_string.strip('[').strip(']')
+                if self.uicore.backend == 'radare':
+                    self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+            else:
+                pass
+
+            if self.addr_tip:
+                value = self.uicore.send_cmd_str('pdi 15 @ ' + self.addr_tip)
+                widget.set_tooltip_markup("<span font_family=\"monospace\">" + value.rstrip() + "</span>")
+            else:
+                widget.set_tooltip_markup("")
 
     def _search(self, search_string, iter = None):
 

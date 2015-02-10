@@ -156,11 +156,11 @@ class BokkenGTKClient:
         self.window.set_title(MAINTITLE + glob.version + " - " + self.target)
 
         # Positions
-        self.window.resize(1000, 700)
-        self.window.move(25, 25)
-        #self.window.set_position(gtk.WIN_POS_CENTER)
+        #self.window.resize(1000, 700)
+        #self.window.move(25, 25)
+        self.window.set_position(gtk.WIN_POS_CENTER)
         # Maximize window
-        self.window.maximize()
+        #self.window.maximize()
 
         # Create VBox to contain top buttons and other VBox
         self.supervb = gtk.VBox(False, 1)
