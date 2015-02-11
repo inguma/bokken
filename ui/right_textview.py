@@ -291,32 +291,22 @@ class RightTextView(gtk.VBox, Searchable):
         # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
-        # Get textiter and offset at coordinates
-        iter = self.view.get_iter_at_location(x, y)
-        offset = iter.get_offset()
-        # Get complete buffer text
-        siter, eiter = self.buffer.get_bounds()
-        text = self.buffer.get_text(siter, eiter)
+        # Get textiter at coordinates.
+        cursor_iter = self.view.get_iter_at_location(x, y)
 
-        # Get clicked word
-        word_seps = [' ', ',', "\t", "\n", '(', ')']
+        # Get clicked word.
+        # Start.
+        if not cursor_iter.starts_word():
+            cursor_iter.backward_word_start()
 
-        # Get end word offset
-        temp_offset = offset
-        while not text[temp_offset:temp_offset+1] in word_seps:
-            temp_offset += 1
-        else:
-            eoffset = temp_offset
+        start_iter = cursor_iter.copy()
+        # End.
+        cursor_iter.forward_word_end()
+        end_iter = cursor_iter.copy()
+        word = start_iter.get_text(end_iter)
 
-        # Get start word offset
-        temp_offset = offset
-        while not text[temp_offset-1:temp_offset] in word_seps:
-            temp_offset -= 1
-        else:
-            soffset = temp_offset
-
-        self._search(text[soffset:eoffset])
-        self.high_word._find(text[soffset:eoffset])
+        self._search(word)
+        self.high_word._find(word)
 
     def create_seek_buttons(self):
         self.hbox = gtk.HBox(False, 1)
@@ -479,8 +469,12 @@ class RightTextView(gtk.VBox, Searchable):
                             self.last_search_iter = self.match_end
                             self.marks.append([self.match_start, self.match_end])
 
-                    # Update seeks
-                    if self.match_start != self.seeks[-1]:
+                    # Update the browse history list.
+                    # It may happen that the self.seeks list is still empty.
+                    # Note: This entire code is pretty bad.  We should make a couple
+                    # of functions to navigate the history and remove this clowntown
+                    # code together with the do_seek() method.
+                    if len(self.seeks) == 0 or self.match_start != self.seeks[-1]:
                         self.seeks.insert(self.seek_index, [self.match_start, self.match_end])
                         self.seek_index += 1
                         if len(self.seeks) != self.seek_index:
