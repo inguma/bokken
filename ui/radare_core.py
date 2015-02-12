@@ -372,7 +372,7 @@ class Core():
                     self.allsections.append([section.name, hex(self.baddr+section.vaddr), hex(section.size), hex(section.paddr)])
                 else:
                     self.allsections.append([section.name, hex(self.baddr+section.rva), hex(section.size), hex(section.offset)])
-                if section.srwx & 1 == 1:
+                if section.srwx & 1 == 1 and section.name != "phdr0":
                     self.execsections.append([section.name, section.size])
                     self.sections_size.append(section.size)
                 if '.text' in section.name:
