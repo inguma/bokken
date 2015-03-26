@@ -154,7 +154,7 @@ class RightTextView(gtk.VBox, Searchable):
 
     def _populate_comments_menu(self, textview, menu):
         '''Populates the menu with the Comments item.'''
-        # Get textbuffer coordinates from texview ones
+        # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
         iter = self.view.get_line_at_y(y)[0]
@@ -218,7 +218,7 @@ class RightTextView(gtk.VBox, Searchable):
                 menu.prepend(opcodem)
 
         # Just show the comment menu if the line has offset/va
-        if addr[0:3] == ' 0x':
+        if addr[2:4] == '0x':
             # Add comment menu
             opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
             opc.get_children()[0].set_label('Add comment')
@@ -291,20 +291,7 @@ class RightTextView(gtk.VBox, Searchable):
         # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
-        # Get textiter at coordinates.
-        cursor_iter = self.view.get_iter_at_location(x, y)
-
-        # Get clicked word.
-        # Start.
-        if not cursor_iter.starts_word():
-            cursor_iter.backward_word_start()
-
-        start_iter = cursor_iter.copy()
-        # End.
-        cursor_iter.forward_word_end()
-        end_iter = cursor_iter.copy()
-        word = start_iter.get_text(end_iter)
-
+        word = self.get_word_on_coords(x, y)
         self._search(word)
         self.high_word._find(word)
 
@@ -346,31 +333,8 @@ class RightTextView(gtk.VBox, Searchable):
         x = int(event.x)
         y = int(event.y)
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
-        # Get textiter and offset at coordinates
-        iter = self.view.get_iter_at_location(x, y)
-        offset = iter.get_offset()
-        # Get complete buffer text
-        siter, eiter = self.buffer.get_bounds()
-        text = self.buffer.get_text(siter, eiter)
+        search_string = self.get_word_on_coords(x,y)
 
-        # Get clicked word
-        word_seps = [' ', ',', "\t", "\n", '(', ')']
-
-        # Get end word offset
-        temp_offset = offset
-        while not text[temp_offset:temp_offset+1] in word_seps:
-            temp_offset += 1
-        else:
-            eoffset = temp_offset
-
-        # Get start word offset
-        temp_offset = offset
-        while not text[temp_offset-1:temp_offset] in word_seps:
-            temp_offset -= 1
-        else:
-            soffset = temp_offset
-
-        search_string = text[soffset:eoffset]
         self.addr_tip =''
         if search_string:
             # If it's an address, search lines beginning with it.
@@ -485,3 +449,29 @@ class RightTextView(gtk.VBox, Searchable):
                     self.last_search_iter = None
                 if self.uicore.backend == 'radare' and self.dograph:
                     self.textviews.update_graph(self, self.search_string)
+
+    def get_word_on_coords(self, x, y):
+        '''This function returns the word surrounding the coordinates (x,y) of
+        a TextView.  Very useful for clicking on words or doing tooltips.
+        I tried to make this work with the Pango functions of the TextIter, but
+        it happens that their idea of word separators doesn't correlate very
+        well with ASM and r2 output. :o)'''
+
+        def is_word_sep(x, bogus):
+            word_separators = [' ', ',', '\t', '\n', '(', ')']
+            return x in word_separators
+
+        # Get textiter at coordinates.
+        start_iter = self.view.get_iter_at_location(x, y)
+        end_iter = start_iter.copy()
+        t_buffer = start_iter.get_buffer()
+
+        ret = start_iter.backward_find_char(is_word_sep)
+        # We went too far rewinding (off-by-one in fact), so let's forward one
+        # character, unless ret is False, which means that we reached the start
+        # of the buffer, in which case we won't do anything.
+        if ret:
+            start_iter.forward_char()
+        end_iter.forward_find_char(is_word_sep)
+
+        return t_buffer.get_text(start_iter, end_iter)
