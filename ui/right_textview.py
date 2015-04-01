@@ -153,51 +153,15 @@ class RightTextView(gtk.VBox, Searchable):
             self.sec_bar.setup(vscrollbar)
 
     def _populate_comments_menu(self, textview, menu):
-        '''Populates the menu with the Comments item.'''
+        '''Populates the context menu with the Comments item.'''
         # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
-        iter = self.view.get_line_at_y(y)[0]
-        # Get text iter and offset at coordinates
-        #iter = self.view.get_iter_at_location(x, y)
-        offset = iter.get_offset()
-        # Get complete buffer text
-        siter, eiter = self.buffer.get_bounds()
-        text = self.buffer.get_text(siter, eiter)
 
-        # Get clicked word
-        word_seps = [' ', ',', "\t", "\n", '(', ')']
-
-        # Get start word offset
-        temp_offset = offset+1
-        while not text[temp_offset:temp_offset+1] in word_seps:
-            temp_offset += 1
-        else:
-            soffset = temp_offset+1
-
-        # Get end word offset
-        temp_offset = soffset
-        while not text[temp_offset:temp_offset+1] in word_seps:
-            temp_offset += 1
-        else:
-            eoffset = temp_offset
-
-        # Get line word offset
-        temp_offset = soffset
-        while not text[temp_offset:temp_offset+1] == '\n':
-            temp_offset += 1
-        else:
-            line_offset = temp_offset
-
-        if self.uicore.backend == 'radare':
-           # MEOW
-           addr = text[offset:eoffset]
-           #addr = text[soffset:eoffset]
-        else:
-           addr = text[offset:eoffset]
+        line = self.get_line_on_coords(x, y)
 
         for opcode in instructions.keys():
-            if opcode.split(' ')[0].lower() in text[offset:line_offset] or opcode.split(' ')[0] in text[offset:line_offset]:
+            if opcode.split(' ')[0].lower() in line or opcode.split(' ')[0] in line:
                 # Add a menu entry with opcode information
                 opmenu = gtk.Menu()
 
@@ -218,7 +182,9 @@ class RightTextView(gtk.VBox, Searchable):
                 menu.prepend(opcodem)
 
         # Just show the comment menu if the line has offset/va
-        if addr[2:4] == '0x':
+        match_address = re.match('\s+(0x[0-9a-z]+)\s', line)
+        if match_address:
+            addr = match_address.groups()[0]
             # Add comment menu
             opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
             opc.get_children()[0].set_label('Add comment')
@@ -449,6 +415,18 @@ class RightTextView(gtk.VBox, Searchable):
                     self.last_search_iter = None
                 if self.uicore.backend == 'radare' and self.dograph:
                     self.textviews.update_graph(self, self.search_string)
+
+    def get_line_on_coords(self, x, y):
+        '''This function returns the entire line containing the coordinates
+        (x,y) of a TextView.'''
+
+        # Get textiter at coordinates.
+        start_iter, _ = self.view.get_line_at_y(y)
+        end_iter = start_iter.copy()
+        end_iter.forward_line()
+        t_buffer = start_iter.get_buffer()
+
+        return t_buffer.get_text(start_iter, end_iter)
 
     def get_word_on_coords(self, x, y):
         '''This function returns the word surrounding the coordinates (x,y) of
