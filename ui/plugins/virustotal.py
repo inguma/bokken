@@ -19,7 +19,7 @@
 
 import hashlib
 
-import plugins.virustotal as vt
+import pyew.plugins.virustotal as vt
 
 def search_vt(pyew):
     """ Search the sample in Virus Total """

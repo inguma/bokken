@@ -22,7 +22,7 @@ import re
 
 def extract(pyew):
 
-    from plugins.url import doFind
+    from pyew.plugins.url import doFind
 
     urlfinders = [
         re.compile("((http|ftp|mailto|telnet|ssh)(s){0,1}\:\/\/[\w|\/|\.|\#|\?|\&|\=|\-|\%]+)+", re.IGNORECASE | re.MULTILINE)

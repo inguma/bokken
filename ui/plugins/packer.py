@@ -17,7 +17,7 @@
 #       foundation, inc., 51 franklin street, fifth floor, boston,
 #       ma 02110-1301, usa.
 
-import plugins.packer as packer
+import pyew.plugins.packer as packer
 
 def search_packer(pyew):
     """ Search the sample for packer """
