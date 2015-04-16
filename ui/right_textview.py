@@ -157,6 +157,7 @@ class RightTextView(gtk.VBox, Searchable):
         # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
         x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
+        iter = self.view.get_line_at_y(y)[0]
 
         line = self.get_line_on_coords(x, y)
 
