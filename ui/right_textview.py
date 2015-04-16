@@ -87,8 +87,11 @@ class RightTextView(gtk.VBox, Searchable):
 
         self.buffer.set_highlight_syntax(True)
         manager = self.buffer.get_data('languages-manager')
-        if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
-            language = manager.get_language('arm-asm')
+        if self.uicore.backend == 'radare':
+            if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
+                language = manager.get_language('arm-asm')
+            else:
+                language = manager.get_language('asm')
         else:
             language = manager.get_language('asm')
         self.buffer.set_language(language)

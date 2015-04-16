@@ -35,6 +35,8 @@ try:
 except ImportError:
     from pyew.pyew_core import CPyew
 
+import pyew.pyew
+
 class Core():
 
     def __init__(self, dialog):

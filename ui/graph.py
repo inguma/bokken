@@ -55,10 +55,14 @@ class MyDotWidget(gtk.HBox):
             self.side_vb.pack_start(self.preview, False, False, 0)
 
     def set_dot(self, dotcode):
+        dotcode = dotcode.replace('overlap="scale", bgcolor="#475672"', 'overlap="scale", bgcolor="invis"')
+        dotcode = dotcode.replace('color=azure3, fontcolor=white, fillcolor="#373D49"', 'color=blue, fontcolor="#666666", fillcolor=white')
+        dotcode = dotcode.replace('fillcolor="#5E82C6"', 'fillcolor="white", color=green')
         dotcode = dotcode.replace('color=lightgray, style=filled,', 'color=blue')
         dotcode = dotcode.replace('color="lightgray"', 'color="blue"')
+        dotcode = dotcode.replace('len=1.25, color=azure3', 'len=1.25, color=blue')
         dotcode = dotcode.replace('color=lightgray', 'color=lightgray, bgcolor=white')
-        dotcode = dotcode.replace('color="green"', 'color="green", fontname="Courier", fontsize="14"')
+        dotcode = dotcode.replace('color="green"', 'color="green", fontname="Courier", fontsize="8"')
         self.dot_widget.set_dotcode(dotcode)
         self.generate_thumbnail(dotcode)
         if self.uicore.backend == 'radare':
@@ -73,8 +77,9 @@ class MyDotWidget(gtk.HBox):
                 self.update_tree(function)
         self.dot_widget.on_zoom_100(None)
         # Navigate to first node
-        if len(self.nodes) > 1:
-            node = self.nodes.keys()[0]
+        if self.uicore.backend == 'radare':
+            if len(self.nodes) > 1:
+                node = self.nodes.keys()[0]
             self.dot_widget.animate_to(int(self.nodes[node][0]), int(self.nodes[node][1]))
 
     def generate_thumbnail(self, dotcode):
