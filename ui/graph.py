@@ -80,7 +80,7 @@ class MyDotWidget(gtk.HBox):
         if self.uicore.backend == 'radare':
             if len(self.nodes) > 1:
                 node = self.nodes.keys()[0]
-            self.dot_widget.animate_to(int(self.nodes[node][0]), int(self.nodes[node][1]))
+                self.dot_widget.animate_to(int(self.nodes[node][0]), int(self.nodes[node][1]))
 
     def generate_thumbnail(self, dotcode):
         #size = self.tree.allocation.width
