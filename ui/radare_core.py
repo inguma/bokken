@@ -172,6 +172,7 @@ class Core():
             self.send_cmd("e asm.bytes=true")
         if self.do_anal:
             self.send_cmd("aa")
+            self.send_cmd("aac")
             self.send_cmd("af;ac@$S")
         if self.start_addr:
             self.send_cmd('af @ %s' % self.start_addr)
@@ -579,7 +580,7 @@ class Core():
         # What we do is to make every element a list.  Theoretically it should
         # be (address, address_text) but radare returns just the first one, so
         # for the time being we put an empty string as the second element.
-        results = map(lambda x: (x.split(' ')[-1], ''), hits)
+        results = map(lambda x: (x.split(' ')[0], x.split(' ')[1]), hits)
 
         #self.send_cmd('e io.va=1')
         self.restore_va()
