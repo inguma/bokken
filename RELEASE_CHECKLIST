@@ -11,6 +11,8 @@ Things to do in order to release Bokken
 
 * Finish polishing details in Changelog and add release date.
 
+* Change lib/bokken_globals.py and bump the global version accordingly.
+
 * Debian packages:
   - Run dpkg-buildpackage -rfakeroot -uc -us and test it.
 

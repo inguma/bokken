@@ -1,16 +1,19 @@
-Release 1.7 (xx-xx-2014)
+Release 1.7 (04-05-2015)
 
  * General refactoring of functions and classes to make them more abstract and
    generic.
  * Added new experimental web server (Mune) based on webpy with command-line
    flag --web.  It's very incomplete but the idea is to keep making it a
    first-class citizen in subsequent releases.
- * Fixed usability bugs.
+ * Fixed a lot of usability bugs, weird bugs, corner cases, unhandled
+   exceptions and the like.
  * Revamped all the search dialogs, moved them to a new tab and fixed some
    bugs in the meantime.
- * Added compatibility with radare2 0.9.8-rc1.
+ * Added compatibility with radare2 up to 0.9.8.
  * Added support for base address in radare.
  * Updated xdot to latest version.
+ * Fixed Add comment functionality.
+ * Added click-to-go and highlighting the search string.
 
 Release 1.6 (23-01-2012)
 
