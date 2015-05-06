@@ -553,13 +553,13 @@ class Core():
         if output == 'hexadecimal':
             if va == "true":
                 self.send_cmd('e io.va=0')
-            self.core._cmd('px', True)
+            self.send_cmd('px')
             data = self.send_cmd_str(direction)
             #self.send_cmd('e io.va=true')
         elif output == 'disassembly':
             if va == "false":
                 self.send_cmd('e io.va=1')
-            self.core._cmd('pd', True)
+            self.send_cmd('pd')
             data = self.send_cmd_str(direction)
 
         return data
