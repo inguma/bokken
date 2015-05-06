@@ -173,6 +173,7 @@ class Core():
         if self.do_anal:
             self.send_cmd("aa")
             self.send_cmd("aac")
+            self.send_cmd("aaa")
             self.send_cmd("af;ac@$S")
         if self.start_addr:
             self.send_cmd('af @ %s' % self.start_addr)
@@ -479,7 +480,7 @@ class Core():
             if file_info:
                 self.full_fileinfo['bin'] = []
                 for line in file_info.split('\n'):
-                    line = line.split('\t')
+                    line = line.split(' ')
                     self.full_fileinfo['bin'].append(line)
             # Get imports
             imports = self.send_cmd_str('ii')

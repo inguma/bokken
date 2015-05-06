@@ -98,8 +98,8 @@ class InfoTree(gtk.TreeView):
 
         if full_info.has_key('bin'):
             for info in full_info['bin']:
-                if len(info) == 2:
-                    self.treestore.append(file_it, [info[0], info[1], '', '', '', '', '', ''])
+                if len(info) >= 2:
+                    self.treestore.append(file_it, [info[0], info[-1], '', '', '', '', '', ''])
 
         if full_info.has_key('symbols'):
             for sym in full_info['symbols']:
