@@ -26,6 +26,8 @@ Things to do in order to release Bokken
 
 hg tag -m "Tagged 1.5 release." 1.5
 hg push
+hg push git
+hg push bb
 
 * Make a tar.gz and zip archive with the following commands:
 
@@ -47,14 +49,6 @@ and upload them with the Debian and Windows packages to Redmine as bokken-1.5.ta
 * Tweet about the new release and point to the blog post.
 
 * Send a message to bokken-devel with the post/Changelog to spread the news.
-
-* Go to http://freecode.com/projects/bokken:
-  - Click on "Edit this project" (http://freecode.com/projects/bokken/edit), and change the "Latest release"
-    link to the new one.
-  - Click on "Submit a release" (http://freecode.com/projects/bokken/releases/new) and fill out the text
-    field with short sentences about the release, using possibly the Changelog as base.  Note that Freshmeat
-    does not respect new lines, so everything will appear as a long sentence.  If you are in doubt, preview
-    your changes or see other releases.  You have 600 characters (as of 07-12-2011) for the changelog.
 
 * Go to Redmine, to the Versions tab under Settings (http://inguma.eu/projects/bokken/settings/versions) and
   open a new release (say 2.0) with a proposed release date.
