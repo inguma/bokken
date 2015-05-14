@@ -19,7 +19,7 @@
 
 import gtk
 
-import Image
+from PIL import Image
 import os, tempfile
 from subprocess import *
 
