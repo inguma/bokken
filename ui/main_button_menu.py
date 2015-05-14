@@ -63,7 +63,12 @@ class MenuBar(gtk.Menu):
         savem.get_children()[0].set_label('Save')
         savem.set_submenu(smenu)
 
-        saves = [['All', gtk.STOCK_SAVE_AS, 'all'], ['Disassembly', gtk.STOCK_SORT_DESCENDING, 'asm'], ['Hexdump', gtk.STOCK_INDEX, 'hex'], ['Strings', gtk.STOCK_JUSTIFY_CENTER, 'str'], ['String repr', gtk.STOCK_JUSTIFY_FILL, 'repr']]
+        saves = [
+                    ['All', gtk.STOCK_SAVE_AS, 'all'],
+                    ['Disassembly', gtk.STOCK_SORT_DESCENDING, 'asm'],
+                    ['Hexdump', gtk.STOCK_INDEX, 'hex'],
+                    ['Strings', gtk.STOCK_JUSTIFY_CENTER, 'str'],
+                ]
         for save in saves:
             savei = gtk.ImageMenuItem(save[1])
             savei.get_children()[0].set_label(save[0])
@@ -231,7 +236,7 @@ class MenuBar(gtk.Menu):
         dialog.destroy()
 
     def _get_content(self, type):
-        types = {'asm':self.uicore.text_dasm, 'hex':self.uicore.fullhex, 'str':self.uicore.allstrings, 'repr':self.uicore.fullstr}
+        types = {'asm':self.uicore.text_dasm, 'hex':self.uicore.fullhex, 'str':self.uicore.allstrings}
         return types[type]
 
     def _save(self, widget, data):
@@ -239,7 +244,7 @@ class MenuBar(gtk.Menu):
         response = chooser.run()
 
         if response == gtk.RESPONSE_OK:
-            all = ['asm', 'hex', 'str', 'repr']
+            all = ['asm', 'hex', 'str']
             filename = chooser.get_filename()
             if data != 'all':
                 output = open(filename + '.' + data, 'wb')

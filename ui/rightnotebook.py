@@ -204,7 +204,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', 'Strings repr', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
+        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
             close_button.hide()
 
         return tab_box

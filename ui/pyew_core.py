@@ -1,17 +1,17 @@
 #       pyew_core.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -48,7 +48,6 @@ class Core():
         self.text_dasm = ''     # Dasm of the .text section
         self.pythondasm = ''
         self.fullhex = ''
-        self.fullstr = ''
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
@@ -91,7 +90,6 @@ class Core():
         self.text_dasm = ''     # Dasm of the .text section
         self.pythondasm = ''
         self.fullhex = ''
-        self.fullstr = ''
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
@@ -384,12 +382,6 @@ class Core():
             except:
                 pass
         return self.pythondasm
-
-    def get_repr(self):
-        if not self.fullstr:
-            self.update_progress_bar("Getting string representation", 0.65)
-            self.fullstr = repr(self.core.buf)
-        return self.fullstr
 
     def get_sections(self):
         self.update_progress_bar("Getting sections", 0.15)

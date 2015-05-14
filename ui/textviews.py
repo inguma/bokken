@@ -158,7 +158,6 @@ class TextViews(gtk.HBox):
         style_scheme = self.mgr.get_scheme(theme)
         self.buffer.set_style_scheme(style_scheme)
         self.strings_buffer.set_style_scheme(style_scheme)
-        self.repr_buffer.set_style_scheme(style_scheme)
         self.interactive_buffer.set_style_scheme(style_scheme)
         self.hexdump_view.update_theme(style_scheme)
 
@@ -195,10 +194,9 @@ class TextViews(gtk.HBox):
                 except:
                     pass
 
-            # Load hexdump, strings and strings repr
+            # Load hexdump and strings.
             self.hexdump = self.uicore.get_full_hexdump()
             self.strings = self.uicore.get_strings()
-            self.repr = self.uicore.get_repr()
 
         elif option == 'Python':
             self.dasm = self.uicore.get_python_dasm()

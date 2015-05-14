@@ -42,7 +42,6 @@ class Core():
         self.pythondasm = ''
         self.textsize= 0
         self.fullhex = ''
-        self.fullstr = ''
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
@@ -97,7 +96,6 @@ class Core():
         self.pythondasm = ''
         self.textsize= 0
         self.fullhex = ''
-        self.fullstr = ''
         self.allstrings = ''
         self.allfuncs = []
         self.allsections = []
@@ -352,19 +350,6 @@ class Core():
     def get_fulldasm_through_queue(self, queue, event):
         queue.put(self.get_fulldasm())
         event.set()
-
-    def get_repr(self):
-        if not self.fullstr:
-            self.update_progress_bar("Getting string representation", 0.65)
-            self.send_cmd('e io.va=0')
-            self.send_cmd('s 0')
-            self.send_cmd('b ' + str(self.size))
-            self.fullstr = self.send_cmd_str('ps ' + str(self.size))
-            #self.send_cmd('b 1024')
-            #self.send_cmd('e io.va=1')
-            self.send_cmd('s section..text')
-            self.send_cmd('b 512')
-        return self.fullstr
 
     def get_sections(self):
         if self.allsections == [] and self.core.format != 'Hexdump':
