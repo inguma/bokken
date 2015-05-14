@@ -32,7 +32,6 @@ class RightNotebook(gtk.Notebook):
         self.tviews = tviews
         self.scrolled_window = self.tviews.right_textview
         self.strings_textview = self.tviews.strings_textview
-        self.repr_textview = self.tviews.repr_textview
         self.interactive_scrolled = self.tviews.interactive_textview
         self.hexdump_view = self.tviews.hexdump_view
         self.bindiff = self.tviews.bindiff
@@ -92,14 +91,6 @@ class RightNotebook(gtk.Notebook):
 
         self.set_tab_label_packing(self.strings_textview, False, False, gtk.PACK_START)
         self.set_tab_label(self.strings_textview, tab)
-
-        #################################################
-        # Repr view TAB
-        self.append_page(self.repr_textview)
-        tab = self.create_tab('Strings repr', self.repr_textview, 'JUSTIFY_FILL')
-
-        self.set_tab_label_packing(self.repr_textview, False, False, gtk.PACK_START)
-        self.set_tab_label(self.repr_textview, tab)
 
         #################################################
         # Interactive view TAB

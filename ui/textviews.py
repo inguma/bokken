@@ -29,7 +29,6 @@ import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
 import ui.strings_textview as strings_textview
-import ui.repr_textview as repr_textview
 import ui.hexdump_view as hexdump_view
 import ui.interactive_textview as interactive_textview
 import ui.bindiff as bindiff
@@ -122,15 +121,6 @@ class TextViews(gtk.HBox):
         self.strings_buffer = self.strings_textview.buffer
         self.strings_view = self.strings_textview.view
         self.strings_mgr = self.strings_textview.mgr
-
-        #################################################################
-        # Repr Textview
-        #################################################################
-
-        self.repr_textview = repr_textview.ReprTextView(self.uicore, self)
-        self.repr_buffer = self.repr_textview.buffer
-        self.repr_view = self.repr_textview.view
-        self.repr_mgr = self.repr_textview.mgr
 
         #################################################################
         # Bindiff widget
