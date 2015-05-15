@@ -275,9 +275,6 @@ class BokkenGTKClient:
 
             self.topbuttons.throbber.running('')
 
-        # Add data to INTERACTIVE TextView
-        self.tviews.update_interactive()
-
         # Load data to LEFT Tree
         if self.uicore.core.format in ["PE", "ELF", "Program"]:
             self.tviews.create_model('Functions')

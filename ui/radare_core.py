@@ -510,11 +510,6 @@ class Core():
         #self.send_cmd('e io.va=true')
         #print self.ars_magica
 
-    def seek(self, pos):
-        #print pos
-        self.send_cmd('s ' + str(pos))
-        return True
-
     def set_bsize(self, size):
         self.send_cmd('b ' + str(size))
         return True
@@ -526,28 +521,6 @@ class Core():
     def add_comment(self, offset, comment):
         self.send_cmd('CC 1 ' + comment + ' @ ' + offset)
         return True
-
-    def move(self, direction, output):
-        if direction == 'f':
-            direction = ''
-        elif direction == 'b':
-            direction = '.'
-
-        va = self.send_cmd_str('e io.va').rstrip()
-
-        if output == 'hexadecimal':
-            if va == "true":
-                self.send_cmd('e io.va=0')
-            self.send_cmd('px')
-            data = self.send_cmd_str(direction)
-            #self.send_cmd('e io.va=true')
-        elif output == 'disassembly':
-            if va == "false":
-                self.send_cmd('e io.va=1')
-            self.send_cmd('pd')
-            data = self.send_cmd_str(direction)
-
-        return data
 
     def string_search(self, text, type):
         '''Searches an arbitrary string text in the analyzed content.'''

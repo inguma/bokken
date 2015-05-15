@@ -30,7 +30,6 @@ import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
 import ui.strings_textview as strings_textview
 import ui.hexdump_view as hexdump_view
-import ui.interactive_textview as interactive_textview
 import ui.bindiff as bindiff
 import ui.html_tree as html_tree
 import ui.info_tree as info_tree
@@ -100,15 +99,6 @@ class TextViews(gtk.HBox):
         self.mgr = self.right_textview.mgr
 
         #################################################################
-        # Right Interactive Textview
-        #################################################################
-
-        self.interactive_textview = interactive_textview.InteractiveTextView(self.uicore)
-        self.interactive_buffer = self.interactive_textview.buffer
-        self.interactive_view = self.interactive_textview.view
-        self.interactive_mgr = self.interactive_textview.mgr
-
-        #################################################################
         # Hexdump Textview
         #################################################################
         self.hexdump_view = hexdump_view.HexdumpView(self.uicore)
@@ -158,7 +148,6 @@ class TextViews(gtk.HBox):
         style_scheme = self.mgr.get_scheme(theme)
         self.buffer.set_style_scheme(style_scheme)
         self.strings_buffer.set_style_scheme(style_scheme)
-        self.interactive_buffer.set_style_scheme(style_scheme)
         self.hexdump_view.update_theme(style_scheme)
 
     def update_righttext(self, option):
@@ -253,18 +242,7 @@ class TextViews(gtk.HBox):
         self.buffer.set_text(dasm)
         self.right_textview.setup_sections_bar()
 
-    def update_interactive(self):
-        #print "[*] Update interacive"
-        if self.uicore.backend == 'pyew':
-            self.uicore.core.offset = 0
-        elif self.uicore.backend == 'radare':
-            self.uicore.core.cmd0('e io.va=0')
-
-        dump = self.uicore.get_hexdump()
-        self.interactive_buffer.set_text(dump)
-
     def create_completion(self):
-        self.interactive_textview.interactive_buttons.set_completion()
         self.right_textview.set_completion()
 
     def format_html(self, code):

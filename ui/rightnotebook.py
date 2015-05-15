@@ -32,7 +32,6 @@ class RightNotebook(gtk.Notebook):
         self.tviews = tviews
         self.scrolled_window = self.tviews.right_textview
         self.strings_textview = self.tviews.strings_textview
-        self.interactive_scrolled = self.tviews.interactive_textview
         self.hexdump_view = self.tviews.hexdump_view
         self.bindiff = self.tviews.bindiff
         self.html_elements = self.tviews.html_widget
@@ -92,14 +91,6 @@ class RightNotebook(gtk.Notebook):
         self.set_tab_label_packing(self.strings_textview, False, False, gtk.PACK_START)
         self.set_tab_label(self.strings_textview, tab)
 
-        #################################################
-        # Interactive view TAB
-        self.append_page(self.interactive_scrolled)
-        tab = self.create_tab('Interactive', self.interactive_scrolled, 'EXECUTE')
-
-        self.set_tab_label_packing(self.interactive_scrolled, False, False, gtk.PACK_START)
-        self.set_tab_label(self.interactive_scrolled, tab)
-
         if self.uicore.backend == 'radare':
             self.add_info_elements_tab()
 
@@ -121,7 +112,6 @@ class RightNotebook(gtk.Notebook):
         avoid = [
                 self.page_num(self.scrolled_window),
                 self.page_num(self.xdot_box),
-                self.page_num(self.interactive_scrolled),
                 self.page_num(self.bindiff),
                 self.page_num(self.html_elements),
                 self.page_num(self.info_elements)
