@@ -43,6 +43,7 @@ class Core():
         self.textsize= 0
         self.fullhex = ''
         self.allstrings = []
+        self.allrelocs = []
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
@@ -97,6 +98,7 @@ class Core():
         self.textsize= 0
         self.fullhex = ''
         self.allstrings = []
+        self.allrelocs = []
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
@@ -263,6 +265,23 @@ class Core():
                 string = string.split(' ')
                 self.allstrings.append(string)
         return self.allstrings
+
+    def get_relocs(self):
+        if not self.allrelocs:
+            self.update_progress_bar("Getting relocs", 0.7)
+            if self.use_va:
+                self.send_cmd('e io.va=0')
+            else:
+                self.send_cmd('e io.va=1')
+            relocs = ''
+            self.send_cmd('fs relocs')
+            relocs = self.send_cmd_str('f')
+            relocs = relocs.split('\n')
+            for reloc in relocs:
+                reloc = reloc.split(' ')
+                if len(reloc) == 3:
+                    self.allrelocs.append(reloc)
+        return self.allrelocs
 
     def get_functions(self):
         if not self.allfuncs:

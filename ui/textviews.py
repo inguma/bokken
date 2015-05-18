@@ -270,18 +270,10 @@ class TextViews(gtk.HBox):
                     self.left_treeview.store.append([self.left_treeview.bb_pix, function, '', '', ''])
                 else:
                     self.left_treeview.store.append([self.left_treeview.fcn_pix, function, '', '', ''])
-        elif mode == 'Sections':
-            self.left_treeview.create_sections_columns()
-            execs = [x[0] for x in self.uicore.execsections]
-            if self.uicore.backend == 'pyew' and self.uicore.core.format != 'ELF':
-                execs = [x[0] for x in execs]
-            for section in self.uicore.get_sections():
-                if section[0] in execs:
-                    tmp = [self.left_treeview.fcn_pix]
-                else:
-                    tmp = [self.left_treeview.data_sec_pix]
-                for element in section:
-                    tmp.append(element)
+        elif mode == 'Relocs':
+            self.left_treeview.create_relocs_columns()
+            for reloc in self.uicore.get_relocs():
+                tmp = [self.left_treeview.fcn_pix, reloc[2], reloc[0], reloc[1], '']
                 self.left_treeview.store.append(tmp)
         elif mode == 'Imports':
             # FIXME horrible...

@@ -74,20 +74,7 @@ class LeftButtons(gtk.VBox):
             a.pack_start(self.fcn_pix, False, False, 1)
             fcntb.add(a)
 
-            # Sections
-            sectb = gtk.ToggleButton()
-            sectb.set_tooltip_text('List of sections in the binary')
-            handler = sectb.connect('toggled', self._on_toggle)
-            sectb.handler = handler
-            a = gtk.VBox(False, 1)
-            l = gtk.Label('Sections')
-            l.set_angle(90)
-            a.pack_start(l, False, False, 1)
-            a.pack_start(self.bb_pix, False, False, 1)
-            sectb.add(a)
-
             self.pack_start(fcntb, False, False, 0)
-            self.pack_start(sectb, False, False, 0)
 
             if option == 'full_bin':
                 # Imports
@@ -114,8 +101,22 @@ class LeftButtons(gtk.VBox):
                 a.pack_start(self.exp_pix, False, False, 1)
                 exptb.add(a)
 
+                # Relocs
+                sectb = gtk.ToggleButton()
+                sectb.set_tooltip_text('List of relocs in the binary')
+                handler = sectb.connect('toggled', self._on_toggle)
+                sectb.handler = handler
+                a = gtk.VBox(False, 1)
+                l = gtk.Label('Relocs')
+                l.set_angle(90)
+                a.pack_start(l, False, False, 1)
+                a.pack_start(self.bb_pix, False, False, 1)
+                sectb.add(a)
+
                 self.pack_start(imptb, False, False, 0)
                 self.pack_start(exptb, False, False, 0)
+                self.pack_start(sectb, False, False, 0)
+
         elif option == 'pdf':
             # PDF
             pdftb = gtk.ToggleButton()

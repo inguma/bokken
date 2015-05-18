@@ -223,6 +223,7 @@ class BokkenGTKClient:
             return
         if self.uicore.core.format in ['PE', 'Elf', 'ELF', 'Program']:
             self.uicore.get_sections()
+            self.uicore.get_relocs()
 
     def show_empty_gui(self):
         self.topbuttons.throbber.running('start')

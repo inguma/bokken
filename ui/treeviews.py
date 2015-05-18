@@ -58,12 +58,12 @@ class TreeViews(gtk.TreeView):
         self.append_column(column)
         self.set_model(self.store)
 
-    def create_sections_columns(self):
+    def create_relocs_columns(self):
 
         self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('data-sec.png'))
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Section")
+        column = gtk.TreeViewColumn("Name")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
@@ -79,15 +79,9 @@ class TreeViews(gtk.TreeView):
         self.append_column(column)
 
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Virtual Size", rendererText, text=3)
+        column = gtk.TreeViewColumn("Type", rendererText, text=3)
         column.set_sort_column_id(3)
         self.append_column(column)
-
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Raw Size", rendererText, text=4)
-        column.set_sort_column_id(4)
-        self.append_column(column)
-        self.set_model(self.store)
 
     def create_exports_columns(self):
 
@@ -366,13 +360,13 @@ class TreeViews(gtk.TreeView):
                 elif self.uicore.backend == 'radare':
                     if '0x' in link_name[0]:
                         link_name = link_name[0]
+                    elif 'reloc.' in link_name[0]:
+                            link_name = link_name[0]
                     else:
                         # Just get graph for functions
                         if not 'loc.' in link_name[0] and link_name[0][0] != '.':
                             self.dograph = True
                         # Adjust section name to search inside r2 flags
-                        if link_name[0][0] == '.':
-                            link_name[0] = 'section.' + link_name[0]
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
@@ -411,13 +405,13 @@ class TreeViews(gtk.TreeView):
                 elif self.uicore.backend == 'radare':
                     if '0x' in link_name[0]:
                         link_name = link_name[0]
+                    elif 'reloc.' in link_name[0]:
+                        link_name = link_name[0]
                     else:
                         # Just get graph for functions
                         if not 'loc.' in link_name[0] and link_name[0][0] != '.':
                             self.dograph = True
                         # Adjust section name to search inside r2 flags
-                        if link_name[0][0] == '.':
-                            link_name[0] = 'section.' + link_name[0]
                         link_name = "0x%08x" % self.uicore.core.num.get(link_name[0])
             # Elf/PE (import/export)
             elif len( link_name ) == 2 and link_name[1] != '':
