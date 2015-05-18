@@ -42,7 +42,7 @@ class Core():
         self.pythondasm = ''
         self.textsize= 0
         self.fullhex = ''
-        self.allstrings = ''
+        self.allstrings = []
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
@@ -96,7 +96,7 @@ class Core():
         self.pythondasm = ''
         self.textsize= 0
         self.fullhex = ''
-        self.allstrings = ''
+        self.allstrings = []
         self.allfuncs = []
         self.allsections = []
         self.execsections = []
@@ -258,7 +258,10 @@ class Core():
             strings = ''
             self.send_cmd('fs strings')
             strings = self.send_cmd_str('f')
-            self.allstrings = strings
+            strings = strings.split('\n')
+            for string in strings:
+                string = string.split(' ')
+                self.allstrings.append(string)
         return self.allstrings
 
     def get_functions(self):

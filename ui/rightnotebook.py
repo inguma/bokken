@@ -31,7 +31,7 @@ class RightNotebook(gtk.Notebook):
 
         self.tviews = tviews
         self.scrolled_window = self.tviews.right_textview
-        self.strings_textview = self.tviews.strings_textview
+        self.strings_treeview = self.tviews.strings_treeview
         self.hexdump_view = self.tviews.hexdump_view
         self.bindiff = self.tviews.bindiff
         self.html_elements = self.tviews.html_widget
@@ -85,11 +85,11 @@ class RightNotebook(gtk.Notebook):
 
         #################################################
         # Strings view TAB
-        self.append_page(self.strings_textview)
-        tab = self.create_tab('Strings', self.strings_textview, 'JUSTIFY_CENTER')
+        self.append_page(self.strings_treeview)
+        tab = self.create_tab('Strings', self.strings_treeview, 'JUSTIFY_CENTER')
 
-        self.set_tab_label_packing(self.strings_textview, False, False, gtk.PACK_START)
-        self.set_tab_label(self.strings_textview, tab)
+        self.set_tab_label_packing(self.strings_treeview, False, False, gtk.PACK_START)
+        self.set_tab_label(self.strings_treeview, tab)
 
         if self.uicore.backend == 'radare':
             self.add_info_elements_tab()

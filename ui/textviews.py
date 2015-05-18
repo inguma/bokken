@@ -28,7 +28,7 @@ import gtksourceview2
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
-import ui.strings_textview as strings_textview
+import ui.strings_treeview as strings_treeview
 import ui.hexdump_view as hexdump_view
 import ui.bindiff as bindiff
 import ui.html_tree as html_tree
@@ -104,13 +104,10 @@ class TextViews(gtk.HBox):
         self.hexdump_view = hexdump_view.HexdumpView(self.uicore)
 
         #################################################################
-        # Strings Textview
+        # Strings Treeview
         #################################################################
 
-        self.strings_textview = strings_textview.StringsTextView(self.uicore, self)
-        self.strings_buffer = self.strings_textview.buffer
-        self.strings_view = self.strings_textview.view
-        self.strings_mgr = self.strings_textview.mgr
+        self.strings_treeview = strings_treeview.StringsView(self.uicore, self)
 
         #################################################################
         # Bindiff widget
