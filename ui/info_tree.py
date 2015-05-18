@@ -91,35 +91,11 @@ class InfoTree(gtk.TreeView):
 
         file_it = self.treestore.append(None, ['File info', '', '', '', '', '', '', ''])
         entry_it = self.treestore.append(None, ['Entry points', '', '', '', '', '', '', ''])
-        sym_it = self.treestore.append(None, ['Symbols', '', '', '', '', '', '', ''])
-        imp_it = self.treestore.append(None, ['Imports', '', '', '', '', '', '', ''])
-        sec_it = self.treestore.append(None, ['Sections', '', '', '', '', '', '', ''])
-        str_it = self.treestore.append(None, ['Strings', '', '', '', '', '', '', ''])
 
         if full_info.has_key('bin'):
             for info in full_info['bin']:
                 if len(info) >= 2:
                     self.treestore.append(file_it, [info[0], info[-1], '', '', '', '', '', ''])
-
-        if full_info.has_key('symbols'):
-            for sym in full_info['symbols']:
-                if len(sym) == 8:
-                    self.treestore.append(sym_it, [sym[0], sym[1], sym[2], sym[3], sym[4], sym[5], sym[6], sym[7]])
-
-        if full_info.has_key('imports'):
-            for imp in full_info['imports']:
-                if len(imp) == 5:
-                    self.treestore.append(imp_it, [imp[0], imp[1], imp[2], imp[3], imp[4], '', '', ''])
-
-        if full_info.has_key('sections'):
-            for sec in full_info['sections']:
-                if len(sec) == 7:
-                    self.treestore.append(sec_it, [sec[0], sec[1], sec[2], sec[3], sec[4], sec[5], sec[6], ''])
-
-        if full_info.has_key('strings'):
-            for string in full_info['strings']:
-                if len(string) == 8:
-                    self.treestore.append(str_it, [string[0], string[1], string[2], string[3], string[4], string[5], string[6], string[7]])
 
         if full_info.has_key('eps'):
             for ep in full_info['eps']:
@@ -129,7 +105,7 @@ class InfoTree(gtk.TreeView):
         # Add column to tree
         self.append_column(infos)
         self.set_model(self.treestore)
-        #self.expand_all()
-        self.collapse_all()
+        self.expand_all()
+        #self.collapse_all()
 
         self.show_all()
