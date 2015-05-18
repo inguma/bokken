@@ -29,6 +29,7 @@ import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.right_textview as right_textview
 import ui.strings_treeview as strings_treeview
+import ui.sections_treeview as sections_treeview
 import ui.hexdump_view as hexdump_view
 import ui.bindiff as bindiff
 import ui.html_tree as html_tree
@@ -108,6 +109,12 @@ class TextViews(gtk.HBox):
         #################################################################
 
         self.strings_treeview = strings_treeview.StringsView(self.uicore, self)
+
+        #################################################################
+        # Sections Treeview
+        #################################################################
+
+        self.sections_treeview = sections_treeview.SectionsView(self.uicore, self)
 
         #################################################################
         # Bindiff widget

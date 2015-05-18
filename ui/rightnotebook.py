@@ -32,6 +32,7 @@ class RightNotebook(gtk.Notebook):
         self.tviews = tviews
         self.scrolled_window = self.tviews.right_textview
         self.strings_treeview = self.tviews.strings_treeview
+        self.sections_treeview = self.tviews.sections_treeview
         self.hexdump_view = self.tviews.hexdump_view
         self.bindiff = self.tviews.bindiff
         self.html_elements = self.tviews.html_widget
@@ -90,6 +91,14 @@ class RightNotebook(gtk.Notebook):
 
         self.set_tab_label_packing(self.strings_treeview, False, False, gtk.PACK_START)
         self.set_tab_label(self.strings_treeview, tab)
+
+        #################################################
+        # Sections view TAB
+        self.append_page(self.sections_treeview)
+        tab = self.create_tab('Sections', self.sections_treeview, 'JUSTIFY_FILL')
+
+        self.set_tab_label_packing(self.sections_treeview, False, False, gtk.PACK_START)
+        self.set_tab_label(self.sections_treeview, tab)
 
         if self.uicore.backend == 'radare':
             self.add_info_elements_tab()
@@ -194,7 +203,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', 'Hexdump', 'Bindiff', 'Elements', 'File info']:
+        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', "Sections", 'Hexdump', 'Bindiff', 'Elements', 'File info']:
             close_button.hide()
 
         return tab_box
