@@ -80,7 +80,7 @@ class SectionsTreeView(gtk.TreeView):
 
         rendererPix = gtk.CellRendererPixbuf()
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Section")
+        column = gtk.TreeViewColumn("Name")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)

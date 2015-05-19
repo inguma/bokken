@@ -79,7 +79,7 @@ class TreeViews(gtk.TreeView):
         self.append_column(column)
 
         rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Type", rendererText, text=3)
+        column = gtk.TreeViewColumn("Size", rendererText, text=3)
         column.set_sort_column_id(3)
         self.append_column(column)
 
