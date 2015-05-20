@@ -102,6 +102,10 @@ class ConsoleTextView(gtk.VBox):
         self.exec_entry.set_text('')
         self.exec_entry.grab_focus()
 
+    def add_message(self, msg):
+        end_iter = self.buffer.get_end_iter()
+        self.buffer.insert(end_iter, ' > ' + msg + '\n')
+
     def _populate_menu(self, textview, menu):
         opc = gtk.ImageMenuItem((gtk.STOCK_CLEAR))
         opc.get_children()[0].set_label('Clear text')

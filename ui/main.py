@@ -200,6 +200,8 @@ class BokkenGTKClient:
             self.show_empty_gui()
 
         self.show_file_data()
+        self.tviews.console.add_message('Bokken ' + glob.version + ' ready')
+        self.tviews.console.add_message('Starting background analysis')
         self.window.show_all()
 
         # Hide left tree for plain or unsupported formats
@@ -353,6 +355,10 @@ class BokkenGTKClient:
 
         self.tviews.right_textview.right_scrolled_window.set_sensitive(True)
         self.topbuttons.throbber.running('')
+        self.tviews.console.add_message('Background analysis finished')
+        self.tviews.console.add_message('Happy reversing!')
+        # Insert random r2 quote
+        self.tviews.console.add_message(self.uicore.execute_command('fo'))
         return False
 
     def disable_all(self):
