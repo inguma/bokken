@@ -27,6 +27,7 @@ import gtksourceview2
 #import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
+import ui.console_textview as console_textview
 import ui.right_textview as right_textview
 import ui.strings_treeview as strings_treeview
 import ui.sections_treeview as sections_treeview
@@ -42,6 +43,8 @@ Layout:
 ---------------------------- HBox ------------------------------
 Left Buttons | ---------------------Paned ----------------------
              | Left Treeview | ----------- Notebook ------------
+             |               | ------------- Paned -------------
+             |               | ------------ Console ------------
 '''
 
 class TextViews(gtk.HBox):
@@ -136,12 +139,29 @@ class TextViews(gtk.HBox):
         self.info_widget = info_tree.InfoWindow(self.uicore)
 
         #################################################################
+        # Right Paned
+        #################################################################
+
+        # Paned for the right notebook and the bottom console
+        self.right_paned = gtk.VPaned()
+        self.right_paned.set_position(300)
+
+        #################################################################
         # Right NoteBook
         #################################################################
         self.right_notebook = rightnotebook.RightNotebook(self)
 
+        #################################################################
+        # Right Paned
+        #################################################################
+
+        # Console textview
+        self.console = console_textview.ConsoleTextView(self.uicore)
+
         # Add notebook to the paned
-        self.left_paned.pack2(self.right_notebook, True, True)
+        self.right_paned.pack1(self.right_notebook, True, True)
+        self.right_paned.pack2(self.console, True, True)
+        self.left_paned.pack2(self.right_paned, True, True)
         self.right_notebook.show()
 
     def update_lefttext(self, text):
@@ -151,7 +171,7 @@ class TextViews(gtk.HBox):
         theme = theme.lower()
         style_scheme = self.mgr.get_scheme(theme)
         self.buffer.set_style_scheme(style_scheme)
-        self.strings_buffer.set_style_scheme(style_scheme)
+        self.console.buffer.set_style_scheme(style_scheme)
         self.hexdump_view.update_theme(style_scheme)
 
     def update_righttext(self, option):

@@ -121,6 +121,20 @@ class TopButtons(gtk.HBox):
         self.sep.set_draw(False)
         self.main_tb.insert(self.sep, -1)
 
+        # Show/hide console
+        console_toolitem = gtk.ToolItem()
+        a = gtk.HBox(False, 1)
+        self.hide = gtk.ToggleButton('Console')
+        i = gtk.Image()
+        i.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
+        l = gtk.Label('Console')
+        self.hide.set_image(i)
+        self.hide.set_tooltip_text('Show/hide console')
+        self.hide.set_active(True)
+        handler = self.hide.connect('toggled', self._hide_tb_toggled)
+        console_toolitem.add(self.hide)
+        self.main_tb.insert(console_toolitem, -1)
+
         # Throbber
         self.throbber = throbber.Throbber()
         self.throbber_tb = gtk.ToolItem()
@@ -191,6 +205,19 @@ class TopButtons(gtk.HBox):
 
     def _assembler(self, widgets):
         self.create_assemble_dialog()
+
+
+    def _hide_tb_toggled(self, widget):
+        if widget.get_active():
+            self.main.tviews.console.show()
+            i = gtk.Image()
+            i.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
+            widget.set_image(i)
+        else:
+            self.main.tviews.console.hide()
+            i = gtk.Image()
+            i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
+            widget.set_image(i)
 
     def disable_all(self):
         for child in self:
