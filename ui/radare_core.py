@@ -150,6 +150,7 @@ class Core():
         self.send_cmd('e asm.cmtflgrefs=false')     # Show comment flags associated to branch referece
         self.send_cmd('e asm.fcnlines=false')
         self.send_cmd('e asm.linesright=true')
+        self.send_cmd('e asm.cmtcol=50')
 
         if not self.lower_case:
             self.send_cmd('e asm.ucase=true')

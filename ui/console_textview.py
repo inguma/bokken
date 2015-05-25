@@ -48,7 +48,7 @@ class ConsoleTextView(gtk.VBox):
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
-        self.view.set_highlight_current_line(True)
+        #self.view.set_highlight_current_line(True)
         # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
         self.view.set_wrap_mode(gtk.WRAP_NONE)
         self.view.connect("populate-popup", self._populate_menu)
