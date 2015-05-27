@@ -341,6 +341,11 @@ class FileDialog(gtk.Dialog):
             self.io_va.set_sensitive(True)
             self.asm_bytes.set_sensitive(True)
             self.start_addr.set_sensitive(True)
+            self.pseudo_check.set_sensitive(True)
+            self.stack_check.set_sensitive(True)
+            self.flow_lines.set_sensitive(True)
+            self.anal_depth_entry.set_sensitive(True)
+            self.arch.set_sensitive(True)
         else:
             self.io_va.set_active(False)
             self.io_va.set_sensitive(False)
@@ -348,6 +353,11 @@ class FileDialog(gtk.Dialog):
             self.asm_bytes.set_sensitive(False)
             self.start_addr.set_active(False)
             self.start_addr.set_sensitive(False)
+            self.pseudo_check.set_sensitive(False)
+            self.stack_check.set_sensitive(False)
+            self.flow_lines.set_sensitive(False)
+            self.anal_depth_entry.set_sensitive(False)
+            self.arch.set_sensitive(False)
             self._start_addr_ctl(self.start_addr)
             self._flow_lines_ctl(self.flow_lines)
 
