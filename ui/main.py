@@ -66,6 +66,7 @@ class BokkenGTKClient:
         self.dasm_process = False
 
         # Check if we have, at least, one available core; otherwise exit.
+        # TODO: Should be removed? now with one core and dependency_check doing the core check... 
         if not glob.has_radare:
             md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
             md.set_markup("<big><b>No backend engine found!</b></big>")
@@ -102,27 +103,18 @@ class BokkenGTKClient:
             return None
         # Get dialog selected file, backend and options
         self.target = dialog.file
-        self.backend = 'radare'      # To be removed on pyew code clean
+        self.backend = 'radare'      # TODO: To be removed on pyew code clean
 
-        # Load selected core
-        if self.backend == 'pyew':
-            import ui.pyew_core as core
-        elif self.backend == 'radare':
-            import ui.radare_core as core
-        else:
-            print 'Unknown backend: %s' % self.backend
-            sys.exit(1)
+        # Load core
+        import ui.radare_core as core
         self.uicore = core.Core(dialog)
 
         # Create a global object under glob.
         glob.core = self.uicore
 
-        # Check if target name is an URL, pyew stores it as 'raw'
-        self.uicore.is_url(self.target)
-
         if self.target:
             # Just open the target if path is correct or an url
-            if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
+            if not os.path.isfile(self.target):
                 print(common.console_color('Incorrect file argument: %s' %
                         self.target, 'red'))
                 sys.exit(1)
@@ -163,12 +155,8 @@ class BokkenGTKClient:
         self.supervb = gtk.VBox(False, 1)
 
         # Create top buttons and add to VBox
-        if self.backend == 'pyew':
-            import ui.pyew_toolbar as toolbar
-            self.topbuttons = toolbar.TopButtons(self.uicore, self)
-        elif self.backend == 'radare':
-            import ui.radare_toolbar as toolbar
-            self.topbuttons = toolbar.TopButtons(self.uicore, self)
+        import ui.radare_toolbar as toolbar
+        self.topbuttons = toolbar.TopButtons(self.uicore, self)
         self.supervb.pack_start(self.topbuttons, False, True, 1)
 
         # Create VBox to contain textviews and statusbar
@@ -411,7 +399,7 @@ class BokkenGTKClient:
         self.uicore.core.progress_bar = None
 
         # Hide left tree for plain or unsupported formats
-        if self.uicore.core.format in ['Hexdump', 'Plain Text', 'OLE2']:
+        if self.uicore.core.format == 'Hexdump':
             self.tviews.left_scrolled_window.hide()
 
         # Show UI
@@ -419,9 +407,9 @@ class BokkenGTKClient:
         self.sbar.show_all()
         self.tviews.right_notebook.show_all()
 
-        if self.backend == 'radare':
-            if not self.uicore.do_anal:
-                self.topbuttons.diff_tb.set_sensitive(False)
+        if not self.uicore.do_anal:
+            self.topbuttons.diff_tb.set_sensitive(False)
+            self.topbuttons.sections_tb.set_sensitive(False)
 
         self.window.show()
         dialog.destroy()
