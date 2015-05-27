@@ -44,8 +44,6 @@ def bokken():
                         help='File to load')
     parser.add_argument('-r', '--radare', action='store_true',
                         help='Select the radare2 core')
-    parser.add_argument('-p', '--pyew', action='store_true',
-                        help='Select the pyew core')
     parser.add_argument('-w', '--web', action='store_true',
                         help='Start up Mune, the internal web server.')
     parser.add_argument('-l', '--port', nargs='?', default=4546,
@@ -56,9 +54,8 @@ def bokken():
                         help='Use the new and experimental QT interface instead of the GTK one.')
     args = parser.parse_args()
 
-    if args.radare and args.pyew:
+    if args.radare:
         args.radare = False
-        args.pyew = False
 
     if args.web:
         glob.http_server = True
@@ -71,7 +68,7 @@ def bokken():
         import ui.main as main
 
     main.main(args.file_to_load,
-              'radare' if args.radare else ('pyew' if args.pyew else ''),
+              'radare' if args.radare else '',
               )
 
 if __name__ == "__main__":
