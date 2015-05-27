@@ -22,7 +22,7 @@ import platform
 import lib.bokken_globals as glob
 import lib.common as common
 
-# Add plugins directory to the path
+# Add plugins directory to the path (Pyew)
 BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
 sys.path.append(BOKKEN_PATH)
 
@@ -66,13 +66,11 @@ class BokkenGTKClient:
         self.dasm_process = False
 
         # Check if we have, at least, one available core; otherwise exit.
-        if not glob.has_pyew and not glob.has_radare:
+        if not glob.has_radare:
             md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
-            md.set_markup("<big><b>No backend engines found!</b></big>")
+            md.set_markup("<big><b>No backend engine found!</b></big>")
             md.format_secondary_markup((
-                    'Install either pyew or radare to run bokken:\n\n'
-                    '<b>Pyew:</b>\t\t<a href="http://code.google.com/p/pyew/">'
-                    'http://code.google.com/p/pyew/</a>\n'
+                    'Install radare to run bokken:\n\n'
                     '<b>Radare:</b>\t<a href="http://radare.org/">'
                     'http://radare.org</a>'))
             md.run()
@@ -98,13 +96,13 @@ class BokkenGTKClient:
             glob.http = http
 
         # Launch file selection dialog
-        dialog = file_dialog.FileDialog(glob.has_pyew, glob.has_radare, self.backend, self.target, True)
+        dialog = file_dialog.FileDialog(self.target, True)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             return None
         # Get dialog selected file, backend and options
         self.target = dialog.file
-        self.backend = dialog.backend
+        self.backend = 'radare'      # To be removed on pyew code clean
 
         # Load selected core
         if self.backend == 'pyew':
