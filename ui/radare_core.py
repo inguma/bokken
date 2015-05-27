@@ -186,10 +186,6 @@ class Core(lib.backend.BasicBackend):
         if not hasattr(self.info, 'type'):
             self.core.format = 'Hexdump'
 
-        # Check if file name is an URL
-        if self.is_url(filename):
-            self.core.format = 'URL'
-
     def set_options(self, dialog):
         """Method to load all the options from a client."""
         """TODO: I know that I'm passing a UI component, but until the progress
@@ -216,13 +212,6 @@ class Core(lib.backend.BasicBackend):
             self.send_cmd("e io.va=0")
         else:
             self.send_cmd("e io.va=1")
-
-    def is_url(self, filename):
-        if filename.lower().startswith("http://") or \
-           filename.lower().startswith("https://") or \
-           filename.lower().startswith("ftp://"):
-            return True
-        return False
 
     def get_strings(self):
         if not self.allstrings:

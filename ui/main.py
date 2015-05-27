@@ -190,11 +190,11 @@ class BokkenGTKClient:
         self.window.show_all()
 
         # Hide left tree for plain or unsupported formats
-        if self.uicore.core.format in ['Hexdump', 'Plain Text', 'OLE2']:
+        if self.uicore.core.format == 'Hexdump':
             self.tviews.left_scrolled_window.hide()
-        if self.uicore.backend == 'radare':
-            if not self.uicore.do_anal:
-                self.topbuttons.diff_tb.set_sensitive(False)
+        if not self.uicore.do_anal:
+            self.topbuttons.diff_tb.set_sensitive(False)
+            self.topbuttons.sections_tb.set_sensitive(False)
 
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
@@ -208,7 +208,7 @@ class BokkenGTKClient:
         self.uicore.load_file(target)
         if not self.uicore.file_loaded:
             return
-        if self.uicore.core.format in ['PE', 'Elf', 'ELF', 'Program']:
+        if self.uicore.core.format == 'Program' and self.uicore.do_anal:
             self.uicore.get_sections()
             self.uicore.get_relocs()
 
@@ -223,56 +223,34 @@ class BokkenGTKClient:
         self.tviews.update_left_buttons()
 
         # Add data to RIGHT TextView
-        if self.uicore.core.format in ["PE", "ELF", "Program"]:
+        if self.uicore.core.format == "Program":
             self.tviews.update_righttext('Disassembly')
-        elif self.uicore.core.format in ["PYC"]:
-            self.tviews.update_righttext('Python')
-        elif self.uicore.core.format in ['URL']:
-            self.tviews.update_righttext('URL')
-        elif self.uicore.core.format in ['Plain Text']:
-            self.tviews.update_righttext('Plain Text')
         else:
             self.tviews.update_righttext('Hexdump')
 
-        if 'radare' in self.uicore.backend and platform.system() != 'Windows':
+        if platform.system() != 'Windows':
             gobject.timeout_add(250, self.merge_dasm_rightextview)
         else:
             if self.uicore.text_dasm:
                 self.tviews.update_dasm(self.uicore.text_dasm)
             elif self.uicore.fulldasm:
                 self.tviews.update_dasm(self.uicore.fulldasm)
-            if 'radare' in self.uicore.backend:
-                self.uicore.restore_va()
-                if self.uicore.core.format == 'Program':
-                    link_name = "0x%08x" % self.uicore.core.num.get('entry0')
-                    if not link_name:
-                        link_name = "0x%08x" % self.uicore.core.num.get('section..text')
-                    if not link_name:
-                        link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
-                    self.tviews.update_graph(self, link_name)
-                    self.tviews.search(self, link_name)
-                    self.tviews.right_notebook.finish_dasm()
-            elif 'pyew' in self.uicore.backend:
-                if self.uicore.core.format in ['PE', 'ELF']:
-                    if self.uicore.core.ep:
-                        link_name = "0x%08x" % self.uicore.core.ep
-                        if link_name:
-                            if not self.tviews.search(self, link_name):
-                                link_name = "0x%08x" % self.uicore.text_address
-                                self.tviews.search(self, link_name)
+            self.uicore.restore_va()
+            if self.uicore.core.format == 'Program':
+                link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+                if not link_name:
+                    link_name = "0x%08x" % self.uicore.core.num.get('section..text')
+                if not link_name:
+                    link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
+                self.tviews.update_graph(self, link_name)
+                self.tviews.search(self, link_name)
+                self.tviews.right_notebook.finish_dasm()
 
             self.topbuttons.throbber.running('')
 
         # Load data to LEFT Tree
-        if self.uicore.core.format in ["PE", "ELF", "Program"]:
+        if self.uicore.core.format == "Program":
             self.tviews.create_model('Functions')
-
-        elif self.uicore.core.format in ["PDF"]:
-            # Why?! Oh why in the name of God....!!
-            self.tviews.create_model('PDF')
-
-        elif self.uicore.core.format in ["URL"]:
-            self.tviews.create_model('URL')
 
         # Update statusbar with file info
         info = self.uicore.get_file_info()
@@ -285,8 +263,8 @@ class BokkenGTKClient:
 
         # Enable GUI
         self.enable_all()
-        if self.uicore.backend == 'radare' and platform.system() != 'Windows':
-            if self.uicore.core.format not in ["PE", "ELF", "Program"]:
+        if  platform.system() != 'Windows':
+            if self.uicore.core.format != "Program":
                 self.topbuttons.throbber.running('')
             else:
                 self.tviews.right_textview.right_scrolled_window.set_sensitive(False)
@@ -294,22 +272,18 @@ class BokkenGTKClient:
 
     def merge_dasm_rightextview(self):
         """ Timeout to make sure we join the spawned process for disassembling a binary. """
-        if self.uicore.backend == 'radare':
-            if not self.dasm_process:
-                # We don't need a process for this file.
-                return False
-            if not self.dasm_event.is_set():
-                # Keep retrying.
-                return True
-        else:
-            if self.dasm_process.is_alive():
-                return True
+        if not self.dasm_process:
+            # We don't need a process for this file.
+            return False
+        if not self.dasm_event.is_set():
+            # Keep retrying.
+            return True
 
         # Once finished the load, let's fill the UI
         #print "DEBUG: DASM finished, reading from queue!"
         #print "Process state", self.dasm_process.is_alive()
         # We read from the queue the disassembly.
-        if 'radare' in self.uicore.backend and self.uicore.do_anal:
+        if self.uicore.do_anal:
             self.uicore.text_dasm, self.uicore.sections_lines = self.dasm_queue.get()
         #print "DEBUG: Got a disassembly of", len(self.uicore.text_dasm), "bytes."
         #print "DEBUG: Section lines created", self.uicore.sections_lines
@@ -318,25 +292,17 @@ class BokkenGTKClient:
             self.tviews.update_dasm(self.uicore.text_dasm)
         else:
             self.tviews.update_dasm(self.uicore.fulldasm)
-        if 'radare' in self.uicore.backend:
-            self.uicore.restore_va()
-            link_name = "0x%08x" % self.uicore.core.num.get('entry0')
-            if not link_name:
-                link_name = "0x%08x" % self.uicore.core.num.get('section..text')
-            if not link_name:
-                link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
-            self.tviews.update_graph(self, link_name)
-            self.tviews.search(self, link_name)
-            self.tviews.right_notebook.finish_dasm()
-            self.topbuttons.menu._finish_dasm()
-        elif 'pyew' in self.uicore.backend:
-            if self.uicore.core.format in ['PE', 'ELF']:
-                if self.uicore.core.ep:
-                    link_name = "0x%08x" % self.uicore.core.ep
-                    if link_name:
-                        if not self.tviews.search(self, link_name):
-                            link_name = "0x%08x" % self.uicore.text_address
-                            #self.tviews.search(self, link_name)
+
+        self.uicore.restore_va()
+        link_name = "0x%08x" % self.uicore.core.num.get('entry0')
+        if not link_name:
+            link_name = "0x%08x" % self.uicore.core.num.get('section..text')
+        if not link_name:
+            link_name = "0x%08x" % self.uicore.core.num.get('section.' + self.uicore.execsections[0][0])
+        self.tviews.update_graph(self, link_name)
+        self.tviews.search(self, link_name)
+        self.tviews.right_notebook.finish_dasm()
+        self.topbuttons.menu._finish_dasm()
 
         self.tviews.right_textview.right_scrolled_window.set_sensitive(True)
         self.topbuttons.throbber.running('')
@@ -365,7 +331,7 @@ class BokkenGTKClient:
 
         if self.target:
             # Just open the target if path is correct or an url
-            if self.uicore.core.format != 'URL' and not os.path.isfile(self.target):
+            if not os.path.isfile(self.target):
                 print(common.console_color('Incorrect file argument: ' %
                         self.target, 'red'))
                 #sys.exit(1)
@@ -407,10 +373,6 @@ class BokkenGTKClient:
         self.sbar.show_all()
         self.tviews.right_notebook.show_all()
 
-        if not self.uicore.do_anal:
-            self.topbuttons.diff_tb.set_sensitive(False)
-            self.topbuttons.sections_tb.set_sensitive(False)
-
         self.window.show()
         dialog.destroy()
 
@@ -431,7 +393,7 @@ class BokkenGTKClient:
             return True
 
         gtk.main_quit()
-        if self.dasm_process and self.uicore.backend == 'radare':
+        if self.dasm_process:
             self.dasm_process.terminate()
         return True
 
