@@ -326,8 +326,6 @@ class BokkenGTKClient:
         self.window.hide()
         self.disable_all()
         self.target = target
-        # Check if target name is an URL, pyew stores it as 'raw'
-        self.uicore.is_url(self.target)
 
         if self.target:
             # Just open the target if path is correct or an url
