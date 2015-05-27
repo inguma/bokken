@@ -35,12 +35,11 @@ import gtk
 import gobject
 
 # This is just general info, to help people knowing their system
-print "Starting bokken, running on:"
-print "  Python version:"
-print "\n".join("    "+x for x in sys.version.split("\n"))
-print "  GTK version:", ".".join(str(x) for x in gtk.gtk_version)
-print "  PyGTK version:", ".".join(str(x) for x in gtk.pygtk_version)
-print
+print("Starting bokken {}, running on:".format(glob.version))
+print("  Python version:")
+print("\n".join("    "+x for x in sys.version.split("\n")))
+print("  GTK version: {}".format(".".join(str(x) for x in gtk.gtk_version)))
+print("  PyGTK version: {}\n".format(".".join(str(x) for x in gtk.pygtk_version)))
 
 import ui.gtk2.common
 import ui.textviews as textviews

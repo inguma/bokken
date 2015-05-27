@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 import lib.common as common
+import lib.backend
 import os
 import re
 import tempfile
@@ -25,51 +26,19 @@ import tempfile
 from r2.r_core import *
 from r2.r_bin import *
 
-class Core():
+class Core(lib.backend.BasicBackend):
 
     def __init__(self, dialog):
 
-        self.core = RCore()
-        self.cons = RCons()
-        self.assembler = self.core.assembler
-        self.core.format = ''
-        self.debug = False
-
-        self.set_options(dialog)
-
-        self.fulldasm = ''
-        self.text_dasm = ''     # Dasm of the .text section
-        self.pythondasm = ''
-        self.textsize= 0
-        self.fullhex = ''
-        self.allstrings = []
-        self.allrelocs = []
-        self.allfuncs = []
-        self.allsections = []
-        self.execsections = []
-        self.sections_size = []
-        self.sections_lines = []
-        self.allimports = {}
-        self.allexports = []
-        self.fileinfo = ''
-        self.full_fileinfo = {}
-        self.pdfinfo = ''
-        self.alllinks = []
-        self.ars_magica = ''
-        self.parsed_links = {'remotes':[], 'locals':[]}
-        self.links_struct = []
-        self.dot = ''
-        self.graph_layout = 'flow'
-        self.http_dot = ''
-        self.checked_urls = []
-        self.bad_urls = []
-        self.cmd = ''
-        self.last_cmd = ''
+        # We init just basic things, then create all the rest.
         self.corename = 'radare'
-
         self.backend = 'radare'
         self.version = R2_VERSION
-        self.file_loaded = False
+        self.debug = False
+
+        self.clean_fullvars()
+
+        self.set_options(dialog)
 
     def send_cmd(self, string):
         '''This function is in the middle of the communication of the core and
@@ -92,6 +61,9 @@ class Core():
         return output
 
     def clean_fullvars(self):
+        '''Function to initialize members in the Core class.  Common (i.e.
+        non-r2) variables should be migrated to the BasicCore class.'''
+
         self.fulldasm = ''
         self.text_dasm = ''     # Dasm of the .text section
         self.pythondasm = ''
@@ -106,6 +78,9 @@ class Core():
         self.sections_lines = []
         self.allimports = {}
         self.allexports = []
+        self.alllinks = []
+        self.filename = ''
+        self.file_loaded = False
         self.fileinfo = ''
         self.full_fileinfo = {}
         self.pdfinfo = ''
@@ -126,13 +101,10 @@ class Core():
         self.assembler = self.core.assembler
         self.core.format = ''
 
-        self.backend = 'radare'
-        self.file_loaded = False
-
-    def load_file(self, file):
+    def load_file(self, filename):
         self.update_progress_bar("Loading file", 0.1)
-        self.file = file
-        open_result = self.core.file_open(file, 0, 0)
+        self.filename = filename
+        open_result = self.core.file_open(filename, 0, 0)
         if open_result is None:
             self.file_loaded = False
             return
@@ -147,7 +119,7 @@ class Core():
         self.send_cmd('e asm.bytespace=true')
         self.send_cmd('e asm.cmtright=true')
         self.send_cmd('e asm.xrefs=false')          # Show xrefs in disassembly
-        self.send_cmd('e asm.cmtflgrefs=false')     # Show comment flags associated to branch referece
+        self.send_cmd('e asm.cmtflgrefs=false')     # Show comment flags associated to branch reference
         self.send_cmd('e asm.fcnlines=false')
         self.send_cmd('e asm.linesright=true')
         self.send_cmd('e asm.cmtcol=50')
@@ -194,8 +166,8 @@ class Core():
         self.bin = self.core.bin
         self.info = self.bin.get_info()
         if not self.info:
-            list = self.send_cmd_str('i').split('\n')
-            for line in list:
+            output = self.send_cmd_str('i').split('\n')
+            for line in output:
                 if line:
                     line = line.split('\t')
                     if line[0] == 'size':
@@ -215,7 +187,8 @@ class Core():
             self.core.format = 'Hexdump'
 
         # Check if file name is an URL
-        self.is_url(file)
+        if self.is_url(filename):
+            self.core.format = 'URL'
 
     def set_options(self, dialog):
         """Method to load all the options from a client."""
@@ -244,12 +217,12 @@ class Core():
         else:
             self.send_cmd("e io.va=1")
 
-    def is_url(self, file):
-        self.filename = file
-        if self.filename.lower().startswith("http://") or \
-           self.filename.lower().startswith("https://") or \
-           self.filename.lower().startswith("ftp://"):
-            self.core.format = 'URL'
+    def is_url(self, filename):
+        if filename.lower().startswith("http://") or \
+           filename.lower().startswith("https://") or \
+           filename.lower().startswith("ftp://"):
+            return True
+        return False
 
     def get_strings(self):
         if not self.allstrings:
