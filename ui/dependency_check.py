@@ -25,13 +25,10 @@ import os, sys, platform
 
 def check_all():
     python_version()
-    pyew_dependency_check()
     radare_dependency_check()
     cores()
     gtkui_dependency_check()
-    psyco_dependency_check()
-    tidy_dependency_check()
-    graphvix_dependency_check()
+    graphviz_dependency_check()
 
 def python_version():
     print('\tPython version...', end='')
@@ -41,45 +38,6 @@ def python_version():
         exit(1)
     else:
         print(common.console_color('\tOK', 'green'))
-
-def tidy_dependency_check():
-    '''Try to use tidy'''
-
-    print('\tTidy availability...', end='')
-
-    try:
-        import tidy
-        print(common.console_color('\tOK', 'green'))
-    except ImportError:
-        print(common.console_color("\tD'oh!", 'red'))
-        msg = 'No tidy module found. HTTP code won\'t be properly formatted\n'
-        print(msg)
-
-def pyew_dependency_check():
-    '''We need to verify the presence of pyew'''
-
-    print('Checking:')
-    print('\tPyew availability... ', end='')
-
-    try:
-        import pyew.pyew
-        print(common.console_color('\tOK', 'green'))
-        glob.has_pyew = True
-    except:
-        print(common.console_color("\tD'oh!", 'red'))
-        print('You need pyew in order to use the pyew backend in binaries and '
-                'PDFs. Download it from its web:\n'
-                '    - http://code.google.com/p/pyew/\n')
-        return
-
-    if common.version_gt(glob.min_pyew_version, pyew.pyew.HUMAN_VERSION):
-        print(common.console_color("\tD'oh!", 'red'))
-        print(common.console_color(('Your version of pyew (%s) is not supported! '
-                'It must be equal or greater than %s.' %
-                (pyew.pyew.HUMAN_VERSION, glob.min_pyew_version)), 'red'))
-        print('Everything from here may break at any time.  If you feel that '
-                'this check is wrong, please file a bug at '
-                'http://bokken.inguma.eu')
 
 def radare_dependency_check():
     '''We need to verify the presence of radare2'''
@@ -111,25 +69,11 @@ def radare_dependency_check():
                 'http://bokken.inguma.eu')
 
 def cores():
-    if not glob.has_pyew and not glob.has_radare:
-        print('You need at least one dissasembler core, either pyew or radare:\n'
-                '    - http://code.google.com/p/pyew/\n'
+    '''I keep it, although Pyew has been removed, as it may be useful in the future'''
+    if not glob.has_radare:
+        print('You need radare2 as dissasembler core:\n'
                 '    - http://www.radare.org')
         sys.exit(1)
-
-def psyco_dependency_check():
-    '''Try to use psyco'''
-
-    print('\tPsyco availability...', end='')
-
-    try:
-        import psyco
-        psyco.log()
-        psyco.full()
-        print(common.console_color('\tOK', 'green'))
-    except ImportError:
-        print(common.console_color("\tD'oh!", 'red'))
-        print("No psyco module found. It's recommended to use it to improve performance\n")
 
 def gtkui_dependency_check():
     '''
@@ -165,7 +109,7 @@ def gtkui_dependency_check():
                 '    - On Debian-based distributions: apt-get install python-gtksourceview2')
         sys.exit(1)
 
-def graphvix_dependency_check():
+def graphviz_dependency_check():
     # Check Graphviz
     print("\tGraphviz binaries...", end="")
     if os.environ.has_key('PATH'):
