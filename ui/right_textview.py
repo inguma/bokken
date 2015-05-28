@@ -71,8 +71,7 @@ class RightTextView(gtk.VBox, Searchable):
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
         self.view.connect("key-release-event", self._cursor_moved)
-        if self.uicore.backend == 'radare':
-            tooltip_handle = self.view.connect('motion-notify-event', self.call_tooltip)
+        tooltip_handle = self.view.connect('motion-notify-event', self.call_tooltip)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
@@ -87,13 +86,11 @@ class RightTextView(gtk.VBox, Searchable):
 
         self.buffer.set_highlight_syntax(True)
         manager = self.buffer.get_data('languages-manager')
-        if self.uicore.backend == 'radare':
-            if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
-                language = manager.get_language('arm-asm')
-            else:
-                language = manager.get_language('asm')
+        if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
+            language = manager.get_language('arm-asm')
         else:
             language = manager.get_language('asm')
+
         self.buffer.set_language(language)
 
         self.mgr = gtksourceview2.style_scheme_manager_get_default()
@@ -195,31 +192,30 @@ class RightTextView(gtk.VBox, Searchable):
             menu.prepend(opc)
             opc.connect("activate", self._call_comments_dialog, iter, addr)
 
-            if self.uicore.backend == 'radare':
-                # Add Xrefs menu
-                refs = []
-                xrefs = []
+            # Add Xrefs menu
+            refs = []
+            xrefs = []
 
-                xmenu = xrefs_menu.XrefsMenu(self.uicore, self.main)
-                addr = self.uicore.core.num.get(addr)
-                fcn = self.uicore.core.anal.get_fcn_in(addr, 0)
+            xmenu = xrefs_menu.XrefsMenu(self.uicore, self.main)
+            addr = self.uicore.core.num.get(addr)
+            fcn = self.uicore.core.anal.get_fcn_in(addr, 0)
 
-                if fcn:
-                    for ref in fcn.get_refs():
-                        if not "0x%08x" % ref.addr in refs:
-                            refs.append("0x%08x" % ref.addr)
-                    for xref in fcn.get_xrefs():
-                        if not "0x%08x" % xref.addr in xrefs:
-                            xrefs.append("0x%08x" % xref.addr)
+            if fcn:
+                for ref in fcn.get_refs():
+                    if not "0x%08x" % ref.addr in refs:
+                        refs.append("0x%08x" % ref.addr)
+                for xref in fcn.get_xrefs():
+                    if not "0x%08x" % xref.addr in xrefs:
+                        xrefs.append("0x%08x" % xref.addr)
 
-                    refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
-                    sep = gtk.SeparatorMenuItem()
-                    menu.prepend(sep)
-                    if hasattr(xmenu, 'xfrommenu'):
-                        menu.prepend(xmenu.xfrommenu)
-                    if hasattr(xmenu, 'xtomenu'):
-                        menu.prepend(xmenu.xtomenu)
-                    menu.prepend(xmenu.fcnm)
+                refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
+                sep = gtk.SeparatorMenuItem()
+                menu.prepend(sep)
+                if hasattr(xmenu, 'xfrommenu'):
+                    menu.prepend(xmenu.xfrommenu)
+                if hasattr(xmenu, 'xtomenu'):
+                    menu.prepend(xmenu.xtomenu)
+                menu.prepend(xmenu.fcnm)
 
         menu.show_all()
 
@@ -233,8 +229,7 @@ class RightTextView(gtk.VBox, Searchable):
             tainted_comment = '  ; ' + tainted_comment
             dialog.destroy()
             self.buffer.insert(iter, tainted_comment + '\n')
-            if self.uicore.backend == 'radare':
-                self.uicore.add_comment(offset, comment)
+            self.uicore.add_comment(offset, comment)
 
     def set_completion(self):
         # Seek entry EntryCompletion
@@ -332,8 +327,7 @@ class RightTextView(gtk.VBox, Searchable):
             elif '.' in search_string:
                 if '[' in search_string:
                     search_string = search_string.strip('[').strip(']')
-                if self.uicore.backend == 'radare':
-                    self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
+                self.addr_tip = "0x%08x" % self.uicore.core.num.get(search_string)
             else:
                 pass
 
@@ -373,8 +367,7 @@ class RightTextView(gtk.VBox, Searchable):
             elif '.' in search_string:
                 if '[' in search_string:
                     search_string = search_string.strip('[').strip(']')
-                if self.uicore.backend == 'radare':
-                    self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
+                self.search_string = "0x%08x" % self.uicore.core.num.get(search_string)
             else:
                 pass
 
@@ -417,8 +410,7 @@ class RightTextView(gtk.VBox, Searchable):
                 else:
                     self.search_string = None
                     self.last_search_iter = None
-                if self.uicore.backend == 'radare' and self.dograph:
-                    self.textviews.update_graph(self, self.search_string)
+                self.textviews.update_graph(self, self.search_string)
 
     def get_line_on_coords(self, x, y):
         '''This function returns the entire line containing the coordinates
