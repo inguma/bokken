@@ -33,7 +33,7 @@ class AboutDialog():
         ui.gtk2.common.set_bokken_icon(about)
         about.set_version(glob.version)
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
-        about.set_comments("A GUI for pyew and radare2!")
+        about.set_comments("A GUI for radare2!")
         about.set_website("http://www.bokken.re")
         about.set_authors(["Hugo Teso <hteso@inguma.eu>", "David Martínez <ender@inguma.eu>"])
         about.set_artists(["Ana Muniesa <ana.muniesa@gmail.com>", "Huahe <juanje@gmail.com> twitter: @huahe", "Marcos Gómez <renx67@gmail.com>"])

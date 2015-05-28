@@ -9,6 +9,4 @@ if [ "$PYTHON_VER" -eq 3 ];then
     PYTHON_EXECUTABLE="python2"
 fi
 
-# distorm in bokken+pyew mode needs this for now.
-export LD_LIBRARY_PATH=$BOKKEN_DIR/lib
 $PYTHON_EXECUTABLE $BOKKEN_DIR/bokken.py $@

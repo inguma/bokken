@@ -22,10 +22,6 @@ import platform
 import lib.bokken_globals as glob
 import lib.common as common
 
-# Add plugins directory to the path (Pyew)
-BOKKEN_PATH = os.getcwd() + os.sep + 'plugins' + os.sep
-sys.path.append(BOKKEN_PATH)
-
 # Perform the GTK UI dependency check here
 import ui.dependency_check as dependency_check
 dependency_check.check_all()
@@ -103,7 +99,7 @@ class BokkenGTKClient:
             return None
         # Get dialog selected file, backend and options
         self.target = dialog.file
-        self.backend = 'radare'      # TODO: To be removed on pyew code clean
+        self.backend = 'radare'      # I'm leaving that as may be needed in the future
 
         # Load core
         import ui.radare_core as core

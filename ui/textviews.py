@@ -282,7 +282,6 @@ class TextViews(gtk.HBox):
         if self.uicore.core.format in ['PE', 'Program']:
             options = 'full_bin'
         elif self.uicore.core.format in ['ELF']:
-            # Pyew doesn't has support for Elf Imports/Exports parsing
             options = 'full_bin'
         elif self.uicore.core.format in ['Hexdump']:
             options = ''
