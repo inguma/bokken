@@ -34,18 +34,6 @@ class HexdumpView(gtk.HBox):
         #################################################################
 
         self.uicore = core
-        if self.uicore.backend == 'pyew':
-            try:
-                from pydistorm import Decode, Decode16Bits, Decode32Bits, Decode64Bits
-            except ImportError:
-                from pyew.pydistorm import Decode, Decode16Bits, Decode32Bits, Decode64Bits
-            self.Decode = Decode
-            if self.uicore.core.type == 16:
-                self.decode = Decode16Bits
-            elif self.uicore.core.type == 32:
-                self.decode = Decode32Bits
-            elif self.uicore.core.type == 64:
-                self.decode = Decode64Bits
 
         # Scrolledwindow for Offsets
         self.offset_sw = gtk.ScrolledWindow()
@@ -162,20 +150,12 @@ class HexdumpView(gtk.HBox):
         ASCII_DUMP = ''
 
         DUMP_LINES = DUMP.split('\n')
-        if self.uicore.backend == 'radare':
-            for line in DUMP_LINES[1:]:
-                line = line.split('  ')
-                if len(line) > 1:
-                    OFFSET_DUMP += line[0] +'\n'
-                    HEX_DUMP += line[1] + '\n'
-                    ASCII_DUMP += line[-1] + '\n'
-        elif self.uicore.backend == 'pyew':
-            for line in DUMP_LINES:
-                line = line.split('   ')
-                if len(line) > 1:
-                    OFFSET_DUMP += line[0] +'\n'
-                    HEX_DUMP += line[1] + '\n'
-                    ASCII_DUMP += line[-1][1:] + '\n'
+        for line in DUMP_LINES[1:]:
+            line = line.split('  ')
+            if len(line) > 1:
+                OFFSET_DUMP += line[0] +'\n'
+                HEX_DUMP += line[1] + '\n'
+                ASCII_DUMP += line[-1] + '\n'
 
         self.offset_buffer.set_text(OFFSET_DUMP)
         self.hex_buffer.set_text(HEX_DUMP)
@@ -273,20 +253,9 @@ class HexdumpView(gtk.HBox):
     def set_asm_text(self, hex):
         if hex is None:
             return
-        if self.uicore.backend == 'radare':
-            dasm = self.uicore.core.assembler.mdisassemble_hexstr(hex)
-            if dasm:
-                asm = dasm.buf_asm
-                if not self.uicore.lower_case:
-                    asm = asm.upper().replace('0X', '0x')
-                self.asm_buffer.set_text(hex + '\n\n' + asm)
-        elif self.uicore.backend == 'pyew':
-            dasm = ''
-            for i in self.Decode(0, tmp_hex, self.decode):
-                mn = "%s " % i.mnemonic
-                op = "%s" % i.operands
-                if self.uicore.lower_case:
-                    dasm += mn.lower() + op.lower() + '\n'
-                else:
-                    dasm += mn + op + '\n'
-            self.asm_buffer.set_text(hex + '\n\n' + dasm)
+        dasm = self.uicore.core.assembler.mdisassemble_hexstr(hex)
+        if dasm:
+            asm = dasm.buf_asm
+            if not self.uicore.lower_case:
+                asm = asm.upper().replace('0X', '0x')
+            self.asm_buffer.set_text(hex + '\n\n' + asm)
