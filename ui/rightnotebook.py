@@ -50,7 +50,7 @@ class RightNotebook(gtk.Notebook):
         #################################################
         # Code view TAB
         self.append_page(self.scrolled_window)
-        if self.uicore.backend == 'radare' and platform.system() != 'Windows':
+        if platform.system() != 'Windows':
             text = 'Loading dasm...'
         else:
             text = 'Code'
@@ -58,17 +58,13 @@ class RightNotebook(gtk.Notebook):
 
         self.set_tab_label_packing(self.scrolled_window, False, False, gtk.PACK_START)
         self.set_tab_label(self.scrolled_window, self.code_tab)
-        if self.uicore.backend == 'radare':
-            self.code_tab.get_children()[0].set_sensitive(False)
+        self.code_tab.get_children()[0].set_sensitive(False)
 
         #################################################
         # Graph map TAB
         self.append_page(self.xdot_box)
 
-        if self.uicore.backend == 'pyew':
-            label = 'Callgraph'
-        else:
-            label = 'Flowgraph'
+        label = 'Flowgraph'
 
         tab = self.create_tab(label, self.xdot_box, 'ZOOM_FIT')
 
@@ -99,19 +95,18 @@ class RightNotebook(gtk.Notebook):
         self.set_tab_label_packing(self.sections_treeview, False, False, gtk.PACK_START)
         self.set_tab_label(self.sections_treeview, tab)
 
-        if self.uicore.backend == 'radare':
-            self.add_info_elements_tab()
+        self.add_info_elements_tab()
 
         self.connect("switch-page", self.on_switch)
 
         #self.set_current_page(0)
         # Hide callgraph for URL, Plain Text and PDF
-        if self.uicore.core.format in ['Plain Text', 'PDF', 'Hexdump']:
+        if self.uicore.core.format == 'Hexdump':
             self.remove_page(1)
-            if self.uicore.core.format != 'Plain Text':
-                self.remove_page(0)
+            self.remove_page(0)
+            self.remove_page(2)
             self.set_current_page(0)
-        elif self.uicore.core.format in ['Program', 'PE', 'ELF'] and self.uicore.backend == 'radare':
+        elif self.uicore.core.format in ['Program', 'PE', 'ELF']:
             # Set flowgraph view as default while disassembly finishes
             self.set_current_page(1)
 
@@ -132,37 +127,23 @@ class RightNotebook(gtk.Notebook):
             elif page == page_num and page not in avoid:
                 widget = self.get_nth_page(page)
                 widget.add_content()
-        if page_num == self.page_num(self.xdot_box) and self.uicore.backend == 'radare':
+        if page_num == self.page_num(self.xdot_box):
             self.xdot_box.set_dot(self.uicore.get_callgraph(self.last_fcn))
 
     def add_bindiff_tab(self, filename, fcn_thr, bb_thr, bytes):
         #################################################
         # Bindiffing TAB
-        if self.uicore.backend == 'radare':
-            self.append_page(self.bindiff)
-            tab = self.create_tab('Bindiff', self.bindiff, 'REFRESH')
+        self.append_page(self.bindiff)
+        tab = self.create_tab('Bindiff', self.bindiff, 'REFRESH')
 
-            self.set_tab_label_packing(self.bindiff, False, False, gtk.PACK_START)
-            self.set_tab_label(self.bindiff, tab)
-            self.show_all()
-            num = self.page_num(self.bindiff)
-            self.set_current_page(num)
+        self.set_tab_label_packing(self.bindiff, False, False, gtk.PACK_START)
+        self.set_tab_label(self.bindiff, tab)
+        self.show_all()
+        num = self.page_num(self.bindiff)
+        self.set_current_page(num)
 
-            self.tviews.bindiff_widget.set_file(filename, fcn_thr, bb_thr, bytes)
-            self.tviews.bindiff_widget.diff()
-
-    def add_html_elements_tab(self):
-        #################################################
-        # HTML elements TAB
-        if self.uicore.core.format == 'URL':
-            self.append_page(self.html_elements)
-            tab = self.create_tab('Elements', self.html_elements, 'INFO')
-
-            self.set_tab_label_packing(self.html_elements, False, False, gtk.PACK_START)
-            self.set_tab_label(self.html_elements, tab)
-            self.html_elements.html_tree.create_html_tree()
-            self.show_all()
-            self.set_current_page(0)
+        self.tviews.bindiff_widget.set_file(filename, fcn_thr, bb_thr, bytes)
+        self.tviews.bindiff_widget.diff()
 
     def add_info_elements_tab(self):
         #################################################
@@ -201,7 +182,7 @@ class RightNotebook(gtk.Notebook):
         tab_box.pack_end(close_button, False, False)
 
         tab_box.show_all()
-        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', "Sections", 'Hexdump', 'Bindiff', 'Elements', 'File info']:
+        if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', "Sections", 'Hexdump', 'Bindiff', 'File info']:
             close_button.hide()
 
         return tab_box

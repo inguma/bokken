@@ -201,7 +201,7 @@ class MenuBar(gtk.Menu):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(glob.has_pyew, glob.has_radare, self.uicore.backend, file)
+        dialog = file_dialog.FileDialog(file, False)
         resp = dialog.run()
         if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
             dialog.destroy()

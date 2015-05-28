@@ -335,7 +335,7 @@ class BokkenGTKClient:
                 #sys.exit(1)
 
             # Get dialog selected file, backend and options
-            self.backend = dialog.backend
+            self.backend = 'radare'
 
             # Set user selected options
             self.uicore.set_options(dialog)
