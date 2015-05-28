@@ -142,11 +142,10 @@ class SectionsTreeView(gtk.TreeView):
             (path, column, x, y) = coordinates
     
         # FIXME: We should do this on the uicore, possibly in every operation.
-        if self.uicore.backend == 'radare':
-            if self.uicore.use_va:
-                self.uicore.core.cmd0('e io.va=0')
-            else:
-                self.uicore.core.cmd0('e io.va=1')
+        if self.uicore.use_va:
+            self.uicore.core.cmd0('e io.va=0')
+        else:
+            self.uicore.core.cmd0('e io.va=1')
     
         # Main loop, deciding whether to take an action or display a pop-up.
         if primary_action:

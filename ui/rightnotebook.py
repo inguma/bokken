@@ -35,7 +35,6 @@ class RightNotebook(gtk.Notebook):
         self.sections_treeview = self.tviews.sections_treeview
         self.hexdump_view = self.tviews.hexdump_view
         self.bindiff = self.tviews.bindiff
-        self.html_elements = self.tviews.html_widget
         self.info_elements = self.tviews.info_widget
         self.uicore = self.tviews.uicore
         self.main = self.tviews.main
@@ -122,7 +121,6 @@ class RightNotebook(gtk.Notebook):
                 self.page_num(self.scrolled_window),
                 self.page_num(self.xdot_box),
                 self.page_num(self.bindiff),
-                self.page_num(self.html_elements),
                 self.page_num(self.info_elements)
                 ]
         #avoid = [0, 1, 5]

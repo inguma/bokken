@@ -127,12 +127,6 @@ class TextViews(gtk.HBox):
         self.bindiff = self.bindiff_widget.dw
 
         #################################################################
-        # HTML elements widget
-        #################################################################
-
-        self.html_widget = html_tree.HtmlWindow(self.uicore)
-
-        #################################################################
         # Full file info widget
         #################################################################
 
@@ -180,7 +174,7 @@ class TextViews(gtk.HBox):
         if option in ['Disassembly', 'Hexdump', 'Program']:
             # We don't want dasm and graph for not analyzed programs or other files
             if option != 'Hexdump':
-                if self.uicore.backend == 'radare' and platform.system() != 'Windows':
+                if platform.system() != 'Windows':
                     from multiprocessing import Process, Queue, Event
                     # These functions are extremely expensive, so we fork a process for them.
                     if self.uicore.allsections:
@@ -211,54 +205,19 @@ class TextViews(gtk.HBox):
             self.hexdump = self.uicore.get_full_hexdump()
             self.strings = self.uicore.get_strings()
 
-        elif option == 'Python':
-            self.dasm = self.uicore.get_python_dasm()
-        elif option == 'URL':
-            self.uicore.core.bsize = self.uicore.core.maxsize
-            self.uicore.core.seek(0)
-            language = 'http'
-            try:
-                code = "%s" % ( self.format_html(self.uicore.core.buf) )
-            except:
-                code = unicode(self.uicore.core.buf, 'iso8859-15')
-            self.uicore.core.bsize = 512
-            print "set text to buffer"
-            self.buffer.set_text(code)
-            self.right_notebook.xdot_box.set_dot(self.uicore.http_dot)
-            self.hexdump = self.uicore.get_full_hexdump()
-            self.hexdump_view.set_hexdump(self.hexdump)
-        elif option == 'Plain Text':
-            language = self.get_language()
-            data = self.uicore.get_file_text()
-
-            if language:
-                self.buffer.set_language(language)
-                self.buffer.set_text(data)
-            else:
-                self.dasm = self.uicore.get_fulldasm()
-                self.buffer.set_text(self.dasm)
-                self.uicore.core.format = 'Hexdump'
-                option = 'Disassembly'
-
         # Highlight syntax just for 'Disassembly', 'URL' 'Program' and 'Plain text'
-        if option in ['Disassembly', 'URL', 'Plain Text', 'Python', 'Program']:
+        if option in ['Disassembly', 'Program']:
             self.buffer.set_highlight_syntax(True)
         else:
             self.buffer.set_highlight_syntax(False)
 
-        # Wrap text only for 'String Repr'
-        if option != 'String Repr':
-            self.view.set_wrap_mode(gtk.WRAP_NONE)
-        else:
-            self.view.set_wrap_mode(gtk.WRAP_WORD)
+        self.view.set_wrap_mode(gtk.WRAP_WORD)
 
         # Hide left content for 'Plain Text'
-        if self.uicore.core.format not in ['Plain Text', 'Hexdump']:
+        if self.uicore.core.format not in ['Hexdump']:
             self.left_scrolled_window.show()
         else:
             self.left_scrolled_window.hide()
-        if self.uicore.core.format == 'URL':
-            self.right_notebook.add_html_elements_tab()
 
         #self.update_tabs(option)
 
@@ -268,13 +227,6 @@ class TextViews(gtk.HBox):
 
     def create_completion(self):
         self.right_textview.set_completion()
-
-    def format_html(self, code):
-        import tidy
-        # Tidy options reference: http://tidy.sourceforge.net/docs/quickref.html
-        options = dict(output_xhtml=1, add_xml_decl=1, indent=1, tidy_mark=0, output_encoding='UTF8', wrap=0)
-        code = tidy.parseString(code, **options)
-        return code
 
     def create_model(self, mode):
         # Clear before changing contents
@@ -298,11 +250,8 @@ class TextViews(gtk.HBox):
         elif mode == 'Imports':
             # FIXME horrible...
             # We have different import format for PE or Elf
-            if self.uicore.backend == 'radare':
-                if 'elf' in self.uicore.info.rclass:
-                    self.left_treeview.create_tree( self.uicore.get_elf_imports() )
-                else:
-                    self.left_treeview.create_tree( self.uicore.get_imports() )
+            if 'elf' in self.uicore.info.rclass:
+                self.left_treeview.create_tree( self.uicore.get_elf_imports() )
             else:
                 self.left_treeview.create_tree( self.uicore.get_imports() )
         elif mode == 'Symbols':
@@ -311,14 +260,6 @@ class TextViews(gtk.HBox):
                 if len(export) < 5:
                     export.insert(0, self.left_treeview.exp_pix)
                 self.left_treeview.store.append(export)
-        elif mode == 'PDF':
-            self.left_treeview.create_pdf_tree( self.uicore.get_pdf_info() )
-        elif mode == 'URL':
-            self.left_treeview.create_url_tree( self.uicore.parsed_links )
-        elif mode == 'Headers':
-            self.left_treeview.create_url_headers( self.uicore.url_headers )
-        elif mode == 'Cookies':
-            self.left_treeview.create_cookies_tree( self.uicore.url_cookies )
 
     def _hide_tb_toggled(self, widget):
         if widget.get_active():
@@ -342,14 +283,7 @@ class TextViews(gtk.HBox):
             options = 'full_bin'
         elif self.uicore.core.format in ['ELF']:
             # Pyew doesn't has support for Elf Imports/Exports parsing
-            if 'pyew' in self.uicore.backend:
-                options = 'half_bin'
-            else:
-                options = 'full_bin'
-        elif self.uicore.core.format in ['PDF']:
-            options = 'pdf'
-        elif self.uicore.core.format in ['URL']:
-            options = 'url'
+            options = 'full_bin'
         elif self.uicore.core.format in ['Hexdump']:
             options = ''
         else:
@@ -405,45 +339,3 @@ class TextViews(gtk.HBox):
                 self.search_string = None      
                 self.last_search_iter = None
                 return False
-
-    def get_language(self):
-        if 'http' in self.uicore.core.filename:
-            language = 'http'
-        else:
-            if os.path.isabs(self.uicore.core.filename):
-                path = self.uicore.core.filename
-            else:
-                path = os.path.abspath(self.uicore.core.filename)
-            f = gio.File(path)
-        
-            path = f.get_path()
-        
-            info = f.query_info("*")
-    
-            mime_type = info.get_content_type()
-            language = None
-        
-            if mime_type:
-                language = self.get_language_for_mime_type(mime_type)
-                if not language:
-                    print 'No language found for mime type "%s"' % mime_type
-            else:
-                print 'Couldn\'t get mime type for file "%s"' % self.uicore.core.filename
-    
-            #self.buffer.set_language(language)
-
-        return language
-
-    ######################################################################
-    ##### Note this function is silly and wrong, because it ignores mime
-    ##### parent types and subtypes.
-    def get_language_for_mime_type(self, mime):
-        lang_manager = gtksourceview2.language_manager_get_default()
-        lang_ids = lang_manager.get_language_ids()
-        for i in lang_ids:
-            lang = lang_manager.get_language(i)
-            for m in lang.get_mime_types():
-                if m == mime:
-                    return lang
-        return None
-
