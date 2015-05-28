@@ -117,55 +117,6 @@ class LeftButtons(gtk.VBox):
                 self.pack_start(exptb, False, False, 0)
                 self.pack_start(sectb, False, False, 0)
 
-        elif option == 'pdf':
-            # PDF
-            pdftb = gtk.ToggleButton()
-            pdftb.set_inconsistent(True)
-            a = gtk.VBox(False, 1)
-            l = gtk.Label('PDF info')
-            l.set_angle(90)
-            a.pack_start(l, False, False, 1)
-            a.pack_start(self.exp_pix, False, False, 1)
-            pdftb.add(a)
-
-            self.pack_start(pdftb, False, False, 0)
-        elif option == 'url':
-            # URL
-            lnktb = gtk.ToggleButton()
-            lnktb.set_active(True)
-            handler = lnktb.connect('toggled', self._on_toggle)
-            lnktb.handler = handler
-            a = gtk.VBox(False, 1)
-            l = gtk.Label('URL')
-            l.set_angle(90)
-            a.pack_start(l, False, False, 1)
-            a.pack_start(self.fcn_pix, False, False, 1)
-            lnktb.add(a)
-
-            hdrtb = gtk.ToggleButton()
-            handler = hdrtb.connect('toggled', self._on_toggle)
-            hdrtb.handler = handler
-            a = gtk.VBox(False, 1)
-            l = gtk.Label('Headers')
-            l.set_angle(90)
-            a.pack_start(l, False, False, 1)
-            a.pack_start(self.exp_pix, False, False, 1)
-            hdrtb.add(a)
-
-            ccktb = gtk.ToggleButton()
-            handler = ccktb.connect('toggled', self._on_toggle)
-            ccktb.handler = handler
-            a = gtk.VBox(False, 1)
-            l = gtk.Label('Cookies')
-            l.set_angle(90)
-            a.pack_start(l, False, False, 1)
-            a.pack_start(self.imp_pix, False, False, 1)
-            ccktb.add(a)
-
-            self.pack_start(lnktb, False, False, 0)
-            self.pack_start(hdrtb, False, False, 0)
-            self.pack_start(ccktb, False, False, 0)
-
         self.show_all()
 
     def _on_toggle(self, widget):
