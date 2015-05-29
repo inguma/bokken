@@ -154,7 +154,7 @@ class TextViews(gtk.HBox):
 
         # Add notebook to the paned
         self.right_paned.pack1(self.right_notebook, True, True)
-        self.right_paned.pack2(self.console, True, True)
+        self.right_paned.pack2(self.console, True, False)
         self.left_paned.pack2(self.right_paned, True, True)
         self.right_notebook.show()
 
