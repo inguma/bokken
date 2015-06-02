@@ -58,7 +58,7 @@ class ConsoleTextView(gtk.VBox):
         if font_desc:
             self.view.modify_font(font_desc)
 
-        self.buffer.set_highlight_syntax(True)
+        self.buffer.set_highlight_syntax(False)
         manager = self.buffer.get_data('languages-manager')
         language = manager.get_language('asm')
         self.buffer.set_language(language)
@@ -82,7 +82,7 @@ class ConsoleTextView(gtk.VBox):
         self.exec_entry = gtk.Entry(100)
         self.exec_entry.set_icon_from_stock(1, gtk.STOCK_EXECUTE)
         self.exec_entry.set_icon_tooltip_text(1, 'Execute')
-        self.exec_entry.set_text('Type ? for help')
+        self.exec_entry.set_text('Radare console: type ? for help')
         self.exec_entry.connect("activate", self.r2_exec)
         self.exec_entry.connect("icon-press", self.r2_exec)
         self.exec_entry.connect('focus-in-event', self._clean, 'in')
@@ -123,4 +123,4 @@ class ConsoleTextView(gtk.VBox):
                 widget.set_text('')
         elif data == 'out':
             if widget.get_text() == '':
-                widget.set_text('Type ? for help')
+                widget.set_text('Radare console: type ? for help')
