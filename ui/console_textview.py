@@ -96,7 +96,7 @@ class ConsoleTextView(gtk.VBox):
     def r2_exec(self, widget, icon_pos=None, event=None):
         command = self.exec_entry.get_text()
         res = self.uicore.execute_command(command)
-        if res != '':
+        if res and res != '':
             end_iter = self.buffer.get_end_iter()
             self.buffer.insert(end_iter, res + '\n')
         self.exec_entry.set_text('')
@@ -119,7 +119,7 @@ class ConsoleTextView(gtk.VBox):
 
     def _clean(self, widget, event, data):
         if data == 'in':
-            if widget.get_text() == 'Type ? for help':
+            if widget.get_text() == 'Radare console: type ? for help':
                 widget.set_text('')
         elif data == 'out':
             if widget.get_text() == '':

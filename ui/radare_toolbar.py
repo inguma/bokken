@@ -209,12 +209,12 @@ class TopButtons(gtk.HBox):
 
     def _hide_tb_toggled(self, widget):
         if widget.get_active():
-            self.main.tviews.console.show()
+            self.main.tviews.term_nb.show()
             i = gtk.Image()
             i.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
             widget.set_image(i)
         else:
-            self.main.tviews.console.hide()
+            self.main.tviews.term_nb.hide()
             i = gtk.Image()
             i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
             widget.set_image(i)

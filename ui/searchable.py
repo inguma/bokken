@@ -88,6 +88,11 @@ class Searchable(object):
         opc.connect("activate", self.show_search)
         menu.show_all()
 
+    def hide_search(self, widget=None):
+        '''Shows the search tab.'''
+        self.srchtab.hide_all()
+        self.searching = False
+
     def show_search(self, widget=None):
         '''Shows the search tab.'''
         self.srchtab.show_all()

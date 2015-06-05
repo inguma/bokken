@@ -28,6 +28,7 @@ import gtksourceview2
 import ui.treeviews as treeviews
 import ui.rightnotebook as rightnotebook
 import ui.console_textview as console_textview
+import ui.python_textview as python_textview
 import ui.right_textview as right_textview
 import ui.strings_treeview as strings_treeview
 import ui.sections_treeview as sections_treeview
@@ -36,6 +37,7 @@ import ui.bindiff as bindiff
 import ui.html_tree as html_tree
 import ui.info_tree as info_tree
 import ui.left_buttons as left_buttons
+from lib.common import datafile_path
 
 '''
 Layout:
@@ -149,12 +151,28 @@ class TextViews(gtk.HBox):
         # Right Paned
         #################################################################
 
+        # Terminals Notebook
+        self.term_nb = gtk.Notebook()
+        self.term_nb.set_tab_pos(gtk.POS_LEFT)
+
         # Console textview
+        i = gtk.Image()
+        i.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_SMALL_TOOLBAR)
         self.console = console_textview.ConsoleTextView(self.uicore)
+
+        self.term_nb.insert_page(self.console, i)
+
+        # Python textview
+        self.py_pix = gtk.Image()
+        self.py_pix.set_from_file(datafile_path('python-icon.png'))
+
+        self.python = python_textview.PythonTextView(self.uicore)
+
+        self.term_nb.insert_page(self.python, self.py_pix)
 
         # Add notebook to the paned
         self.right_paned.pack1(self.right_notebook, True, True)
-        self.right_paned.pack2(self.console, True, False)
+        self.right_paned.pack2(self.term_nb, True, False)
         self.left_paned.pack2(self.right_paned, True, True)
         self.right_notebook.show()
 
@@ -167,6 +185,8 @@ class TextViews(gtk.HBox):
         self.buffer.set_style_scheme(style_scheme)
         self.console.buffer.set_style_scheme(style_scheme)
         self.hexdump_view.update_theme(style_scheme)
+        self.python.buffer.set_style_scheme(style_scheme)
+        self.python.py_buffer.set_style_scheme(style_scheme)
 
     def update_righttext(self, option):
         self.dasm = ''
