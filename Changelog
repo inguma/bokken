@@ -1,3 +1,17 @@
+Release 1.8 (10-06-2015)
+ * Removed pyew entirely.  Its support has been in a non-official deprecated
+   state for the past two years but we were trying not to do it.  Pyew has
+   some dependencies that makes harder to package it, it's missing a lot of
+   features from r2, plus it sees very few releases.
+ * Removed other almost useless features in their current form: Strings repr
+   and Interactive mode.  We expect to bring those at some point in a proper
+   way.
+ * Added r2 console.  It crashes here and there but we think it's rather
+   usable.
+ * Added interactive Python console.
+ * Rearranged and simplified some tabs: Strings, Relocs and File info.
+ * Some additional cleanups and fixes.
+
 Release 1.7 (04-05-2015)
 
  * General refactoring of functions and classes to make them more abstract and
