@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 """Global configuration object for Bokken."""
 
-version = '1.8'
+version = '1.9-dev'
 has_radare = False
 min_radare_version = '0.9.9'
 http = None

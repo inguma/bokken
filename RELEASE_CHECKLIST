@@ -43,14 +43,17 @@ and upload them with the Debian and Windows packages to Redmine as bokken-1.5.ta
 * Publish the blog post once you have the download links, with special attention to the published date (it will
   reflect when you started to write, possibly days ago).
 
-* Based on the post and the Changelog, write a simple new News entry in http://bokken.eu/projects/bokken/news/new
+* Edit the bokken.re site with the updated download links and added dependencies (mostly download.html).  Remember
+  to run hg up in the /srv/data/... directory to allow the web server to catch up your changes.
+
+* Based on the post and the Changelog, write a simple new News entry in https://bokken.inguma.eu/projects/bokken/news/new
   and refer to the blog article for further information.  See http://inguma.eu/news/6 as an example.
 
 * Tweet about the new release and point to the blog post.
 
 * Send a message to bokken-devel with the post/Changelog to spread the news.
 
-* Go to Redmine, to the Versions tab under Settings (http://inguma.eu/projects/bokken/settings/versions) and
+* Go to Redmine, to the Versions tab under Settings (https://inguma.eu/projects/bokken/settings/versions) and
   open a new release (say 2.0) with a proposed release date.
 
 * Go to the Roadmap page (http://inguma.eu/projects/bokken/roadmap) and move all the open bugs (if any!)
