@@ -100,13 +100,13 @@ def gtkui_dependency_check():
 
     # Check GtkSourceView2
     try:
-        print('\tGtkSourceView2...', end='')
+        print('\tGtkSourceView3...', end='')
         from gi.repository import GtkSource
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
         print('GtkSourceView2 not installed! Install it for your platform:\n'
-                '    - On Debian-based distributions: apt-get install python-gtksourceview2')
+                '    - On Debian-based distributions: apt-get install python-gtksourceview3')
         sys.exit(1)
 
 def graphviz_dependency_check():

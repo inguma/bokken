@@ -33,9 +33,8 @@ from gi.repository import GObject
 # This is just general info, to help people knowing their system
 print("Starting bokken {}, running on:".format(glob.version))
 print("  Python version:")
-print("\n".join("    "+x for x in sys.version.split("\n")))
-print("  GTK version: {}".format(".".join(str(x) for x in Gtk.gtk_version)))
-print("  PyGTK version: {}\n".format(".".join(str(x) for x in Gtk.pygtk_version)))
+print("\n".join("    " + x for x in sys.version.split("\n")))
+print("  GTK version: " + str(Gtk.get_major_version()) + '.' + str(Gtk.get_minor_version())   )
 
 import ui.gtk2.common
 import ui.textviews as textviews
