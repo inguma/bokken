@@ -19,7 +19,8 @@
 
 import os
 
-import gtk, pango
+import gtk
+import pango
 
 class StringsView(gtk.ScrolledWindow):
 

@@ -19,7 +19,8 @@
 
 import os
 
-import gtk, pango
+import gtk
+import pango
 from lib.common import datafile_path
 
 class SectionsView(gtk.ScrolledWindow):

@@ -20,7 +20,8 @@
 from __future__ import print_function
 import os
 
-import gtk, pango
+import gtk
+import pango
 import gtksourceview2
 
 import ui.sections_bar as sections_bar

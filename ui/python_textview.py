@@ -19,7 +19,8 @@
 
 import os, sys
 
-import gtk, pango
+import gtk
+import pango
 import gtksourceview2
 
 from threading import Thread

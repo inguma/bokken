@@ -17,7 +17,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk, pango
+import gtk
+import pango
 from lib.common import datafile_path
 
 class MainMenuButton (gtk.ToggleButton):
