@@ -18,7 +18,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 import lib.bokken_globals as glob
 import ui.gtk2.common
 from lib.common import datafile_path
@@ -28,7 +28,7 @@ class AboutDialog():
 
     def create_dialog(self):
 
-        about = gtk.AboutDialog()
+        about = Gtk.AboutDialog()
         about.set_program_name("Bokken")
         ui.gtk2.common.set_bokken_icon(about)
         about.set_version(glob.version)
@@ -37,6 +37,6 @@ class AboutDialog():
         about.set_website("http://www.bokken.re")
         about.set_authors(["Hugo Teso <hteso@inguma.eu>", "David Martínez <ender@inguma.eu>"])
         about.set_artists(["Ana Muniesa <ana.muniesa@gmail.com>", "Huahe <juanje@gmail.com> twitter: @huahe", "Marcos Gómez <renx67@gmail.com>"])
-        about.set_logo(gtk.gdk.pixbuf_new_from_file(datafile_path('bokken.svg')))
+        about.set_logo(GdkPixbuf.Pixbuf.new_from_file(datafile_path('bokken.svg')))
 
         return about

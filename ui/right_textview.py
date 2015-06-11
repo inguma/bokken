@@ -20,9 +20,9 @@
 from __future__ import print_function
 import os
 
-import gtk
-import pango
-import gtksourceview2
+from gi.repository import Gtk
+from gi.repository import Pango
+from gi.repository import GtkSource
 
 import ui.sections_bar as sections_bar
 import ui.comments_dialog as comments_dialog
@@ -33,7 +33,7 @@ from ui.highword import HighWord
 from ui.opcodes import *
 from lib.highword_helper import *
 
-class RightTextView(gtk.VBox, Searchable):
+class RightTextView(Gtk.VBox, Searchable):
     '''Right TextView elements'''
 
     def __init__(self, core, textviews, main):
@@ -57,18 +57,18 @@ class RightTextView(gtk.VBox, Searchable):
         self.move_buttons = self.create_seek_buttons()
         self.pack_start(self.move_buttons, False, False, 1)
 
-        self.hbox = gtk.HBox(False, 0)
+        self.hbox = Gtk.HBox(False, 0)
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
-        lm = gtksourceview2.LanguageManager()
+        lm = GtkSource.LanguageManager()
         # Add ui dir to language paths
         paths = lm.get_search_path()
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
-        self.buffer = gtksourceview2.Buffer()
+        self.buffer = GtkSource.Buffer()
         self.buffer.set_data('languages-manager', lm)
-        self.view = gtksourceview2.View(self.buffer)
+        self.view = GtkSource.View(self.buffer)
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
         self.view.connect("key-release-event", self._cursor_moved)
@@ -77,11 +77,11 @@ class RightTextView(gtk.VBox, Searchable):
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
         self.view.set_highlight_current_line(True)
-        # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
-        self.view.set_wrap_mode(gtk.WRAP_NONE)
+        # posible values: Gtk.WrapMode.NONE, Gtk.WrapMode.CHAR, Gtk.WrapMode.WORD...
+        self.view.set_wrap_mode(Gtk.WrapMode.NONE)
 
         # setup view
-        font_desc = pango.FontDescription('monospace 9')
+        font_desc = Pango.FontDescription('monospace 9')
         if font_desc:
             self.view.modify_font(font_desc)
 
@@ -94,12 +94,12 @@ class RightTextView(gtk.VBox, Searchable):
 
         self.buffer.set_language(language)
 
-        self.mgr = gtksourceview2.style_scheme_manager_get_default()
+        self.mgr = GtkSource.StyleSchemeManager.get_default()
 
         # Scrolled Window
-        self.right_scrolled_window = gtk.ScrolledWindow()
-        self.right_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.right_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.right_scrolled_window = Gtk.ScrolledWindow()
+        self.right_scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.right_scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.right_scrolled_window.show()
         # Add Textview to Scrolled Window
         self.right_scrolled_window.add(self.view)
@@ -157,7 +157,7 @@ class RightTextView(gtk.VBox, Searchable):
         '''Populates the context menu with the Comments item.'''
         # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
-        x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
+        x, y = self.view.window_to_buffer_coords(Gtk.TextWindowType.WIDGET, x, y)
         iter = self.view.get_line_at_y(y)[0]
 
         line = self.get_line_on_coords(x, y)
@@ -165,21 +165,21 @@ class RightTextView(gtk.VBox, Searchable):
         for opcode in instructions.keys():
             if opcode.split(' ')[0].lower() in line or opcode.split(' ')[0] in line:
                 # Add a menu entry with opcode information
-                opmenu = gtk.Menu()
+                opmenu = Gtk.Menu()
 
-                opcodem = gtk.ImageMenuItem((gtk.STOCK_INFO))
+                opcodem = Gtk.ImageMenuItem((Gtk.STOCK_INFO))
                 opcodem.set_submenu(opmenu)
                 opcodem.get_children()[0].set_markup('Opcode info: <b>' + opcode.split(' ')[0].lower() + '</b>')
 
-                opcode1 = gtk.ImageMenuItem(gtk.STOCK_EXECUTE)
+                opcode1 = Gtk.ImageMenuItem(Gtk.STOCK_EXECUTE)
                 opcode_text = opcode.replace('<', '"').replace('>', '"').lower()
                 opcode1.get_children()[0].set_markup('<b>' + opcode_text + '</b>')
 
-                opcode2 = gtk.MenuItem("")
+                opcode2 = Gtk.MenuItem("")
                 opcode2.get_children()[0].set_markup(instructions[opcode].replace('<', '"').replace('>', '"'))
 
                 opmenu.append(opcode1)
-                opmenu.append(gtk.SeparatorMenuItem())
+                opmenu.append(Gtk.SeparatorMenuItem())
                 opmenu.append(opcode2)
                 menu.prepend(opcodem)
 
@@ -188,7 +188,7 @@ class RightTextView(gtk.VBox, Searchable):
         if match_address:
             addr = match_address.groups()[0]
             # Add comment menu
-            opc = gtk.ImageMenuItem((gtk.STOCK_ADD))
+            opc = Gtk.ImageMenuItem((Gtk.STOCK_ADD))
             opc.get_children()[0].set_label('Add comment')
             menu.prepend(opc)
             opc.connect("activate", self._call_comments_dialog, iter, addr)
@@ -210,7 +210,7 @@ class RightTextView(gtk.VBox, Searchable):
                         xrefs.append("0x%08x" % xref.addr)
 
                 refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
-                sep = gtk.SeparatorMenuItem()
+                sep = Gtk.SeparatorMenuItem()
                 menu.prepend(sep)
                 if hasattr(xmenu, 'xfrommenu'):
                     menu.prepend(xmenu.xfrommenu)
@@ -223,7 +223,7 @@ class RightTextView(gtk.VBox, Searchable):
     def _call_comments_dialog(self, widget, iter, offset):
         dialog = comments_dialog.CommentsDialog()
         resp = dialog.run()
-        if resp == gtk.RESPONSE_ACCEPT:
+        if resp == Gtk.ResponseType.ACCEPT:
             start, end = dialog.input_buffer.get_bounds()
             comment = dialog.input_buffer.get_text(start, end)
             tainted_comment = comment.replace('\n', '\n  ; ')
@@ -234,8 +234,8 @@ class RightTextView(gtk.VBox, Searchable):
 
     def set_completion(self):
         # Seek entry EntryCompletion
-        self.completion = gtk.EntryCompletion()
-        self.liststore = gtk.ListStore(str)
+        self.completion = Gtk.EntryCompletion()
+        self.liststore = Gtk.ListStore(str)
         # Add function names to the list
         for function in self.uicore.allfuncs:
             self.liststore.append([function])
@@ -256,30 +256,30 @@ class RightTextView(gtk.VBox, Searchable):
     def _get_clicked_word(self):
         # Get textbuffer coordinates from textview ones
         x, y = self.view.get_pointer()
-        x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
+        x, y = self.view.window_to_buffer_coords(Gtk.TextWindowType.WIDGET, x, y)
         word = self.get_word_on_coords(x, y)
         self._search(word)
         self.high_word._find(word)
 
     def create_seek_buttons(self):
-        self.hbox = gtk.HBox(False, 1)
+        self.hbox = Gtk.HBox(False, 1)
 
-        self.back = gtk.Button()
-        self.back_img = gtk.Image()
-        self.back_img.set_from_stock(gtk.STOCK_GO_BACK, gtk.ICON_SIZE_MENU)
+        self.back = Gtk.Button()
+        self.back_img = Gtk.Image()
+        self.back_img.set_from_stock(Gtk.STOCK_GO_BACK, Gtk.IconSize.MENU)
         self.back.set_image(self.back_img)
-        self.back.set_relief(gtk.RELIEF_NONE)
+        self.back.set_relief(Gtk.ReliefStyle.NONE)
         self.back.connect('clicked', self.do_seek, 'b')
 
-        self.forward = gtk.Button()
-        self.forward_img = gtk.Image()
-        self.forward_img.set_from_stock(gtk.STOCK_GO_FORWARD, gtk.ICON_SIZE_MENU)
+        self.forward = Gtk.Button()
+        self.forward_img = Gtk.Image()
+        self.forward_img.set_from_stock(Gtk.STOCK_GO_FORWARD, Gtk.IconSize.MENU)
         self.forward.set_image(self.forward_img)
-        self.forward.set_relief(gtk.RELIEF_NONE)
+        self.forward.set_relief(Gtk.ReliefStyle.NONE)
         self.forward.connect('clicked', self.do_seek, 'f')
 
-        self.seek = gtk.Entry(30)
-        self.seek.set_icon_from_stock(1, gtk.STOCK_JUMP_TO)
+        self.seek = Gtk.Entry(30)
+        self.seek.set_icon_from_stock(1, Gtk.STOCK_JUMP_TO)
         self.seek.set_activates_default(True)
         self.seek.connect("activate", self.goto)
         self.seek.connect("icon-press", self.goto)
@@ -298,7 +298,7 @@ class RightTextView(gtk.VBox, Searchable):
     def call_tooltip(self, widget, event):
         x = int(event.x)
         y = int(event.y)
-        x, y = self.view.window_to_buffer_coords(gtk.TEXT_WINDOW_WIDGET, x, y)
+        x, y = self.view.window_to_buffer_coords(Gtk.TextWindowType.WIDGET, x, y)
         search_string = self.get_word_on_coords(x,y)
 
         self.addr_tip =''
@@ -377,7 +377,7 @@ class RightTextView(gtk.VBox, Searchable):
                 # find the positions where the phrase is found
                 res = []
                 while True:
-                    result = startIter.forward_search(self.search_string, gtk.TEXT_SEARCH_TEXT_ONLY, None)
+                    result = startIter.forward_search(self.search_string, Gtk.TextSearchFlags.TEXT_ONLY, None)
                     if result:
                         res.append((result[0], result[1]))
                         startIter = result[1]

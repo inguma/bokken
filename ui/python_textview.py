@@ -19,9 +19,9 @@
 
 import os, sys
 
-import gtk
-import pango
-import gtksourceview2
+from gi.repository import Gtk
+from gi.repository import Pango
+from gi.repository import GtkSource
 
 from threading import Thread
 from cStringIO import StringIO
@@ -47,7 +47,7 @@ class ScriptThread(Thread):
         end_iter = self.buff.get_end_iter()
         self.buff.insert(end_iter, redirected_output.getvalue() + '\n')
 
-class PythonTextView(gtk.HBox):
+class PythonTextView(Gtk.HBox):
     '''Console TextView elements'''
 
     def __init__(self, uicore):
@@ -71,34 +71,34 @@ class PythonTextView(gtk.HBox):
         self.exprloc['file_info'] = self.uicore.fileinfo
         self.exprloc['magic'] = self.uicore.ars_magica
 
-        self.py_hb = gtk.HBox(False)
-        self.ou_hb = gtk.HBox(False)
+        self.py_hb = Gtk.HBox(False)
+        self.ou_hb = Gtk.HBox(False)
 
         # Toolbar
-        self.py_tb_hb = gtk.HBox(False)
-        b = SemiStockButton("", gtk.STOCK_CLEAR, 'Clear code panel')
+        self.py_tb_hb = Gtk.HBox(False)
+        b = SemiStockButton("", Gtk.STOCK_CLEAR, 'Clear code panel')
         b.connect("clicked", self._clear_code)
         self.py_tb_hb.pack_end(b, False, False, 0)
-        b = SemiStockButton("", gtk.STOCK_MEDIA_PLAY, 'Execute code')
+        b = SemiStockButton("", Gtk.STOCK_MEDIA_PLAY, 'Execute code')
         b.connect("clicked", self._exec)
         self.py_tb_hb.pack_end(b, False, False, 0)
 
-        self.ou_tb_hb = gtk.HBox(False)
+        self.ou_tb_hb = Gtk.HBox(False)
 
-        wrap = gtk.ToggleToolButton(stock_id=gtk.STOCK_JUSTIFY_FILL)
-        b = SemiStockButton("", gtk.STOCK_CLEAR, 'Clear output panel')
+        wrap = Gtk.ToggleToolButton(stock_id=Gtk.STOCK_JUSTIFY_FILL)
+        b = SemiStockButton("", Gtk.STOCK_CLEAR, 'Clear output panel')
         b.connect("clicked", self._clear)
         self.ou_tb_hb.pack_end(b, False, False, 0)
         wrap.set_active(True)
         wrap.set_tooltip_text('Switch text wrap')
         self.ou_tb_hb.pack_end(wrap, False, False, 0)
-        b = SemiStockButton("", gtk.STOCK_HELP, 'Show help')
+        b = SemiStockButton("", Gtk.STOCK_HELP, 'Show help')
         b.connect("clicked", self._help)
         self.ou_tb_hb.pack_end(b, False, False, 0)
 
         # Panels VBoxes
-        self.py_vb= gtk.VBox(False)
-        self.ou_vb= gtk.VBox(False)
+        self.py_vb= Gtk.VBox(False)
+        self.ou_vb= Gtk.VBox(False)
 
         self.py_vb.pack_start(self.py_tb_hb, False, True, 0)
         self.ou_vb.pack_start(self.ou_tb_hb, False, True, 0)
@@ -112,22 +112,22 @@ class PythonTextView(gtk.HBox):
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
-        lm = gtksourceview2.LanguageManager()
+        lm = GtkSource.LanguageManager()
         # Add ui dir to language paths
-        self.py_buffer = gtksourceview2.Buffer()
+        self.py_buffer = GtkSource.Buffer()
         self.py_buffer.set_data('languages-manager', lm)
-        self.py_view = gtksourceview2.View(self.py_buffer)
+        self.py_view = GtkSource.View(self.py_buffer)
         self.py_view.set_left_margin(5)
 
         # FIXME options must be user selectable (statusbar)
         self.py_view.set_editable(True)
         self.py_view.set_auto_indent(True)
         self.py_view.set_highlight_current_line(True)
-        # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
-        self.py_view.set_wrap_mode(gtk.WRAP_NONE)
+        # posible values: Gtk.WrapMode.NONE, Gtk.WrapMode.CHAR, Gtk.WrapMode.WORD...
+        self.py_view.set_wrap_mode(Gtk.WrapMode.NONE)
         
         # setup view
-        font_desc = pango.FontDescription('monospace 9')
+        font_desc = Pango.FontDescription('monospace 9')
         if font_desc:
             self.py_view.modify_font(font_desc)
 
@@ -136,12 +136,12 @@ class PythonTextView(gtk.HBox):
         language = manager.get_language('python')
         self.py_buffer.set_language(language)
 
-        self.mgr = gtksourceview2.style_scheme_manager_get_default()
+        self.mgr = GtkSource.StyleSchemeManager.get_default()
 
         # Scrolled Window
-        self.python_scrolled_window = gtk.ScrolledWindow()
-        self.python_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.python_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.python_scrolled_window = Gtk.ScrolledWindow()
+        self.python_scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.python_scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.python_scrolled_window.show()
         # Add Textview to Scrolled Window
         self.python_scrolled_window.add(self.py_view)
@@ -160,26 +160,26 @@ class PythonTextView(gtk.HBox):
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
-        lm = gtksourceview2.LanguageManager()
+        lm = GtkSource.LanguageManager()
         # Add ui dir to language paths
         paths = lm.get_search_path()
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
-        self.buffer = gtksourceview2.Buffer()
+        self.buffer = GtkSource.Buffer()
         self.buffer.create_tag("green-background", background="green", foreground="black")
         self.buffer.set_data('languages-manager', lm)
-        self.view = gtksourceview2.View(self.buffer)
+        self.view = GtkSource.View(self.buffer)
         wrap.connect("clicked", self._change_wrap)
         self.view.set_left_margin(5)
-        self.view.set_wrap_mode(gtk.WRAP_WORD)
+        self.view.set_wrap_mode(Gtk.WrapMode.WORD)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
         #self.view.set_highlight_current_line(True)
-        # posible values: gtk.WRAP_NONE, gtk.WRAP_CHAR, gtk.WRAP_WORD...
+        # posible values: Gtk.WrapMode.NONE, Gtk.WrapMode.CHAR, Gtk.WrapMode.WORD...
         
         # setup view
-        font_desc = pango.FontDescription('monospace 9')
+        font_desc = Pango.FontDescription('monospace 9')
         if font_desc:
             self.view.modify_font(font_desc)
 
@@ -188,12 +188,12 @@ class PythonTextView(gtk.HBox):
         language = manager.get_language('asm')
         self.buffer.set_language(language)
 
-        self.mgr = gtksourceview2.style_scheme_manager_get_default()
+        self.mgr = GtkSource.StyleSchemeManager.get_default()
 
         # Scrolled Window
-        self.console_scrolled_window = gtk.ScrolledWindow()
-        self.console_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.console_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.console_scrolled_window = Gtk.ScrolledWindow()
+        self.console_scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.console_scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.console_scrolled_window.show()
         # Add Textview to Scrolled Window
         self.console_scrolled_window.add(self.view)
@@ -233,11 +233,11 @@ class PythonTextView(gtk.HBox):
 
     def _change_wrap(self, widget):
         if widget.get_active():
-            self.view.set_wrap_mode(gtk.WRAP_WORD)
+            self.view.set_wrap_mode(Gtk.WrapMode.WORD)
         else:
-            self.view.set_wrap_mode(gtk.WRAP_NONE)
+            self.view.set_wrap_mode(Gtk.WrapMode.NONE)
 
-class SemiStockButton(gtk.Button):
+class SemiStockButton(Gtk.Button):
     '''Takes the image from the stock, but the label which is passed.
     
     @param text: the text that will be used for the label
@@ -263,6 +263,6 @@ class SemiStockButton(gtk.Button):
         @param tooltip: the tooltip for the button
         '''
         self.label.set_text(newtext)
-        self.image.set_from_stock(newimage, gtk.ICON_SIZE_BUTTON)
+        self.image.set_from_stock(newimage, Gtk.IconSize.BUTTON)
         if tooltip is not None:
             self.set_tooltip_text(tooltip)

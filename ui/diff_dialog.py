@@ -17,14 +17,14 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 import ui.gtk2.common
 
-class DiffDialog(gtk.Dialog):
+class DiffDialog(Gtk.Dialog):
     '''Window popup to select files'''
 
     def __init__(self, core):
-        super(DiffDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        super(DiffDialog,self).__init__('Select file', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT, Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
 
         self.core = core
         self.file = self.core.filename
@@ -38,18 +38,18 @@ class DiffDialog(gtk.Dialog):
         self.butt_ok.connect("clicked", self.select_file)
 
         # Window position
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
 
         # Main Vertical Box
-        self.main_vbox = gtk.VBox(False, 2)
+        self.main_vbox = Gtk.VBox(False, 2)
         self.main_vbox.set_border_width(7)
 
-        self.label = gtk.Label('Select the file to diff against:')
+        self.label = Gtk.Label(label='Select the file to diff against:')
 
         # File selection Horizontal Box 1
-        self.hbox1 = gtk.HBox(False, 0)
+        self.hbox1 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry = gtk.Entry(100)
+        self.input_entry = Gtk.Entry(100)
         #self.input_entry.get_child().connect("activate", self.fast_start)
         self.input_entry.set_text(self.file)
         self.input_entry.set_sensitive(False)
@@ -57,11 +57,11 @@ class DiffDialog(gtk.Dialog):
         self.hbox1.pack_start(self.input_entry, True, True, 2)
 
         # File selection Horizontal Box 2
-        self.hbox2 = gtk.HBox(False, 0)
+        self.hbox2 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry2 = gtk.Entry(100)
+        self.input_entry2 = Gtk.Entry(100)
         # Select file button
-        self.input_entry2.set_icon_from_stock(1, gtk.STOCK_OPEN)
+        self.input_entry2.set_icon_from_stock(1, Gtk.STOCK_OPEN)
         self.input_entry2.set_icon_tooltip_text(1, 'Select file')
         self.input_entry2.connect("activate", self.select_file)
         self.input_entry2.connect("icon-press", self.select_file)
@@ -70,38 +70,38 @@ class DiffDialog(gtk.Dialog):
 
         #########################################################
         # Options elements
-        self.options_box = gtk.VBox(False, 2)
+        self.options_box = Gtk.VBox(False, 2)
 
-        self.sep = gtk.HSeparator()
-        self.options_exp = gtk.Expander("Binary diffing options:")
+        self.sep = Gtk.HSeparator()
+        self.options_exp = Gtk.Expander("Binary diffing options:")
 
         # HScale for function matching threshold
-        self.thresh_label = gtk.Label("Function matching threshold:")
+        self.thresh_label = Gtk.Label(label="Function matching threshold:")
         self.thresh_label.set_alignment(0, 0.5)
-        self.scale = gtk.HScale()
+        self.scale = Gtk.HScale()
         self.scale.set_range(0, 100)
         self.scale.set_increments(1, 10)
         self.scale.set_digits(0)
-        self.scale.set_value_pos(gtk.POS_RIGHT)
+        self.scale.set_value_pos(Gtk.PositionType.RIGHT)
         self.scale.set_value(70)
-        self.scale.add_mark(0, gtk.POS_BOTTOM, "0")
-        self.scale.add_mark(50, gtk.POS_BOTTOM, "50")
-        self.scale.add_mark(100, gtk.POS_BOTTOM, "100")
+        self.scale.add_mark(0, Gtk.PositionType.BOTTOM, "0")
+        self.scale.add_mark(50, Gtk.PositionType.BOTTOM, "50")
+        self.scale.add_mark(100, Gtk.PositionType.BOTTOM, "100")
 
         # HScale for basic block matching threshold
-        self.bb_thresh_label = gtk.Label("Basic block matching threshold:")
+        self.bb_thresh_label = Gtk.Label(label="Basic block matching threshold:")
         self.bb_thresh_label.set_alignment(0, 0.5)
-        self.bb_scale = gtk.HScale()
+        self.bb_scale = Gtk.HScale()
         self.bb_scale.set_range(0, 100)
         self.bb_scale.set_increments(1, 10)
         self.bb_scale.set_digits(0)
-        self.bb_scale.set_value_pos(gtk.POS_RIGHT)
+        self.bb_scale.set_value_pos(Gtk.PositionType.RIGHT)
         self.bb_scale.set_value(70)
-        self.bb_scale.add_mark(0, gtk.POS_BOTTOM, "0")
-        self.bb_scale.add_mark(50, gtk.POS_BOTTOM, "50")
-        self.bb_scale.add_mark(100, gtk.POS_BOTTOM, "100")
+        self.bb_scale.add_mark(0, Gtk.PositionType.BOTTOM, "0")
+        self.bb_scale.add_mark(50, Gtk.PositionType.BOTTOM, "50")
+        self.bb_scale.add_mark(100, Gtk.PositionType.BOTTOM, "100")
 
-        self.bytes_check = gtk.CheckButton("Do code diffing with all bytes", use_underline=True)
+        self.bytes_check = Gtk.CheckButton("Do code diffing with all bytes", use_underline=True)
 
         self.options_box.pack_start(self.thresh_label, False, False, 1)
         self.options_box.pack_start(self.scale, False, False, 1)
@@ -130,10 +130,10 @@ class DiffDialog(gtk.Dialog):
             self.get_file(self.input_entry2)
             self.response(0)
         else:
-            chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                      buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+            chooser = Gtk.FileChooserDialog(title=None,action=Gtk.FileChooserAction.OPEN,
+                      buttons=(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK))
             self.resp = chooser.run()
-            if self.resp == gtk.RESPONSE_DELETE_EVENT or self.resp == gtk.RESPONSE_REJECT or self.resp == gtk.RESPONSE_CANCEL:
+            if self.resp == Gtk.ResponseType.DELETE_EVENT or self.resp == Gtk.ResponseType.REJECT or self.resp == Gtk.ResponseType.CANCEL:
                 chooser.destroy()
             else:
                 self.file_name = chooser.get_filename()

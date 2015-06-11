@@ -19,24 +19,24 @@
 
 import os
 
-import gtk
-import pango
+from gi.repository import Gtk
+from gi.repository import Pango
 from lib.common import datafile_path
 
-class SectionsView(gtk.ScrolledWindow):
+class SectionsView(Gtk.ScrolledWindow):
 
     def __init__(self, uicore, textviews):
         super(SectionsView ,self).__init__()
 
         self.uicore = uicore
 
-        self.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self.sections_tree = SectionsTreeView(self.uicore, textviews)
 
-        self.fcn_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('function.png'))
-        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('data-sec.png'))
+        self.fcn_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('function.png'))
+        self.data_sec_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('data-sec.png'))
 
         # Add Textview to Scrolled Window
         self.add(self.sections_tree)
@@ -59,11 +59,11 @@ class SectionsView(gtk.ScrolledWindow):
     def remove_content(self):
         self.sections_tree.store.clear()
 
-class SectionsTreeView(gtk.TreeView):
+class SectionsTreeView(Gtk.TreeView):
     '''Sections TextView elements'''
 
     def __init__(self, core, textviews):
-        self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str)
+        self.store = Gtk.ListStore(GdkPixbuf.Pixbuf, str, str, str, str)
         super(SectionsTreeView ,self).__init__(self.store)
 
         self.uicore = core
@@ -79,9 +79,9 @@ class SectionsTreeView(gtk.TreeView):
 
     def create_sections_columns(self):
 
-        rendererPix = gtk.CellRendererPixbuf()
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Name")
+        rendererPix = Gtk.CellRendererPixbuf()
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
@@ -90,19 +90,19 @@ class SectionsTreeView(gtk.TreeView):
         column.set_sort_column_id(0)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Virtual Address", rendererText, text=2)
-        self.store.set_sort_column_id(2,gtk.SORT_ASCENDING)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Virtual Address", rendererText, text=2)
+        self.store.set_sort_column_id(2,Gtk.SortType.ASCENDING)
         column.set_sort_column_id(2)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Virtual Size", rendererText, text=3)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Virtual Size", rendererText, text=3)
         column.set_sort_column_id(3)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Raw Size", rendererText, text=4)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Raw Size", rendererText, text=4)
         column.set_sort_column_id(4)
         self.append_column(column)
         self.set_model(self.store)
@@ -113,9 +113,9 @@ class SectionsTreeView(gtk.TreeView):
         Double-click or Enter: Goes to the corresponding address
 
         @param tv: The treeview.
-        @parameter event: The GTK event (gtk.gdk.Event) in case this is a mouse
+        @parameter event: The GTK event (Gdk.Event) in case this is a mouse
             click.  Otherwise it's the activated row index in format (n,).
-        @parameter row: A gtk.TreeViewColumn object in case it's a keypress,
+        @parameter row: A Gtk.TreeViewColumn object in case it's a keypress,
             otherwise None.
 
         '''

@@ -19,18 +19,18 @@
 
 import os
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 import ui.gtk2.common
 from lib.common import datafile_path
 
 import lib.bokken_globals as glob
 
-class FileDialog(gtk.Dialog):
+class FileDialog(Gtk.Dialog):
     '''Window popup to select file'''
 
     def __init__(self, file='', first_run=False):
-        super(FileDialog,self).__init__('Select file', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        super(FileDialog,self).__init__('Select file', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT, Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
 
         self.file = file
 
@@ -49,31 +49,31 @@ class FileDialog(gtk.Dialog):
         self.butt_cancel.connect("clicked", self.cancel)
 
         # Window position
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
 
         # Main Vertical Box
-        self.main_vbox = gtk.VBox(False, 2)
+        self.main_vbox = Gtk.VBox(False, 2)
         self.main_vbox.set_border_width(7)
 
         # Logo
-        self.logo = gtk.Image()
+        self.logo = Gtk.Image()
         self.logo.set_from_file(datafile_path('bokken.svg'))
         # Logo label
-        self.logo_text = gtk.Label()
+        self.logo_text = Gtk.Label()
         self.logo_text.set_markup('<span size=\'12000\'>Welcome to <b>Bokken '+glob.version+'</b></span>')
 
         # Common label
-        self.label = gtk.Label('Select a target or enter the path manually.')
+        self.label = Gtk.Label(label='Select a target or enter the path manually.')
         self.label.set_padding(0, 3)
         self.label.set_alignment(0, 0.5)
 
         # Radare targets label
-        self.radare_label = gtk.Label()
+        self.radare_label = Gtk.Label()
         self.radare_label.set_markup('Valid inputs are: <b>PE, ELF and mach0</b> files')
         self.radare_label.set_padding(0, 2)
 
         # Horizontal Separator
-        self.hseparator1 = gtk.HSeparator()
+        self.hseparator1 = Gtk.HSeparator()
 
         self.plugins = []
 
@@ -81,27 +81,27 @@ class FileDialog(gtk.Dialog):
         self.plugins = UICore.get_plugins()
 
         # Horizontal Separator
-        self.hseparator2 = gtk.HSeparator()
+        self.hseparator2 = Gtk.HSeparator()
 
         # File selection Horizontal Box
-        self.hbox = gtk.HBox(False, 0)
+        self.hbox = Gtk.HBox(False, 0)
         # TextEntry
-        self.model = gtk.ListStore(str)
-        self.input_entry = gtk.ComboBoxEntry(self.model, column=0)
+        self.model = Gtk.ListStore(str)
+        self.input_entry = Gtk.ComboBoxEntry(self.model, column=0)
         self.input_entry.get_child().connect("activate", self.fast_start)
         self.input_entry.connect("changed", self._validate_cb)
-        #self.input_entry = gtk.Entry(100)
+        #self.input_entry = Gtk.Entry(100)
         if self.file:
             self.input_entry.get_child().set_text(self.file)
         # Recent file manager
-        self.manager = gtk.recent_manager_get_default()
+        self.manager = Gtk.RecentManager.get_default()
         items = self.manager.get_items()
         for element in items[:10]:
             self.model.append([element.get_uri_display()])
         # Select file button
-        icon = gtk.Image()
-        icon.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
-        self.select_button = gtk.Button()
+        icon = Gtk.Image()
+        icon.set_from_stock(Gtk.STOCK_OPEN, Gtk.IconSize.MENU)
+        self.select_button = Gtk.Button()
         self.select_button.set_image(icon)
         self.select_button.connect("clicked", self.select_file)
         # Pack elements into hbox
@@ -109,77 +109,77 @@ class FileDialog(gtk.Dialog):
         self.hbox.pack_start(self.select_button, False, False, 2)
 
         # File options Horizontal Box
-        self.options_hbox = gtk.HBox(False, 2)
+        self.options_hbox = Gtk.HBox(False, 2)
 
         # Radare option Vertical Box
-        self.radare_box = gtk.VBox(False, 0)
-        self.vseparator = gtk.VSeparator()
-        self.radare_box_2 = gtk.VBox(False, 0)
-        self.radare_box_3 = gtk.VBox(False, 0)
+        self.radare_box = Gtk.VBox(False, 0)
+        self.vseparator = Gtk.VSeparator()
+        self.radare_box_2 = Gtk.VBox(False, 0)
+        self.radare_box_3 = Gtk.VBox(False, 0)
         # pack the boxes
         self.options_hbox.pack_start(self.radare_box, True, True, 0)
         self.options_hbox.pack_start(self.vseparator, False, False, 5)
         self.options_hbox.pack_start(self.radare_box_2, True, True, 0)
 
         # HSeparator
-        self.hseparator3 = gtk.HSeparator()
+        self.hseparator3 = Gtk.HSeparator()
         # Analysis options label
-        self.anal_label = gtk.Label()
+        self.anal_label = Gtk.Label()
         self.anal_label.set_markup("<b>Analysis options:</b>")
         # Advanced Analysis options label
-        self.adv_anal_label = gtk.Label()
+        self.adv_anal_label = Gtk.Label()
         self.adv_anal_label.set_markup("<b>Advanced options:</b>")
 
         # Radare options
-        self.anal_bin = gtk.CheckButton(label='Analyze program')
+        self.anal_bin = Gtk.CheckButton(label='Analyze program')
         self.anal_bin.set_active(True)
         self.anal_bin.connect("toggled", self._no_anal)
-        self.anal_depth_label = gtk.Label('Max analysis depth: ')
-        self.anal_depth_entry = gtk.Entry(3)
+        self.anal_depth_label = Gtk.Label(label='Max analysis depth: ')
+        self.anal_depth_entry = Gtk.Entry(3)
         self.anal_depth_entry.set_width_chars(3)
         self.anal_depth_entry.set_text('16')
-        self.radare_dasm = gtk.CheckButton(label='Lower case disassembly')
+        self.radare_dasm = Gtk.CheckButton(label='Lower case disassembly')
         self.radare_dasm.set_active(True)
-        self.io_va = gtk.CheckButton(label='Don\'t use VA')
-        self.asm_syntax = gtk.CheckButton(label='Use AT&T syntax')
-        self.asm_bytes = gtk.CheckButton(label='Don\'t show asm bytes')
+        self.io_va = Gtk.CheckButton(label='Don\'t use VA')
+        self.asm_syntax = Gtk.CheckButton(label='Use AT&T syntax')
+        self.asm_bytes = Gtk.CheckButton(label='Don\'t show asm bytes')
 
         # Bottom radare2 options
-        self.hseparator5 = gtk.HSeparator()
-        self.bits_label = gtk.Label('Bits:')
-        self.bits = gtk.combo_box_new_text()
+        self.hseparator5 = Gtk.HSeparator()
+        self.bits_label = Gtk.Label(label='Bits:')
+        self.bits = Gtk.ComboBoxText()
         #self.bits.set_size_request(70, -1)
-        self.arch_label = gtk.Label('Architecture:')
-        self.arch = gtk.combo_box_new_text()
+        self.arch_label = Gtk.Label(label='Architecture:')
+        self.arch = Gtk.ComboBoxText()
         self.arch.connect("changed", self._arch_changed)
         self.arch.append_text('Auto')
         for plugin in self.plugins:
             self.arch.append_text('%s (%s)' % (plugin.name, plugin.arch))
             #self.arch.append_text('%s (%s) - %s' % (plugin.name, plugin.arch, plugin.desc))
         self.arch.set_active(0)
-        self.start_addr = gtk.CheckButton(label='Start address: ')
+        self.start_addr = Gtk.CheckButton(label='Start address: ')
         self.start_addr.connect("toggled", self._start_addr_ctl)
-        self.start_addr_label = gtk.Label()
+        self.start_addr_label = Gtk.Label()
         self.start_addr_label.set_markup('<b>0x</b>')
         self.start_addr_label.set_padding(0, 5)
-        self.start_addr_address = gtk.Entry(12)
+        self.start_addr_address = Gtk.Entry(12)
         self.start_addr_address.set_width_chars(12)
         self.start_addr_address.set_sensitive(False)
 
         # More radare2 options
-        self.stack_check = gtk.CheckButton(label='Show stack pointer')
-        self.pseudo_check = gtk.CheckButton(label='Enable pseudo syntax')
-        self.flow_lines = gtk.CheckButton(label='Show flow lines')
+        self.stack_check = Gtk.CheckButton(label='Show stack pointer')
+        self.pseudo_check = Gtk.CheckButton(label='Enable pseudo syntax')
+        self.flow_lines = Gtk.CheckButton(label='Show flow lines')
         self.flow_lines.connect("toggled", self._flow_lines_ctl)
-        self.flow_lines_label = gtk.Label('Columns for flow lines: ')
-        self.flow_lines_entry = gtk.Entry(3)
+        self.flow_lines_label = Gtk.Label(label='Columns for flow lines: ')
+        self.flow_lines_entry = Gtk.Entry(3)
         self.flow_lines_entry.set_width_chars(3)
         self.flow_lines_entry.set_text('20')
         self.flow_lines_entry.set_sensitive(False)
 
         # Pack them
-        self.flow_hbox = gtk.HBox(False)
-        self.depth_hbox = gtk.HBox(False)
+        self.flow_hbox = Gtk.HBox(False)
+        self.depth_hbox = Gtk.HBox(False)
         self.radare_box_2.pack_start(self.pseudo_check, False, False, 2)
         self.radare_box_2.pack_start(self.stack_check, False, False, 2)
         self.radare_box_2.pack_start(self.asm_bytes, False, False, 2)
@@ -195,18 +195,18 @@ class FileDialog(gtk.Dialog):
         self.radare_box.pack_start(self.radare_dasm, False, False, 2)
         self.radare_box.pack_start(self.io_va, False, False, 2)
         self.radare_box.pack_start(self.asm_syntax, False, False, 2)
-        self.start_addr_hbox = gtk.HBox(False, 0)
+        self.start_addr_hbox = Gtk.HBox(False, 0)
         self.start_addr_hbox.pack_start(self.start_addr, False, False, 0)
         self.start_addr_hbox.pack_start(self.start_addr_label, False, False, 2)
         self.start_addr_hbox.pack_start(self.start_addr_address, True, True, 2)
         self.radare_box_3.pack_start(self.hseparator5, False, False, 5)
         self.radare_box_3.pack_start(self.adv_anal_label, False, False, 5)
         self.radare_box_3.pack_start(self.start_addr_hbox, False, False, 2)
-        self.arch_hbox = gtk.HBox(False, 0)
+        self.arch_hbox = Gtk.HBox(False, 0)
         self.arch_hbox.pack_start(self.arch_label, False, False, 2)
         self.arch_hbox.pack_start(self.arch, True, True, 2)
         self.radare_box_3.pack_start(self.arch_hbox, False, False, 2)
-        self.bits_hbox = gtk.HBox(False, 0)
+        self.bits_hbox = Gtk.HBox(False, 0)
         self.bits_hbox.pack_start(self.bits_label, False, False, 2)
         self.bits_hbox.pack_start(self.bits, False, False, 2)
         #self.radare_box_3.pack_start(self.bits_hbox, False, False, 2)
@@ -242,9 +242,9 @@ class FileDialog(gtk.Dialog):
         self.butt_ok.set_sensitive(False)
 
         # Progress bar
-        self.progress_box = gtk.VBox(False, 0)
-        self.hseparator4 = gtk.HSeparator()
-        self.progress_bar = gtk.ProgressBar()
+        self.progress_box = Gtk.VBox(False, 0)
+        self.hseparator4 = Gtk.HSeparator()
+        self.progress_bar = Gtk.ProgressBar()
         self.progress_box.pack_start(self.hseparator4, False, False, 0)
         self.progress_box.pack_start(self.progress_bar, False, False, 0)
 
@@ -289,10 +289,10 @@ class FileDialog(gtk.Dialog):
             self.opt_bits = self.bits.get_active_text()
 
     def select_file(self, widget):
-        chooser = gtk.FileChooserDialog(title="Select target",action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                              buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+        chooser = Gtk.FileChooserDialog(title="Select target",action=Gtk.FileChooserAction.OPEN,
+                              buttons=(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK))
         self.resp = chooser.run()
-        if self.resp == gtk.RESPONSE_OK:
+        if self.resp == Gtk.ResponseType.OK:
             self.file_name = chooser.get_filename()
             self.input_entry.get_child().set_text(self.file_name)
         chooser.destroy()
@@ -305,7 +305,7 @@ class FileDialog(gtk.Dialog):
 
     def _validate_cb(self, widget):
         # We create a timeout object to avoid fast lookups on disk when typing.
-        self.timer_id = gobject.timeout_add(500, self._validate, widget.get_child())
+        self.timer_id = GObject.timeout_add(500, self._validate, widget.get_child())
 
     def _validate(self, widget):
         text = widget.get_text()
@@ -314,13 +314,13 @@ class FileDialog(gtk.Dialog):
         bg_ok = colormap.alloc_color("white")
         bg_not_valid = colormap.alloc_color("red")
         if len(text)==0:
-            widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+            widget.modify_base(Gtk.StateType.NORMAL, bg_ok)
             self.butt_ok.set_sensitive(False)
         elif not os.path.isfile(text):
-            widget.modify_base(gtk.STATE_NORMAL, bg_not_valid)
+            widget.modify_base(Gtk.StateType.NORMAL, bg_not_valid)
             self.butt_ok.set_sensitive(False)
         else:
-            widget.modify_base(gtk.STATE_NORMAL, bg_ok)
+            widget.modify_base(Gtk.StateType.NORMAL, bg_ok)
             self.butt_ok.set_sensitive(True)
 
     def _start_addr_ctl(self, widget):

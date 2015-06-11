@@ -18,11 +18,11 @@
 #       MA 02110-1301, USA.
 
 import os
-import gio
+from gi.repository import Gio
 import platform
 
-import gtk
-import gtksourceview2
+from gi.repository import Gtk
+from gi.repository import GtkSource
 
 #import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
@@ -48,7 +48,7 @@ Left Buttons | ---------------------Paned ----------------------
              |               | ------------ Console ------------
 '''
 
-class TextViews(gtk.HBox):
+class TextViews(Gtk.HBox):
     '''Main TextView elements'''
 
     def __init__(self, core, main):
@@ -65,7 +65,7 @@ class TextViews(gtk.HBox):
         #################################################################
 
         # Left and right Vertical Boxes
-        self.left_paned = gtk.HPaned()
+        self.left_paned = Gtk.HPaned()
         self.left_paned.set_position(125)
 
         #################################################################
@@ -82,9 +82,9 @@ class TextViews(gtk.HBox):
         #################################################################
 
         # Scrolled Window
-        self.left_scrolled_window = gtk.ScrolledWindow()
-        self.left_scrolled_window.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.left_scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.left_scrolled_window = Gtk.ScrolledWindow()
+        self.left_scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.left_scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 #        self.left_scrolled_window.set_size_request(100, 1)
         self.left_scrolled_window.show()
 
@@ -138,7 +138,7 @@ class TextViews(gtk.HBox):
         #################################################################
 
         # Paned for the right notebook and the bottom console
-        self.right_paned = gtk.VPaned()
+        self.right_paned = Gtk.VPaned()
         self.right_paned.set_position(300)
 
         #################################################################
@@ -151,18 +151,18 @@ class TextViews(gtk.HBox):
         #################################################################
 
         # Terminals Notebook
-        self.term_nb = gtk.Notebook()
-        self.term_nb.set_tab_pos(gtk.POS_LEFT)
+        self.term_nb = Gtk.Notebook()
+        self.term_nb.set_tab_pos(Gtk.PositionType.LEFT)
 
         # Console textview
-        i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_SMALL_TOOLBAR)
+        i = Gtk.Image()
+        i.set_from_stock(Gtk.STOCK_EXECUTE, Gtk.IconSize.SMALL_TOOLBAR)
         self.console = console_textview.ConsoleTextView(self.uicore)
 
         self.term_nb.insert_page(self.console, i)
 
         # Python textview
-        self.py_pix = gtk.Image()
+        self.py_pix = Gtk.Image()
         self.py_pix.set_from_file(datafile_path('python-icon.png'))
 
         self.python = python_textview.PythonTextView(self.uicore)
@@ -230,7 +230,7 @@ class TextViews(gtk.HBox):
         else:
             self.buffer.set_highlight_syntax(False)
 
-        self.view.set_wrap_mode(gtk.WRAP_WORD)
+        self.view.set_wrap_mode(Gtk.WrapMode.WORD)
 
         # Hide left content for 'Plain Text'
         if self.uicore.core.format not in ['Hexdump']:
@@ -284,14 +284,14 @@ class TextViews(gtk.HBox):
         if widget.get_active():
             self.main.topbuttons.hide()
             self.main.mbar.hide()
-            i = gtk.Image()
-            i.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
+            i = Gtk.Image()
+            i.set_from_stock(Gtk.STOCK_GO_DOWN, Gtk.IconSize.MENU)
             widget.set_image(i)
         else:
             self.main.topbuttons.show()
             self.main.mbar.show()
-            i = gtk.Image()
-            i.set_from_stock(gtk.STOCK_GO_UP, gtk.ICON_SIZE_MENU)
+            i = Gtk.Image()
+            i.set_from_stock(Gtk.STOCK_GO_UP, Gtk.IconSize.MENU)
             widget.set_image(i)
 
     def update_left_buttons(self):
@@ -328,16 +328,16 @@ class TextViews(gtk.HBox):
 
         if search_string:
             self.search_string = search_string 
-            res = start.forward_search(self.search_string, gtk.TEXT_SEARCH_TEXT_ONLY)
+            res = start.forward_search(self.search_string, Gtk.TextSearchFlags.TEXT_ONLY)
 
             # Search 'function_name' instead of 'FUNCTION function_name'
             if not res and 'FUNCTION' in self.search_string:
                 self.search_function_name = self.search_string.split()[1]
-                res = start.forward_search(self.search_function_name, gtk.TEXT_SEARCH_TEXT_ONLY)
+                res = start.forward_search(self.search_function_name, Gtk.TextSearchFlags.TEXT_ONLY)
             # Try lowercase search
             elif not res:
                 self.search_lower_string = self.search_string.lower()
-                res = start.forward_search(self.search_lower_string, gtk.TEXT_SEARCH_TEXT_ONLY)
+                res = start.forward_search(self.search_lower_string, Gtk.TextSearchFlags.TEXT_ONLY)
 
             if res:
                 self.match_start, self.match_end = res

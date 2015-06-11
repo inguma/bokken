@@ -17,10 +17,10 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
-class SectionsBar(gtk.DrawingArea):
+class SectionsBar(Gtk.DrawingArea):
 
     __gsignals__ = {
         'expose-event': 'override',
@@ -29,8 +29,8 @@ class SectionsBar(gtk.DrawingArea):
     }
 
     def __init__(self, core):
-        gtk.DrawingArea.__init__(self)
-        self.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        GObject.GObject.__init__(self)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._scrolladj = None
         self._y_offset = 0
         self._h_offset = 0
@@ -97,16 +97,16 @@ class SectionsBar(gtk.DrawingArea):
     def do_size_request(self, request):
         request.width = self.style_get_property('width')
 
-gtk.widget_class_install_style_property(SectionsBar,
+Gtk.widget_class_install_style_property(SectionsBar,
                                         ('width', float,
                                          'Width',
                                          'Width of the bar',
-                                         0.0, gobject.G_MAXFLOAT, 20,
-                                         gobject.PARAM_READABLE))
-gtk.widget_class_install_style_property(SectionsBar,
+                                         0.0, GObject.G_MAXFLOAT, 20,
+                                         GObject.PARAM_READABLE))
+Gtk.widget_class_install_style_property(SectionsBar,
                                         ('x-padding', float,
                                          'Width-wise padding',
                                          'Padding to be left between left and '
                                          'right edges and change blocks',
-                                         0.0, gobject.G_MAXFLOAT, 2.5,
-                                         gobject.PARAM_READABLE))
+                                         0.0, GObject.G_MAXFLOAT, 2.5,
+                                         GObject.PARAM_READABLE))

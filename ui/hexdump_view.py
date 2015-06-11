@@ -18,11 +18,11 @@
 #       MA 02110-1301, USA.
 
 import os
-import gtk
-import pango
-import gtksourceview2
+from gi.repository import Gtk
+from gi.repository import Pango
+from gi.repository import GtkSource
 
-class HexdumpView(gtk.HBox):
+class HexdumpView(Gtk.HBox):
 
     '''Right TextView elements'''
 
@@ -36,28 +36,28 @@ class HexdumpView(gtk.HBox):
         self.uicore = core
 
         # Scrolledwindow for Offsets
-        self.offset_sw = gtk.ScrolledWindow()
-        self.offset_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.offset_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.offset_sw = Gtk.ScrolledWindow()
+        self.offset_sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.offset_sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sb = self.offset_sw.get_vscrollbar()
         sb.set_child_visible(False)
 
         # Scrolledwindow for Hexdump
-        self.hex_sw = gtk.ScrolledWindow()
-        self.hex_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.hex_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.hex_sw = Gtk.ScrolledWindow()
+        self.hex_sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.hex_sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sb = self.hex_sw.get_vscrollbar()
         sb.set_child_visible(False)
 
         # Scrolledwindow for ASCII
-        self.ascii_sw = gtk.ScrolledWindow()
-        self.ascii_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.ascii_sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.ascii_sw = Gtk.ScrolledWindow()
+        self.ascii_sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.ascii_sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         # Scrolledwindow for DASM
-        self.asm_sw = gtk.ScrolledWindow()
-        self.asm_sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.asm_sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.asm_sw = Gtk.ScrolledWindow()
+        self.asm_sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.asm_sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         # Scrolling signals and callbacks
         self.offset_sw.connect("scroll-event", self._sync_vscroll_offset_scroll)
@@ -67,13 +67,13 @@ class HexdumpView(gtk.HBox):
         self.offset_sw.get_vadjustment().connect("value-changed", self._sync_vscroll_offset_mouse)
 
         # Textviews and buffers
-        self.offset_buffer = gtksourceview2.Buffer()
-        self.hex_buffer = gtksourceview2.Buffer()
-        self.ascii_buffer = gtksourceview2.Buffer()
+        self.offset_buffer = GtkSource.Buffer()
+        self.hex_buffer = GtkSource.Buffer()
+        self.ascii_buffer = GtkSource.Buffer()
 
-        self.asm_buffer = gtksourceview2.Buffer()
+        self.asm_buffer = GtkSource.Buffer()
         # Add ui dir to language paths
-        lm = gtksourceview2.LanguageManager()
+        lm = GtkSource.LanguageManager()
         paths = lm.get_search_path()
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
@@ -87,12 +87,12 @@ class HexdumpView(gtk.HBox):
         language = manager.get_language('asm')
         self.asm_buffer.set_language(language)
 
-        self.offset_view = gtksourceview2.View(self.offset_buffer)
-        self.hex_view = gtksourceview2.View(self.hex_buffer)
+        self.offset_view = GtkSource.View(self.offset_buffer)
+        self.hex_view = GtkSource.View(self.hex_buffer)
         self.hex_view.connect("button-release-event", self.hex_view_button_release)
         self.hex_view.connect("populate-popup", self.hex_view_populate_popup)
-        self.ascii_view = gtksourceview2.View(self.ascii_buffer)
-        self.asm_view = gtksourceview2.View(self.asm_buffer)
+        self.ascii_view = GtkSource.View(self.ascii_buffer)
+        self.asm_view = GtkSource.View(self.asm_buffer)
 
         # Margins for eye candy
         self.offset_view.set_show_right_margin(True)
@@ -107,7 +107,7 @@ class HexdumpView(gtk.HBox):
         self.ascii_view.set_right_margin(10)
         self.asm_view.set_left_margin(10)
 
-        font_desc = pango.FontDescription('monospace 9')
+        font_desc = Pango.FontDescription('monospace 9')
         if font_desc:
             self.offset_view.modify_font(font_desc)
             self.hex_view.modify_font(font_desc)
@@ -225,9 +225,9 @@ class HexdumpView(gtk.HBox):
         hex_adj.changed()
 
     def hex_view_populate_popup(self, textview, popup):
-        disassemble_item = gtk.MenuItem('Disassemble')
+        disassemble_item = Gtk.MenuItem('Disassemble')
         disassemble_item.connect('activate', self.disassemble_item_activate)
-        separator = gtk.SeparatorMenuItem()
+        separator = Gtk.SeparatorMenuItem()
         popup.prepend(separator)
         popup.prepend(disassemble_item)
         separator.show()

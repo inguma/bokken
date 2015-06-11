@@ -27,15 +27,15 @@ import ui.dependency_check as dependency_check
 dependency_check.check_all()
 
 # Now that I know that I have them, import them!
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 # This is just general info, to help people knowing their system
 print("Starting bokken {}, running on:".format(glob.version))
 print("  Python version:")
 print("\n".join("    "+x for x in sys.version.split("\n")))
-print("  GTK version: {}".format(".".join(str(x) for x in gtk.gtk_version)))
-print("  PyGTK version: {}\n".format(".".join(str(x) for x in gtk.pygtk_version)))
+print("  GTK version: {}".format(".".join(str(x) for x in Gtk.gtk_version)))
+print("  PyGTK version: {}\n".format(".".join(str(x) for x in Gtk.pygtk_version)))
 
 import ui.gtk2.common
 import ui.textviews as textviews
@@ -53,7 +53,7 @@ class BokkenGTKClient:
 
         # Allow only the main thread to touch the GUI (gtk) part, while letting
         # other threads do background work.
-        gobject.threads_init()
+        GObject.threads_init()
 
         self.target = target
         self.backend = backend
@@ -64,7 +64,7 @@ class BokkenGTKClient:
         # Check if we have, at least, one available core; otherwise exit.
         # TODO: Should be removed? now with one core and dependency_check doing the core check... 
         if not glob.has_radare:
-            md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
+            md = Gtk.MessageDialog(None, Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, None)
             md.set_markup("<big><b>No backend engine found!</b></big>")
             md.format_secondary_markup((
                     'Install radare to run bokken:\n\n'
@@ -95,7 +95,7 @@ class BokkenGTKClient:
         # Launch file selection dialog
         dialog = file_dialog.FileDialog(self.target, True)
         resp = dialog.run()
-        if resp == gtk.RESPONSE_DELETE_EVENT or resp == gtk.RESPONSE_REJECT:
+        if resp == Gtk.ResponseType.DELETE_EVENT or resp == Gtk.ResponseType.REJECT:
             return None
         # Get dialog selected file, backend and options
         self.target = dialog.file
@@ -118,7 +118,7 @@ class BokkenGTKClient:
             self.load_file(self.target)
             if not self.uicore.file_loaded:
                 error_msg = "Error opening file " + self.target
-                md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, None)
+                md = Gtk.MessageDialog(None, Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, None)
                 md.set_markup("<big><b>File open error!</b></big>")
                 md.format_secondary_markup(error_msg)
                 md.run()
@@ -131,11 +131,11 @@ class BokkenGTKClient:
         else:
             self.empty_gui = True
 
-        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
         self.window.set_focus = True
         self.window.connect("delete_event", self.quit)
         ui.gtk2.common.set_bokken_icon(self.window)
-        gtk.settings_get_default().set_long_property("gtk-button-images", True, "main")
+        Gtk.Settings.get_default().set_long_property("gtk-button-images", True, "main")
 
         # Title
         self.window.set_title(MAINTITLE + glob.version + " - " + self.target)
@@ -143,12 +143,12 @@ class BokkenGTKClient:
         # Positions
         #self.window.resize(1000, 700)
         #self.window.move(25, 25)
-        self.window.set_position(gtk.WIN_POS_CENTER)
+        self.window.set_position(Gtk.WindowPosition.CENTER)
         # Maximize window
         #self.window.maximize()
 
         # Create VBox to contain top buttons and other VBox
-        self.supervb = gtk.VBox(False, 1)
+        self.supervb = Gtk.VBox(False, 1)
 
         # Create top buttons and add to VBox
         import ui.radare_toolbar as toolbar
@@ -156,7 +156,7 @@ class BokkenGTKClient:
         self.supervb.pack_start(self.topbuttons, False, True, 1)
 
         # Create VBox to contain textviews and statusbar
-        self.mainvb = gtk.VBox(False, 1)
+        self.mainvb = Gtk.VBox(False, 1)
         self.supervb.pack_start(self.mainvb, True, True, 1)
 
         # Initialize and add TextViews
@@ -195,7 +195,7 @@ class BokkenGTKClient:
         dialog.destroy()
         # We make sure that we remove the reference to the scrollbar to avoid errors.
         self.uicore.core.progress_bar = None
-        gtk.main()
+        Gtk.main()
 
     # Do all the core stuff of parsing file
     def load_file(self, target):
@@ -225,7 +225,7 @@ class BokkenGTKClient:
             self.tviews.update_righttext('Hexdump')
 
         if platform.system() != 'Windows':
-            gobject.timeout_add(250, self.merge_dasm_rightextview)
+            GObject.timeout_add(250, self.merge_dasm_rightextview)
         else:
             if self.uicore.text_dasm:
                 self.tviews.update_dasm(self.uicore.text_dasm)
@@ -378,15 +378,15 @@ class BokkenGTKClient:
         @param data: optional data to receive.
         '''
         msg = ("Do you really want to quit?")
-        dlg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, msg)
-        dlg.set_default_response(gtk.RESPONSE_YES)
+        dlg = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, msg)
+        dlg.set_default_response(Gtk.ResponseType.YES)
         opt = dlg.run()
         dlg.destroy()
 
-        if opt != gtk.RESPONSE_YES:
+        if opt != Gtk.ResponseType.YES:
             return True
 
-        gtk.main_quit()
+        Gtk.main_quit()
         if self.dasm_process:
             self.dasm_process.terminate()
         return True

@@ -17,14 +17,14 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 import ui.gtk2.common
 
-class CalcDialog(gtk.Dialog):
+class CalcDialog(Gtk.Dialog):
     '''Window popup to select files'''
 
     def __init__(self, core):
-        super(CalcDialog,self).__init__('Calculator', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        super(CalcDialog,self).__init__('Calculator', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
 
         self.uicore = core
 
@@ -39,19 +39,19 @@ class CalcDialog(gtk.Dialog):
         self.butt_ok.connect("clicked", lambda x: self.destroy())
 
         # Window position
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
 
         # Main Vertical Box
-        self.main_vbox = gtk.VBox(False, 2)
+        self.main_vbox = Gtk.VBox(False, 2)
         self.main_vbox.set_border_width(7)
 
-        self.label = gtk.Label('Enter expression to calculate:')
+        self.label = Gtk.Label(label='Enter expression to calculate:')
 
         # File selection Horizontal Box 1
-        self.hbox1 = gtk.HBox(False, 0)
+        self.hbox1 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry = gtk.Entry(100)
-        self.input_entry.set_icon_from_stock(1, gtk.STOCK_INFO)
+        self.input_entry = Gtk.Entry(100)
+        self.input_entry.set_icon_from_stock(1, Gtk.STOCK_INFO)
         self.input_entry.set_icon_tooltip_text(1, self.examples)
         self.input_entry.connect("activate", self._do_calc)
         self.input_entry.connect("icon-press", self._do_calc)
@@ -60,24 +60,24 @@ class CalcDialog(gtk.Dialog):
         self.hbox1.pack_start(self.input_entry, True, True, 2)
 
         # File selection Horizontal Box 2
-        self.hbox2 = gtk.HBox(False, 0)
+        self.hbox2 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry2 = gtk.Entry(100)
+        self.input_entry2 = Gtk.Entry(100)
         # Select file button
         # Pack elements into hbox
         self.hbox2.pack_start(self.input_entry2, True, True, 2)
 
         # Base conversion labels
-        self.out_box = gtk.VBox(False, 1)
-        self.hex_lbl = gtk.Label()
+        self.out_box = Gtk.VBox(False, 1)
+        self.hex_lbl = Gtk.Label()
         self.hex_lbl.set_alignment(0, 0.5)
-        self.dec_lbl = gtk.Label()
+        self.dec_lbl = Gtk.Label()
         self.dec_lbl.set_alignment(0, 0.5)
-        self.oct_lbl = gtk.Label()
+        self.oct_lbl = Gtk.Label()
         self.oct_lbl.set_alignment(0, 0.5)
-        self.bin_lbl = gtk.Label()
+        self.bin_lbl = Gtk.Label()
         self.bin_lbl.set_alignment(0, 0.5)
-        self.chr_lbl = gtk.Label()
+        self.chr_lbl = Gtk.Label()
         self.chr_lbl.set_alignment(0, 0.5)
 
         self.out_box.pack_start(self.hex_lbl, False, False, 1)
@@ -92,7 +92,7 @@ class CalcDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.hbox2, False, False, 2)
         self.main_vbox.pack_start(self.out_box, False, False, 2)
 
-        self.vbox.pack_start(self.main_vbox)
+        self.vbox.pack_start(self.main_vbox, True, True, 0)
         self.show_all()
         self.out_box.hide_all()
 

@@ -20,15 +20,15 @@
 # TODO: ask the user for the program counter to be used instead of use 0 by default. See the FIXMES below
 
 import os
-import gtk
-import gobject
-import gtksourceview2
+from gi.repository import Gtk
+from gi.repository import GObject
+from gi.repository import GtkSource
 
-class AssembleDialog(gtk.Dialog):
+class AssembleDialog(Gtk.Dialog):
     '''Assembler plugin dialog'''
 
     def __init__(self, core):
-        super(AssembleDialog,self).__init__('Assembler plugin', None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+        super(AssembleDialog,self).__init__('Assembler plugin', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
 
         self.uicore = core
         self.timer_id = None
@@ -49,20 +49,20 @@ class AssembleDialog(gtk.Dialog):
 
         # Positions
         self.resize(600, 400)
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
 
         self.vbox.set_spacing(3)
         self.set_border_width(3)
 
         # Main HBox to contain both columns (VBoxes)
-        self.main_hb = gtk.HBox(True, 5)
+        self.main_hb = Gtk.HBox(True, 5)
 
         # Info icon and some help text
         #################################################################
-        self.info_hb = gtk.HBox(False, 3)
-        self.info_icon = gtk.Image()
-        self.info_icon.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
-        self.info_label = gtk.Label()
+        self.info_hb = Gtk.HBox(False, 3)
+        self.info_icon = Gtk.Image()
+        self.info_icon.set_from_stock(Gtk.STOCK_INFO, Gtk.IconSize.MENU)
+        self.info_label = Gtk.Label()
         self.info_label.set_markup('Just type your asm/hex in the appropiate text area to get it assembled on the other')
         self.info_label.set_alignment(0.02, 0.5)
 
@@ -70,7 +70,7 @@ class AssembleDialog(gtk.Dialog):
         self.info_hb.pack_start(self.info_label, True, True, 1)
         self.vbox.pack_start(self.info_hb, False, False, 1)
 
-        sep = gtk.HSeparator()
+        sep = Gtk.HSeparator()
         self.vbox.pack_start(sep, False, False, 1)
 
         self.vbox.pack_start(self.main_hb, True, True, 1)
@@ -79,54 +79,54 @@ class AssembleDialog(gtk.Dialog):
         #################################################################
 
         # Two VBoxes, one for each "column": hex and dasm
-        self.hex_vb = gtk.VBox(False, 3)
-        self.asm_vb = gtk.VBox(False, 3)
+        self.hex_vb = Gtk.VBox(False, 3)
+        self.asm_vb = Gtk.VBox(False, 3)
 
         self.main_hb.pack_start(self.asm_vb, True, True, 1)
         self.main_hb.pack_start(self.hex_vb, True, True, 1)
 
         # HBoxes for the label/info of each column
-        self.hex_hb = gtk.HBox(False, 1)
-        self.asm_hb = gtk.HBox(False, 1)
+        self.hex_hb = Gtk.HBox(False, 1)
+        self.asm_hb = Gtk.HBox(False, 1)
 
         self.hex_vb.pack_start(self.hex_hb, False, False, 1)
         self.asm_vb.pack_start(self.asm_hb, False, False, 1)
 
-        self.hex_label = gtk.Label("")
+        self.hex_label = Gtk.Label(label="")
         self.hex_label.set_markup("<b>Hexadecimal</b>")
         self.hex_label.set_alignment(0.05, 0.5)
-        self.asm_label = gtk.Label("Assembly")
+        self.asm_label = Gtk.Label(label="Assembly")
         self.asm_label.set_markup("<b>Assembly</b>")
         self.asm_label.set_alignment(0.05, 0.5)
 
-        self.hex_info = gtk.Button('')
+        self.hex_info = Gtk.Button('')
         self.hex_info.set_tooltip_text('Fill the text area with example code.\nWARNING: This will remove actual text area contents!')
         self.hex_info.connect('clicked', self._help, 'hex')
-        i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_HELP, gtk.ICON_SIZE_MENU)
+        i = Gtk.Image()
+        i.set_from_stock(Gtk.STOCK_HELP, Gtk.IconSize.MENU)
         self.hex_info.set_image(i)
         l = self.hex_info.get_children()[0]
         l = l.get_children()[0].get_children()[1]
         l = l.set_label('')
 
-        self.asm_info = gtk.Button('')
+        self.asm_info = Gtk.Button('')
         self.asm_info.set_tooltip_text('Fill the text area with example code.\nWARNING: This will remove actual text area contents!')
         self.asm_info.connect('clicked', self._help, 'asm')
-        i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_HELP, gtk.ICON_SIZE_MENU)
+        i = Gtk.Image()
+        i.set_from_stock(Gtk.STOCK_HELP, Gtk.IconSize.MENU)
         self.asm_info.set_image(i)
         l = self.asm_info.get_children()[0]
         l = l.get_children()[0].get_children()[1]
         l = l.set_label('')
 
-        self.arch_combo = gtk.combo_box_new_text()
+        self.arch_combo = Gtk.ComboBoxText()
         self.arch_combo.set_tooltip_text('Select the architecture to use')
         options = ['x86', 'x86.olly', 'ppc', 'mips', 'arm']
         for option in options:
             self.arch_combo.append_text(option)
         self.arch_combo.set_active(0)
 
-        self.bits_combo = gtk.combo_box_new_text()
+        self.bits_combo = Gtk.ComboBoxText()
         self.bits_combo.set_tooltip_text('Select the bits to use')
         options = ['16', '32', '64']
         for option in options:
@@ -142,7 +142,7 @@ class AssembleDialog(gtk.Dialog):
         self.asm_hb.pack_start(self.asm_info, False, False, 1)
         
         # Add ui dir to language paths
-        lm = gtksourceview2.LanguageManager()
+        lm = GtkSource.LanguageManager()
         paths = lm.get_search_path()
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
@@ -150,12 +150,12 @@ class AssembleDialog(gtk.Dialog):
         # HEX textview
         #################################################################
 
-        self.hex_buffer = gtksourceview2.Buffer()
-        self.hex_view = gtksourceview2.View(self.hex_buffer)
+        self.hex_buffer = GtkSource.Buffer()
+        self.hex_view = GtkSource.View(self.hex_buffer)
         self.hex_view.set_show_right_margin(True)
         self.hex_view.set_left_margin(10)
         self.hex_view.set_editable(True)
-        self.hex_view.set_wrap_mode(gtk.WRAP_WORD_CHAR)
+        self.hex_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         self.hex_handler = self.hex_buffer.connect("changed", self._update, "hex")
 
         self.hex_buffer.set_data('languages-manager', lm)
@@ -165,8 +165,8 @@ class AssembleDialog(gtk.Dialog):
         language = manager.get_language('asm')
         self.hex_buffer.set_language(language)
 
-        self.hex_scrolled = gtk.ScrolledWindow()
-        self.hex_scrolled.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.hex_scrolled = Gtk.ScrolledWindow()
+        self.hex_scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.hex_scrolled.is_visible = True
 
         # Add Textview to Scrolled Window
@@ -180,8 +180,8 @@ class AssembleDialog(gtk.Dialog):
 
         # ASM TextView
         #################################################################
-        self.asm_buffer = gtksourceview2.Buffer()
-        self.asm_view = gtksourceview2.View(self.asm_buffer)
+        self.asm_buffer = GtkSource.Buffer()
+        self.asm_view = GtkSource.View(self.asm_buffer)
         self.asm_view.set_show_right_margin(True)
         self.asm_view.set_left_margin(10)
         self.asm_view.set_editable(True)
@@ -194,8 +194,8 @@ class AssembleDialog(gtk.Dialog):
         language = manager.get_language('asm')
         self.asm_buffer.set_language(language)
 
-        self.asm_scrolled = gtk.ScrolledWindow()
-        self.asm_scrolled.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.asm_scrolled = Gtk.ScrolledWindow()
+        self.asm_scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.asm_scrolled.is_visible = True
 
         # Add Textview to Scrolled Window
@@ -203,26 +203,26 @@ class AssembleDialog(gtk.Dialog):
 
         self.asm_vb.pack_start(self.asm_scrolled, True, True, 1)
 
-        sep = gtk.HSeparator()
+        sep = Gtk.HSeparator()
         self.vbox.pack_start(sep, False, False, 1)
 
         # Export buttons
-        self.export_hb = gtk.HBox(False, 3)
+        self.export_hb = Gtk.HBox(False, 3)
 
-        self.export_label = gtk.Label('Select the export format:')
+        self.export_label = Gtk.Label(label='Select the export format:')
 
-        self.export_combo = gtk.combo_box_new_text()
+        self.export_combo = Gtk.ComboBoxText()
 
         options = ['Python buffer', 'C Array']
         for option in options:
             self.export_combo.append_text(option)
         self.export_combo.set_active(0)
 
-        self.export_bt = gtk.Button('')
+        self.export_bt = Gtk.Button('')
         self.export_bt.set_tooltip_text('Export the generated code in the selected format')
         self.export_bt.connect('clicked', self._export)
-        i = gtk.Image()
-        i.set_from_stock(gtk.STOCK_CONVERT, gtk.ICON_SIZE_MENU)
+        i = Gtk.Image()
+        i.set_from_stock(Gtk.STOCK_CONVERT, Gtk.IconSize.MENU)
         self.export_bt.set_image(i)
         l = self.export_bt.get_children()[0]
         l = l.get_children()[0].get_children()[1]
@@ -232,7 +232,7 @@ class AssembleDialog(gtk.Dialog):
         self.export_hb.pack_start(self.export_combo, False, False, 1)
         self.export_hb.pack_start(self.export_bt, False, False, 1)
 
-        halign = gtk.Alignment(0, 1, 0, 0)
+        halign = Gtk.Alignment.new(0, 1, 0, 0)
         halign.add(self.export_hb)
 
         self.vbox.pack_start(halign, False, False, 1)
@@ -303,9 +303,9 @@ class AssembleDialog(gtk.Dialog):
         # This loop makes sure that we only call _find every 500 ms .
         if self.timer_id:
             # We destroy the last event source and create another one.
-            gobject.source_remove(self.timer_id)
+            GObject.source_remove(self.timer_id)
 
-        self.timer_id = gobject.timeout_add(500, self._refresh, widget, data)
+        self.timer_id = GObject.timeout_add(500, self._refresh, widget, data)
 
     def _refresh(self, widget, type):
 
