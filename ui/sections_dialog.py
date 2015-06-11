@@ -109,8 +109,8 @@ class SectionsDialog(gtk.Dialog):
 
         # Packing
         self.scrolled_window.add(self.tv)
-        self.vbox.pack_start(self.hbox, False, False)
-        self.vbox.pack_start(self.scrolled_window, True, True)
+        self.vbox.pack_start(self.hbox, False, False, 0)
+        self.vbox.pack_start(self.scrolled_window, True, True, 0)
 
         self._get_section_bars()
         self.show_all()

@@ -69,10 +69,10 @@ class DiffView(gtk.VBox):
         toolbar.set_show_arrow(False)
         label = self.label = gtk.Label()
         hbox = gtk.HBox(False, 5)
-        hbox.pack_start(toolbar, False)
-        hbox.pack_start(label, False)
-        self.pack_start(hbox, False)
-        self.pack_start(xdotwidget)
+        hbox.pack_start(toolbar, False, True, 0)
+        hbox.pack_start(label, False, True, 0)
+        self.pack_start(hbox, False, True, 0)
+        self.pack_start(xdotwidget, True, True, 0)
 
     def set_filename(self, name):
         self.label.set_text(name)
@@ -98,8 +98,8 @@ class DiffWidget(gtk.VPaned):
         hbox = gtk.HBox(True, 5)
         dw = self.dw = DiffView()
         dw2 = self.dw2 = DiffView()
-        hbox.pack_start(dw)
-        hbox.pack_start(dw2)
+        hbox.pack_start(dw, True, True, 0)
+        hbox.pack_start(dw2, True, True, 0)
         self.add(hbox)
         # Function list
         scrolledwin = gtk.ScrolledWindow()

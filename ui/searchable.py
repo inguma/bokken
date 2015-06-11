@@ -108,16 +108,16 @@ class Searchable(object):
         eventbox = gtk.EventBox()
         eventbox.add(close)
         eventbox.connect("button-release-event", self._close)
-        self.srchtab.pack_start(eventbox, expand=False, fill=False, padding=3)
+        self.srchtab.pack_start(eventbox, False, False, 3)
         # label
         label = gtk.Label("Find:")
-        self.srchtab.pack_start(label, expand=False, fill=False, padding=3)
+        self.srchtab.pack_start(label, False, False, 3)
         # entry
         self.search_entry = gtk.Entry()
         self.search_entry.set_tooltip_text("Type here the phrase you want to find")
         self.search_entry.connect("activate", self._find, "next")
         self.search_entry.connect("changed", self._find_cb, "find")
-        self.srchtab.pack_start(self.search_entry, expand=False, fill=False, padding=3)
+        self.srchtab.pack_start(self.search_entry, False, False, 3)
         # find next button
         if self.small:
             but_text = ''
@@ -127,7 +127,7 @@ class Searchable(object):
         butn.set_relief(gtk.RELIEF_NONE)
         butn.connect("clicked", self._find, "next")
         butn.set_tooltip_text("Find the next ocurrence of the phrase")
-        self.srchtab.pack_start(butn, expand=False, fill=False, padding=3)
+        self.srchtab.pack_start(butn, False, False, 3)
         # find previous button
         if self.small:
             but_text = ''
@@ -137,7 +137,7 @@ class Searchable(object):
         butp.set_relief(gtk.RELIEF_NONE)
         butp.connect("clicked", self._find, "previous")
         butp.set_tooltip_text("Find the previous ocurrence of the phrase")
-        self.srchtab.pack_start(butp, expand=False, fill=False, padding=3)
+        self.srchtab.pack_start(butp, False, False, 3)
         # make last two buttons equally width
         wn,hn = butn.size_request()
         wp,hp = butp.size_request()
@@ -152,10 +152,10 @@ class Searchable(object):
         # current version of gtk.TextIter doesn't support SEARCH_CASE_INSENSITIVE
         #butCase.show()
         #self.srchtab.pack_start(butCase, expand=False, fill=False, padding=3)
-        self.pack_start(self.srchtab, expand=False, fill=False)
+        self.pack_start(self.srchtab, False, False, 0)
         # Results
         self._resultsLabel = gtk.Label("")
-        self.srchtab.pack_start(self._resultsLabel, expand=False, fill=False, padding=3)
+        self.srchtab.pack_start(self._resultsLabel, False, False, 3)
         self.searching = False
 
     def _matchCase(self, widg):

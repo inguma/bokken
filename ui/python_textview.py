@@ -78,23 +78,23 @@ class PythonTextView(gtk.HBox):
         self.py_tb_hb = gtk.HBox(False)
         b = SemiStockButton("", gtk.STOCK_CLEAR, 'Clear code panel')
         b.connect("clicked", self._clear_code)
-        self.py_tb_hb.pack_end(b, False, False)
+        self.py_tb_hb.pack_end(b, False, False, 0)
         b = SemiStockButton("", gtk.STOCK_MEDIA_PLAY, 'Execute code')
         b.connect("clicked", self._exec)
-        self.py_tb_hb.pack_end(b, False, False)
+        self.py_tb_hb.pack_end(b, False, False, 0)
 
         self.ou_tb_hb = gtk.HBox(False)
 
         wrap = gtk.ToggleToolButton(stock_id=gtk.STOCK_JUSTIFY_FILL)
         b = SemiStockButton("", gtk.STOCK_CLEAR, 'Clear output panel')
         b.connect("clicked", self._clear)
-        self.ou_tb_hb.pack_end(b, False, False)
+        self.ou_tb_hb.pack_end(b, False, False, 0)
         wrap.set_active(True)
         wrap.set_tooltip_text('Switch text wrap')
-        self.ou_tb_hb.pack_end(wrap, False, False)
+        self.ou_tb_hb.pack_end(wrap, False, False, 0)
         b = SemiStockButton("", gtk.STOCK_HELP, 'Show help')
         b.connect("clicked", self._help)
-        self.ou_tb_hb.pack_end(b, False, False)
+        self.ou_tb_hb.pack_end(b, False, False, 0)
 
         # Panels VBoxes
         self.py_vb= gtk.VBox(False)
@@ -145,7 +145,7 @@ class PythonTextView(gtk.HBox):
         self.python_scrolled_window.show()
         # Add Textview to Scrolled Window
         self.python_scrolled_window.add(self.py_view)
-        self.py_vb.pack_start(self.python_scrolled_window, expand=True, fill=True)
+        self.py_vb.pack_start(self.python_scrolled_window, True, True, 0)
 
         #Always on bottom on change
         self.vajd = self.python_scrolled_window.get_vadjustment()
@@ -197,7 +197,7 @@ class PythonTextView(gtk.HBox):
         self.console_scrolled_window.show()
         # Add Textview to Scrolled Window
         self.console_scrolled_window.add(self.view)
-        self.ou_vb.pack_start(self.console_scrolled_window, expand=True, fill=True)
+        self.ou_vb.pack_start(self.console_scrolled_window, True, True, 0)
 
         #Always on bottom on change
         self.vajd = self.console_scrolled_window.get_vadjustment()

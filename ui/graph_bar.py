@@ -32,25 +32,25 @@ class GraphBar(gtk.VBox):
         self.toolbox = self
         b = SemiStockButton("", gtk.STOCK_ZOOM_IN, 'Zoom In')
         b.connect("clicked", self._zoom, "in")
-        self.toolbox.pack_start(b, False, False)
+        self.toolbox.pack_start(b, False, False, 0)
         b = SemiStockButton("", gtk.STOCK_ZOOM_OUT, 'Zoom Out')
         b.connect("clicked", self._zoom, "out")
-        self.toolbox.pack_start(b, False, False)
+        self.toolbox.pack_start(b, False, False, 0)
         b = SemiStockButton("", gtk.STOCK_ZOOM_FIT, 'Zoom Fit')
         b.connect("clicked", self._zoom, "fit")
-        self.toolbox.pack_start(b, False, False)
+        self.toolbox.pack_start(b, False, False, 0)
         b = SemiStockButton("", gtk.STOCK_ZOOM_100, 'Zoom 100%')
         b.connect("clicked", self._zoom, "100")
-        self.toolbox.pack_start(b, False, False)
+        self.toolbox.pack_start(b, False, False, 0)
         # Separator
         self.sep = gtk.HSeparator()
-        self.toolbox.pack_start(self.sep, False, False)
+        self.toolbox.pack_start(self.sep, False, False, 0)
 
         # Change between Callgraph and Flowgraph
         if self.uicore.backend == 'radare':
             self.grpah_layout = gtk.ToggleToolButton(stock_id=gtk.STOCK_FULLSCREEN)
             self.grpah_layout.connect("clicked", self._change_layout)
-            self.toolbox.pack_start(self.grpah_layout, False, False)
+            self.toolbox.pack_start(self.grpah_layout, False, False, 0)
 
         # Grayed?
         self.toolbox.set_sensitive(True)

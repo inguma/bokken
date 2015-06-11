@@ -50,5 +50,5 @@ class CommentsDialog(gtk.Dialog):
         self.scrolled_window.add_with_viewport(self.input_text)
 
         #self.vbox.pack_start(self.input_text)
-        self.vbox.pack_start(self.scrolled_window)
+        self.vbox.pack_start(self.scrolled_window, True, True, 0)
         self.show_all()

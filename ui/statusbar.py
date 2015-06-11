@@ -83,7 +83,7 @@ class Statusbar(gtk.Statusbar):
             label = gtk.Label()
             label.set_markup('<b>Bokken ' + version + '</b> (' + self.uicore.backend.capitalize() + ' ' + self.uicore.version + ')')
             label.set_padding(3, 3)
-            self.pack_end(label, False)
+            self.pack_end(label, False, True, 0)
 
         self.show_all()
 

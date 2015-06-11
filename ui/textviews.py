@@ -34,7 +34,6 @@ import ui.strings_treeview as strings_treeview
 import ui.sections_treeview as sections_treeview
 import ui.hexdump_view as hexdump_view
 import ui.bindiff as bindiff
-import ui.html_tree as html_tree
 import ui.info_tree as info_tree
 import ui.left_buttons as left_buttons
 from lib.common import datafile_path

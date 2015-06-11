@@ -225,7 +225,7 @@ class FileDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.options_hbox, False, False, 2)
         self.main_vbox.pack_start(self.radare_box_3, False, False, 2)
 
-        self.vbox.pack_start(self.main_vbox)
+        self.vbox.pack_start(self.main_vbox, True, True, 0)
         self.set_focus(self.input_entry.get_child())
         self.show_all()
 

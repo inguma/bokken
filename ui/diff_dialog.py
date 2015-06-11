@@ -118,7 +118,7 @@ class DiffDialog(gtk.Dialog):
         self.main_vbox.pack_start(self.sep, False, False, 2)
         self.main_vbox.pack_start(self.options_exp, False, False, 2)
 
-        self.vbox.pack_start(self.main_vbox)
+        self.vbox.pack_start(self.main_vbox, True, True, 0)
         self.show_all()
 
     def get_file(self, widget):

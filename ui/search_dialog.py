@@ -50,5 +50,5 @@ class SearchDialog(gtk.Dialog):
         self.scrolled_window.add_with_viewport(self.output_text)
 
         #self.vbox.pack_start(self.output_text)
-        self.vbox.pack_start(self.scrolled_window)
+        self.vbox.pack_start(self.scrolled_window, True, True, 0)
         self.show_all()

@@ -73,7 +73,7 @@ class ConsoleTextView(gtk.VBox):
         self.console_scrolled_window.show()
         # Add Textview to Scrolled Window
         self.console_scrolled_window.add(self.view)
-        self.pack_start(self.console_scrolled_window, expand=True, fill=True)
+        self.pack_start(self.console_scrolled_window, True, True, 0)
 
         #Always on bottom on change
         self.vajd = self.console_scrolled_window.get_vadjustment()
@@ -88,7 +88,7 @@ class ConsoleTextView(gtk.VBox):
         self.exec_entry.connect("icon-press", self.r2_exec)
         self.exec_entry.connect('focus-in-event', self._clean, 'in')
         self.exec_entry.connect('focus-out-event', self._clean, 'out')
-        self.pack_end(self.exec_entry, expand=False, fill=True)
+        self.pack_end(self.exec_entry, False, True, 0)
 
     def rescroll(self, adj, scroll):
         adj.set_value(adj.upper-adj.page_size)

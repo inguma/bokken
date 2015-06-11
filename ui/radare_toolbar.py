@@ -141,7 +141,7 @@ class TopButtons(gtk.HBox):
         self.throbber_tb.add(self.throbber)
         self.main_tb.insert(self.throbber_tb, -1)
 
-        self.toolbox.pack_start(self.main_tb, True, True)
+        self.toolbox.pack_start(self.main_tb, True, True, 0)
 
         self.show_all()
 

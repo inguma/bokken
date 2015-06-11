@@ -173,13 +173,13 @@ class RightNotebook(gtk.Notebook):
         if icon:
             i = gtk.Image()
             i.set_from_stock(eval('gtk.STOCK_' + icon), gtk.ICON_SIZE_MENU)
-            tab_box.pack_start(i, False, False)
+            tab_box.pack_start(i, False, False, 0)
 
         close_button.connect("clicked", self.close_tab, tab_child)
         close_button.set_image(image)
         close_button.set_relief(gtk.RELIEF_NONE)
-        tab_box.pack_start(label, True, True)
-        tab_box.pack_end(close_button, False, False)
+        tab_box.pack_start(label, True, True, 0)
+        tab_box.pack_end(close_button, False, False, 0)
 
         tab_box.show_all()
         if title in ['Loading dasm...', 'Code', 'Callgraph', 'Flowgraph', 'Interactive', 'Strings', "Sections", 'Hexdump', 'Bindiff', 'File info']:
