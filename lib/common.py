@@ -97,7 +97,7 @@ def console_color(string='', color='white'):
     }
     if sys.platform == "win32":
         # No color for you today!
-        ansi_code = map(lambda x:'', ansi_code)
+        return string
 
     return('%s%s%s' % (ansi_code[color], string, ansi_code['white']))
 
