@@ -89,7 +89,7 @@ class MyDotWidget(gtk.HBox):
         tmp_dot.write(dotcode)
         tmp_dot.close()
 
-        cmd = "/usr/bin/dot -Tpng " + tmp_dot.name + " > " + tmp_dot.name + ".png" 
+        cmd = "dot -Tpng " + tmp_dot.name + " > " + tmp_dot.name + ".png" 
         os.system(cmd)
 
         im = Image.open(tmp_dot.name + ".png")

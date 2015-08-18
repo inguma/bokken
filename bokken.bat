@@ -1,2 +1,3 @@
+@echo off
 echo Modify this script for you
-python.exe c:\bokken\bokken.py
+c:\Python27\python.exe bokken.py %*
