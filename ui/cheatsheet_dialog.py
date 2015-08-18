@@ -433,10 +433,10 @@ class CheatsheetDialog(gtk.Dialog):
         dialog.destroy()
 
     def _show_about(self, widget):
-        md = gtk.MessageDialog(self, 
-            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, 
+        md = gtk.MessageDialog(self,
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
             gtk.BUTTONS_CLOSE, "")
-        md.set_markup('The data for this cheat sheet\nhas been borrowed from:\n\n<a href="http://www.rnicrosoft.net">http://www.rnicrosoft.net</a>\n\nThe original cheat sheet can be\ndownloaded from <a href="http://www.rnicrosoft.net/docs/X86_Win32_Reverse_Engineering_Cheat_Sheet.pdf">here</a>')
+        md.set_markup('The data for this cheat sheet\nwas borrowed from http://www.rnicrosoft.net.\n\nThe original site is no longer up, and now it\'s owned by cyber-squatters.  There are multiple ones over the Internet, you might like a simple one like <a href="http://www.jegerlehner.ch/intel/IntelCodeTable.pdf">the one from http://www.jegerlehner.ch/intel</a>.')
         ui.gtk2.common.set_bokken_icon(md)
         md.run()
         md.destroy()
