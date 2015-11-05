@@ -44,8 +44,9 @@ class ConsoleTextView(Gtk.VBox):
         lm.set_search_path(paths)
         self.buffer = GtkSource.Buffer()
         self.buffer.create_tag("green-background", background="green", foreground="black")
-        self.buffer.set_data('languages-manager', lm)
-        self.view = GtkSource.View(self.buffer)
+        # MEOW
+        #self.buffer.set_data('languages-manager', lm)
+        self.view = GtkSource.View.new_with_buffer(self.buffer)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
@@ -60,9 +61,9 @@ class ConsoleTextView(Gtk.VBox):
             self.view.modify_font(font_desc)
 
         self.buffer.set_highlight_syntax(False)
-        manager = self.buffer.get_data('languages-manager')
-        language = manager.get_language('asm')
-        self.buffer.set_language(language)
+        #manager = self.buffer.get_data('languages-manager')
+        #language = manager.get_language('asm')
+        #self.buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 
@@ -80,7 +81,8 @@ class ConsoleTextView(Gtk.VBox):
         self.vajd.connect('changed', lambda a, s=self.console_scrolled_window: self.rescroll(a,s))
 
         # Comand line entry
-        self.exec_entry = Gtk.Entry(100)
+        self.exec_entry = Gtk.Entry()
+        self.exec_entry.set_max_length(100)
         self.exec_entry.set_icon_from_stock(1, Gtk.STOCK_EXECUTE)
         self.exec_entry.set_icon_tooltip_text(1, 'Execute')
         self.exec_entry.set_text('Radare console: type ? for help')
@@ -91,7 +93,7 @@ class ConsoleTextView(Gtk.VBox):
         self.pack_end(self.exec_entry, False, True, 0)
 
     def rescroll(self, adj, scroll):
-        adj.set_value(adj.upper-adj.page_size)
+        adj.set_value(adj.get_upper()-adj.get_page_size())
         scroll.set_vadjustment(adj)
 
     def r2_exec(self, widget, icon_pos=None, event=None):

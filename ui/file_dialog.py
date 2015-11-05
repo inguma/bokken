@@ -20,6 +20,7 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
 import ui.gtk2.common
 from lib.common import datafile_path
@@ -41,11 +42,11 @@ class FileDialog(Gtk.Dialog):
         ui.gtk2.common.set_bokken_icon(self)
 
         # The Ok Button.
-        self.butt_ok = self.action_area.get_children()[0]
+        self.butt_ok = self.action_area.get_children()[1]
         self.butt_ok.connect("clicked", self.fast_start)
         self.butt_ok.set_sensitive(False)
         # The Cancel button.
-        self.butt_cancel = self.action_area.get_children()[1]
+        self.butt_cancel = self.action_area.get_children()[0]
         self.butt_cancel.connect("clicked", self.cancel)
 
         # Window position
@@ -87,7 +88,7 @@ class FileDialog(Gtk.Dialog):
         self.hbox = Gtk.HBox(False, 0)
         # TextEntry
         self.model = Gtk.ListStore(str)
-        self.input_entry = Gtk.ComboBoxEntry(self.model, column=0)
+        self.input_entry = Gtk.ComboBox.new_with_model_and_entry(self.model)
         self.input_entry.get_child().connect("activate", self.fast_start)
         self.input_entry.connect("changed", self._validate_cb)
         #self.input_entry = Gtk.Entry(100)
@@ -135,8 +136,10 @@ class FileDialog(Gtk.Dialog):
         self.anal_bin.set_active(True)
         self.anal_bin.connect("toggled", self._no_anal)
         self.anal_depth_label = Gtk.Label(label='Max analysis depth: ')
-        self.anal_depth_entry = Gtk.Entry(3)
+        self.anal_depth_entry = Gtk.Entry()
+        self.anal_depth_entry.set_max_length(3)
         self.anal_depth_entry.set_width_chars(3)
+        self.anal_depth_entry.set_max_width_chars(3)
         self.anal_depth_entry.set_text('16')
         self.radare_dasm = Gtk.CheckButton(label='Lower case disassembly')
         self.radare_dasm.set_active(True)
@@ -162,7 +165,8 @@ class FileDialog(Gtk.Dialog):
         self.start_addr_label = Gtk.Label()
         self.start_addr_label.set_markup('<b>0x</b>')
         self.start_addr_label.set_padding(0, 5)
-        self.start_addr_address = Gtk.Entry(12)
+        self.start_addr_address = Gtk.Entry()
+        self.start_addr_address.set_max_length(12)
         self.start_addr_address.set_width_chars(12)
         self.start_addr_address.set_sensitive(False)
 
@@ -172,8 +176,10 @@ class FileDialog(Gtk.Dialog):
         self.flow_lines = Gtk.CheckButton(label='Show flow lines')
         self.flow_lines.connect("toggled", self._flow_lines_ctl)
         self.flow_lines_label = Gtk.Label(label='Columns for flow lines: ')
-        self.flow_lines_entry = Gtk.Entry(3)
+        self.flow_lines_entry = Gtk.Entry()
+        self.flow_lines_entry.set_max_length(3)
         self.flow_lines_entry.set_width_chars(3)
+        self.flow_lines_entry.set_max_width_chars(3)
         self.flow_lines_entry.set_text('20')
         self.flow_lines_entry.set_sensitive(False)
 
@@ -216,7 +222,7 @@ class FileDialog(Gtk.Dialog):
         self.main_vbox.pack_start(self.logo, False, False, 0)
         self.main_vbox.pack_start(self.logo_text, False, False, 0)
         self.main_vbox.pack_start(self.hseparator1, False, False, 2)
-        self.main_vbox.pack_start(self.hseparator2, False, False, 2)
+        #self.main_vbox.pack_start(self.hseparator2, False, False, 2)
         self.main_vbox.pack_start(self.label, False, False, 2)
         self.main_vbox.pack_start(self.radare_label, False, False, 1)
         self.main_vbox.pack_start(self.hbox, False, False, 2)
@@ -310,9 +316,11 @@ class FileDialog(Gtk.Dialog):
     def _validate(self, widget):
         text = widget.get_text()
         core = 'radare'
-        colormap = widget.get_colormap()
-        bg_ok = colormap.alloc_color("white")
-        bg_not_valid = colormap.alloc_color("red")
+        #colormap = widget.get_colormap()
+        #bg_ok = colormap.alloc_color("white")
+        parse, bg_ok = Gdk.Color.parse('white')
+        #bg_not_valid = colormap.alloc_color("red")
+        parse, bg_not_valid = Gdk.Color.parse('red')
         if len(text)==0:
             widget.modify_base(Gtk.StateType.NORMAL, bg_ok)
             self.butt_ok.set_sensitive(False)

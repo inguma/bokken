@@ -54,7 +54,7 @@ class Statusbar(Gtk.Statusbar):
         for element in data_dict.keys():
             # Element icon
             if element == 'processor':
-                _icon = Gtk.image_new_from_file(datafile_path('processor_small.png'))
+                _icon = Gtk.Image.new_from_file(datafile_path('processor_small.png'))
                 self.box.pack_start(_icon, False, False, 0)
             else:
                 _icon = Gtk.Image.new_from_stock(self.icons[element], Gtk.IconSize.MENU)
@@ -78,7 +78,7 @@ class Statusbar(Gtk.Statusbar):
             self.box.pack_start(sep, True, True, 1)
 
         if version:
-            _icon = Gtk.image_new_from_file(datafile_path('bokken-small.svg'))
+            _icon = Gtk.Image.new_from_file(datafile_path('bokken-small.svg'))
             self.pack_start(_icon, False, False, 1)
             label = Gtk.Label()
             label.set_markup('<b>Bokken ' + version + '</b> (' + self.uicore.backend.capitalize() + ' ' + self.uicore.version + ')')

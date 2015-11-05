@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 '''This library provides a function to create the search widget in a toolbar.'''
 
 from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 from lib.common import datafile_path
 
 def create(toolbar):
@@ -34,9 +35,9 @@ def create(toolbar):
 
     # Search components
     toolbar.search_combo_tb = Gtk.ToolItem()
-    toolbar.search_combo_align = Gtk.Alignment.new(yalign=0.5)
+    toolbar.search_combo_align = Gtk.Alignment.new(0, 0.5, 0, 0)
     store = Gtk.ListStore(GdkPixbuf.Pixbuf, str)
-    toolbar.search_combo = Gtk.ComboBox(store)
+    toolbar.search_combo = Gtk.ComboBox.new_with_model(store)
     rendererText = Gtk.CellRendererText()
     rendererPix = Gtk.CellRendererPixbuf()
     toolbar.search_combo.pack_start(rendererPix, False)
@@ -64,7 +65,8 @@ def create(toolbar):
     toolbar.main_tb.insert(toolbar.sep, -1)
 
     toolbar.search_entry_tb = Gtk.ToolItem()
-    toolbar.search_entry = Gtk.Entry(100)
+    toolbar.search_entry = Gtk.Entry()
+    toolbar.search_entry.set_max_length(100)
     toolbar.search_entry.set_text('Text to search')
     toolbar.search_entry.set_icon_from_stock(1, Gtk.STOCK_FIND)
     toolbar.search_entry.set_icon_tooltip_text(1, 'Search')

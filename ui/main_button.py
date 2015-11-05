@@ -19,6 +19,7 @@
 
 from gi.repository import Gtk
 from gi.repository import Pango
+from gi.repository import GObject
 from lib.common import datafile_path
 
 class MainMenuButton (Gtk.ToggleButton):
@@ -43,16 +44,17 @@ class MainMenuButton (Gtk.ToggleButton):
         icon = Gtk.Image()
         icon.set_from_file(datafile_path('bokken-small.svg'))
         hbox1.pack_start(icon, True, True, 3)
-        label = Gtk.Label(label=text)
+        label = Gtk.Label()
+        label.set_markup("<b>"+ text + "</b>")
         hbox1.pack_start(label, True, True, 3)
         arrow = Gtk.Arrow(Gtk.ArrowType.DOWN, Gtk.ShadowType.IN)
         hbox1.pack_start(arrow, False, False, 3)
         hbox2.pack_start(hbox1, True, True, 0)
 
-        # Text settings
-        attrs = Pango.AttrList()
-        attrs.change(Pango.AttrWeight(Pango.Weight.SEMIBOLD, 0, -1))
-        label.set_attributes(attrs)
+        # MEOW Text settings
+        #attrs = Pango.AttrList()
+        #attrs.change(Pango.AttrWeight(Pango.Weight.SEMIBOLD, 0, -1))
+        #label.set_attributes(attrs)
 
         self.add(hbox2)
         self.set_relief(Gtk.ReliefStyle.NORMAL)
@@ -87,7 +89,7 @@ class MainMenuButton (Gtk.ToggleButton):
         if togglebutton.get_active():
             if not self.menu.get_property("visible"):
                 pos_func = self._get_popup_menu_position
-                self.menu.popup(None, None, pos_func, 1, 0)
+                self.menu.popup(None, None, pos_func, 1, 0, 0)
                 self.menu.show_all()
 
     def on_menu_dismiss(self, *a, **kw):
@@ -100,7 +102,8 @@ class MainMenuButton (Gtk.ToggleButton):
 
     def _get_popup_menu_position(self, menu, *junk):
         # Underneath the button, at the same x position.
-        x, y = self.window.get_origin()
-        y += self.allocation.height
+        z, x, y = self.get_window().get_origin()
+        #y += self.allocation.height
+        y += self.get_allocated_height()
         return x, y + 5, True
 

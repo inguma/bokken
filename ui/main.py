@@ -34,7 +34,7 @@ from gi.repository import GObject
 print("Starting bokken {}, running on:".format(glob.version))
 print("  Python version:")
 print("\n".join("    " + x for x in sys.version.split("\n")))
-print("  GTK version: " + str(Gtk.get_major_version()) + '.' + str(Gtk.get_minor_version())   )
+print("  GTK version: " + str(Gtk.get_major_version()) + '.' + str(Gtk.get_minor_version()))
 
 import ui.gtk2.common
 import ui.textviews as textviews
@@ -250,7 +250,8 @@ class BokkenGTKClient:
         # Update statusbar with file info
         info = self.uicore.get_file_info()
         self.sbar.add_text(info, glob.version)
-        self.sbar.hide_all()
+        # MEOW
+        self.sbar.hide()
         self.sbar._statusbar.show_all()
 
         # Create seek entry autocompletion of function names...

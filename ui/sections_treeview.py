@@ -20,6 +20,7 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 from gi.repository import Pango
 from lib.common import datafile_path
 

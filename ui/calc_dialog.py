@@ -29,7 +29,8 @@ class CalcDialog(Gtk.Dialog):
         self.uicore = core
 
         # Set dialog resizeable and auto-shrink
-        self.set_policy(False, False, True)
+        # MEOW
+        #self.set_policy(False, False, True)
         ui.gtk2.common.set_bokken_icon(self)
 
         self.examples = "Examples:\n0x100\n0x100 + 20\n01001\n01001 + 0x10\n0x10 + 20 * 0101"
@@ -50,7 +51,8 @@ class CalcDialog(Gtk.Dialog):
         # File selection Horizontal Box 1
         self.hbox1 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry = Gtk.Entry(100)
+        self.input_entry = Gtk.Entry()
+        self.input_entry.set_max_length(100)
         self.input_entry.set_icon_from_stock(1, Gtk.STOCK_INFO)
         self.input_entry.set_icon_tooltip_text(1, self.examples)
         self.input_entry.connect("activate", self._do_calc)
@@ -62,7 +64,8 @@ class CalcDialog(Gtk.Dialog):
         # File selection Horizontal Box 2
         self.hbox2 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry2 = Gtk.Entry(100)
+        self.input_entry2 = Gtk.Entry()
+        self.input_entry2.set_max_length(100)
         # Select file button
         # Pack elements into hbox
         self.hbox2.pack_start(self.input_entry2, True, True, 2)
@@ -94,7 +97,7 @@ class CalcDialog(Gtk.Dialog):
 
         self.vbox.pack_start(self.main_vbox, True, True, 0)
         self.show_all()
-        self.out_box.hide_all()
+        self.out_box.hide()
 
     def _do_calc(self, widget, icon_pos=None, event=None):
         res = self.uicore.core.num.math(self.input_entry.get_text())

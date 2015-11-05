@@ -49,7 +49,7 @@ class MenuBar(Gtk.Menu):
 
         self.manager = Gtk.RecentManager.get_default()
 
-        self.recent_menu = Gtk.RecentChooserMenu(self.manager)
+        self.recent_menu = Gtk.RecentChooserMenu.new_for_manager(self.manager)
 
         self.recentm = Gtk.MenuItem('Recent targets')
         self.recentm.set_submenu(self.recent_menu)

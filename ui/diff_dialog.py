@@ -30,11 +30,12 @@ class DiffDialog(Gtk.Dialog):
         self.file = self.core.filename
 
         # Set dialog resizeable and auto-shrink
-        self.set_policy(False, False, True)
+        # MEOW
+        #self.set_policy(False, False, True)
         ui.gtk2.common.set_bokken_icon(self)
 
         # the cancel button
-        self.butt_ok = self.action_area.get_children()[0]
+        self.butt_ok = self.action_area.get_children()[1]
         self.butt_ok.connect("clicked", self.select_file)
 
         # Window position
@@ -49,7 +50,8 @@ class DiffDialog(Gtk.Dialog):
         # File selection Horizontal Box 1
         self.hbox1 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry = Gtk.Entry(100)
+        self.input_entry = Gtk.Entry()
+        self.input_entry.set_max_length(100)
         #self.input_entry.get_child().connect("activate", self.fast_start)
         self.input_entry.set_text(self.file)
         self.input_entry.set_sensitive(False)
@@ -59,7 +61,8 @@ class DiffDialog(Gtk.Dialog):
         # File selection Horizontal Box 2
         self.hbox2 = Gtk.HBox(False, 0)
         # TextEntry
-        self.input_entry2 = Gtk.Entry(100)
+        self.input_entry2 = Gtk.Entry()
+        self.input_entry2.set_max_length(100)
         # Select file button
         self.input_entry2.set_icon_from_stock(1, Gtk.STOCK_OPEN)
         self.input_entry2.set_icon_tooltip_text(1, 'Select file')
@@ -73,7 +76,7 @@ class DiffDialog(Gtk.Dialog):
         self.options_box = Gtk.VBox(False, 2)
 
         self.sep = Gtk.HSeparator()
-        self.options_exp = Gtk.Expander("Binary diffing options:")
+        self.options_exp = Gtk.Expander.new("Binary diffing options:")
 
         # HScale for function matching threshold
         self.thresh_label = Gtk.Label(label="Function matching threshold:")

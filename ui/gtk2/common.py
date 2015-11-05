@@ -33,7 +33,8 @@ def repaint():
 
     # I've been unable to find any other way to repaint the interface. :-(
     while Gtk.events_pending():
-        Gtk.main_iteration_do()
+        # Blocking: True/false
+        Gtk.main_iteration_do(False)
 
 def set_bokken_icon(obj):
     '''Set the Bokken icon in a generic GTK object.  If the method

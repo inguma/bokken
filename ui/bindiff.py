@@ -20,7 +20,8 @@
 import os
 import re
 from gi.repository import Gtk
-import Gtk.gdk
+from gi.repository import Gdk
+from gi.repository import GObject
 import xdot
 import tempfile
 from r2.r_core import *

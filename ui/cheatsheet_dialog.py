@@ -20,6 +20,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 import ui.gtk2.common
 from lib.common import datafile_path
 
@@ -130,10 +131,10 @@ class CheatsheetDialog(Gtk.Dialog):
         from gi.repository import Pango
 
         # The Cancel button.
-        self.butt_cancel = self.action_area.get_children()[0]
+        self.butt_cancel = self.action_area.get_children()[1]
         self.butt_cancel.connect("clicked", lambda x: self.destroy())
 
-        self.butt_about = self.action_area.get_children()[1]
+        self.butt_about = self.action_area.get_children()[0]
         self.butt_about.connect("clicked", self._show_about)
 
         self.vbox.set_spacing(3)
@@ -160,7 +161,7 @@ class CheatsheetDialog(Gtk.Dialog):
 
         # Pack icon and title
         hbox_summary.pack_start(summ_icon, False, False, 2)
-        hbox_summary.pack_start(self.create_h1_label('Assembly language', True, True, 0), True, True, 2)
+        hbox_summary.pack_start(self.create_h1_label('Assembly language'), True, True, 2)
 
         # Pack contents
         vbox_summary.pack_start(hbox_summary, False, False, 2)
@@ -175,7 +176,7 @@ class CheatsheetDialog(Gtk.Dialog):
         directives_hbox = Gtk.HBox(False, 1)
         directives_icon = Gtk.Image.new_from_stock(Gtk.STOCK_EXECUTE, Gtk.IconSize.MENU)
         directives_hbox.pack_start(directives_icon, False, False, 2)
-        directives_hbox.pack_start(self.create_h2_label('Assembly directives', True, True, 0), True, True, 2)
+        directives_hbox.pack_start(self.create_h2_label('Assembly directives'), True, True, 2)
         directives_vbox.pack_start(directives_hbox, False, False, 2)
         assembler_directives_tv = self.populate_treeview(self.assembler_directives)
         sw = Gtk.ScrolledWindow()
@@ -202,7 +203,7 @@ class CheatsheetDialog(Gtk.Dialog):
         operands_hbox = Gtk.HBox(False, 1)
         operands_icon = Gtk.Image.new_from_stock(Gtk.STOCK_PROPERTIES, Gtk.IconSize.MENU)
         operands_hbox.pack_start(operands_icon, False, False, 2)
-        operands_hbox.pack_start(self.create_h2_label('Operand Types', True, True, 0), True, True, 2)
+        operands_hbox.pack_start(self.create_h2_label('Operand Types'), True, True, 2)
         operands_vbox.pack_start(operands_hbox, False, False, 2)
         assembler_operands_tv = self.populate_treeview(self.operand_types)
         sw = Gtk.ScrolledWindow()
@@ -229,7 +230,7 @@ class CheatsheetDialog(Gtk.Dialog):
         terminology_hbox = Gtk.HBox(False, 1)
         terminology_icon = Gtk.Image.new_from_stock(Gtk.STOCK_INDEX, Gtk.IconSize.MENU)
         terminology_hbox.pack_start(terminology_icon, False, False, 2)
-        terminology_hbox.pack_start(self.create_h1_label('Terminology and Functions', True, True, 0), True, True, 2)
+        terminology_hbox.pack_start(self.create_h1_label('Terminology and Functions'), True, True, 2)
         vbox_terminology.pack_start(terminology_hbox, False, False, 2)
         sw = Gtk.ScrolledWindow()
         sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
@@ -254,7 +255,7 @@ class CheatsheetDialog(Gtk.Dialog):
         lang_vbox.pack_start(directives_vbox, False, False, 0)
         lang_vbox.pack_start(operands_vbox, False, False, 0)
         self.hbox.add(lang_vbox)
-        self.hbox.pack_start(Gtk.VSeparator(, True, True, 0), False, False, 0)
+        self.hbox.pack_start(Gtk.VSeparator(), False, False, 0)
         self.hbox.add(vbox_terminology)
 
         # Hbox for instructions and registers
@@ -348,7 +349,7 @@ class CheatsheetDialog(Gtk.Dialog):
         registers_vbox.pack_start(sw, True, True, 1)
 
         self.bottom_hbox.pack_start(instructions_vbox, True, True, 1)
-        self.bottom_hbox.pack_start(Gtk.VSeparator(, True, True, 0), False, False, 1)
+        self.bottom_hbox.pack_start(Gtk.VSeparator(), False, False, 1)
         self.bottom_hbox.pack_start(registers_vbox, False, False, 1)
 
         # Last packaging
@@ -412,7 +413,7 @@ class CheatsheetDialog(Gtk.Dialog):
         ui.gtk2.common.set_bokken_icon(dialog)
         stack_img = Gtk.Image()
         stack_img.set_from_file(datafile_path('stack.png'))
-        dialog.vbox.pack_start(self.create_h1_label("The stack", True, True, 0), False, False, 2)
+        dialog.vbox.pack_start(self.create_h1_label("The stack"), False, False, 2)
         dialog.vbox.pack_start(stack_img, True, True, 2)
         dialog.show_all()
         dialog.run()

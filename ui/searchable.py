@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 '''
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
 
 class Searchable(object):
@@ -49,9 +50,14 @@ class Searchable(object):
         # colors for textview and entry backgrounds
         self.textbuf = self.textview.get_buffer()
         self.textbuf.create_tag("yellow-background", background="yellow")
-        colormap = self.get_colormap()
-        self.bg_normal = colormap.alloc_color("white")
-        self.bg_notfnd = colormap.alloc_color("red")
+        #MEOW
+        #colormap = self.get_colormap()
+        #self.bg_normal = colormap.alloc_color("white")
+        #self.bg_notfnd = colormap.alloc_color("red")
+
+        parse, self.bg_normal = Gdk.Color.parse('white')
+        parse, self.bg_notfnd = Gdk.Color.parse('red')
+
         # build the search tab
         self._build_search(None)
         self.searching = True
@@ -139,11 +145,12 @@ class Searchable(object):
         butp.set_tooltip_text("Find the previous ocurrence of the phrase")
         self.srchtab.pack_start(butp, False, False, 3)
         # make last two buttons equally width
-        wn,hn = butn.size_request()
-        wp,hp = butp.size_request()
-        newwidth = max(wn, wp)
-        butn.set_size_request(newwidth, hn)
-        butp.set_size_request(newwidth, hp)
+        # MEOW
+        wn,hn = butn.get_preferred_size()
+        wp,hp = butp.get_preferred_size()
+        newwidth = max(wn.width, wp.width)
+        butn.set_size_request(newwidth, hn.height)
+        butp.set_size_request(newwidth, hp.height)
         # Match case CheckButton
         butCase = Gtk.CheckButton(('Match case'))
         butCase.set_active(self._matchCaseValue)

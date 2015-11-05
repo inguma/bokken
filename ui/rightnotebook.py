@@ -56,7 +56,7 @@ class RightNotebook(Gtk.Notebook):
             text = 'Code'
         self.code_tab = self.create_tab(text, self.scrolled_window, 'SORT_DESCENDING')
 
-        self.set_tab_label_packing(self.scrolled_window, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.scrolled_window, False, False, Gtk.PACK_START)
         self.set_tab_label(self.scrolled_window, self.code_tab)
         self.code_tab.get_children()[0].set_sensitive(False)
 
@@ -68,7 +68,7 @@ class RightNotebook(Gtk.Notebook):
 
         tab = self.create_tab(label, self.xdot_box, 'ZOOM_FIT')
 
-        self.set_tab_label_packing(self.xdot_box, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.xdot_box, False, False, Gtk.PACK_START)
         self.set_tab_label(self.xdot_box, tab)
 
         #################################################
@@ -76,7 +76,7 @@ class RightNotebook(Gtk.Notebook):
         self.append_page(self.hexdump_view)
         tab = self.create_tab('Hexdump', self.hexdump_view, 'INDEX')
 
-        self.set_tab_label_packing(self.hexdump_view, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.hexdump_view, False, False, Gtk.PACK_START)
         self.set_tab_label(self.hexdump_view, tab)
 
         #################################################
@@ -84,7 +84,7 @@ class RightNotebook(Gtk.Notebook):
         self.append_page(self.strings_treeview)
         tab = self.create_tab('Strings', self.strings_treeview, 'JUSTIFY_CENTER')
 
-        self.set_tab_label_packing(self.strings_treeview, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.strings_treeview, False, False, Gtk.PACK_START)
         self.set_tab_label(self.strings_treeview, tab)
 
         #################################################
@@ -92,7 +92,7 @@ class RightNotebook(Gtk.Notebook):
         self.append_page(self.sections_treeview)
         tab = self.create_tab('Sections', self.sections_treeview, 'JUSTIFY_FILL')
 
-        self.set_tab_label_packing(self.sections_treeview, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.sections_treeview, False, False, Gtk.PACK_START)
         self.set_tab_label(self.sections_treeview, tab)
 
         self.add_info_elements_tab()
@@ -136,7 +136,7 @@ class RightNotebook(Gtk.Notebook):
         self.append_page(self.bindiff)
         tab = self.create_tab('Bindiff', self.bindiff, 'REFRESH')
 
-        self.set_tab_label_packing(self.bindiff, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.bindiff, False, False, Gtk.PACK_START)
         self.set_tab_label(self.bindiff, tab)
         self.show_all()
         num = self.page_num(self.bindiff)
@@ -153,7 +153,7 @@ class RightNotebook(Gtk.Notebook):
         self.append_page(self.info_elements)
         tab = self.create_tab('File info', self.info_elements, 'INFO')
 
-        self.set_tab_label_packing(self.info_elements, False, False, Gtk.PACK_START)
+        #self.set_tab_label_packing(self.info_elements, False, False, Gtk.PACK_START)
         self.set_tab_label(self.info_elements, tab)
         self.info_elements.info_tree.create_info_tree()
         self.show_all()

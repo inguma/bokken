@@ -19,6 +19,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
+from gi.repository import GObject
 
 class GraphBar(Gtk.VBox):
     ''' Bar for the xdot graph widget '''

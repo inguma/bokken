@@ -23,9 +23,11 @@ from gi.repository import GObject
 class SectionsBar(Gtk.DrawingArea):
 
     __gsignals__ = {
-        'expose-event': 'override',
+        'draw': 'override',
+        #'expose-event': 'override',
         'button-press-event': 'override',
-        'size-request': 'override',
+        # MEOW
+        #'size-request': 'override',
     }
 
     def __init__(self, core):
@@ -97,13 +99,13 @@ class SectionsBar(Gtk.DrawingArea):
     def do_size_request(self, request):
         request.width = self.style_get_property('width')
 
-Gtk.widget_class_install_style_property(SectionsBar,
+Gtk.gtk_widget_class_install_style_property(SectionsBar,
                                         ('width', float,
                                          'Width',
                                          'Width of the bar',
                                          0.0, GObject.G_MAXFLOAT, 20,
                                          GObject.PARAM_READABLE))
-Gtk.widget_class_install_style_property(SectionsBar,
+Gtk.gtk_widget_class_install_style_property(SectionsBar,
                                         ('x-padding', float,
                                          'Width-wise padding',
                                          'Padding to be left between left and '

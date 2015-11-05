@@ -159,7 +159,7 @@ class TextViews(Gtk.HBox):
         i.set_from_stock(Gtk.STOCK_EXECUTE, Gtk.IconSize.SMALL_TOOLBAR)
         self.console = console_textview.ConsoleTextView(self.uicore)
 
-        self.term_nb.insert_page(self.console, i)
+        self.term_nb.insert_page(self.console, i, 0)
 
         # Python textview
         self.py_pix = Gtk.Image()
@@ -167,7 +167,7 @@ class TextViews(Gtk.HBox):
 
         self.python = python_textview.PythonTextView(self.uicore)
 
-        self.term_nb.insert_page(self.python, self.py_pix)
+        self.term_nb.insert_page(self.python, self.py_pix, 1)
 
         # Add notebook to the paned
         self.right_paned.pack1(self.right_notebook, True, True)
@@ -242,7 +242,8 @@ class TextViews(Gtk.HBox):
 
     def update_dasm(self, dasm):
         self.buffer.set_text(dasm)
-        self.right_textview.setup_sections_bar()
+        # MEOW
+        #self.right_textview.setup_sections_bar()
 
     def create_completion(self):
         self.right_textview.set_completion()

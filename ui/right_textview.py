@@ -24,7 +24,8 @@ from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository import GtkSource
 
-import ui.sections_bar as sections_bar
+# MEOW
+#import ui.sections_bar as sections_bar
 import ui.comments_dialog as comments_dialog
 import ui.xrefs_menu as xrefs_menu
 
@@ -61,14 +62,15 @@ class RightTextView(Gtk.VBox, Searchable):
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
-        lm = GtkSource.LanguageManager()
+        lm = GtkSource.LanguageManager.get_default()
         # Add ui dir to language paths
         paths = lm.get_search_path()
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
         lm.set_search_path(paths)
         self.buffer = GtkSource.Buffer()
-        self.buffer.set_data('languages-manager', lm)
-        self.view = GtkSource.View(self.buffer)
+        # MEOW
+        #self.buffer.set_data('languages-manager', lm)
+        self.view = GtkSource.View.new_with_buffer(self.buffer)
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
         self.view.connect("key-release-event", self._cursor_moved)
@@ -86,7 +88,9 @@ class RightTextView(Gtk.VBox, Searchable):
             self.view.modify_font(font_desc)
 
         self.buffer.set_highlight_syntax(True)
-        manager = self.buffer.get_data('languages-manager')
+        # MEOW
+        #manager = self.buffer.get_data('languages-manager')
+        manager = GtkSource.LanguageManager.get_default()
         if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
             language = manager.get_language('arm-asm')
         else:
@@ -147,7 +151,8 @@ class RightTextView(Gtk.VBox, Searchable):
         # The check is used to avoid duplicated bars
         # when loading a new file from inside bokken
         if not hasattr(self,"sec_bar"):
-            self.sec_bar = sections_bar.SectionsBar(self.uicore)
+            # MEOW
+            #self.sec_bar = sections_bar.SectionsBar(self.uicore)
             self.hbox.pack_start(self.sec_bar, False, False, 0)
             self.sec_bar.show()
             vscrollbar = self.right_scrolled_window.get_vscrollbar()
@@ -278,16 +283,17 @@ class RightTextView(Gtk.VBox, Searchable):
         self.forward.set_relief(Gtk.ReliefStyle.NONE)
         self.forward.connect('clicked', self.do_seek, 'f')
 
-        self.seek = Gtk.Entry(30)
+        self.seek = Gtk.Entry()
+        self.seek.set_max_length(30)
         self.seek.set_icon_from_stock(1, Gtk.STOCK_JUMP_TO)
         self.seek.set_activates_default(True)
         self.seek.connect("activate", self.goto)
         self.seek.connect("icon-press", self.goto)
         self.seek.set_icon_tooltip_text(1, 'Go')
 
-        self.hbox.pack_start(self.back, False, False)
-        self.hbox.pack_start(self.forward, False, False)
-        self.hbox.pack_start(self.seek, True, True)
+        self.hbox.pack_start(self.back, False, False, 0)
+        self.hbox.pack_start(self.forward, False, False, 0)
+        self.hbox.pack_start(self.seek, True, True, 0)
 
         return self.hbox
 
@@ -449,4 +455,5 @@ class RightTextView(Gtk.VBox, Searchable):
             start_iter.forward_char()
         end_iter.forward_find_char(is_word_sep)
 
-        return t_buffer.get_text(start_iter, end_iter)
+        # MEOW
+        return t_buffer.get_text(start_iter, end_iter, True)

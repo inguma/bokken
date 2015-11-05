@@ -534,7 +534,7 @@ class XDotAttrParser:
         return res
 
     def read_number(self):
-        return int(self.read_code())
+        return float(self.read_code())
 
     def read_float(self):
         return float(self.read_code())
@@ -547,14 +547,14 @@ class XDotAttrParser:
     def read_text(self):
         num = self.read_number()
         pos = self.buf.find("-", self.pos) + 1
-        self.pos = pos + num
+        self.pos = int(pos + num)
         res = self.buf[pos:self.pos]
         while self.pos < len(self.buf) and self.buf[self.pos].isspace():
             self.pos += 1
         return res
 
     def read_polygon(self):
-        n = self.read_number()
+        n = int(self.read_number())
         p = []
         for i in range(n):
             x, y = self.read_point()

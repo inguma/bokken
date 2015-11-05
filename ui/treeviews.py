@@ -20,6 +20,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 from lib.common import datafile_path
 
 class TreeViews(Gtk.TreeView):

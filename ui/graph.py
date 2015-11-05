@@ -18,6 +18,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
+from gi.repository import GObject
 
 from PIL import Image
 import os, tempfile
@@ -36,7 +37,9 @@ class MyDotWidget(Gtk.HBox):
         self.last_fcn = ''
 
         #dotcode = self.uicore.get_callgraph()
-        GObject.GObject.__init__(self, False, 1)
+        #GObject.GObject.__init__(self, False, 1)
+        # MEOW
+        GObject.GObject.__init__(self)
         self.side_vb = Gtk.VBox(False, 1)
         self.side_hb = Gtk.HBox(False, 1)
 
@@ -84,7 +87,7 @@ class MyDotWidget(Gtk.HBox):
 
     def generate_thumbnail(self, dotcode):
         #size = self.tree.allocation.width
-        size = self.side_hb.allocation.width
+        size = self.side_hb.get_allocated_width()
         tmp_dot = tempfile.NamedTemporaryFile(delete = False)
         tmp_dot.write(dotcode)
         tmp_dot.close()

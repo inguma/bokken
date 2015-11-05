@@ -115,8 +115,8 @@ class PythonTextView(Gtk.HBox):
         lm = GtkSource.LanguageManager()
         # Add ui dir to language paths
         self.py_buffer = GtkSource.Buffer()
-        self.py_buffer.set_data('languages-manager', lm)
-        self.py_view = GtkSource.View(self.py_buffer)
+        #self.py_buffer.set_data('languages-manager', lm)
+        self.py_view = GtkSource.View.new_with_buffer(self.py_buffer)
         self.py_view.set_left_margin(5)
 
         # FIXME options must be user selectable (statusbar)
@@ -132,9 +132,10 @@ class PythonTextView(Gtk.HBox):
             self.py_view.modify_font(font_desc)
 
         self.py_buffer.set_highlight_syntax(True)
-        manager = self.py_buffer.get_data('languages-manager')
-        language = manager.get_language('python')
-        self.py_buffer.set_language(language)
+        # MEOW
+        #manager = self.py_buffer.get_data('languages-manager')
+        #language = manager.get_language('python')
+        #self.py_buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 
@@ -167,8 +168,8 @@ class PythonTextView(Gtk.HBox):
         lm.set_search_path(paths)
         self.buffer = GtkSource.Buffer()
         self.buffer.create_tag("green-background", background="green", foreground="black")
-        self.buffer.set_data('languages-manager', lm)
-        self.view = GtkSource.View(self.buffer)
+        #self.buffer.set_data('languages-manager', lm)
+        self.view = GtkSource.View.new_with_buffer(self.buffer)
         wrap.connect("clicked", self._change_wrap)
         self.view.set_left_margin(5)
         self.view.set_wrap_mode(Gtk.WrapMode.WORD)
@@ -184,9 +185,10 @@ class PythonTextView(Gtk.HBox):
             self.view.modify_font(font_desc)
 
         self.buffer.set_highlight_syntax(False)
-        manager = self.buffer.get_data('languages-manager')
-        language = manager.get_language('asm')
-        self.buffer.set_language(language)
+        # MEOW
+        #manager = self.buffer.get_data('languages-manager')
+        #language = manager.get_language('asm')
+        #self.buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 
@@ -206,7 +208,7 @@ class PythonTextView(Gtk.HBox):
         self._help(self)
 
     def rescroll(self, adj, scroll):
-        adj.set_value(adj.upper-adj.page_size)
+        adj.set_value(adj.get_upper()-adj.get_page_size())
         scroll.set_vadjustment(adj)
 
     def _clear_code(self, widget):
@@ -226,7 +228,7 @@ class PythonTextView(Gtk.HBox):
 
     def _exec(self, widget, icon_pos=None, event=None):
         bounds = self.py_buffer.get_bounds()
-        pycode = self.py_buffer.get_text(bounds[0], bounds[1])
+        pycode = self.py_buffer.get_text(bounds[0], bounds[1], True)
         cobj = compile(pycode, "vqpython_exec.py", "exec")
         sthr = ScriptThread(cobj, self.exprloc, self.buffer)
         sthr.start()
