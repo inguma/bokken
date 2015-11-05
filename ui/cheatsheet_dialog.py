@@ -126,34 +126,34 @@ class CheatsheetDialog(Gtk.Dialog):
         ]
 
     def __init__(self, title='Reference Sheet for x86 Assembler'):
-        super(CheatsheetDialog,self).__init__(title, None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_ABOUT, Gtk.ResponseType.ACCEPT, Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+        super(CheatsheetDialog,self).__init__(title, None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_ABOUT, gtk.RESPONSE_ACCEPT, gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
-        from gi.repository import Pango
+        import pango
 
         # The Cancel button.
-        self.butt_cancel = self.action_area.get_children()[1]
+        self.butt_cancel = self.action_area.get_children()[0]
         self.butt_cancel.connect("clicked", lambda x: self.destroy())
 
-        self.butt_about = self.action_area.get_children()[0]
+        self.butt_about = self.action_area.get_children()[1]
         self.butt_about.connect("clicked", self._show_about)
 
         self.vbox.set_spacing(3)
 
         # Positions
         self.resize(600, 700)
-        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_position(gtk.WIN_POS_CENTER)
         ui.gtk2.common.set_bokken_icon(self)
-        self.pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('block.png'))
+        self.pix = gtk.gdk.pixbuf_new_from_file(datafile_path('block.png'))
 
         # Font
-        font_desc = Pango.FontDescription("FreeSans 9")
+        font_desc = pango.FontDescription("FreeSans 9")
 
         # Assembly Summary
-        vbox_summary = Gtk.VBox(False, 1)
-        hbox_summary = Gtk.HBox(False, 1)
+        vbox_summary = gtk.VBox(False, 1)
+        hbox_summary = gtk.HBox(False, 1)
 
-        summ_icon = Gtk.Image.new_from_stock(Gtk.STOCK_INFO, Gtk.IconSize.MENU)
-        label_summary = Gtk.Label()
+        summ_icon = gtk.image_new_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
+        label_summary = gtk.Label()
         label_summary.set_markup(self.summary)
         #label_summary.modify_font(font_desc)
         #label_summary.set_line_wrap(True)
@@ -169,29 +169,29 @@ class CheatsheetDialog(Gtk.Dialog):
         self.vbox.pack_start(vbox_summary, False, False, 2)
 
         # Directives and operands VBox
-        lang_vbox = Gtk.VBox(False, 2)
+        lang_vbox = gtk.VBox(False, 2)
 
         # Assembly directives
-        directives_vbox = Gtk.VBox(False, 2)
-        directives_hbox = Gtk.HBox(False, 1)
-        directives_icon = Gtk.Image.new_from_stock(Gtk.STOCK_EXECUTE, Gtk.IconSize.MENU)
+        directives_vbox = gtk.VBox(False, 2)
+        directives_hbox = gtk.HBox(False, 1)
+        directives_icon = gtk.image_new_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU)
         directives_hbox.pack_start(directives_icon, False, False, 2)
         directives_hbox.pack_start(self.create_h2_label('Assembly directives'), True, True, 2)
         directives_vbox.pack_start(directives_hbox, False, False, 2)
         assembler_directives_tv = self.populate_treeview(self.assembler_directives)
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        sw = gtk.ScrolledWindow()
+        sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
 
         assembler_directives_tv = self.populate_treeview(self.assembler_directives)
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("", renderer_text, text=0)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=0)
         assembler_directives_tv.append_column(column)
 
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("", renderer_text, text=1)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=1)
         renderer_text.set_property("wrap_width", 300)
-        renderer_text.set_property("wrap_mode", Pango.WrapMode.WORD_CHAR)
+        renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
         assembler_directives_tv.append_column(column)
         assembler_directives_tv.set_headers_visible(False)
 
@@ -199,26 +199,26 @@ class CheatsheetDialog(Gtk.Dialog):
         directives_vbox.add(sw)
 
         # Operand types
-        operands_vbox = Gtk.VBox(False, 2)
-        operands_hbox = Gtk.HBox(False, 1)
-        operands_icon = Gtk.Image.new_from_stock(Gtk.STOCK_PROPERTIES, Gtk.IconSize.MENU)
+        operands_vbox = gtk.VBox(False, 2)
+        operands_hbox = gtk.HBox(False, 1)
+        operands_icon = gtk.image_new_from_stock(gtk.STOCK_PROPERTIES, gtk.ICON_SIZE_MENU)
         operands_hbox.pack_start(operands_icon, False, False, 2)
         operands_hbox.pack_start(self.create_h2_label('Operand Types'), True, True, 2)
         operands_vbox.pack_start(operands_hbox, False, False, 2)
         assembler_operands_tv = self.populate_treeview(self.operand_types)
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        sw = gtk.ScrolledWindow()
+        sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
 
         assembler_operands_tv = self.populate_treeview(self.operand_types)
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("", renderer_text, text=0)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=0)
         assembler_operands_tv.append_column(column)
 
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("", renderer_text, text=1)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=1)
         renderer_text.set_property("wrap_width", 300)
-        renderer_text.set_property("wrap_mode", Pango.WrapMode.WORD_CHAR)
+        renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
         assembler_operands_tv.append_column(column)
         assembler_operands_tv.set_headers_visible(False)
 
@@ -226,47 +226,47 @@ class CheatsheetDialog(Gtk.Dialog):
         operands_vbox.add(sw)
 
         # Terminology
-        vbox_terminology = Gtk.VBox(False, 1)
-        terminology_hbox = Gtk.HBox(False, 1)
-        terminology_icon = Gtk.Image.new_from_stock(Gtk.STOCK_INDEX, Gtk.IconSize.MENU)
+        vbox_terminology = gtk.VBox(False, 1)
+        terminology_hbox = gtk.HBox(False, 1)
+        terminology_icon = gtk.image_new_from_stock(gtk.STOCK_INDEX, gtk.ICON_SIZE_MENU)
         terminology_hbox.pack_start(terminology_icon, False, False, 2)
         terminology_hbox.pack_start(self.create_h1_label('Terminology and Functions'), True, True, 2)
         vbox_terminology.pack_start(terminology_hbox, False, False, 2)
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sw = gtk.ScrolledWindow()
+        sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
         terminology_tv = self.populate_treeview(self.terms)
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("", renderer_text, text=0)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=0)
         terminology_tv.append_column(column)
 
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("", renderer_text, text=1)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("", renderer_text, text=1)
         renderer_text.set_property("wrap_width", 300)
-        renderer_text.set_property("wrap_mode", Pango.WrapMode.WORD_CHAR)
+        renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
         terminology_tv.append_column(column)
         terminology_tv.set_headers_visible(False)
 
         sw.add(terminology_tv)
         vbox_terminology.add(sw)
 
-        self.hbox = Gtk.HBox(False, 3)
+        self.hbox = gtk.HBox(False, 3)
         lang_vbox.pack_start(directives_vbox, False, False, 0)
         lang_vbox.pack_start(operands_vbox, False, False, 0)
         self.hbox.add(lang_vbox)
-        self.hbox.pack_start(Gtk.VSeparator(), False, False, 0)
+        self.hbox.pack_start(gtk.VSeparator(), False, False, 0)
         self.hbox.add(vbox_terminology)
 
         # Hbox for instructions and registers
-        self.bottom_hbox = Gtk.HBox(False, 3)
+        self.bottom_hbox = gtk.HBox(False, 3)
 
         # Instructions
-        instructions_vbox = Gtk.VBox(False, 0)
-        instructions_hbox = Gtk.HBox(False, 0)
-        instructions_icon = Gtk.Image.new_from_stock(Gtk.STOCK_INDENT, Gtk.IconSize.MENU)
-        info_icon = Gtk.Image.new_from_stock(Gtk.STOCK_SORT_ASCENDING, Gtk.IconSize.MENU)
-        stack_button = Gtk.Button()
+        instructions_vbox = gtk.VBox(False, 0)
+        instructions_hbox = gtk.HBox(False, 0)
+        instructions_icon = gtk.image_new_from_stock(gtk.STOCK_INDENT, gtk.ICON_SIZE_MENU)
+        info_icon = gtk.image_new_from_stock(gtk.STOCK_SORT_ASCENDING, gtk.ICON_SIZE_MENU)
+        stack_button = gtk.Button()
         stack_button.set_tooltip_text("Stack diagram")
         stack_button.set_image(info_icon)
         stack_button.set_label('The stack')
@@ -277,22 +277,22 @@ class CheatsheetDialog(Gtk.Dialog):
         instructions_hbox.pack_start(instructions_label, True, True, 2)
         instructions_hbox.pack_end(stack_button, False, False, 2)
 
-        self.sw = Gtk.ScrolledWindow()
-        self.sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        self.sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.sw = gtk.ScrolledWindow()
+        self.sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
         self.treeview = self.populate_treeview(self.instructions)
-        renderer_text = Gtk.CellRendererText()
-#        font = Pango.FontDescription('Bitstream Charter 9')
+        renderer_text = gtk.CellRendererText()
+#        font = pango.FontDescription('Bitstream Charter 9')
 #        renderer_text.set_property('font-desc', font)
-        column = Gtk.TreeViewColumn("Instruction", renderer_text, text=0)
+        column = gtk.TreeViewColumn("Instruction", renderer_text, text=0)
         column.set_sort_column_id(0)
         self.treeview.append_column(column)
 
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("Description", renderer_text, text=1)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("Description", renderer_text, text=1)
         renderer_text.set_property("wrap_width", 390)
-        renderer_text.set_property("wrap_mode", Pango.WrapMode.WORD_CHAR)
+        renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
 
         self.treeview.append_column(column)
 
@@ -302,11 +302,11 @@ class CheatsheetDialog(Gtk.Dialog):
         instructions_vbox.pack_start(self.sw, True, True, 1)
 
         # Registers
-        registers_vbox = Gtk.VBox(False, 0)
-        registers_hbox = Gtk.HBox(False, 0)
-        registers_icon = Gtk.Image.new_from_stock(Gtk.STOCK_UNINDENT, Gtk.IconSize.MENU)
-        info_icon = Gtk.Image.new_from_stock(Gtk.STOCK_LEAVE_FULLSCREEN, Gtk.IconSize.MENU)
-        registers_button = Gtk.Button()
+        registers_vbox = gtk.VBox(False, 0)
+        registers_hbox = gtk.HBox(False, 0)
+        registers_icon = gtk.image_new_from_stock(gtk.STOCK_UNINDENT, gtk.ICON_SIZE_MENU)
+        info_icon = gtk.image_new_from_stock(gtk.STOCK_LEAVE_FULLSCREEN, gtk.ICON_SIZE_MENU)
+        registers_button = gtk.Button()
         registers_button.set_tooltip_text("16 and 8 bits registers")
         registers_button.set_image(info_icon)
         registers_button.set_label('16/8 Bits')
@@ -317,15 +317,15 @@ class CheatsheetDialog(Gtk.Dialog):
         registers_hbox.pack_start(registers_label, True, True, 2)
         registers_hbox.pack_end(registers_button, False, False, 2)
 
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sw = gtk.ScrolledWindow()
+        sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
         treeview = self.populate_tree(self.all_registers)
 
-        rendererPix = Gtk.CellRendererPixbuf()
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("Register")
+        rendererPix = gtk.CellRendererPixbuf()
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("Register")
         column.pack_start(rendererPix, False)
         column.pack_start(renderer_text, True)
         column.set_attributes(renderer_text, text=1)
@@ -336,10 +336,10 @@ class CheatsheetDialog(Gtk.Dialog):
 #        renderer_text.set_property("markup", 1)
         treeview.append_column(column)
 
-        renderer_text = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("Description", renderer_text, text=2)
+        renderer_text = gtk.CellRendererText()
+        column = gtk.TreeViewColumn("Description", renderer_text, text=2)
         renderer_text.set_property("wrap_width", 300)
-        renderer_text.set_property("wrap_mode", Pango.WrapMode.WORD_CHAR)
+        renderer_text.set_property("wrap_mode", pango.WRAP_WORD_CHAR)
 
         treeview.append_column(column)
 
@@ -349,7 +349,7 @@ class CheatsheetDialog(Gtk.Dialog):
         registers_vbox.pack_start(sw, True, True, 1)
 
         self.bottom_hbox.pack_start(instructions_vbox, True, True, 1)
-        self.bottom_hbox.pack_start(Gtk.VSeparator(), False, False, 1)
+        self.bottom_hbox.pack_start(gtk.VSeparator(), False, False, 1)
         self.bottom_hbox.pack_start(registers_vbox, False, False, 1)
 
         # Last packaging
@@ -360,7 +360,7 @@ class CheatsheetDialog(Gtk.Dialog):
     def populate_tree(self, groups):
         """ Accepts an array of n rows made of 2 elements each, and returns a TreeView."""
 
-        store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str)
+        store = gtk.TreeStore(gtk.gdk.Pixbuf, str, str)
 
         for group in groups:
             #header = '<span background=\"#5a58ff\" foreground=\"white\"><b> ' + group.replace('_', ' ').capitalize() + '\t</b></span>'
@@ -369,7 +369,7 @@ class CheatsheetDialog(Gtk.Dialog):
             for row in eval('self.' + group):
                 store.append(it, [None, row[0], row[1]])
 
-        tv = Gtk.TreeView(store)
+        tv = gtk.TreeView(store)
         #tv.set_rules_hint(True)
         #tv.set_enable_tree_lines(True)
         tv.set_show_expanders(False)
@@ -381,11 +381,11 @@ class CheatsheetDialog(Gtk.Dialog):
     def populate_treeview(self, rows):
         """ Accepts an array of n rows made of 2 elements each, and returns a ListView."""
 
-        store = Gtk.ListStore(str, str)
+        store = gtk.ListStore(str, str)
         for row in rows:
             store.append([row[0], row[1]])
 
-        tv = Gtk.TreeView(store)
+        tv = gtk.TreeView(store)
         tv.set_rules_hint(True)
 
         return tv
@@ -393,7 +393,7 @@ class CheatsheetDialog(Gtk.Dialog):
     def create_h1_label(self, string):
         """ Accepts a string and return a label formatted with black background and larger bold white font size."""
 
-        label = Gtk.Label()
+        label = gtk.Label()
         label.set_markup('<span background="black" color="white" font_weight="bold" size="larger">  ' + string + '\t\t</span>')
         label.set_alignment(0, 0)
 
@@ -434,10 +434,10 @@ class CheatsheetDialog(Gtk.Dialog):
         dialog.destroy()
 
     def _show_about(self, widget):
-        md = Gtk.MessageDialog(self, 
-            Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.INFO, 
-            Gtk.ButtonsType.CLOSE, "")
-        md.set_markup('The data for this cheat sheet\nhas been borrowed from:\n\n<a href="http://www.rnicrosoft.net">http://www.rnicrosoft.net</a>\n\nThe original cheat sheet can be\ndownloaded from <a href="http://www.rnicrosoft.net/docs/X86_Win32_Reverse_Engineering_Cheat_Sheet.pdf">here</a>')
+        md = gtk.MessageDialog(self, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, 
+            gtk.BUTTONS_CLOSE, "")
+        md.set_markup('The data for this cheat sheet\nwas borrowed from http://www.rnicrosoft.net.\n\nThe original site is no longer up, and now it\'s owned by cyber-squatters.  There are multiple ones over the Internet, you might like a simple one like <a href="http://www.jegerlehner.ch/intel/IntelCodeTable.pdf">the one from http://www.jegerlehner.ch/intel</a>.')
         ui.gtk2.common.set_bokken_icon(md)
         md.run()
         md.destroy()
