@@ -181,7 +181,7 @@ class MenuBar(Gtk.Menu):
             if target in y.get_children()[1].get_text().lower():
                 target = x
                 break
-        if widget.active:
+        if widget.get_active():
             x.show()
         else:
             x.hide()

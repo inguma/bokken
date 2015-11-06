@@ -19,6 +19,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 import lib.bokken_globals as glob
 import ui.gtk2.common
 from lib.common import datafile_path
