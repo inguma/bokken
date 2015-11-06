@@ -37,7 +37,7 @@ class ConsoleTextView(Gtk.VBox):
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
-        lm = GtkSource.LanguageManager()
+        lm = GtkSource.LanguageManager.get_default()
         # Add ui dir to language paths
         paths = lm.get_search_path()
         paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
@@ -62,8 +62,8 @@ class ConsoleTextView(Gtk.VBox):
 
         self.buffer.set_highlight_syntax(False)
         #manager = self.buffer.get_data('languages-manager')
-        #language = manager.get_language('asm')
-        #self.buffer.set_language(language)
+        language = lm.get_language('asm')
+        self.buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 

@@ -429,7 +429,7 @@ class RightTextView(Gtk.VBox, Searchable):
         end_iter.forward_line()
         t_buffer = start_iter.get_buffer()
 
-        return t_buffer.get_text(start_iter, end_iter)
+        return t_buffer.get_text(start_iter, end_iter, False)
 
     def get_word_on_coords(self, x, y):
         '''This function returns the word surrounding the coordinates (x,y) of

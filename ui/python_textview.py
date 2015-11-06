@@ -112,7 +112,7 @@ class PythonTextView(Gtk.HBox):
 
         # Use GtkSourceView to add eye candy :P
         # create buffer
-        lm = GtkSource.LanguageManager()
+        lm = GtkSource.LanguageManager.get_default()
         # Add ui dir to language paths
         self.py_buffer = GtkSource.Buffer()
         #self.py_buffer.set_data('languages-manager', lm)
@@ -134,8 +134,8 @@ class PythonTextView(Gtk.HBox):
         self.py_buffer.set_highlight_syntax(True)
         # MEOW
         #manager = self.py_buffer.get_data('languages-manager')
-        #language = manager.get_language('python')
-        #self.py_buffer.set_language(language)
+        language = lm.get_language('python')
+        self.py_buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 
@@ -187,8 +187,8 @@ class PythonTextView(Gtk.HBox):
         self.buffer.set_highlight_syntax(False)
         # MEOW
         #manager = self.buffer.get_data('languages-manager')
-        #language = manager.get_language('asm')
-        #self.buffer.set_language(language)
+        language = lm.get_language('asm')
+        self.buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 
