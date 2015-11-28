@@ -19,18 +19,18 @@
 
 import os
 
-import gtk
-import pango
+from gi.repository import Gtk
+from gi.repository import Pango
 
-class StringsView(gtk.ScrolledWindow):
+class StringsView(Gtk.ScrolledWindow):
 
     def __init__(self, uicore, textviews):
         super(StringsView,self).__init__()
 
         self.uicore = uicore
 
-        self.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self.strings_tree = StringsTreeView(self.uicore, textviews)
 
@@ -48,11 +48,11 @@ class StringsView(gtk.ScrolledWindow):
     def remove_content(self):
         self.strings_tree.store.clear()
 
-class StringsTreeView(gtk.TreeView):
+class StringsTreeView(Gtk.TreeView):
     '''Strings TextView elements'''
 
     def __init__(self, core, textviews):
-        self.store = gtk.ListStore(str, str, str)
+        self.store = Gtk.ListStore(str, str, str)
         super(StringsTreeView ,self).__init__(self.store)
 
         self.uicore = core
@@ -68,19 +68,19 @@ class StringsTreeView(gtk.TreeView):
 
     def create_strings_columns(self):
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Address", rendererText, text=0)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Address", rendererText, text=0)
         column.set_sort_column_id(0)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Size", rendererText, text=1)
-        #self.store.set_sort_column_id(2,gtk.SORT_ASCENDING)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Size", rendererText, text=1)
+        #self.store.set_sort_column_id(2,Gtk.SortType.ASCENDING)
         column.set_sort_column_id(1)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("String", rendererText, text=2)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("String", rendererText, text=2)
         column.set_sort_column_id(2)
         self.append_column(column)
 
@@ -90,9 +90,9 @@ class StringsTreeView(gtk.TreeView):
         Double-click or Enter: Goes to the corresponding address
 
         @param tv: The treeview.
-        @parameter event: The GTK event (gtk.gdk.Event) in case this is a mouse
+        @parameter event: The GTK event (Gdk.Event) in case this is a mouse
             click.  Otherwise it's the activated row index in format (n,).
-        @parameter row: A gtk.TreeViewColumn object in case it's a keypress,
+        @parameter row: A Gtk.TreeViewColumn object in case it's a keypress,
             otherwise None.
 
         '''

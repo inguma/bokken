@@ -17,17 +17,18 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
-import pango
+from gi.repository import Gtk
+from gi.repository import Pango
+from gi.repository import GObject
 from lib.common import datafile_path
 
-class MainMenuButton (gtk.ToggleButton):
+class MainMenuButton (Gtk.ToggleButton):
     """Launches the popup menu when clicked.
 
     This sits inside the main toolbar when the main menu bar is hidden. In
     addition to providing access to the app's menu associated with the main
     view, this is a little more compliant with Fitts's Law than a normal
-    `gtk.MenuBar`: our local style modifications mean that for most styles,
+    `Gtk.MenuBar`: our local style modifications mean that for most styles,
     when the window is fullscreened with only the "toolbar" present the
     ``(0,0)`` screen pixel hits this button.
 
@@ -36,26 +37,27 @@ class MainMenuButton (gtk.ToggleButton):
     """
 
     def __init__(self, text, menu):
-        gtk.Button.__init__(self)
+        GObject.GObject.__init__(self)
         self.menu = menu
-        hbox1 = gtk.HBox()
-        hbox2 = gtk.HBox()
-        icon = gtk.Image()
+        hbox1 = Gtk.HBox()
+        hbox2 = Gtk.HBox()
+        icon = Gtk.Image()
         icon.set_from_file(datafile_path('bokken-small.svg'))
         hbox1.pack_start(icon, True, True, 3)
-        label = gtk.Label(text)
+        label = Gtk.Label()
+        label.set_markup("<b>"+ text + "</b>")
         hbox1.pack_start(label, True, True, 3)
-        arrow = gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_IN)
+        arrow = Gtk.Arrow(Gtk.ArrowType.DOWN, Gtk.ShadowType.IN)
         hbox1.pack_start(arrow, False, False, 3)
         hbox2.pack_start(hbox1, True, True, 0)
 
-        # Text settings
-        attrs = pango.AttrList()
-        attrs.change(pango.AttrWeight(pango.WEIGHT_SEMIBOLD, 0, -1))
-        label.set_attributes(attrs)
+        # MEOW Text settings
+        #attrs = Pango.AttrList()
+        #attrs.change(Pango.AttrWeight(Pango.Weight.SEMIBOLD, 0, -1))
+        #label.set_attributes(attrs)
 
         self.add(hbox2)
-        self.set_relief(gtk.RELIEF_NORMAL)
+        self.set_relief(Gtk.ReliefStyle.NORMAL)
         self.set_can_focus(True)
         self.set_can_default(False)
         self.connect("toggled", self.on_toggled)
@@ -65,13 +67,13 @@ class MainMenuButton (gtk.ToggleButton):
 
     def on_enter(self, widget, event):
         # Not this set_state(). That one.
-        #self.set_state(gtk.STATE_PRELIGHT)
-        gtk.Widget.set_state(self, gtk.STATE_PRELIGHT)
+        #self.set_state(Gtk.StateType.PRELIGHT)
+        Gtk.Widget.set_state(self, Gtk.StateType.PRELIGHT)
 
 
     def on_leave(self, widget, event):
-        #self.set_state(gtk.STATE_NORMAL)
-        gtk.Widget.set_state(self, gtk.STATE_NORMAL)
+        #self.set_state(Gtk.StateType.NORMAL)
+        Gtk.Widget.set_state(self, Gtk.StateType.NORMAL)
 
 
     def on_button_press(self, widget, event):
@@ -87,20 +89,21 @@ class MainMenuButton (gtk.ToggleButton):
         if togglebutton.get_active():
             if not self.menu.get_property("visible"):
                 pos_func = self._get_popup_menu_position
-                self.menu.popup(None, None, pos_func, 1, 0)
+                self.menu.popup(None, None, pos_func, 1, 0, 0)
                 self.menu.show_all()
 
     def on_menu_dismiss(self, *a, **kw):
         # Reset the button state when the user's finished, and
         # park focus back on the menu button.
-        #self.set_state(gtk.STATE_NORMAL)
+        #self.set_state(Gtk.StateType.NORMAL)
         self.set_active(False)
         self.grab_focus()
 
 
     def _get_popup_menu_position(self, menu, *junk):
         # Underneath the button, at the same x position.
-        x, y = self.window.get_origin()
-        y += self.allocation.height
+        z, x, y = self.get_window().get_origin()
+        #y += self.allocation.height
+        y += self.get_allocated_height()
         return x, y + 5, True
 

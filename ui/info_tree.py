@@ -17,17 +17,17 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 
-class InfoWindow(gtk.ScrolledWindow):
+class InfoWindow(Gtk.ScrolledWindow):
 
     def __init__(self, uicore):
         super(InfoWindow,self).__init__()
 
         self.uicore = uicore
 
-        self.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-        self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self.info_tree = InfoTree(self.uicore)
 
@@ -35,11 +35,11 @@ class InfoWindow(gtk.ScrolledWindow):
         self.add(self.info_tree)
         self.show_all()
 
-class InfoTree(gtk.TreeView):
+class InfoTree(Gtk.TreeView):
     '''HTML elements TreeView'''
 
     def __init__(self, core):
-        self.store = gtk.ListStore(str, str, str, str, str, str, str, str)
+        self.store = Gtk.ListStore(str, str, str, str, str, str, str, str)
         super(InfoTree,self).__init__(self.store)
 
         self.uicore = core
@@ -52,42 +52,42 @@ class InfoTree(gtk.TreeView):
         full_info = self.uicore.full_fileinfo
 
         # Create the column
-        infos = gtk.TreeViewColumn()
+        infos = Gtk.TreeViewColumn()
         infos.set_title("Extended file information")
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 0)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 1)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 2)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 3)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 4)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 5)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 6)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         infos.pack_start(cell, True)
         infos.add_attribute(cell, "text", 7)
 
-        self.treestore = gtk.TreeStore(str, str, str, str, str, str, str, str)
+        self.treestore = Gtk.TreeStore(str, str, str, str, str, str, str, str)
 
         file_it = self.treestore.append(None, ['File info', '', '', '', '', '', '', ''])
         entry_it = self.treestore.append(None, ['Entry points', '', '', '', '', '', '', ''])

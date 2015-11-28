@@ -17,16 +17,16 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 from lib.common import datafile_path
 
-class Throbber(gtk.ToolButton):
+class Throbber(Gtk.ToolButton):
     '''Creates the throbber widget'''
     def __init__(self):
-        self.img_static = gtk.Image()
+        self.img_static = Gtk.Image()
         self.img_static.set_from_file(datafile_path('throbber_static.gif'))
         self.img_static.show()
-        self.img_animat = gtk.Image()
+        self.img_animat = Gtk.Image()
         self.img_animat.set_from_file(datafile_path('throbber_animat.gif'))
         self.img_animat.show()
 

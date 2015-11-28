@@ -19,8 +19,8 @@ along with w3af; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 '''
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 class HighWord(object):
     '''Class that gives the machinery to search to a TextView.
@@ -66,7 +66,7 @@ class HighWord(object):
         # TODO: Will the highlighting succeed? How's the text with \0's actually
         # printed in the textview?
 
-        flags = gtk.TEXT_SEARCH_VISIBLE_ONLY
+        flags = Gtk.TextSearchFlags.VISIBLE_ONLY
         startIter =  self.textbuf.get_start_iter()
         # find the positions where the phrase is found
         positions = []

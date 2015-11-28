@@ -84,29 +84,29 @@ def gtkui_dependency_check():
 
     # Check Gtk
     try:
-        import pygtk
-        pygtk.require('2.0')
-        import gtk, gobject
-        assert gtk.gtk_version >= (2, 12)
-        assert gtk.pygtk_version >= (2, 12)
+        import gi
+        gi.require_version('Gtk', '3.0')
+        from gi.repository import Gtk
+        from gi.repository import GObject
+        assert Gtk.get_major_version() >= 3
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
-        print('You have to install GTK and PyGTK versions >=2.12 to be able to '
+        print('You have to install GTK3 and PyGObject version >= 3.0 to be able to '
                 'run the GTK user interface.\n'
-                '    - On Debian-based distributions: apt-get install python-gtk2\n'
-                '    - On Mac: sudo port install py25-gtk')
+                '    - On Debian-based distributions: apt-get install python-gi\n'
+                '    - On Mac: brew install pygobject3')
         sys.exit(1)
 
     # Check GtkSourceView2
     try:
-        print('\tGtkSourceView2...', end='')
-        import gtksourceview2
+        print('\tGtkSourceView3...', end='')
+        from gi.repository import GtkSource
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
         print('GtkSourceView2 not installed! Install it for your platform:\n'
-                '    - On Debian-based distributions: apt-get install python-gtksourceview2')
+                '    - On Debian-based distributions: apt-get install python-gtksourceview3')
         sys.exit(1)
 
 def graphviz_dependency_check():

@@ -17,19 +17,19 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 import ui.gtk2.common
 
-class SectionsDialog(gtk.Dialog):
+class SectionsDialog(Gtk.Dialog):
     '''Window to popup sections info'''
 
     def __init__(self, core, parent_window):
-        super(SectionsDialog,self).__init__('Extended sections information', parent_window, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+        super(SectionsDialog,self).__init__('Extended sections information', parent_window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
 
         self.uicore = core
         self.sec_bars = ''
 
-        #self.vbox = gtk.VBox(False, 0)
+        #self.vbox = Gtk.VBox(False, 0)
 
         # the cancel button
         self.butt_cancel = self.action_area.get_children()[0]
@@ -37,26 +37,26 @@ class SectionsDialog(gtk.Dialog):
 
         # Positions
         self.resize(700, 400)
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
         ui.gtk2.common.set_bokken_icon(self)
 
         # Label...
-        self.hbox = gtk.HBox(False, 1)
-        self.label = gtk.Label('')
+        self.hbox = Gtk.HBox(False, 1)
+        self.label = Gtk.Label(label='')
         self.label.set_markup('<big>List of binary sections with their data and size</big>')
         self.label.set_alignment(0.02, 0.5)
-        self.icon = gtk.Image()
-        self.icon.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
+        self.icon = Gtk.Image()
+        self.icon.set_from_stock(Gtk.STOCK_INFO, Gtk.IconSize.MENU)
         self.hbox.pack_start(self.icon, False, False, 2)
         self.hbox.pack_start(self.label, True, True, 0)
 
         # ScrolledWindow
-        self.scrolled_window = gtk.ScrolledWindow()
-        self.scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.scrolled_window = Gtk.ScrolledWindow()
+        self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.scrolled_window.is_visible = True
 
         # List view
-        self.store = gtk.ListStore(
+        self.store = Gtk.ListStore(
                 # For each section in the binary:
                 str, # Start address in hex.
                 str, # r2's ASCII representation of the section.
@@ -66,13 +66,13 @@ class SectionsDialog(gtk.Dialog):
                 int, # Total section size in bytes.
                 str, # Initial binary address in hex.
         )
-        self.tv = gtk.TreeView(self.store)
+        self.tv = Gtk.TreeView(self.store)
         self.tv.set_rules_hint(True)
 
         # Columns
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Start offset", rendererText, text=0)
-        self.store.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Start offset", rendererText, text=0)
+        self.store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
         column.set_sort_column_id(0)
         self.tv.append_column(column)
 
@@ -81,25 +81,25 @@ class SectionsDialog(gtk.Dialog):
         # The way this constructor works is:
         # __init__(title, renderer, property_X_in_renderer=column_Y_from_liststore, ...)
         # This means that we are passing column 1 from liststore as 'text', column 0 as 'start'...
-        column = gtk.TreeViewColumn("Section size", rendererBar,
+        column = Gtk.TreeViewColumn("Section size", rendererBar,
                 text=1, start=0, end=2, total_size=5, begin=6)
         column.set_min_width(300)
         column.set_sort_column_id(1)
         self.tv.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("End offset", rendererText, text=2)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("End offset", rendererText, text=2)
         column.set_sort_column_id(2)
         self.tv.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Flags", rendererText, text=3)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Flags", rendererText, text=3)
         column.set_sort_column_id(3)
         self.tv.append_column(column)
         self.tv.set_model(self.store)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Name", rendererText, text=4)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name", rendererText, text=4)
         column.set_sort_column_id(4)
         self.tv.append_column(column)
         self.tv.set_model(self.store)
@@ -154,48 +154,48 @@ class SectionsDialog(gtk.Dialog):
             line.extend((size, hex(min_address)))
             self.store.append(line)
 
-class ColoredBarRenderer(gtk.GenericCellRenderer):
-    import gobject
+class ColoredBarRenderer(Gtk.GenericCellRenderer):
+    from gi.repository import GObject
 
     __gproperties__ = {
-                    'text': (gobject.TYPE_STRING,
+                    'text': (GObject.TYPE_STRING,
                             'Text to be displayed',
                             'Text to be displayed',
                             '',
-                            gobject.PARAM_READWRITE
+                            GObject.PARAM_READWRITE
                             ),
-                    'start': (gobject.TYPE_STRING,
+                    'start': (GObject.TYPE_STRING,
                             'Starting value',
                             'Starting value',
                             '',
-                            gobject.PARAM_READWRITE
+                            GObject.PARAM_READWRITE
                             ),
-                    'end': (gobject.TYPE_STRING,
+                    'end': (GObject.TYPE_STRING,
                             'End value',
                             'End value',
                             '',
-                            gobject.PARAM_READWRITE
+                            GObject.PARAM_READWRITE
                             ),
                     # Size of the binary calculated as max-min address.
-                    'total_size': (gobject.TYPE_INT, # type
+                    'total_size': (GObject.TYPE_INT, # type
                             'Total size',            # nick name
                             'Total size',            # description
                             0,                       # minimum value
                             100000000,               # maximum value
                             0,                       # default value
-                            gobject.PARAM_READWRITE  # flags
+                            GObject.PARAM_READWRITE  # flags
                             ),
                     # Address of the initial section.
-                    'begin': (gobject.TYPE_STRING,   # type
+                    'begin': (GObject.TYPE_STRING,   # type
                             'Initial binary address',# nick name
                             'Initial binary address',# description
                             '',
-                            gobject.PARAM_READWRITE  # flags
+                            GObject.PARAM_READWRITE  # flags
                             ),
                     }
 
     def __init__(self):
-        gtk.GenericCellRenderer.__init__(self)
+        GObject.GObject.__init__(self)
 
     def on_get_size(self, widget, cell_area):
         return (0, 0, 0, 0) # x,y,w,h

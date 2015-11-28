@@ -57,7 +57,7 @@ class MyDotWidget(xdot.DotWidget):
                         xrefs.append("0x%08x" % xref.addr)
 
                 menu = self.xmenu.create_menu(address, refs, xrefs)
-                menu.popup(None, None, None, 1, event.time)
+                menu.popup(None, None, None, 1, event.time, 0)
                 menu.show_all()
 
 #            jump = self.get_jump(x, y)

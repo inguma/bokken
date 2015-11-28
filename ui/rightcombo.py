@@ -17,9 +17,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 
-class RightCombo(gtk.Table):
+class RightCombo(Gtk.Table):
     '''Main TextiView elements'''
 
     def __init__(self, tviews, uicore):
@@ -29,11 +29,11 @@ class RightCombo(gtk.Table):
         self.uicore = uicore
 
         # Theme Label
-        self.theme_label = gtk.Label('Color theme:')
+        self.theme_label = Gtk.Label(label='Color theme:')
         self.attach(self.theme_label, 0, 1, 0, 1)
 
         # Theme ComboBox
-        self.theme_combo = gtk.combo_box_new_text()
+        self.theme_combo = Gtk.ComboBoxText()
         options = ['Classic', 'Cobalt', 'kate', 'Oblivion', 'Tango']
         for option in options:
             self.theme_combo.append_text(option)

@@ -19,8 +19,9 @@
 
 import os
 import re
-import gtk
-import gtk.gdk
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
 import xdot
 import tempfile
 from r2.r_core import *
@@ -35,7 +36,7 @@ except:
    BlockDiff_MATCH      =   'm'
    BlockDiff_UNMATCH    =   'u'
 
-class DiffView(gtk.VBox):
+class DiffView(Gtk.VBox):
     ui = '''
     <ui>
         <toolbar name="ToolBar">
@@ -48,27 +49,27 @@ class DiffView(gtk.VBox):
     '''
 
     def __init__(self):
-        gtk.VBox.__init__(self)
+        GObject.GObject.__init__(self)
 
         # XDotWidget
         xdotwidget = self.xdotwidget = xdot.DotWidget()
         # Toolbar
-        uimanager = gtk.UIManager()
-        actiongroup = gtk.ActionGroup('Actions')
+        uimanager = Gtk.UIManager()
+        actiongroup = Gtk.ActionGroup('Actions')
         actiongroup.add_actions((
-            ('ZoomIn', gtk.STOCK_ZOOM_IN, None, None, None, self.xdotwidget.on_zoom_in),
-            ('ZoomOut', gtk.STOCK_ZOOM_OUT, None, None, None, self.xdotwidget.on_zoom_out),
-            ('ZoomFit', gtk.STOCK_ZOOM_FIT, None, None, None, self.xdotwidget.on_zoom_fit),
-            ('Zoom100', gtk.STOCK_ZOOM_100, None, None, None, self.xdotwidget.on_zoom_100),
+            ('ZoomIn', Gtk.STOCK_ZOOM_IN, None, None, None, self.xdotwidget.on_zoom_in),
+            ('ZoomOut', Gtk.STOCK_ZOOM_OUT, None, None, None, self.xdotwidget.on_zoom_out),
+            ('ZoomFit', Gtk.STOCK_ZOOM_FIT, None, None, None, self.xdotwidget.on_zoom_fit),
+            ('Zoom100', Gtk.STOCK_ZOOM_100, None, None, None, self.xdotwidget.on_zoom_100),
         ))
         uimanager.insert_action_group(actiongroup, 0)
         uimanager.add_ui_from_string(self.ui)
         toolbar = uimanager.get_widget('/ToolBar')
-        toolbar.set_icon_size(gtk.ICON_SIZE_SMALL_TOOLBAR)
-        toolbar.set_style(gtk.TOOLBAR_ICONS)
+        toolbar.set_icon_size(Gtk.IconSize.SMALL_TOOLBAR)
+        toolbar.set_style(Gtk.ToolbarStyle.ICONS)
         toolbar.set_show_arrow(False)
-        label = self.label = gtk.Label()
-        hbox = gtk.HBox(False, 5)
+        label = self.label = Gtk.Label()
+        hbox = Gtk.HBox(False, 5)
         hbox.pack_start(toolbar, False, True, 0)
         hbox.pack_start(label, False, True, 0)
         self.pack_start(hbox, False, True, 0)
@@ -90,54 +91,54 @@ class DiffView(gtk.VBox):
         if (fit):
             self.xdotwidget.zoom_to_fit()
 
-class DiffWidget(gtk.VPaned):
+class DiffWidget(Gtk.VPaned):
     def __init__(self):
-        gtk.VPaned.__init__(self)
+        GObject.GObject.__init__(self)
         self.set_position (500)
         # Graph viewers
-        hbox = gtk.HBox(True, 5)
+        hbox = Gtk.HBox(True, 5)
         dw = self.dw = DiffView()
         dw2 = self.dw2 = DiffView()
         hbox.pack_start(dw, True, True, 0)
         hbox.pack_start(dw2, True, True, 0)
         self.add(hbox)
         # Function list
-        scrolledwin = gtk.ScrolledWindow()
-        scrolledwin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        liststore = self.liststore = gtk.ListStore(str, str, str, str, str)
-        treeview = gtk.TreeView(liststore)
+        scrolledwin = Gtk.ScrolledWindow()
+        scrolledwin.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        liststore = self.liststore = Gtk.ListStore(str, str, str, str, str)
+        treeview = Gtk.TreeView(liststore)
         # Column Address L
-        tvcolumn0 = gtk.TreeViewColumn('Function L')
+        tvcolumn0 = Gtk.TreeViewColumn('Function L')
         treeview.append_column(tvcolumn0)
-        cell0 = gtk.CellRendererText()
+        cell0 = Gtk.CellRendererText()
         tvcolumn0.pack_start(cell0, True)
         tvcolumn0.add_attribute(cell0, 'text', 0)
         tvcolumn0.set_sort_column_id(0)
         # Column Function L
-        tvcolumn1 = gtk.TreeViewColumn('Address L')
+        tvcolumn1 = Gtk.TreeViewColumn('Address L')
         treeview.append_column(tvcolumn1)
-        cell1 = gtk.CellRendererText()
+        cell1 = Gtk.CellRendererText()
         tvcolumn1.pack_start(cell1, True)
         tvcolumn1.add_attribute(cell1, 'text', 1)
         tvcolumn1.set_sort_column_id(1)
         # Column Address R
-        tvcolumn2 = gtk.TreeViewColumn('Function R')
+        tvcolumn2 = Gtk.TreeViewColumn('Function R')
         treeview.append_column(tvcolumn2)
-        cell2 = gtk.CellRendererText()
+        cell2 = Gtk.CellRendererText()
         tvcolumn2.pack_start(cell2, True)
         tvcolumn2.add_attribute(cell2, 'text', 2)
         tvcolumn2.set_sort_column_id(2)
         # Column Function R
-        tvcolumn3 = gtk.TreeViewColumn('Address R')
+        tvcolumn3 = Gtk.TreeViewColumn('Address R')
         treeview.append_column(tvcolumn3)
-        cell3 = gtk.CellRendererText()
+        cell3 = Gtk.CellRendererText()
         tvcolumn3.pack_start(cell3, True)
         tvcolumn3.add_attribute(cell3, 'text', 3)
         tvcolumn3.set_sort_column_id(3)
         # Column Diff
-        tvcolumn4 = gtk.TreeViewColumn('Diff')
+        tvcolumn4 = Gtk.TreeViewColumn('Diff')
         treeview.append_column(tvcolumn4)
-        cell4 = gtk.CellRendererText()
+        cell4 = Gtk.CellRendererText()
         tvcolumn4.pack_start(cell4, True)
         tvcolumn4.add_attribute(cell4, 'text', 4)
         tvcolumn4.set_sort_column_id(4)
@@ -174,7 +175,7 @@ class DiffWidget(gtk.VPaned):
 
 class Bindiff():
     def __init__(self, core, tviews):
-        #gtk.Window.__init__(self)
+        #GObject.GObject.__init__(self)
         self.tviews = tviews
         self.c = core
         self.c2 = RCore()

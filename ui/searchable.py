@@ -19,8 +19,9 @@ along with w3af; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 '''
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
 
 class Searchable(object):
     '''Class that gives the machinery to search to a TextView.
@@ -38,20 +39,25 @@ class Searchable(object):
         # By default, don't match case
         self._matchCaseValue = False
         # key definitions
-        self.key_f = gtk.gdk.keyval_from_name("f")
-        self.key_g = gtk.gdk.keyval_from_name("g")
-        self.key_G = gtk.gdk.keyval_from_name("G")
-        self.key_F3 = gtk.gdk.keyval_from_name("F3")
-        self.key_Esc = gtk.gdk.keyval_from_name("Escape")
+        self.key_f = Gdk.keyval_from_name("f")
+        self.key_g = Gdk.keyval_from_name("g")
+        self.key_G = Gdk.keyval_from_name("G")
+        self.key_F3 = Gdk.keyval_from_name("F3")
+        self.key_Esc = Gdk.keyval_from_name("Escape")
         # signals
         self.connect("key-press-event", self._key)
         self.textview.connect("populate-popup", self._populate_popup)
         # colors for textview and entry backgrounds
         self.textbuf = self.textview.get_buffer()
         self.textbuf.create_tag("yellow-background", background="yellow")
-        colormap = self.get_colormap()
-        self.bg_normal = colormap.alloc_color("white")
-        self.bg_notfnd = colormap.alloc_color("red")
+        #MEOW
+        #colormap = self.get_colormap()
+        #self.bg_normal = colormap.alloc_color("white")
+        #self.bg_notfnd = colormap.alloc_color("red")
+
+        parse, self.bg_normal = Gdk.Color.parse('white')
+        parse, self.bg_notfnd = Gdk.Color.parse('red')
+
         # build the search tab
         self._build_search(None)
         self.searching = True
@@ -60,7 +66,7 @@ class Searchable(object):
     def _key(self, widg, event):
         '''Handles keystrokes.'''
         # ctrl-something
-        if event.state & gtk.gdk.CONTROL_MASK:
+        if event.get_state() & Gdk.ModifierType.CONTROL_MASK:
             if event.keyval == self.key_f:   # -f
                 self.show_search()
             elif event.keyval == self.key_g:   # -g
@@ -70,7 +76,7 @@ class Searchable(object):
             return True
         # F3
         if event.keyval == self.key_F3:
-            if event.state & gtk.gdk.SHIFT_MASK:
+            if event.get_state() & Gdk.ModifierType.SHIFT_MASK:
                 self._find(None, "previous")
             else:
                 self._find(None, "next")
@@ -81,8 +87,8 @@ class Searchable(object):
 
     def _populate_popup(self, textview, menu):
         '''Populates the menu with the Find item.'''
-        menu.append(gtk.SeparatorMenuItem())
-        opc = gtk.ImageMenuItem((gtk.STOCK_FIND))
+        menu.append(Gtk.SeparatorMenuItem())
+        opc = Gtk.ImageMenuItem((Gtk.STOCK_FIND))
         opc.get_children()[0].set_label('Find...')
         menu.append(opc)
         opc.connect("activate", self.show_search)
@@ -101,19 +107,19 @@ class Searchable(object):
 
     def _build_search(self, widget):
         '''Builds the search bar.'''
-        self.srchtab = gtk.HBox()
+        self.srchtab = Gtk.HBox()
         # close button
-        close = gtk.Image()
-        close.set_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_MENU)
-        eventbox = gtk.EventBox()
+        close = Gtk.Image()
+        close.set_from_stock(Gtk.STOCK_CLOSE, Gtk.IconSize.MENU)
+        eventbox = Gtk.EventBox()
         eventbox.add(close)
         eventbox.connect("button-release-event", self._close)
         self.srchtab.pack_start(eventbox, False, False, 3)
         # label
-        label = gtk.Label("Find:")
+        label = Gtk.Label(label="Find:")
         self.srchtab.pack_start(label, False, False, 3)
         # entry
-        self.search_entry = gtk.Entry()
+        self.search_entry = Gtk.Entry()
         self.search_entry.set_tooltip_text("Type here the phrase you want to find")
         self.search_entry.connect("activate", self._find, "next")
         self.search_entry.connect("changed", self._find_cb, "find")
@@ -123,8 +129,8 @@ class Searchable(object):
             but_text = ''
         else:
             but_text = 'Next'
-        butn = SemiStockButton(but_text, gtk.STOCK_GO_DOWN)
-        butn.set_relief(gtk.RELIEF_NONE)
+        butn = SemiStockButton(but_text, Gtk.STOCK_GO_DOWN)
+        butn.set_relief(Gtk.ReliefStyle.NONE)
         butn.connect("clicked", self._find, "next")
         butn.set_tooltip_text("Find the next ocurrence of the phrase")
         self.srchtab.pack_start(butn, False, False, 3)
@@ -133,28 +139,29 @@ class Searchable(object):
             but_text = ''
         else:
             but_text = ('Previous')
-        butp = SemiStockButton(but_text, gtk.STOCK_GO_UP)
-        butp.set_relief(gtk.RELIEF_NONE)
+        butp = SemiStockButton(but_text, Gtk.STOCK_GO_UP)
+        butp.set_relief(Gtk.ReliefStyle.NONE)
         butp.connect("clicked", self._find, "previous")
         butp.set_tooltip_text("Find the previous ocurrence of the phrase")
         self.srchtab.pack_start(butp, False, False, 3)
         # make last two buttons equally width
-        wn,hn = butn.size_request()
-        wp,hp = butp.size_request()
-        newwidth = max(wn, wp)
-        butn.set_size_request(newwidth, hn)
-        butp.set_size_request(newwidth, hp)
+        # MEOW
+        wn,hn = butn.get_preferred_size()
+        wp,hp = butp.get_preferred_size()
+        newwidth = max(wn.width, wp.width)
+        butn.set_size_request(newwidth, hn.height)
+        butp.set_size_request(newwidth, hp.height)
         # Match case CheckButton
-        butCase = gtk.CheckButton(('Match case'))
+        butCase = Gtk.CheckButton(('Match case'))
         butCase.set_active(self._matchCaseValue)
         butCase.connect("clicked", self._matchCase)
         # FIXME
-        # current version of gtk.TextIter doesn't support SEARCH_CASE_INSENSITIVE
+        # current version of Gtk.TextIter doesn't support SEARCH_CASE_INSENSITIVE
         #butCase.show()
         #self.srchtab.pack_start(butCase, expand=False, fill=False, padding=3)
         self.pack_start(self.srchtab, False, False, 0)
         # Results
-        self._resultsLabel = gtk.Label("")
+        self._resultsLabel = Gtk.Label(label="")
         self.srchtab.pack_start(self._resultsLabel, False, False, 3)
         self.searching = False
 
@@ -169,8 +176,8 @@ class Searchable(object):
         # This loop makes sure that we only call _find every 500 ms .
         if self.timer_id:
             # We destroy the last event source and create another one.
-            gobject.source_remove(self.timer_id)
-        self.timer_id = gobject.timeout_add(500, self._find, widget, data)
+            GObject.source_remove(self.timer_id)
+        self.timer_id = GObject.timeout_add(500, self._find, widget, data)
 
     def _find(self, widget, direction):
         '''Actually find the text, and handle highlight and selection.'''
@@ -221,7 +228,7 @@ class Searchable(object):
         # TODO: Will the highlighting succeed? How's the text with \0's actually
         # printed in the textview? 
         
-        flags = gtk.TEXT_SEARCH_VISIBLE_ONLY
+        flags = Gtk.TextSearchFlags.VISIBLE_ONLY
         startIter =  self.textbuf.get_start_iter()
         # find the positions where the phrase is found
         positions = []
@@ -233,7 +240,7 @@ class Searchable(object):
             else:
                 break
         if not positions:
-            self.search_entry.modify_base(gtk.STATE_NORMAL, self.bg_notfnd)
+            self.search_entry.modify_base(Gtk.StateType.NORMAL, self.bg_notfnd)
             self.textbuf.select_range(startIter, startIter)
             self._resultsLabel.set_text('')
             return positions
@@ -255,12 +262,12 @@ class Searchable(object):
         (ini, fin) = self.textbuf.get_bounds()
         self.textbuf.remove_tag_by_name(tag, ini, fin)
         # entry background
-        self.search_entry.modify_base(gtk.STATE_NORMAL, self.bg_normal)
+        self.search_entry.modify_base(Gtk.StateType.NORMAL, self.bg_normal)
         self._resultsLabel.set_text('')
 
 # Used to create most of the buttons
 #
-class SemiStockButton(gtk.Button):
+class SemiStockButton(Gtk.Button):
     '''Takes the image from the stock, but the label which is passed.
     
     @param text: the text that will be used for the label
@@ -286,7 +293,7 @@ class SemiStockButton(gtk.Button):
         @param tooltip: the tooltip for the button
         '''
         self.label.set_text(newtext)
-        self.image.set_from_stock(newimage, gtk.ICON_SIZE_BUTTON)
+        self.image.set_from_stock(newimage, Gtk.IconSize.BUTTON)
         if tooltip is not None:
             self.set_tooltip_text(tooltip)
 

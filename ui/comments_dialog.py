@@ -17,14 +17,14 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
 import ui.gtk2.common
 
-class CommentsDialog(gtk.Dialog):
+class CommentsDialog(Gtk.Dialog):
     '''Window to popup search input'''
 
     def __init__(self, title='Add comment'):
-        super(CommentsDialog,self).__init__(title, None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+        super(CommentsDialog,self).__init__(title, None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT, Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
 
         # the cancel button
         self.butt_cancel = self.action_area.get_children()[1]
@@ -32,23 +32,23 @@ class CommentsDialog(gtk.Dialog):
 
         # Positions
         self.resize(400, 200)
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
         ui.gtk2.common.set_bokken_icon(self)
 
         # Log TextView
         #################################################################
-        self.input_text = gtk.TextView(buffer=None)
-        self.input_text.set_wrap_mode(gtk.WRAP_NONE)
+        self.input_text = Gtk.TextView(buffer=None)
+        self.input_text.set_wrap_mode(Gtk.WrapMode.NONE)
         self.input_text.set_left_margin(10)
         self.input_buffer = self.input_text.get_buffer()
 
-        self.scrolled_window = gtk.ScrolledWindow()
-        self.scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.scrolled_window = Gtk.ScrolledWindow()
+        self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.scrolled_window.is_visible = True
 
         # Add Textview to Scrolled Window
         self.scrolled_window.add_with_viewport(self.input_text)
 
-        #self.vbox.pack_start(self.input_text)
+        #self.vbox.pack_start(self.input_text, True, True, 0)
         self.vbox.pack_start(self.scrolled_window, True, True, 0)
         self.show_all()

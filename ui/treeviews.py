@@ -19,14 +19,15 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 from lib.common import datafile_path
 
-class TreeViews(gtk.TreeView):
+class TreeViews(Gtk.TreeView):
     '''Main TextView elements'''
 
     def __init__(self, core, textviews):
-        self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str)
+        self.store = Gtk.ListStore(GdkPixbuf.Pixbuf, str, str, str, str)
         super(TreeViews,self).__init__(self.store)
 
         self.uicore = core
@@ -41,28 +42,28 @@ class TreeViews(gtk.TreeView):
 
     def create_functions_columns(self):
 
-        rendererText = gtk.CellRendererText()
+        rendererText = Gtk.CellRendererText()
         rendererText.tooltip_handle = self.connect('motion-notify-event', self.fcn_tooltip)
-        rendererPix = gtk.CellRendererPixbuf()
-        self.fcn_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('function.png'))
-        self.bb_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('block.png'))
-        column = gtk.TreeViewColumn("Function")
+        rendererPix = Gtk.CellRendererPixbuf()
+        self.fcn_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('function.png'))
+        self.bb_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('block.png'))
+        column = Gtk.TreeViewColumn("Function")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
         column.set_attributes(rendererText, text=1)
         column.set_attributes(rendererPix, pixbuf=0)
         column.set_sort_column_id(1)
-        self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
+        self.store.set_sort_column_id(1,Gtk.SortType.ASCENDING)
         self.append_column(column)
         self.set_model(self.store)
 
     def create_relocs_columns(self):
 
-        self.data_sec_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('data-sec.png'))
-        rendererPix = gtk.CellRendererPixbuf()
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Name")
+        self.data_sec_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('data-sec.png'))
+        rendererPix = Gtk.CellRendererPixbuf()
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
@@ -71,39 +72,39 @@ class TreeViews(gtk.TreeView):
         column.set_sort_column_id(0)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Virtual Address", rendererText, text=2)
-        self.store.set_sort_column_id(2,gtk.SORT_ASCENDING)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Virtual Address", rendererText, text=2)
+        self.store.set_sort_column_id(2,Gtk.SortType.ASCENDING)
         column.set_sort_column_id(2)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Size", rendererText, text=3)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Size", rendererText, text=3)
         column.set_sort_column_id(3)
         self.append_column(column)
 
     def create_exports_columns(self):
 
-        self.exp_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('export.png'))
-        rendererPix = gtk.CellRendererPixbuf()
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Offset")
+        self.exp_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('export.png'))
+        rendererPix = Gtk.CellRendererPixbuf()
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Offset")
         column.set_spacing(5)
         column.pack_start(rendererPix, False)
         column.pack_start(rendererText, True)
         column.set_attributes(rendererText, text=1)
         column.set_attributes(rendererPix, pixbuf=0)
-        self.store.set_sort_column_id(1,gtk.SORT_ASCENDING)
+        self.store.set_sort_column_id(1,Gtk.SortType.ASCENDING)
         column.set_sort_column_id(1)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Name", rendererText, text=2)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name", rendererText, text=2)
         column.set_sort_column_id(2)
         self.append_column(column)
 
-        rendererText = gtk.CellRendererText()
-        column = gtk.TreeViewColumn("Ordinal", rendererText, text=3)
+        rendererText = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Ordinal", rendererText, text=3)
         column.set_sort_column_id(3)
         self.append_column(column)
         self.set_model(self.store)
@@ -115,15 +116,15 @@ class TreeViews(gtk.TreeView):
 
     def create_tree(self, imps):
         # Create the column
-        imports = gtk.TreeViewColumn()
+        imports = Gtk.TreeViewColumn()
         imports.set_title("Imports")
         imports.set_spacing(5)
 
-        self.treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str)
+        self.treestore = Gtk.TreeStore(GdkPixbuf.Pixbuf, str)
 
-        self.imp_pix = gtk.gdk.pixbuf_new_from_file(datafile_path('import.png'))
-        rendererPix = gtk.CellRendererPixbuf()
-        rendererText = gtk.CellRendererText()
+        self.imp_pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('import.png'))
+        rendererPix = Gtk.CellRendererPixbuf()
+        rendererText = Gtk.CellRendererText()
         imports.pack_start(rendererPix, False)
         imports.pack_start(rendererText, True)
         imports.set_attributes(rendererText, text=1)
@@ -165,9 +166,9 @@ class TreeViews(gtk.TreeView):
         Right-click: Shows a menu.
 
         @param tv: The treeview.
-        @parameter event: The GTK event (gtk.gdk.Event) in case this is a mouse
+        @parameter event: The GTK event (Gdk.Event) in case this is a mouse
             click.  Otherwise it's the activated row index in format (n,).
-        @parameter row: A gtk.TreeViewColumn object in case it's a keypress,
+        @parameter row: A Gtk.TreeViewColumn object in case it's a keypress,
             otherwise None.
 
         The function works by abstracting the event type and then defining
@@ -270,14 +271,14 @@ class TreeViews(gtk.TreeView):
 
             # Ok, now I show the popup menu !
             # Create the popup menu
-            gm = gtk.Menu()
+            gm = Gtk.Menu()
 
             # And the items
-            e = gtk.MenuItem("Go to")
+            e = Gtk.MenuItem("Go to")
             e.connect('activate', self.search_and_graph, link_name)
             gm.append( e )
             if self.dograph:
-                e = gtk.MenuItem("Show graph")
+                e = Gtk.MenuItem("Show graph")
                 e.connect('activate', self.textviews.update_graph, link_name)
                 gm.append( e )
             gm.show_all()
