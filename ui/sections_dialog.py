@@ -154,7 +154,7 @@ class SectionsDialog(Gtk.Dialog):
             line.extend((size, hex(min_address)))
             self.store.append(line)
 
-class ColoredBarRenderer(Gtk.GenericCellRenderer):
+class ColoredBarRenderer(Gtk.CellRenderer):
     from gi.repository import GObject
 
     __gproperties__ = {
@@ -195,29 +195,31 @@ class ColoredBarRenderer(Gtk.GenericCellRenderer):
                     }
 
     def __init__(self):
+        from gi.repository import GObject
         GObject.GObject.__init__(self)
 
-    def on_get_size(self, widget, cell_area):
+    def do_get_size(self, widget, cell_area):
         return (0, 0, 0, 0) # x,y,w,h
 
-    def on_render(self, window, widget, background_area, cell_area, expose_area, flags):
+    def do_render(self, context, widget, background_area, cell_area, flags):
         '''The way we will render the sections will be drawing a yellow rectangle occupying
         all the area for the column, and then a blue section on top at the proper start
         and end coordinates'''
-        context = window.cairo_create()
         (x, y, w, h) = (cell_area.x, cell_area.y, cell_area.width, cell_area.height)
 
         darken = lambda color: [x * 0.8 for x in color]
 
         # http://colorschemedesigner.com/#2N42mhWs0g0g0
+        __yellow__ = 0xe7c583
+        __blue__ = 0x6b82af
         context.set_line_width(0.5)
         context.save()
 
         # Yellow rectangle.
-        context.set_source_rgb(*split_color(0xe7c583))
+        context.set_source_rgb(*split_color(__yellow__))
         context.rectangle(x+1, y+1 , w-2, h-2)
         context.fill_preserve()
-        context.set_source_rgb(*darken(split_color(0xe7c583)))
+        context.set_source_rgb(*darken(split_color(__yellow__)))
         context.stroke_preserve()
         context.clip()
         context.restore()
@@ -230,18 +232,18 @@ class ColoredBarRenderer(Gtk.GenericCellRenderer):
 
         # Blue rectangle.
         context.save()
-        context.set_source_rgb(*split_color(0x6b82af))
+        context.set_source_rgb(*split_color(__blue__))
         context.rectangle(x+initial_px+1, y+1, final_px-initial_px, h-2)
         context.fill_preserve()
-        context.set_source_rgb(*darken(split_color(0x6b82af)))
+        context.set_source_rgb(*darken(split_color(__blue__)))
         context.stroke_preserve()
         context.clip()
         context.restore()
 
-    def on_activate(self, event, widget, path, background_area, cell_area, flags):
+    def do_activate(self, event, widget, path, background_area, cell_area, flags):
         pass
 
-    def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
+    def do_start_editing(self, event, widget, path, background_area, cell_area, flags):
         pass
 
     def do_set_property(self, key, value):

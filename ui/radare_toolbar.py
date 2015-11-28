@@ -27,8 +27,7 @@ from lib.common import datafile_path
 # We need it for the "New" button
 import ui.file_dialog as file_dialog
 import ui.diff_dialog as diff_dialog
-# MEOW
-#import ui.sections_dialog as sections_dialog
+import ui.sections_dialog as sections_dialog
 import ui.calc_dialog as calc_dialog
 import ui.throbber as throbber
 
