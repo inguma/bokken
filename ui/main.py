@@ -36,7 +36,7 @@ print("  Python version:")
 print("\n".join("    " + x for x in sys.version.split("\n")))
 print("  GTK version: " + str(Gtk.get_major_version()) + '.' + str(Gtk.get_minor_version()))
 
-import ui.gtk2.common
+import ui.gtk3.common
 import ui.textviews as textviews
 import ui.statusbar as statusbar
 import ui.file_dialog as file_dialog
@@ -125,7 +125,7 @@ class BokkenGTKClient:
                 print error_msg
                 sys.exit(1)
 
-            ui.gtk2.common.repaint()
+            ui.gtk3.common.repaint()
 
         else:
             self.empty_gui = True
@@ -133,7 +133,7 @@ class BokkenGTKClient:
         self.window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
         self.window.set_focus = True
         self.window.connect("delete_event", self.quit)
-        ui.gtk2.common.set_bokken_icon(self.window)
+        ui.gtk3.common.set_bokken_icon(self.window)
         Gtk.Settings.get_default().set_long_property("gtk-button-images", True, "main")
 
         # Title
@@ -342,7 +342,7 @@ class BokkenGTKClient:
 
             self.load_file(self.target)
 
-            ui.gtk2.common.repaint()
+            ui.gtk3.common.repaint()
 
         # Clean UI
         self.topbuttons.menu.delete_view_menu()

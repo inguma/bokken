@@ -18,7 +18,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
-import ui.gtk2.common
+import ui.gtk3.common
 
 class SectionsDialog(Gtk.Dialog):
     '''Window to popup sections info'''
@@ -38,7 +38,7 @@ class SectionsDialog(Gtk.Dialog):
         # Positions
         self.resize(700, 400)
         self.set_position(Gtk.WindowPosition.CENTER)
-        ui.gtk2.common.set_bokken_icon(self)
+        ui.gtk3.common.set_bokken_icon(self)
 
         # Label...
         self.hbox = Gtk.HBox(False, 1)

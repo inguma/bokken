@@ -21,7 +21,7 @@
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 import lib.bokken_globals as glob
-import ui.gtk2.common
+import ui.gtk3.common
 from lib.common import datafile_path
 
 class AboutDialog():
@@ -31,7 +31,7 @@ class AboutDialog():
 
         about = Gtk.AboutDialog()
         about.set_program_name("Bokken")
-        ui.gtk2.common.set_bokken_icon(about)
+        ui.gtk3.common.set_bokken_icon(about)
         about.set_version(glob.version)
         about.set_copyright("(c) Hugo Teso <hteso@inguma.eu>")
         about.set_comments("A GUI for radare2!")

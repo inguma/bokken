@@ -22,7 +22,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-import ui.gtk2.common
+import ui.gtk3.common
 from lib.common import datafile_path
 
 import lib.bokken_globals as glob
@@ -39,7 +39,7 @@ class FileDialog(Gtk.Dialog):
 
         # Set dialog resizeable and auto-shrink
         self.set_resizable(False)
-        ui.gtk2.common.set_bokken_icon(self)
+        ui.gtk3.common.set_bokken_icon(self)
 
         # The Ok Button.
         self.butt_ok = self.action_area.get_children()[1]
@@ -241,7 +241,7 @@ class FileDialog(Gtk.Dialog):
 
     def get_file(self, widget):
         import re
-        import ui.gtk2.common
+        import ui.gtk3.common
 
         # Disable all the interface and Ok button.
         self.hbox.set_sensitive(False)
@@ -258,7 +258,7 @@ class FileDialog(Gtk.Dialog):
         self.main_vbox.pack_start(self.progress_box, False, False, 2)
         self.progress_box.show_all()
 
-        ui.gtk2.common.repaint()
+        ui.gtk3.common.repaint()
 
         self.file = self.input_entry.get_child().get_text()
         if not re.match('^[a-z]+://', self.file):

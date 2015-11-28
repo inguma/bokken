@@ -21,7 +21,7 @@
 
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
-import ui.gtk2.common
+import ui.gtk3.common
 from lib.common import datafile_path
 
 class CheatsheetDialog(Gtk.Dialog):
@@ -142,7 +142,7 @@ class CheatsheetDialog(Gtk.Dialog):
         # Positions
         self.resize(600, 700)
         self.set_position(Gtk.WindowPosition.CENTER)
-        ui.gtk2.common.set_bokken_icon(self)
+        ui.gtk3.common.set_bokken_icon(self)
         self.pix = GdkPixbuf.Pixbuf.new_from_file(datafile_path('block.png'))
 
         # Font
@@ -410,7 +410,7 @@ class CheatsheetDialog(Gtk.Dialog):
 
     def popup_stack(self, widget):
         dialog = Gtk.Dialog('The stack', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CLOSE,Gtk.ResponseType.CLOSE))
-        ui.gtk2.common.set_bokken_icon(dialog)
+        ui.gtk3.common.set_bokken_icon(dialog)
         stack_img = Gtk.Image()
         stack_img.set_from_file(datafile_path('stack.png'))
         dialog.vbox.pack_start(self.create_h1_label("The stack"), False, False, 2)
@@ -421,7 +421,7 @@ class CheatsheetDialog(Gtk.Dialog):
 
     def popup_registers(self, widget):
         dialog = Gtk.Dialog('16­bit and 8­bit registers', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CLOSE,Gtk.ResponseType.CLOSE))
-        ui.gtk2.common.set_bokken_icon(dialog)
+        ui.gtk3.common.set_bokken_icon(dialog)
         reg_img = Gtk.Image()
         reg_img.set_from_file(datafile_path('registers.png'))
         reg_label = Gtk.Label("The four primary general purpose registers (EAX, EBX, ECX and EDX)\nhave 16 and 8 bit overlapping aliases.")
@@ -438,6 +438,6 @@ class CheatsheetDialog(Gtk.Dialog):
             Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.INFO, 
             Gtk.ButtonsType.CLOSE, "")
         md.set_markup('The data for this cheat sheet\nwas borrowed from http://www.rnicrosoft.net.\n\nThe original site is no longer up, and now it\'s owned by cyber-squatters.  There are multiple ones over the Internet, you might like a simple one like <a href="http://www.jegerlehner.ch/intel/IntelCodeTable.pdf">the one from http://www.jegerlehner.ch/intel</a>.')
-        ui.gtk2.common.set_bokken_icon(md)
+        ui.gtk3.common.set_bokken_icon(md)
         md.run()
         md.destroy()

@@ -532,13 +532,13 @@ class Core(lib.backend.BasicBackend):
 
     def update_progress_bar(self, text, percent):
         """ Easy function to clean up the event queue and force a repaint. """
-        import ui.gtk2.common
+        import ui.gtk3.common
 
         if not self.progress_bar:
             return
         self.progress_bar.set_fraction(percent)
         self.progress_bar.set_text(text)
-        ui.gtk2.common.repaint()
+        ui.gtk3.common.repaint()
 
     @staticmethod
     def get_plugins():

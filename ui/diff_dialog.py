@@ -18,7 +18,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
-import ui.gtk2.common
+import ui.gtk3.common
 
 class DiffDialog(Gtk.Dialog):
     '''Window popup to select files'''
@@ -32,7 +32,7 @@ class DiffDialog(Gtk.Dialog):
         # Set dialog resizeable and auto-shrink
         # MEOW
         #self.set_policy(False, False, True)
-        ui.gtk2.common.set_bokken_icon(self)
+        ui.gtk3.common.set_bokken_icon(self)
 
         # the cancel button
         self.butt_ok = self.action_area.get_children()[1]

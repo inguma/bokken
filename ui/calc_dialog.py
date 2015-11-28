@@ -18,7 +18,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
-import ui.gtk2.common
+import ui.gtk3.common
 
 class CalcDialog(Gtk.Dialog):
     '''Window popup to select files'''
@@ -31,7 +31,7 @@ class CalcDialog(Gtk.Dialog):
         # Set dialog resizeable and auto-shrink
         # MEOW
         #self.set_policy(False, False, True)
-        ui.gtk2.common.set_bokken_icon(self)
+        ui.gtk3.common.set_bokken_icon(self)
 
         self.examples = "Examples:\n0x100\n0x100 + 20\n01001\n01001 + 0x10\n0x10 + 20 * 0101"
 

@@ -18,7 +18,7 @@
 #       MA 02110-1301, USA.
 
 from gi.repository import Gtk
-import ui.gtk2.common
+import ui.gtk3.common
 
 class CommentsDialog(Gtk.Dialog):
     '''Window to popup search input'''
@@ -33,7 +33,7 @@ class CommentsDialog(Gtk.Dialog):
         # Positions
         self.resize(400, 200)
         self.set_position(Gtk.WindowPosition.CENTER)
-        ui.gtk2.common.set_bokken_icon(self)
+        ui.gtk3.common.set_bokken_icon(self)
 
         # Log TextView
         #################################################################

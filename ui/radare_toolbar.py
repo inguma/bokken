@@ -20,7 +20,7 @@
 
 from __future__ import print_function
 from gi.repository import Gtk
-import ui.gtk2.common
+import ui.gtk3.common
 import lib.bokken_globals as glob
 from lib.common import datafile_path
 
@@ -189,7 +189,7 @@ class TopButtons(Gtk.HBox):
         if magic:
             md = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, 
                 Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, None)
-            ui.gtk2.common.set_bokken_icon(md)
+            ui.gtk3.common.set_bokken_icon(md)
             md.set_markup("<b>Detected file magic:</b>\n\n" + magic)
             md.run()
             md.destroy()
