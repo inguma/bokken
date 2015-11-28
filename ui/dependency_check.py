@@ -98,15 +98,28 @@ def gtkui_dependency_check():
                 '    - On Mac: brew install pygobject3')
         sys.exit(1)
 
-    # Check GtkSourceView2
+    # Check GtkSourceView
     try:
         print('\tGtkSourceView3...', end='')
+        gi.require_version('GtkSource', '3.0')
         from gi.repository import GtkSource
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
         print('GtkSourceView3 not installed! Install it for your platform:\n'
                 '    - On Debian-based distributions: apt-get install gir1.2-gtksource-3.0')
+        sys.exit(1)
+
+    # Check PyCairo for GTK+.
+    try:
+        print('\tPython Cairo bindings...', end='')
+        gi.require_version('PangoCairo', '1.0')
+        from gi.repository import PangoCairo
+        print(common.console_color('\tOK', 'green'))
+    except:
+        print(common.console_color("\tD'oh!", 'red'))
+        print('Python Cairo bindings for GObject not installed! Install them for your platform:\n'
+                '    - On Debian-based distributions: apt-get install python-gi-cairo')
         sys.exit(1)
 
 def graphviz_dependency_check():
