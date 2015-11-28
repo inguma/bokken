@@ -92,7 +92,7 @@ def gtkui_dependency_check():
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
-        print('You have to install GTK3 and PyGObject version >= 3.0 to be able to '
+        print('You have to install GTK+3 and PyGObject version >= 3.0 to be able to '
                 'run the GTK user interface.\n'
                 '    - On Debian-based distributions: apt-get install python-gi\n'
                 '    - On Mac: brew install pygobject3')
@@ -105,8 +105,8 @@ def gtkui_dependency_check():
         print(common.console_color('\tOK', 'green'))
     except:
         print(common.console_color("\tD'oh!", 'red'))
-        print('GtkSourceView2 not installed! Install it for your platform:\n'
-                '    - On Debian-based distributions: apt-get install python-gtksourceview3')
+        print('GtkSourceView3 not installed! Install it for your platform:\n'
+                '    - On Debian-based distributions: apt-get install gir1.2-gtksource-3.0')
         sys.exit(1)
 
 def graphviz_dependency_check():
