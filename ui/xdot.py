@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2008 Jose Fonseca
+# Copyright 2008-2015 Jose Fonseca
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -57,6 +57,14 @@ class Pen:
         self.linewidth = 1.0
         self.fontsize = 14.0
         self.fontname = "Times-Roman"
+        self.bold = False
+        self.italic = False
+        self.underline = False
+        self.superscript = False
+        self.subscript = False
+        self.strikethrough = False
+        self.overline = False
+
         self.dash = ()
 
     def copy(self):
@@ -103,9 +111,9 @@ class TextShape(Shape):
         self.pen = pen.copy()
         self.x = x
         self.y = y
-        self.j = j
-        self.w = w
-        self.t = t
+        self.j = j  # Centering
+        self.w = w  # width
+        self.t = t  # text
 
     def draw(self, cr, highlight=False):
 
@@ -134,12 +142,32 @@ class TextShape(Shape):
 
             # set font
             font = Pango.FontDescription()
+
+            # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
+            markup = GObject.markup_escape_text(self.t)
+            if self.pen.bold:
+                markup = '<b>' + markup + '</b>'
+            if self.pen.italic:
+                markup = '<i>' + markup + '</i>'
+            if self.pen.underline:
+                markup = '<span underline="single">' + markup + '</span>'
+            if self.pen.strikethrough:
+                markup = '<s>' + markup + '</s>'
+            if self.pen.superscript:
+                markup = '<sup><small>' + markup + '</small></sup>'
+            if self.pen.subscript:
+                markup = '<sub><small>' + markup + '</small></sub>'
+
+            success, attrs, text, accel_char = Pango.parse_markup(markup, -1, u'\x00')
+            assert success
+            layout.set_attributes(attrs)
+
             font.set_family(self.pen.fontname)
             font.set_absolute_size(self.pen.fontsize*Pango.SCALE)
             layout.set_font_description(font)
 
             # set text
-            layout.set_text(self.t, len(self.t))
+            layout.set_text(text, -1)
 
             # cache it
             self.layout = layout
@@ -151,6 +179,7 @@ class TextShape(Shape):
         width, height = layout.get_size()
         width = float(width)/Pango.SCALE
         height = float(height)/Pango.SCALE
+
         # we know the width that dot thinks this text should have
         # we do not necessarily have a font with the same metrics
         # scale it so that the text fits inside its box
@@ -508,6 +537,15 @@ class Graph(Shape):
         return None
 
 
+BOLD = 1
+ITALIC = 2
+UNDERLINE = 4
+SUPERSCRIPT = 8
+SUBSCRIPT = 16
+STRIKE_THROUGH = 32
+OVERLINE = 64
+
+
 class XDotAttrParser:
     """Parser for xdot drawing attributes.
     See also:
@@ -533,28 +571,28 @@ class XDotAttrParser:
             self.pos += 1
         return res
 
-    def read_number(self):
-        return float(self.read_code())
+    def read_int(self):
+        return int(self.read_code())
 
     def read_float(self):
         return float(self.read_code())
 
     def read_point(self):
-        x = self.read_number()
-        y = self.read_number()
+        x = self.read_float()
+        y = self.read_float()
         return self.transform(x, y)
 
     def read_text(self):
-        num = self.read_number()
+        num = self.read_int()
         pos = self.buf.find("-", self.pos) + 1
-        self.pos = int(pos + num)
+        self.pos = pos + num
         res = self.buf[pos:self.pos]
         while self.pos < len(self.buf) and self.buf[self.pos].isspace():
             self.pos += 1
         return res
 
     def read_polygon(self):
-        n = int(self.read_number())
+        n = self.read_int()
         p = []
         for i in range(n):
             x, y = self.read_point()
@@ -581,6 +619,9 @@ class XDotAttrParser:
             r, g, b = colorsys.hsv_to_rgb(h, s, v)
             a = 1.0
             return r, g, b, a
+        elif c1 == "[":
+            sys.stderr.write('warning: color gradients not supported yet\n')
+            return None
         else:
             return self.lookup_color(c)
 
@@ -610,7 +651,7 @@ class XDotAttrParser:
             a = 1.0
             return r, g, b, a
                 
-        sys.stderr.write("unknown color '%s'\n" % c)
+        sys.stderr.write("warning: unknown color '%s'\n" % c)
         return None
 
     def parse(self):
@@ -641,19 +682,22 @@ class XDotAttrParser:
                 self.handle_font(size, name)
             elif op == "T":
                 x, y = s.read_point()
-                j = s.read_number()
-                w = s.read_number()
+                j = s.read_int()
+                w = s.read_float()
                 t = s.read_text()
                 self.handle_text(x, y, j, w, t)
+            elif op == "t":
+                f = s.read_int()
+                self.handle_font_characteristics(f)
             elif op == "E":
                 x0, y0 = s.read_point()
-                w = s.read_number()
-                h = s.read_number()
+                w = s.read_float()
+                h = s.read_float()
                 self.handle_ellipse(x0, y0, w, h, filled=True)
             elif op == "e":
                 x0, y0 = s.read_point()
-                w = s.read_number()
-                h = s.read_number()
+                w = s.read_float()
+                h = s.read_float()
                 self.handle_ellipse(x0, y0, w, h, filled=False)
             elif op == "L":
                 points = self.read_polygon()
@@ -672,13 +716,13 @@ class XDotAttrParser:
                 self.handle_polygon(points, filled=False)
             elif op == "I":
                 x0, y0 = s.read_point()
-                w = s.read_number()
-                h = s.read_number()
+                w = s.read_float()
+                h = s.read_float()
                 path = s.read_text()
                 self.handle_image(x0, y0, w, h, path)
             else:
-                sys.stderr.write("unknown xdot opcode '%s'\n" % op)
-                break
+                sys.stderr.write("error: unknown xdot opcode '%s'\n" % op)
+                sys.exit(1)
 
         return self.shapes
     
@@ -705,6 +749,17 @@ class XDotAttrParser:
     def handle_font(self, size, name):
         self.pen.fontsize = size
         self.pen.fontname = name
+
+    def handle_font_characteristics(self, flags):
+        self.pen.bold = bool(flags & BOLD)
+        self.pen.italic = bool(flags & ITALIC)
+        self.pen.underline = bool(flags & UNDERLINE)
+        self.pen.superscript = bool(flags & SUPERSCRIPT)
+        self.pen.subscript = bool(flags & SUBSCRIPT)
+        self.pen.strikethrough = bool(flags & STRIKE_THROUGH)
+        self.pen.overline = bool(flags & OVERLINE)
+        if self.pen.overline:
+            sys.stderr.write('warning: overlined text not supported yet\n')
 
     def handle_text(self, x, y, j, w, t):
         self.shapes.append(TextShape(self.pen, x, y, j, w, t))
@@ -1131,6 +1186,8 @@ class DotParser(Parser):
 
 class XDotParser(DotParser):
 
+    XDOTVERSION = '1.7'
+
     def __init__(self, xdotcode):
         lexer = DotLexer(buf = xdotcode)
         DotParser.__init__(self, lexer)
@@ -1140,29 +1197,39 @@ class XDotParser(DotParser):
         self.shapes = []
         self.node_by_name = {}
         self.top_graph = True
+        self.width = 0
+        self.height = 0
 
     def handle_graph(self, attrs):
         if self.top_graph:
+            # Check xdot version
+            try:
+                xdotversion = attrs['xdotversion']
+            except KeyError:
+                pass
+            else:
+                if float(xdotversion) > float(self.XDOTVERSION):
+                    sys.stderr.write('warning: xdot version %s, but supported is %s\n' % (xdotversion, self.XDOTVERSION))
+
+            # Parse bounding box
             try:
                 bb = attrs['bb']
             except KeyError:
                 return
 
-            if not bb:
-                return
+            if bb:
+                xmin, ymin, xmax, ymax = map(float, bb.split(","))
 
-            xmin, ymin, xmax, ymax = map(float, bb.split(","))
+                self.xoffset = -xmin
+                self.yoffset = -ymax
+                self.xscale = 1.0
+                self.yscale = -1.0
+                # FIXME: scale from points to pixels
 
-            self.xoffset = -xmin
-            self.yoffset = -ymax
-            self.xscale = 1.0
-            self.yscale = -1.0
-            # FIXME: scale from points to pixels
+                self.width  = max(xmax - xmin, 1)
+                self.height = max(ymax - ymin, 1)
 
-            self.width  = max(xmax - xmin, 1)
-            self.height = max(ymax - ymin, 1)
-
-            self.top_graph = False
+                self.top_graph = False
         
         for attr in ("_draw_", "_ldraw_", "_hdraw_", "_tdraw_", "_hldraw_", "_tldraw_"):
             if attr in attrs:
@@ -1493,16 +1560,23 @@ class DotWidget(Gtk.DrawingArea):
     def run_filter(self, dotcode):
         if not self.filter:
             return dotcode
-        p = subprocess.Popen(
-            [self.filter, '-Txdot'],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False,
-            universal_newlines=True
-        )
-        xdotcode, error = p.communicate(dotcode)
-        sys.stderr.write(error)
+        try:
+            p = subprocess.Popen(
+                [self.filter, '-Txdot'],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False,
+                universal_newlines=True
+            )
+        except OSError as exc:
+            error = '%s: %s' % (self.filter, exc.strerror)
+            p = subprocess.CalledProcessError(exc.errno, self.filter, exc.strerror)
+        else:
+            xdotcode, error = p.communicate(dotcode)
+        error = error.rstrip()
+        if error:
+            sys.stderr.write(error + '\n')
         if p.returncode != 0:
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR,
                                        message_format=error,
@@ -1546,7 +1620,7 @@ class DotWidget(Gtk.DrawingArea):
     def reload(self):
         if self.openfilename is not None:
             try:
-                fp = file(self.openfilename, 'rt')
+                fp = open(self.openfilename, 'rt')
                 self.set_dotcode(fp.read(), self.openfilename)
                 fp.close()
             except IOError:
@@ -1993,7 +2067,7 @@ class DotWindow(Gtk.Window):
 
     def open_file(self, filename):
         try:
-            fp = file(filename, 'rt')
+            fp = open(filename, 'rt')
             self.set_dotcode(fp.read(), filename)
             fp.close()
         except IOError as ex:
@@ -2076,10 +2150,7 @@ Shortcuts:
     win = DotWindow()
     win.connect('delete-event', Gtk.main_quit)
     win.set_filter(options.filter)
-    if len(args) == 0:
-        if not sys.stdin.isatty():
-            win.set_dotcode(sys.stdin.read())
-    else:
+    if len(args) >= 1:
         if args[0] == '-':
             win.set_dotcode(sys.stdin.read())
         else:
