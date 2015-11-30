@@ -30,8 +30,8 @@ import lib.bokken_globals as glob
 class FileDialog(Gtk.Dialog):
     '''Window popup to select file'''
 
-    def __init__(self, file='', first_run=False):
-        super(FileDialog,self).__init__('Select file', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT, Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
+    def __init__(self, main, file='', first_run=False):
+        super(FileDialog,self).__init__('Select file', main.window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT, Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
 
         self.file = file
 

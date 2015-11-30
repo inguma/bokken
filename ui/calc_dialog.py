@@ -1,17 +1,17 @@
 ##      calc_dialog.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -23,10 +23,10 @@ import ui.gtk3.common
 class CalcDialog(Gtk.Dialog):
     '''Window popup to select files'''
 
-    def __init__(self, core):
-        super(CalcDialog,self).__init__('Calculator', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
+    def __init__(self, main):
+        super(CalcDialog,self).__init__('Calculator', main.window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
 
-        self.uicore = core
+        self.uicore = main.uicore
 
         # Set dialog resizeable and auto-shrink
         # MEOW
@@ -103,7 +103,7 @@ class CalcDialog(Gtk.Dialog):
         res = self.uicore.core.num.math(self.input_entry.get_text())
         if res:
             self.input_entry2.set_text(str(res))
-    
+
             self.hex_lbl.set_markup( "<b>Hexadecimal:</b>\t" + hex(res) )
             self.dec_lbl.set_markup( "<b>Decimal</b>:\t\t" + str(int(str(res), 10)) )
             self.oct_lbl.set_markup( "<b>Octal:</b>\t\t" + str(oct(res)) )

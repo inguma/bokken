@@ -187,7 +187,7 @@ class TopButtons(Gtk.HBox):
         magic = self.uicore.core.cmd_str('pm')
         #self.uicore.core.cmd0('e io.va=1')
         if magic:
-            md = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, 
+            md = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
                 Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, None)
             ui.gtk3.common.set_bokken_icon(md)
             md.set_markup("<b>Detected file magic:</b>\n\n" + magic)
@@ -196,11 +196,11 @@ class TopButtons(Gtk.HBox):
 
     def _do_sections(self, widget):
         '''Instantiate a fully modal sections dialog.'''
-        self.sec_dialog = sections_dialog.SectionsDialog(self.uicore, self.main.window)
+        self.sec_dialog = sections_dialog.SectionsDialog(self.main)
         return False
 
     def _do_calc(self, widget):
-        self.calc_dialog = calc_dialog.CalcDialog(self.uicore)
+        self.calc_dialog = calc_dialog.CalcDialog(self.main)
         return False
 
     def _assembler(self, widgets):
@@ -236,7 +236,7 @@ class TopButtons(Gtk.HBox):
     # New File related methods
     #
     def new_file(self, widget, file=''):
-        dialog = file_dialog.FileDialog(False, glob.has_radare, 'radare', file)
+        dialog = file_dialog.FileDialog(self.main, False, glob.has_radare, 'radare', file)
         resp = dialog.run()
         if resp == Gtk.ResponseType.DELETE_EVENT or resp == Gtk.ResponseType.REJECT:
             dialog.destroy()
@@ -262,12 +262,12 @@ class TopButtons(Gtk.HBox):
             model = self.search_combo.get_model()
             active = self.search_combo.get_active()
             option = model[active][1]
-    
+
             results = self.uicore.string_search(data, self.options_dict[option])
-    
+
             self.create_search_dialog()
             enditer = self.search_dialog.output_buffer.get_end_iter()
-    
+
             for element in results:
                 self.search_dialog.output_buffer.insert(enditer, '%s: %s\n' % (element[0], element[1]))
             if not results:
@@ -276,20 +276,20 @@ class TopButtons(Gtk.HBox):
     def create_assemble_dialog(self):
 
         import assemble_dialog
-        self.assemble_dialog = assemble_dialog.AssembleDialog(self.uicore)
+        self.assemble_dialog = assemble_dialog.AssembleDialog(self.main)
 
         return False
 
     def create_search_dialog(self):
 
         import search_dialog
-        self.search_dialog = search_dialog.SearchDialog()
+        self.search_dialog = search_dialog.SearchDialog(self.main)
 
         return False
 
     def create_cheatsheet_dialog(self, widget):
 
         import cheatsheet_dialog
-        self.cheatsheet_dialog = cheatsheet_dialog.CheatsheetDialog()
+        self.cheatsheet_dialog = cheatsheet_dialog.CheatsheetDialog(self.main)
 
         return False

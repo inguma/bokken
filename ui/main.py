@@ -91,8 +91,18 @@ class BokkenGTKClient:
             # global __main__ handler.
             glob.http = http
 
+        # Create a main window before anything else.
+        self.window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
+        self.window.set_focus = True
+        self.window.connect("delete_event", self.quit)
+        ui.gtk3.common.set_bokken_icon(self.window)
+        Gtk.Settings.get_default().set_long_property("gtk-button-images", True, "main")
+
+        # Title
+        self.window.set_title(MAINTITLE + glob.version + " - " + self.target)
+
         # Launch file selection dialog
-        dialog = file_dialog.FileDialog(self.target, True)
+        dialog = file_dialog.FileDialog(self, self.target, True)
         resp = dialog.run()
         if resp == Gtk.ResponseType.DELETE_EVENT or resp == Gtk.ResponseType.REJECT:
             return None
@@ -129,15 +139,6 @@ class BokkenGTKClient:
 
         else:
             self.empty_gui = True
-
-        self.window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
-        self.window.set_focus = True
-        self.window.connect("delete_event", self.quit)
-        ui.gtk3.common.set_bokken_icon(self.window)
-        Gtk.Settings.get_default().set_long_property("gtk-button-images", True, "main")
-
-        # Title
-        self.window.set_title(MAINTITLE + glob.version + " - " + self.target)
 
         # Positions
         #self.window.resize(1000, 700)

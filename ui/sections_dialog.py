@@ -23,10 +23,10 @@ import ui.gtk3.common
 class SectionsDialog(Gtk.Dialog):
     '''Window to popup sections info'''
 
-    def __init__(self, core, parent_window):
-        super(SectionsDialog,self).__init__('Extended sections information', parent_window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
+    def __init__(self, main):
+        super(SectionsDialog,self).__init__('Extended sections information', main.window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
 
-        self.uicore = core
+        self.uicore = main.uicore
         self.sec_bars = ''
 
         #self.vbox = Gtk.VBox(False, 0)

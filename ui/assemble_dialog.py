@@ -1,23 +1,23 @@
 ##      assemble_dialog.py
-#       
+#
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-# TODO: ask the user for the program counter to be used instead of use 0 by default. See the FIXMES below
+# TODO: ask the user for the program counter to be used instead of using 0 by default. See the FIXMEs below
 
 import os
 from gi.repository import Gtk
@@ -27,10 +27,10 @@ from gi.repository import GtkSource
 class AssembleDialog(Gtk.Dialog):
     '''Assembler plugin dialog'''
 
-    def __init__(self, core):
-        super(AssembleDialog,self).__init__('Assembler plugin', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
+    def __init__(self, main):
+        super(AssembleDialog,self).__init__('Assembler plugin', main.window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
 
-        self.uicore = core
+        self.uicore = main.uicore
         self.timer_id = None
 
         self.butt_ok = self.action_area.get_children()[0]

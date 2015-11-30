@@ -125,8 +125,8 @@ class CheatsheetDialog(Gtk.Dialog):
             ("XOR <dst>, <src>", "Bitwise XOR the value in <src> with the value in <dst>, storing the result in <dst>. <dst> may be reg or mem and <src> may be reg, mem or imm."),
         ]
 
-    def __init__(self, title='Reference Sheet for x86 Assembler'):
-        super(CheatsheetDialog,self).__init__(title, None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_ABOUT, Gtk.ResponseType.ACCEPT, Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+    def __init__(self, main, title='Reference Sheet for x86 Assembler'):
+        super(CheatsheetDialog,self).__init__(title, main.window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_ABOUT, Gtk.ResponseType.ACCEPT, Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
         from gi.repository import Pango
 
@@ -409,7 +409,7 @@ class CheatsheetDialog(Gtk.Dialog):
         return label
 
     def popup_stack(self, widget):
-        dialog = Gtk.Dialog('The stack', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CLOSE,Gtk.ResponseType.CLOSE))
+        dialog = Gtk.Dialog('The stack', self, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CLOSE,Gtk.ResponseType.CLOSE))
         ui.gtk3.common.set_bokken_icon(dialog)
         stack_img = Gtk.Image()
         stack_img.set_from_file(datafile_path('stack.png'))
@@ -420,7 +420,7 @@ class CheatsheetDialog(Gtk.Dialog):
         dialog.destroy()
 
     def popup_registers(self, widget):
-        dialog = Gtk.Dialog('16­bit and 8­bit registers', None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CLOSE,Gtk.ResponseType.CLOSE))
+        dialog = Gtk.Dialog('16-bit and 8-bit registers', self, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CLOSE,Gtk.ResponseType.CLOSE))
         ui.gtk3.common.set_bokken_icon(dialog)
         reg_img = Gtk.Image()
         reg_img.set_from_file(datafile_path('registers.png'))
@@ -434,10 +434,10 @@ class CheatsheetDialog(Gtk.Dialog):
         dialog.destroy()
 
     def _show_about(self, widget):
-        md = Gtk.MessageDialog(self, 
-            Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.INFO, 
+        md = Gtk.MessageDialog(self,
+            Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.INFO,
             Gtk.ButtonsType.CLOSE, "")
-        md.set_markup('The data for this cheat sheet\nwas borrowed from http://www.rnicrosoft.net.\n\nThe original site is no longer up, and now it\'s owned by cyber-squatters.  There are multiple ones over the Internet, you might like a simple one like <a href="http://www.jegerlehner.ch/intel/IntelCodeTable.pdf">the one from http://www.jegerlehner.ch/intel</a>.')
+        md.set_markup('The data for this cheat sheet\nwas borrowed from www.rnicrosoft.net.\n\nThe original site is no longer up, and now it\'s owned by cyber-squatters.  There are multiple ones over the Internet, you might like a simple one like <a href="http://www.jegerlehner.ch/intel/IntelCodeTable.pdf">the one from http://www.jegerlehner.ch/intel</a>.')
         ui.gtk3.common.set_bokken_icon(md)
         md.run()
         md.destroy()
