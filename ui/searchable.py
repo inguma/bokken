@@ -214,7 +214,7 @@ class Searchable(object):
         # mark and show it
         (iterini, iterfin) = positions[keypos]
         self.textbuf.select_range(iterini, iterfin)
-        self.textview.scroll_to_iter(iterini, 0, False)
+        self.textview.scroll_to_iter(iterini, 0, False, 0, 0)
         return False
 
     def highlight(self, text, tag='yellow-background', case_sensitive=True):
