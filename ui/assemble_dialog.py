@@ -19,7 +19,6 @@
 
 # TODO: ask the user for the program counter to be used instead of using 0 by default. See the FIXMEs below
 
-import os
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource

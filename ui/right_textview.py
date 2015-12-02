@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #       right_textview.py
 #
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
