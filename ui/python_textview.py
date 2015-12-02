@@ -50,10 +50,11 @@ class ScriptThread(Thread):
 class PythonTextView(Gtk.HBox):
     '''Console TextView elements'''
 
-    def __init__(self, uicore):
+    def __init__(self, main):
         super(PythonTextView,self).__init__(False, 1)
 
-        self.uicore = uicore
+        self.main = main
+        self.uicore = self.main.uicore
 
         # Set local objects to be accessed from the terminal
         self.exprloc = {}
@@ -110,12 +111,7 @@ class PythonTextView(Gtk.HBox):
         # Input GtkSourceView TextView (Python code panel)
         #################################################################
 
-        # Use GtkSourceView to add eye candy :P
-        # create buffer
-        lm = GtkSource.LanguageManager.get_default()
-        # Add ui dir to language paths
         self.py_buffer = GtkSource.Buffer()
-        #self.py_buffer.set_data('languages-manager', lm)
         self.py_view = GtkSource.View.new_with_buffer(self.py_buffer)
         self.py_view.set_left_margin(5)
 
@@ -132,9 +128,7 @@ class PythonTextView(Gtk.HBox):
             self.py_view.modify_font(font_desc)
 
         self.py_buffer.set_highlight_syntax(True)
-        # MEOW
-        #manager = self.py_buffer.get_data('languages-manager')
-        language = lm.get_language('python')
+        language = self.main.lm.get_language('python')
         self.py_buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
@@ -153,22 +147,14 @@ class PythonTextView(Gtk.HBox):
         self.vajd.connect('changed', lambda a, s=self.python_scrolled_window: self.rescroll(a,s))
 
         end_iter = self.py_buffer.get_end_iter()
-        self.py_buffer.insert(end_iter, "#\n# Your python code goes here\n# Press the run button above to execute\n#\n\n")
+        self.py_buffer.insert(end_iter, "#\n# Your Python code goes here\n# Press the run button above to execute\n#\n\n")
 
         #################################################################
         # Input GtkSourceView TextView (Output panel)
         #################################################################
 
-        # Use GtkSourceView to add eye candy :P
-        # create buffer
-        lm = GtkSource.LanguageManager()
-        # Add ui dir to language paths
-        paths = lm.get_search_path()
-        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
-        lm.set_search_path(paths)
         self.buffer = GtkSource.Buffer()
         self.buffer.create_tag("green-background", background="green", foreground="black")
-        #self.buffer.set_data('languages-manager', lm)
         self.view = GtkSource.View.new_with_buffer(self.buffer)
         wrap.connect("clicked", self._change_wrap)
         self.view.set_left_margin(5)
@@ -185,9 +171,7 @@ class PythonTextView(Gtk.HBox):
             self.view.modify_font(font_desc)
 
         self.buffer.set_highlight_syntax(False)
-        # MEOW
-        #manager = self.buffer.get_data('languages-manager')
-        language = lm.get_language('asm')
+        language = self.main.lm.get_language('asm')
         self.buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()

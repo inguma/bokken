@@ -29,6 +29,7 @@ dependency_check.check_all()
 # Now that I know that I have them, import them!
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GtkSource
 
 # This is just general info, to help people knowing their system
 print("Starting bokken {}, running on:".format(glob.version))
@@ -132,7 +133,7 @@ class BokkenGTKClient:
                 md.format_secondary_markup(error_msg)
                 md.run()
                 md.destroy()
-                print error_msg
+                print(error_msg)
                 sys.exit(1)
 
             ui.gtk3.common.repaint()
@@ -147,6 +148,14 @@ class BokkenGTKClient:
         # Maximize window
         #self.window.maximize()
 
+        # Create LanguageManager object to handle all the syntax highlighting.
+        # Every textview in the app will use it.
+        self.lm = GtkSource.LanguageManager.get_default()
+        # Add UI data dir to language paths
+        paths = self.lm.get_search_path()
+        paths.append(common.datafile_path())
+        self.lm.set_search_path(paths)
+
         # Create VBox to contain top buttons and other VBox
         self.supervb = Gtk.VBox(False, 1)
 
@@ -160,7 +169,7 @@ class BokkenGTKClient:
         self.supervb.pack_start(self.mainvb, True, True, 1)
 
         # Initialize and add TextViews
-        self.tviews = textviews.TextViews(self.uicore, self)
+        self.tviews = textviews.TextViews(self)
         # Create toolbar show/hide tabs menu
         self.topbuttons.menu.create_view_menu()
 

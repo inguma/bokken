@@ -101,8 +101,9 @@ def console_color(string='', color='white'):
 
     return('%s%s%s' % (ansi_code[color], string, ansi_code['white']))
 
-def datafile_path(filename):
-    '''Returns the full path for a file in the ui/data/ directory.'''
+def datafile_path(filename=''):
+    '''Returns the full path for a file in the ui/data/ directory.  In absence
+    of arguments, just returns the UI datadir.'''
     datadir = '%s/../ui/data/' % os.path.dirname(__file__)
 
     return os.path.normpath(datadir + filename)

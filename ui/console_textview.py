@@ -17,8 +17,6 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
-
 from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository import GtkSource
@@ -26,29 +24,21 @@ from gi.repository import GtkSource
 class ConsoleTextView(Gtk.VBox):
     '''Console TextView elements'''
 
-    def __init__(self, uicore):
+    def __init__(self, main):
         super(ConsoleTextView,self).__init__(False, 1)
 
-        self.uicore = uicore
+        self.main = main
+        self.uicore = self.main.uicore
 
         #################################################################
         # Interactive Right Textview
         #################################################################
 
-        # Use GtkSourceView to add eye candy :P
-        # create buffer
-        lm = GtkSource.LanguageManager.get_default()
-        # Add ui dir to language paths
-        paths = lm.get_search_path()
-        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
-        lm.set_search_path(paths)
         self.buffer = GtkSource.Buffer()
         self.buffer.create_tag("green-background", background="green", foreground="black")
-        # MEOW
-        #self.buffer.set_data('languages-manager', lm)
         self.view = GtkSource.View.new_with_buffer(self.buffer)
 
-        # FIXME options must be user selectable (statusbar)
+        # FIXME options must be user-selectable (statusbar)
         self.view.set_editable(False)
         #self.view.set_highlight_current_line(True)
         # posible values: Gtk.WrapMode.NONE, Gtk.WrapMode.CHAR, Gtk.WrapMode.WORD...
@@ -61,13 +51,12 @@ class ConsoleTextView(Gtk.VBox):
             self.view.modify_font(font_desc)
 
         self.buffer.set_highlight_syntax(False)
-        #manager = self.buffer.get_data('languages-manager')
-        language = lm.get_language('asm')
+        language = self.main.lm.get_language('asm')
         self.buffer.set_language(language)
 
         self.mgr = GtkSource.StyleSchemeManager.get_default()
 
-        # Scrolled Window
+        # Scrolled window
         self.console_scrolled_window = Gtk.ScrolledWindow()
         self.console_scrolled_window.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         self.console_scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)

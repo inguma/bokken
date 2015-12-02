@@ -30,7 +30,8 @@ class AssembleDialog(Gtk.Dialog):
     def __init__(self, main):
         super(AssembleDialog,self).__init__('Assembler plugin', main.window, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
 
-        self.uicore = main.uicore
+        self.main = main
+        self.uicore = self.main.uicore
         self.timer_id = None
 
         self.butt_ok = self.action_area.get_children()[0]
@@ -141,12 +142,6 @@ class AssembleDialog(Gtk.Dialog):
         self.asm_hb.pack_start(self.bits_combo, False, False, 1)
         self.asm_hb.pack_start(self.asm_info, False, False, 1)
         
-        # Add ui dir to language paths
-        lm = GtkSource.LanguageManager.get_default()
-        paths = lm.get_search_path()
-        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
-        lm.set_search_path(paths)
-
         # HEX textview
         #################################################################
 
@@ -157,13 +152,9 @@ class AssembleDialog(Gtk.Dialog):
         self.hex_view.set_editable(True)
         self.hex_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         self.hex_handler = self.hex_buffer.connect("changed", self._update, "hex")
-
-        # MEOW
-        #self.hex_buffer.set_data('languages-manager', lm)
         self.hex_buffer.set_highlight_syntax(True)
 
-        #manager = self.hex_buffer.get_data('languages-manager')
-        language = lm.get_language('asm')
+        language = self.main.lm.get_language('asm')
         self.hex_buffer.set_language(language)
 
         self.hex_scrolled = Gtk.ScrolledWindow()
@@ -188,12 +179,9 @@ class AssembleDialog(Gtk.Dialog):
         self.asm_view.set_editable(True)
         self.asm_handler = self.asm_buffer.connect("changed", self._update, "asm")
 
-        # MEOW
-        #self.asm_buffer.set_data('languages-manager', lm)
         self.asm_buffer.set_highlight_syntax(True)
 
-        #manager = self.asm_buffer.get_data('languages-manager')
-        language = lm.get_language('asm')
+        language = self.main.lm.get_language('asm')
         self.asm_buffer.set_language(language)
 
         self.asm_scrolled = Gtk.ScrolledWindow()

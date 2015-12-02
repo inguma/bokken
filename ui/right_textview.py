@@ -1,6 +1,7 @@
 #       right_textview.py
 #
 #       Copyright 2011 Hugo Teso <hugo.teso@gmail.com>
+#       Copyright 2015 David Martínez Moreno <ender@debian.org>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -18,7 +19,6 @@
 #       MA 02110-1301, USA.
 
 from __future__ import print_function
-import os
 
 from gi.repository import Gtk
 from gi.repository import Pango
@@ -37,16 +37,15 @@ from lib.highword_helper import *
 class RightTextView(Gtk.VBox, Searchable):
     '''Right TextView elements'''
 
-    def __init__(self, core, textviews, main):
-        super(RightTextView,self).__init__(False, 1)
+    def __init__(self, main):
+        super(RightTextView, self).__init__(False, 1)
 
         #################################################################
         # Right Textview
         #################################################################
 
-        self.uicore = core
         self.main = main
-        self.textviews = textviews
+        self.uicore = self.main.uicore
 
         self.seek_index = 0
         self.seeks = []
@@ -60,21 +59,12 @@ class RightTextView(Gtk.VBox, Searchable):
 
         self.hbox = Gtk.HBox(False, 0)
 
-        # Use GtkSourceView to add eye candy :P
-        # create buffer
-        lm = GtkSource.LanguageManager.get_default()
-        # Add ui dir to language paths
-        paths = lm.get_search_path()
-        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
-        lm.set_search_path(paths)
         self.buffer = GtkSource.Buffer()
-        # MEOW
-        #self.buffer.set_data('languages-manager', lm)
         self.view = GtkSource.View.new_with_buffer(self.buffer)
         self.view.connect("button-press-event", self._get_press)
         self.view.connect("button-release-event", self._get_release)
         self.view.connect("key-release-event", self._cursor_moved)
-        tooltip_handle = self.view.connect('motion-notify-event', self.call_tooltip)
+        self.view.connect('motion-notify-event', self.call_tooltip)
 
         # FIXME options must be user selectable (statusbar)
         self.view.set_editable(False)
@@ -88,13 +78,10 @@ class RightTextView(Gtk.VBox, Searchable):
             self.view.modify_font(font_desc)
 
         self.buffer.set_highlight_syntax(True)
-        # MEOW
-        #manager = self.buffer.get_data('languages-manager')
-        manager = GtkSource.LanguageManager.get_default()
         if "ARM" in self.uicore.info.machine or "Thumb" in self.uicore.info.machine:
-            language = manager.get_language('arm-asm')
+            language = self.main.lm.get_language('arm-asm')
         else:
-            language = manager.get_language('asm')
+            language = self.main.lm.get_language('asm')
 
         self.buffer.set_language(language)
 
@@ -417,7 +404,7 @@ class RightTextView(Gtk.VBox, Searchable):
                 else:
                     self.search_string = None
                     self.last_search_iter = None
-                self.textviews.update_graph(self, self.search_string)
+                self.main.tviews.update_graph(self, self.search_string)
 
     def get_line_on_coords(self, x, y):
         '''This function returns the entire line containing the coordinates

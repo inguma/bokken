@@ -17,12 +17,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os
-from gi.repository import Gio
 import platform
 
 from gi.repository import Gtk
-from gi.repository import GtkSource
 
 #import ui.rightcombo as rightcombo
 import ui.treeviews as treeviews
@@ -51,11 +48,11 @@ Left Buttons | ---------------------Paned ----------------------
 class TextViews(Gtk.HBox):
     '''Main TextView elements'''
 
-    def __init__(self, core, main):
+    def __init__(self, main):
         super(TextViews,self).__init__(False, 1)
 
-        self.uicore = core
         self.main = main
+        self.uicore = self.main.uicore
 
         self.match_start = None
         self.match_end = None
@@ -98,7 +95,7 @@ class TextViews(Gtk.HBox):
         # Right Textview
         #################################################################
 
-        self.right_textview = right_textview.RightTextView(self.uicore, self, self.main)
+        self.right_textview = right_textview.RightTextView(self.main)
         self.buffer = self.right_textview.buffer
         self.view = self.right_textview.view
         self.mgr = self.right_textview.mgr
@@ -106,7 +103,7 @@ class TextViews(Gtk.HBox):
         #################################################################
         # Hexdump Textview
         #################################################################
-        self.hexdump_view = hexdump_view.HexdumpView(self.uicore)
+        self.hexdump_view = hexdump_view.HexdumpView(self.main)
 
         #################################################################
         # Strings Treeview
@@ -157,7 +154,7 @@ class TextViews(Gtk.HBox):
         # Console textview
         i = Gtk.Image()
         i.set_from_stock(Gtk.STOCK_EXECUTE, Gtk.IconSize.SMALL_TOOLBAR)
-        self.console = console_textview.ConsoleTextView(self.uicore)
+        self.console = console_textview.ConsoleTextView(self.main)
 
         self.term_nb.insert_page(self.console, i, 0)
 
@@ -165,7 +162,7 @@ class TextViews(Gtk.HBox):
         self.py_pix = Gtk.Image()
         self.py_pix.set_from_file(datafile_path('python-icon.png'))
 
-        self.python = python_textview.PythonTextView(self.uicore)
+        self.python = python_textview.PythonTextView(self.main)
 
         self.term_nb.insert_page(self.python, self.py_pix, 1)
 

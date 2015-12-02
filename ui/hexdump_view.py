@@ -26,14 +26,15 @@ class HexdumpView(Gtk.HBox):
 
     '''Right TextView elements'''
 
-    def __init__(self, core):
+    def __init__(self, main):
         super(HexdumpView,self).__init__(False, 0)
 
         #################################################################
         # Hexdump
         #################################################################
 
-        self.uicore = core
+        self.main = main
+        self.uicore = self.main.uicore
 
         # Scrolledwindow for Offsets
         self.offset_sw = Gtk.ScrolledWindow()
@@ -72,20 +73,12 @@ class HexdumpView(Gtk.HBox):
         self.ascii_buffer = GtkSource.Buffer()
 
         self.asm_buffer = GtkSource.Buffer()
-        # Add ui dir to language paths
-        lm = GtkSource.LanguageManager.get_default()
-        paths = lm.get_search_path()
-        paths.append(os.path.dirname(__file__) + os.sep + 'data' + os.sep)
-        lm.set_search_path(paths)
-        # MEOW
-        #self.asm_buffer.set_data('languages-manager', lm)
         self.asm_buffer.set_highlight_syntax(True)
-        #manager = self.asm_buffer.get_data('languages-manager')
-        language = lm.get_language('hex-ascii')
+        language = self.main.lm.get_language('hex-ascii')
         self.hex_buffer.set_language(language)
-        language = lm.get_language('ascii')
+        language = self.main.lm.get_language('ascii')
         self.ascii_buffer.set_language(language)
-        language = lm.get_language('asm')
+        language = self.main.lm.get_language('asm')
         self.asm_buffer.set_language(language)
 
         self.offset_view = GtkSource.View.new_with_buffer(self.offset_buffer)
