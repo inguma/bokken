@@ -426,22 +426,45 @@ class RightTextView(Gtk.VBox, Searchable):
         it happens that their idea of word separators doesn't correlate very
         well with ASM and r2 output. :o)'''
 
-        def is_word_sep(x, bogus):
-            word_separators = [' ', ',', '\t', '\n', '(', ')']
+        def is_word_sep(x, garbage=None):
+            word_separators = [' ', ',', '=', '\t', '\n', '(', ')']
             return x in word_separators
 
-        # Get textiter at coordinates.
-        start_iter = self.view.get_iter_at_location(x, y)
-        end_iter = start_iter.copy()
-        t_buffer = start_iter.get_buffer()
+        def simple_backward_find_char(src_iter, callback):
+            # We return False if we reach the end of the buffer.
+            while src_iter.backward_char():
+                if callback(src_iter.get_char()):
+                    return True
+            return False
 
-        ret = start_iter.backward_find_char(is_word_sep)
-        # We went too far rewinding (off-by-one in fact), so let's forward one
-        # character, unless ret is False, which means that we reached the start
-        # of the buffer, in which case we won't do anything.
-        if ret:
-            start_iter.forward_char()
-        end_iter.forward_find_char(is_word_sep)
+        def simple_forward_find_char(src_iter, callback):
+            # We return False if we reach the end of the buffer.
+            while src_iter.forward_char():
+                if callback(src_iter.get_char()):
+                    return True
+            return False
 
-        # MEOW
+        while 1:
+            # Get textiter at coordinates.
+            start_iter = self.view.get_iter_at_location(x, y)
+            end_iter = start_iter.copy()
+            t_buffer = start_iter.get_buffer()
+            if is_word_sep(start_iter.get_char()):
+                break
+
+            # The gunichar data type, used in backward_find_char(),
+            # forward_find_char() et al, seem broken in GNOME 3.18 (#759276),
+            # so we'll have to do it manually.
+            #ret = start_iter.backward_find_char(is_word_sep)
+            ret = simple_backward_find_char(start_iter, is_word_sep)
+
+            # We went too far rewinding (off-by-one in fact), so let's forward one
+            # character, unless ret is False, which means that we reached the start
+            # of the buffer, in which case we won't do anything.
+            if ret:
+                start_iter.forward_char()
+            #end_iter.forward_find_char(is_word_sep)
+            simple_forward_find_char(end_iter, is_word_sep)
+            break
+
         return t_buffer.get_text(start_iter, end_iter, True)
