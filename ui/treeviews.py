@@ -254,7 +254,7 @@ class TreeViews(Gtk.TreeView):
             # Detect if search string is from URL or PE/ELF
             link_name = link_name.split("\t")
             # Elf/PE (function)
-            if len( link_name ) == 1:
+            if len(link_name) == 1:
                 if '0x' in link_name[0]:
                     link_name = link_name[0]
                 elif 'reloc.' in link_name[0]:
@@ -274,13 +274,13 @@ class TreeViews(Gtk.TreeView):
             gm = Gtk.Menu()
 
             # And the items
-            e = Gtk.MenuItem("Go to")
-            e.connect('activate', self.search_and_graph, link_name)
-            gm.append( e )
+            menuitem_goto = Gtk.MenuItem("Go to")
+            menuitem_goto.connect('activate', self.search_and_graph, link_name)
+            gm.append(menuitem_goto)
             if self.dograph:
-                e = Gtk.MenuItem("Show graph")
-                e.connect('activate', self.textviews.update_graph, link_name)
-                gm.append( e )
+                menuitem_graph = Gtk.MenuItem("Show graph")
+                menuitem_graph.connect('activate', self.textviews.update_graph, link_name)
+                gm.append(menuitem_graph)
             gm.show_all()
 
-            gm.popup( None, None, None, event.button, _time)
+            gm.popup(None, None, None, None, event.button, _time)
