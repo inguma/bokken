@@ -27,12 +27,13 @@ from gi.repository import GtkSource
 
 # MEOW
 #import ui.sections_bar as sections_bar
+import cgi
 import ui.comments_dialog as comments_dialog
+import ui.opcodes
 import ui.xrefs_menu as xrefs_menu
 
 from ui.searchable import Searchable
 from ui.highword import HighWord
-from ui.opcodes import *
 from lib.highword_helper import *
 
 class RightTextView(Gtk.VBox, Searchable):
@@ -155,7 +156,8 @@ class RightTextView(Gtk.VBox, Searchable):
 
         line = self.get_line_on_coords(x, y)
 
-        for opcode in instructions.keys():
+        opcodes = ui.opcodes.instructions
+        for opcode in opcodes.keys():
             if opcode.split(' ')[0].lower() in line or opcode.split(' ')[0] in line:
                 # Add a menu entry with opcode information
                 opmenu = Gtk.Menu()
@@ -165,11 +167,11 @@ class RightTextView(Gtk.VBox, Searchable):
                 opcodem.get_children()[0].set_markup('Opcode info: <b>' + opcode.split(' ')[0].lower() + '</b>')
 
                 opcode1 = Gtk.ImageMenuItem(Gtk.STOCK_EXECUTE)
-                opcode_text = opcode.replace('<', '"').replace('>', '"').lower()
+                opcode_text = cgi.escape(opcode).lower()
                 opcode1.get_children()[0].set_markup('<b>' + opcode_text + '</b>')
 
                 opcode2 = Gtk.MenuItem("")
-                opcode2.get_children()[0].set_markup(instructions[opcode].replace('<', '"').replace('>', '"'))
+                opcode2.get_children()[0].set_markup(cgi.escape(opcodes[opcode]))
 
                 opmenu.append(opcode1)
                 opmenu.append(Gtk.SeparatorMenuItem())
@@ -202,7 +204,7 @@ class RightTextView(Gtk.VBox, Searchable):
                     if not "0x%08x" % xref.addr in xrefs:
                         xrefs.append("0x%08x" % xref.addr)
 
-                refs_menu = xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
+                xmenu.create_menu("0x%08x" % addr, refs, xrefs, False)
                 sep = Gtk.SeparatorMenuItem()
                 menu.prepend(sep)
                 if hasattr(xmenu, 'xfrommenu'):
