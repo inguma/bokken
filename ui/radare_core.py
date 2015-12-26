@@ -435,10 +435,11 @@ class Core(lib.backend.BasicBackend):
     def get_file_info(self):
         self.update_progress_bar("Getting additional file info", 0.9)
 
+        size_string = '%s (%d bytes)' % (self.size, int(self.size[:-1], 16))
         if self.info:
-            self.fileinfo = {'name':self.info.file, 'format':self.info.rclass, 'processor':self.info.machine, 'OS':self.info.os, 'size':self.size}
+            self.fileinfo = {'Name':self.info.file, 'Format':self.info.rclass, 'Arch':self.info.machine, 'OS':self.info.os, 'Size':size_string}
         else:
-            self.fileinfo = {'name':self.info_file, 'size':self.size}
+            self.fileinfo = {'Name':self.info_file, 'Size':size_string}
 
         return self.fileinfo
 
