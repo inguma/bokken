@@ -37,6 +37,28 @@ then merge and push normally as above.
 Problems
 ========
 
+"No changes found" when pushing to git
+--------------------------------------
+
+If you have connectivity issues when pushing to git, you may end up with this
+error:
+
+user@machine:~/bokken$ hg push git
+pushing to git+ssh://git@github.com/inguma/bokken.git
+searching for changes
+no changes found
+
+This happens because the 'master' bookmark loses its sync with the Mercurial
+tip.  We'll reset it and the push will succeed.
+
+user@machine:~/bokken$ hg bookmark -f master
+user@machine:~/bokken$ hg push git
+pushing to git+ssh://git@github.com/inguma/bokken.git
+searching for changes
+5 commits found
+adding objects
+[...]
+
 Inconsistencies in the git import phase
 ---------------------------------------
 
